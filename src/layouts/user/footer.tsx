@@ -1,4 +1,3 @@
-import Stack from "../../components/ui/react.bits/stacks";
 import {
   Avatar,
   AvatarFallback,
@@ -18,24 +17,6 @@ import {
   ArrowRight,
 } from "lucide-react";
 
-const images = [
-  {
-    id: 1,
-    img: "https://res.cloudinary.com/dumprllvt/image/upload/v1765520667/kn-lam-viec-cong-ty-outsource_gmzxvm.jpg",
-  },
-  {
-    id: 2,
-    img: "https://res.cloudinary.com/dumprllvt/image/upload/v1765520667/kinh-nghiem-pv_ltbrxi.jpg",
-  },
-  {
-    id: 3,
-    img: "https://res.cloudinary.com/dumprllvt/image/upload/v1765444438/base-cover_scopmm.jpg",
-  },
-  {
-    id: 4,
-    img: "https://res.cloudinary.com/dumprllvt/image/upload/v1765444437/grab-cover_e94b4a.jpg",
-  },
-];
 const UserFooter = () => {
   return (
     <footer className="py-12 mx-auto px-4 backdrop-blur-md bg-background/60 border-t border-border/40">
@@ -223,15 +204,6 @@ const UserFooter = () => {
           <h3 className="font-semibold text-foreground/90 mb-4">
             Hình ảnh tiêu biểu
           </h3>
-
-          <Stack
-            // randomRotation={true}
-            sensitivity={150}
-            sendToBackOnClick={true}
-            cardDimensions={{ width: 200, height: 200 }}
-            cardsData={images}
-            animationConfig={{ stiffness: 200, damping: 25 }}
-          />
 
           <Badge
             variant="outline"

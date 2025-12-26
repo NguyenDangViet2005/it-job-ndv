@@ -15,12 +15,6 @@ import {
 import { Input } from "@/components/ui/shadcn/input";
 import { Button } from "@/components/ui/shadcn/button";
 import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-} from "@/components/ui/shadcn/card";
-import {
   Select,
   SelectContent,
   SelectItem,
@@ -126,14 +120,11 @@ export default function FormRegisterHR() {
   };
 
   return (
-    <Card className="w-full max-w-2xl p-6 bg-white/70 dark:bg-gray-900/70 backdrop-blur-lg border border-gray-200 dark:border-gray-700 shadow-xl rounded-2xl">
-      <CardHeader>
-        <CardTitle className="text-2xl font-bold text-center text-gray-900 dark:text-gray-100">
-          Đăng ký Nhà tuyển dụng
-        </CardTitle>
-      </CardHeader>
-
-      <CardContent>
+    <div>
+      <h1 className="text-2xl font-bold text-center text-gray-900 dark:text-gray-100">
+        Đăng ký Nhà tuyển dụng
+      </h1>
+      <div className="w-full mt-5">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             {/* Personal Info Section */}
@@ -142,7 +133,7 @@ export default function FormRegisterHR() {
                 Thông tin cá nhân
               </h3>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {/* Full Name */}
                 <FormField
                   control={form.control}
@@ -215,7 +206,7 @@ export default function FormRegisterHR() {
                 Thông tin công ty
               </h3>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {/* Company Name */}
                 <FormField
                   control={form.control}
@@ -451,7 +442,7 @@ export default function FormRegisterHR() {
             </p>
           </form>
         </Form>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

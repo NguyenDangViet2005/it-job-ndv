@@ -93,7 +93,11 @@ export default function FormRegister() {
                 <FormItem>
                   <FormLabel className="text-sm">Họ và tên</FormLabel>
                   <FormControl>
-                    <Input placeholder="Nguyễn Văn A" className="h-9" {...field} />
+                    <Input
+                      placeholder="Nhập họ và tên"
+                      className="h-9"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -109,7 +113,11 @@ export default function FormRegister() {
                   <FormItem>
                     <FormLabel className="text-sm">Email</FormLabel>
                     <FormControl>
-                      <Input placeholder="email@example.com" className="h-9" {...field} />
+                      <Input
+                        placeholder="email@example.com"
+                        className="h-9"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -123,7 +131,11 @@ export default function FormRegister() {
                   <FormItem>
                     <FormLabel className="text-sm">Số điện thoại</FormLabel>
                     <FormControl>
-                      <Input placeholder="0987654321" className="h-9" {...field} />
+                      <Input
+                        placeholder="Nhập số điện thoại"
+                        className="h-9"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -139,7 +151,12 @@ export default function FormRegister() {
                 <FormItem>
                   <FormLabel className="text-sm">Mật khẩu</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="••••••••" className="h-9" {...field} />
+                    <Input
+                      type="password"
+                      placeholder="••••••••"
+                      className="h-9"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -155,7 +172,7 @@ export default function FormRegister() {
             <Button
               type="submit"
               disabled={isLoading}
-              className="cursor-target w-full bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-500 hover:to-teal-500 text-white font-semibold disabled:opacity-50"
+              className="cursor-target w-full h-9 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? "Đang đăng ký..." : "Đăng ký"}
             </Button>

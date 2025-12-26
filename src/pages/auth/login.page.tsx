@@ -1,61 +1,64 @@
 "use client";
 
 import FormLogin from "@/components/forms/login.form";
-import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { Button } from "@/components/ui/shadcn/button";
 import { ArrowLeft } from "lucide-react";
-import { useRouter } from "next/navigation";
+import Routes from "@/routes";
+import Link from "next/link";
 
 export default function LoginPage() {
-  const router = useRouter();
-
   return (
-    <div className="relative min-h-screen w-full overflow-hidden ">
+    <div className="relative z-10 w-full min-h-screen flex flex-col lg:flex-row">
       {/* Back Button */}
       <div className="absolute top-6 left-6 z-50">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => router.back()}
-          className="bg-background/50 backdrop-blur-sm"
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Quay lại
-        </Button>
+        <Link href={Routes.welcome}>
+          <Button
+            variant="outline"
+            size="sm"
+            className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm hover:bg-white dark:hover:bg-slate-900 cursor-pointer"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Quay lại
+          </Button>
+        </Link>
       </div>
 
-      <div className="relative z-10 container mx-auto h-screen flex items-center justify-center px-4">
-        <div className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-          {/* Left Side - Illustration */}
-          <div className="hidden md:flex flex-col items-center justify-center space-y-6 animate-in fade-in slide-in-from-left duration-1000">
-            <div className="w-full max-w-md">
-              <DotLottieReact src="actionImage.lottie" loop autoplay />
+      {/* Left Side - Video */}
+      <div className="w-full lg:w-1/2 min-h-[40vh] lg:min-h-screen flex items-center justify-center p-6 lg:p-12">
+        <div className="w-full max-w-2xl aspect-video overflow-hidden">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-cover"
+          >
+            <source src="/media/welcome.mp4" type="video/mp4" />
+            <div className="w-full h-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white">
+              Video Loading...
             </div>
+          </video>
+        </div>
+      </div>
 
-            <div className="text-center space-y-4">
-              <h1 className="text-4xl font-bold leading-snug">
-                <span className="bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent">
-                  Kết nối nhân tài IT
-                </span>
-                <br />
-                <span className="text-white/80">
-                  với những cơ hội tuyệt vời 🚀
-                </span>
-              </h1>
-
-              <p className="text-center max-w-md mx-auto text-white/80">
-                Hãy đăng nhập để tiếp tục hành trình tuyển dụng hoặc tìm kiếm
-                công việc mơ ước.
-              </p>
-            </div>
+      {/* Right Side - Form */}
+      <div className="w-full lg:w-1/2 min-h-[60vh] lg:min-h-screen flex flex-col items-center justify-center p-6 lg:p-16">
+        <div className="w-full max-w-md space-y-6">
+          {/* Header */}
+          <div className="text-center space-y-3">
+            <h1 className="text-3xl lg:text-4xl font-bold">
+              <span className="bg-gradient-to-r from-blue-600 via-blue-500 to-purple-600 bg-clip-text text-transparent">
+                Chào mừng trở lại
+              </span>
+            </h1>
+            <p className="text-gray-700 dark:text-gray-300 text-sm lg:text-base">
+              Đăng nhập để tiếp tục hành trình tuyển dụng hoặc tìm kiếm công
+              việc mơ ước
+            </p>
           </div>
 
-          {/* Right Side - Form */}
-          <div className="flex items-center justify-center animate-in fade-in slide-in-from-right duration-1000">
-            <div className="w-full max-w-md">
-              <FormLogin />
-            </div>
-          </div>
+          {/* Login Form */}
+          <FormLogin />
         </div>
       </div>
     </div>

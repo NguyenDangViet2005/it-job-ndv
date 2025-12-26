@@ -1,52 +1,10 @@
 "use client";
-import IntroCard from "@/pages/welcome/intro.card";
-import LogoLoop from "@/components/ui/react.bits/logo.loop";
 import { Button } from "@/components/ui/shadcn/button";
-
 import Routes from "@/routes";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
-import {
-  SiNextdotjs,
-  SiReact,
-  SiTailwindcss,
-  SiTypescript,
-} from "react-icons/si";
 import Typed from "typed.js";
 
-const techLogos = [
-  { node: <SiReact />, title: "React", href: "https://react.dev" },
-  { node: <SiNextdotjs />, title: "Next.js", href: "https://nextjs.org" },
-  {
-    node: <SiTypescript />,
-    title: "TypeScript",
-    href: "https://www.typescriptlang.org",
-  },
-  {
-    node: <SiTailwindcss />,
-    title: "Tailwind CSS",
-    href: "https://tailwindcss.com",
-  },
-];
-
-export const intro = [
-  {
-    title: "Cơ hội việc làm",
-    description: "Hàng nghìn việc làm IT từ các công ty hàng đầu",
-    content:
-      "Frontend, Backend, Fullstack, DevOps, Mobile, AI/ML và nhiều vị trí khác",
-  },
-  {
-    title: "Tuyển dụng dễ dàng",
-    description: "Đăng tin và tìm kiếm ứng viên chất lượng",
-    content: "Hệ thống lọc ứng viên thông minh và quản lý ứng tuyển hiệu quả",
-  },
-  {
-    title: "Phù hợp hoàn hảo",
-    description: "AI matching giữa ứng viên và nhà tuyển dụng",
-    content: "Thuật toán thông minh giúp kết nối đúng người với đúng việc",
-  },
-];
 const WelcomePage = () => {
   const el = useRef(null);
 
@@ -71,71 +29,128 @@ const WelcomePage = () => {
   }, []);
 
   return (
-    <div className="relative z-10 container mx-auto px-4 py-8 flex flex-col items-center justify-center min-h-screen space-y-12">
-      {/* Hero Section */}
-      <div className="text-center space-y-6 max-w-3xl animate-in fade-in slide-in-from-bottom-8 duration-1000">
-        <div className="space-y-4">
-          <div className="inline-block rounded-xl bg-background/80 px-3 py-1 text-sm font-medium text-primary mb-2 border border-primary/10">
+    <div className="relative z-10 w-full min-h-screen flex flex-col lg:flex-row">
+      {/* Left Side - Video */}
+      <div className="w-full lg:w-1/2 min-h-[50vh] lg:min-h-screen flex items-center justify-center p-6 lg:p-12">
+        <div className="w-full max-w-2xl aspect-video overflow-hidden ">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-cover"
+          >
+            <source src="/media/welcome.mp4" type="video/mp4" />
+            <div className="w-full h-full bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center text-white">
+              Video Loading...
+            </div>
+          </video>
+        </div>
+      </div>
+
+      {/* Right Side - Content */}
+      <div className="w-full lg:w-1/2 min-h-[50vh] lg:min-h-screen flex flex-col items-center justify-center p-6 lg:p-16">
+        <div className="w-full max-w-xl space-y-6 lg:space-y-8">
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 rounded-full bg-blue-50 dark:bg-blue-950/50 px-4 py-2 text-sm font-medium text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-600 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-600"></span>
+            </span>
             Nền tảng tuyển dụng thế hệ mới
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight">
-            <span className="bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent drop-shadow-sm">
-              Kết nối nhân tài
-            </span>
-            <br />
-            <span className="text-white">Kiến tạo tương lai</span>
-          </h1>
 
-          <div className="h-[60px] flex items-center justify-center">
-            <span
-              className="text-white md:text-lg text-muted-foreground leading-relaxed max-w-xl mx-auto font-normal"
-              ref={el}
-            ></span>
+          {/* Heading */}
+          <div className="space-y-3 lg:space-y-4">
+            <h1 className="text-4xl md:text-5xl lg:text-5xl font-bold tracking-tight leading-tight">
+              <span className="bg-gradient-to-r from-blue-600 via-blue-500 to-purple-600 bg-clip-text text-transparent">
+                Kết nối
+              </span>
+              <span className="text-gray-900 dark:text-gray-100">
+                {" "}
+                nhân tài IT
+              </span>
+            </h1>
+
+            <div className="h-[60px] lg:h-[70px] flex items-start">
+              <p
+                className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed font-light"
+                ref={el}
+              ></p>
+            </div>
+          </div>
+
+          {/* Features */}
+          <div className="grid grid-cols-1 gap-3 lg:gap-4 py-2 lg:py-4">
+            <div className="flex items-start gap-3 text-left">
+              <div className="mt-0.5 rounded-2xl bg-blue-50 dark:bg-blue-950/50 p-2 flex-shrink-0">
+                <svg
+                  className="w-5 h-5  text-blue-700 dark:text-blue-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold text-base text-gray-900 dark:text-gray-100">
+                  Hàng ngàn việc làm IT
+                </h3>
+                <p className="text-xs text-gray-700 dark:text-gray-400">
+                  Cơ hội việc làm từ các công ty công nghệ hàng đầu
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 text-left">
+              <div className="mt-0.5 rounded-2xl bg-blue-50 dark:bg-blue-950/50 p-2 flex-shrink-0">
+                <svg
+                  className="w-5 h-5 text-blue-700 dark:text-blue-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  />
+                </svg>
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold text-base text-gray-900 dark:text-gray-100">
+                  Ứng tuyển nhanh chóng
+                </h3>
+                <p className="text-xs text-gray-700 dark:text-gray-400">
+                  Quy trình đơn giản, phản hồi nhanh từ nhà tuyển dụng
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 pt-2">
+            <Link href={Routes.home} className="flex-1">
+              <Button className="cursor-pointer w-full text-base font-semibold px-8 h-12 bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/30 hover:shadow-blue-600/40 transition-all duration-300 hover:scale-105">
+                Khám phá việc làm
+              </Button>
+            </Link>
+            <Link href={Routes.login} className="flex-1">
+              <Button
+                variant="outline"
+                className="cursor-pointer w-full text-base font-semibold px-8 h-12 border-2 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-300 hover:scale-105"
+              >
+                Đăng nhập
+              </Button>
+            </Link>
           </div>
         </div>
-
-        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
-          <Link href={Routes.home}>
-            <Button className="text-sm font-semibold px-8 h-11 shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all duration-300 hover:-translate-y-0.5 rounded-md animate-pulse">
-              Tìm việc ngay
-            </Button>
-          </Link>
-          <Link href={Routes.login}>
-            <Button
-              variant="outline"
-              className="text-sm font-semibold px-8 h-11 border-2 hover:bg-secondary/50 transition-all duration-300 hover:-translate-y-0.5 rounded-md bg-background/80 backdrop-blur-sm"
-            >
-              Đăng nhập
-            </Button>
-          </Link>
-        </div>
-      </div>
-
-      {/* Tech Stack Loop */}
-      <div className="w-full max-w-2xl py-4 opacity-80 hover:opacity-100 transition-opacity duration-500 border-y border-border/40 bg-background/80 backdrop-blur-sm">
-        <LogoLoop
-          logos={techLogos}
-          speed={40}
-          direction="left"
-          logoHeight={28}
-          gap={48}
-          pauseOnHover
-          scaleOnHover
-          fadeOut
-          ariaLabel="Technology partners"
-        />
-      </div>
-
-      {/* Features Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 w-full max-w-5xl px-4">
-        {intro.map((item, index) => (
-          <div
-            className="col-span-1 transform hover:z-10 transition-all duration-300"
-            key={index}
-          >
-            <IntroCard data={item} />
-          </div>
-        ))}
       </div>
     </div>
   );
