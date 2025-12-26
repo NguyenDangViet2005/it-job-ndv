@@ -1,0 +1,157 @@
+"use client";
+
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/shadcn/form";
+import { Input } from "@/components/ui/shadcn/input";
+import { Button } from "@/components/ui/shadcn/button";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+} from "@/components/ui/shadcn/card";
+import { FcGoogle } from "react-icons/fc";
+import { LoginFormData, loginFormSchema } from "@/validations/login.validation";
+
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useAuth } from "@/providers/auth.provider";
+
+export default function FormLogin() {
+  const { login, getRedirectPath } = useAuth();
+  const router = useRouter();
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const form = useForm<LoginFormData>({
+    resolver: zodResolver(loginFormSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const onSubmit = async (values: LoginFormData) => {
+    setError("");
+    setIsLoading(true);
+
+    const result = await login(values.email, values.password);
+
+    if (result.success && result.role) {
+      // Redirect based on role
+      const redirectPath = getRedirectPath(result.role);
+      router.push(redirectPath);
+    } else {
+      setError(result.error || "Email hoặc mật khẩu không đúng");
+    }
+
+    setIsLoading(false);
+  };
+
+  const handleGoogleLogin = () => {
+    console.log("Google login clicked");
+    // Ở đây bạn có thể gọi API đăng nhập Google
+  };
+
+  return (
+    <Card className="w-full max-w-md p-4 bg-white/70 dark:bg-gray-900/70 backdrop-blur-lg border border-gray-200 dark:border-gray-700 shadow-xl rounded-2xl">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-xl font-bold text-center text-gray-900 dark:text-gray-100">
+          Đăng nhập
+        </CardTitle>
+      </CardHeader>
+
+      <CardContent>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            {/* Error Message */}
+            {error && (
+              <div className="p-2 text-sm text-red-600 bg-red-50 dark:bg-red-900/20 dark:text-red-400 rounded-lg">
+                {error}
+              </div>
+            )}
+
+            {/* Email */}
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm">Email</FormLabel>
+                  <FormControl>
+                    <Input placeholder="you@example.com" className="h-9" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Password */}
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm">Mật khẩu</FormLabel>
+                  <FormControl>
+                    <Input type="password" placeholder="••••••••" className="h-9" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Submit */}
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="cursor-target w-full h-9 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isLoading ? "Đang đăng nhập..." : "Đăng nhập"}
+            </Button>
+
+            {/* Divider */}
+            <div className="flex items-center my-3">
+              <div className="flex-grow h-px bg-gray-300 dark:bg-gray-700"></div>
+              <span className="px-2 text-xs text-gray-500 dark:text-gray-400">
+                hoặc
+              </span>
+              <div className="flex-grow h-px bg-gray-300 dark:bg-gray-700"></div>
+            </div>
+
+            {/* Google Login */}
+            <Button
+              type="button"
+              onClick={handleGoogleLogin}
+              variant="outline"
+              className="cursor-target w-full h-9 flex items-center justify-center gap-2 border-gray-300 dark:border-gray-700"
+            >
+              <FcGoogle className="cursor-target text-lg" />
+              <span className="text-sm">Đăng nhập bằng Google</span>
+            </Button>
+
+            {/* Link phụ */}
+            <p className="text-center text-xs text-gray-600 dark:text-gray-400 mt-2">
+              Chưa có tài khoản?{" "}
+              <a
+                href="/register"
+                className="cursor-target text-blue-600 dark:text-blue-400 hover:underline"
+              >
+                Đăng ký ngay
+              </a>
+            </p>
+          </form>
+        </Form>
+      </CardContent>
+    </Card>
+  );
+}

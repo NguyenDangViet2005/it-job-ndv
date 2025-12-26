@@ -1,0 +1,20 @@
+// Follow List Types
+export interface FollowUser {
+  id: number;
+  fullName: string;
+  avatar?: string;
+  role?: string;
+  company?: string;
+}
+
+export interface FollowCompany {
+  id: number;
+  name: string;
+  avatar?: string;
+  industry?: string;
+  followers?: number;
+}
+
+export interface FollowListProps {
+  followList: FollowUser[] | FollowCompany[];
+}

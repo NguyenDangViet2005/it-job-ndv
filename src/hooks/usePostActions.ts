@@ -1,0 +1,80 @@
+import { useState } from "react";
+import { postApi } from "@/apis";
+import { getUserId } from "@/utils/auth";
+import { toast } from "sonner"; // hoặc notification library bạn đang dùng
+
+export function usePostActions() {
+  const [loading, setLoading] = useState(false);
+  const currentUserId = getUserId();
+
+  const handleSavePost = async (postId: number) => {
+    try {
+      setLoading(true);
+      // TODO: Implement save post API
+      // await postApi.savePost(postId, currentUserId);
+      console.log("Save post:", postId);
+      toast?.success?.("Đã lưu bài viết");
+    } catch (error) {
+      console.error("Error saving post:", error);
+      toast?.error?.("Không thể lưu bài viết");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleReportPost = async (postId: number) => {
+    try {
+      setLoading(true);
+      // TODO: Implement report post API
+      // await postApi.reportPost(postId, currentUserId);
+      console.log("Report post:", postId);
+      toast?.success?.("Đã báo cáo bài viết");
+    } catch (error) {
+      console.error("Error reporting post:", error);
+      toast?.error?.("Không thể báo cáo bài viết");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEditPost = async (postId: number) => {
+    try {
+      // TODO: Open edit dialog/modal
+      console.log("Edit post:", postId);
+      // You can dispatch an action to open edit modal here
+    } catch (error) {
+      console.error("Error editing post:", error);
+    }
+  };
+
+  const handleDeletePost = async (postId: number) => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        toast?.error?.("Vui lòng đăng nhập");
+        return;
+      }
+
+      await postApi.delete(postId, token);
+      console.log("Deleted post:", postId);
+      toast?.success?.("Đã xóa bài viết");
+      
+      // Refresh posts list
+      window.location.reload(); // hoặc dùng state management để update
+    } catch (error) {
+      console.error("Error deleting post:", error);
+      toast?.error?.("Không thể xóa bài viết");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return {
+    loading,
+    handleSavePost,
+    handleReportPost,
+    handleEditPost,
+    handleDeletePost,
+  };
+}
