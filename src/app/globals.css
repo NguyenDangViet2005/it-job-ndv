@@ -165,74 +165,74 @@
 }
 
 :root {
-  --radius: 0.25rem;
-  /* Light Theme - Modern Professional Palette */
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.13 0.02 240);
-  --card: oklch(0.995 0.001 240);
-  --card-foreground: oklch(0.13 0.02 240);
+  --radius: 0.5rem;
+  /* Light Theme - Purple Brand Palette (matching logo) */
+  --background: oklch(100% 0.00011 271.152);
+  --foreground: oklch(0.2 0.01 280);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.2 0.01 280);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.13 0.02 240);
-  --primary: oklch(0.48 0.22 260); /* Deep Indigo/Blue */
-  --primary-foreground: oklch(0.98 0.005 240);
-  --secondary: oklch(0.96 0.01 260);
-  --secondary-foreground: oklch(0.4 0.1 260);
-  --muted: oklch(0.96 0.005 240);
-  --muted-foreground: oklch(0.5 0.05 240);
-  --accent: oklch(0.94 0.02 260);
-  --accent-foreground: oklch(0.4 0.1 260);
+  --popover-foreground: oklch(0.2 0.01 280);
+  --primary: oklch(0.55 0.25 285); /* Purple-600 matching logo */
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.95 0.015 285);
+  --secondary-foreground: oklch(0.3 0.1 285);
+  --muted: oklch(0.96 0.005 280);
+  --muted-foreground: oklch(0.45 0.03 280);
+  --accent: oklch(0.93 0.025 285);
+  --accent-foreground: oklch(0.3 0.1 285);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.82 0.015 240); /* Darker border for light theme */
-  --input: oklch(0.88 0.01 240);
-  --ring: oklch(0.48 0.22 260);
-  --chart-1: oklch(0.48 0.22 260);
-  --chart-2: oklch(0.6 0.18 280);
-  --chart-3: oklch(0.7 0.15 300);
-  --chart-4: oklch(0.4 0.15 240);
-  --chart-5: oklch(0.8 0.1 260);
-  --sidebar: oklch(0.98 0.005 240);
-  --sidebar-foreground: oklch(0.13 0.02 240);
-  --sidebar-primary: oklch(0.48 0.22 260);
-  --sidebar-primary-foreground: oklch(0.98 0.005 240);
-  --sidebar-accent: oklch(0.94 0.02 260);
-  --sidebar-accent-foreground: oklch(0.4 0.1 260);
-  --sidebar-border: oklch(0.92 0.01 240);
-  --sidebar-ring: oklch(0.48 0.22 260);
+  --border: oklch(0.88 0.01 280);
+  --input: oklch(0.92 0.008 280);
+  --ring: oklch(0.55 0.25 285);
+  --chart-1: oklch(0.55 0.25 285);
+  --chart-2: oklch(0.6 0.22 295);
+  --chart-3: oklch(0.65 0.2 305);
+  --chart-4: oklch(0.5 0.2 275);
+  --chart-5: oklch(0.7 0.18 290);
+  --sidebar: oklch(1 0 0);
+  --sidebar-foreground: oklch(0.2 0.01 280);
+  --sidebar-primary: oklch(0.55 0.25 285);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.93 0.025 285);
+  --sidebar-accent-foreground: oklch(0.3 0.1 285);
+  --sidebar-border: oklch(0.92 0.008 280);
+  --sidebar-ring: oklch(0.55 0.25 285);
 }
 
 .dark {
-  /* Dark Theme - Deep Navy/Cosmic Palette */
-  --background: oklch(18.398% 0.01674 273.734); /* Deep Navy */
-  --foreground: oklch(0.98 0.005 240);
-  --card: oklch(0.14 0.04 260);
-  --card-foreground: oklch(0.98 0.005 240);
-  --popover: oklch(0.14 0.04 260);
-  --popover-foreground: oklch(0.98 0.005 240);
-  --primary: oklch(0.65 0.22 260); /* Vibrant Indigo */
-  --primary-foreground: oklch(0.1 0.03 260);
-  --secondary: oklch(0.2 0.05 260);
-  --secondary-foreground: oklch(0.9 0.02 260);
-  --muted: oklch(0.2 0.04 260);
-  --muted-foreground: oklch(0.7 0.05 260);
-  --accent: oklch(0.25 0.06 260);
-  --accent-foreground: oklch(0.95 0.01 260);
-  --destructive: oklch(0.7 0.2 20);
-  --border: oklch(0.25 0.05 260);
-  --input: oklch(0.25 0.05 260);
-  --ring: oklch(0.65 0.22 260);
-  --chart-1: oklch(0.65 0.22 260);
-  --chart-2: oklch(0.6 0.2 280);
-  --chart-3: oklch(0.7 0.18 300);
-  --chart-4: oklch(0.5 0.2 240);
-  --chart-5: oklch(0.7 0.15 320);
-  --sidebar: oklch(0.12 0.04 260);
-  --sidebar-foreground: oklch(0.98 0.005 240);
-  --sidebar-primary: oklch(0.65 0.22 260);
-  --sidebar-primary-foreground: oklch(0.1 0.03 260);
-  --sidebar-accent: oklch(0.25 0.06 260);
-  --sidebar-accent-foreground: oklch(0.95 0.01 260);
-  --sidebar-border: oklch(0.25 0.05 260);
-  --sidebar-ring: oklch(0.65 0.22 260);
+  /* Dark Theme - Purple Brand Palette (matching logo) */
+  --background: oklch(0.15 0.015 285);
+  --foreground: oklch(0.95 0.005 280);
+  --card: oklch(0.18 0.02 285);
+  --card-foreground: oklch(0.95 0.005 280);
+  --popover: oklch(0.18 0.02 285);
+  --popover-foreground: oklch(0.95 0.005 280);
+  --primary: oklch(0.62 0.26 285); /* Purple-500 matching logo */
+  --primary-foreground: oklch(0.98 0.002 280);
+  --secondary: oklch(0.22 0.035 285);
+  --secondary-foreground: oklch(0.88 0.01 285);
+  --muted: oklch(0.22 0.03 285);
+  --muted-foreground: oklch(0.65 0.03 280);
+  --accent: oklch(0.28 0.045 285);
+  --accent-foreground: oklch(0.92 0.008 285);
+  --destructive: oklch(0.65 0.22 25);
+  --border: oklch(0.28 0.035 285);
+  --input: oklch(0.25 0.035 285);
+  --ring: oklch(0.62 0.26 285);
+  --chart-1: oklch(0.62 0.26 285);
+  --chart-2: oklch(0.65 0.24 295);
+  --chart-3: oklch(0.7 0.22 305);
+  --chart-4: oklch(0.55 0.22 275);
+  --chart-5: oklch(0.68 0.2 290);
+  --sidebar: oklch(0.16 0.02 285);
+  --sidebar-foreground: oklch(0.95 0.005 280);
+  --sidebar-primary: oklch(0.62 0.26 285);
+  --sidebar-primary-foreground: oklch(0.98 0.002 280);
+  --sidebar-accent: oklch(0.28 0.045 285);
+  --sidebar-accent-foreground: oklch(0.92 0.008 285);
+  --sidebar-border: oklch(0.28 0.035 285);
+  --sidebar-ring: oklch(0.62 0.26 285);
 }
 
 @layer base {
@@ -267,7 +267,7 @@
 .custom-pagination-1 .swiper-pagination-bullet-active,
 .custom-pagination-2 .swiper-pagination-bullet-active {
   background: transparent;
-  border: 2px solid #dc2626; /* red-600 */
+  border: 2px solid #5330f2; /* red-600 */
 }
 
 .custom-pagination .swiper-pagination-bullet-active::after,
@@ -276,7 +276,7 @@
   content: "";
   width: 6px;
   height: 6px;
-  background: #dc2626; /* red-600 */
+  background: #5330f2; /* red-600 */
   border-radius: 50%;
   position: absolute;
   top: 50%;
@@ -301,7 +301,7 @@
 .custom-prev-2:hover,
 .custom-next-2:hover {
   transform: scale(1.15);
-  background-color: #fee2e2; /* red-100 */
+  background-color: #d9daf0c0;
 }
 
 .dark .custom-prev:hover,
@@ -310,5 +310,5 @@
 .dark .custom-next-1:hover,
 .dark .custom-prev-2:hover,
 .dark .custom-next-2:hover {
-  background-color: #7f1d1d; /* red-900 */
+  background-color: #d9daf0c0; 
 }

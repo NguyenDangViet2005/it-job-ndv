@@ -11,7 +11,7 @@ export default function RegisterHRPage() {
   const router = useRouter();
 
   return (
-    <div className="relative z-10 w-full h-screen overflow-y-auto flex items-center justify-center">
+    <div className="relative z-10 w-full min-h-screen overflow-y-auto">
       {/* Back Button */}
       <div className="absolute top-4 left-4 z-50">
         <Link href={Routes.welcome}>
@@ -27,7 +27,7 @@ export default function RegisterHRPage() {
       </div>
 
       {/* Form Container */}
-      <div className="w-full px-8 py-6">
+      <div className="w-full px-8 py-20 md:py-24">
         <div className="text-center space-y-3 mb-6">
           <h1 className="text-3xl lg:text-4xl font-bold">
             <span className="bg-gradient-to-r from-blue-600 via-blue-500 to-purple-600 bg-clip-text text-transparent">

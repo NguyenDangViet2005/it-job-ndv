@@ -1,12 +1,20 @@
 "use client";
 import { Button } from "@/components/ui/shadcn/button";
 import Routes from "@/routes";
+import { useTheme } from "next-themes";
+import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Typed from "typed.js";
 
 const WelcomePage = () => {
   const el = useRef(null);
+  const { theme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const typed = new Typed(el.current, {
@@ -27,12 +35,31 @@ const WelcomePage = () => {
       typed.destroy();
     };
   }, []);
+  const logoSrc = mounted && (resolvedTheme === "dark" || theme === "dark")
+    ? "/logo/logo-dark-removebg.png"
+    : "/logo/logo-removebg.png";
+
 
   return (
-    <div className="relative z-10 w-full min-h-screen flex flex-col lg:flex-row">
-      {/* Left Side - Video */}
-      <div className="w-full lg:w-1/2 min-h-[50vh] lg:min-h-screen flex items-center justify-center p-6 lg:p-12">
-        <div className="w-full max-w-2xl aspect-video overflow-hidden ">
+   <div className="relative z-10 w-full min-h-screen">
+     <div className="pt-5 pl-10 flex items-center">
+        <Link
+          href={Routes.home}
+          className="cursor-target"
+        >
+          <Image
+            src={logoSrc}
+            width={160}
+            height={80}
+            alt="IT-Job Logo"
+            priority
+            className="object-contain"
+          />
+        </Link>
+      </div>
+    <div className="flex flex-col lg:flex-row mt-10">
+      <div className="w-full lg:w-1/2 min-h-[50vh] flex items-center justify-center p-6">
+        <div className="w-full max-w-2xl aspect-video overflow-hidden">
           <video
             autoPlay
             loop
@@ -49,7 +76,7 @@ const WelcomePage = () => {
       </div>
 
       {/* Right Side - Content */}
-      <div className="w-full lg:w-1/2 min-h-[50vh] lg:min-h-screen flex flex-col items-center justify-center p-6 lg:p-16">
+      <div className="w-full lg:w-1/2 min-h-[50vh] flex flex-col items-center justify-center p-6">
         <div className="w-full max-w-xl space-y-6 lg:space-y-8">
           {/* Badge */}
           <div className="inline-flex items-center gap-2 rounded-full bg-blue-50 dark:bg-blue-950/50 px-4 py-2 text-sm font-medium text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
@@ -153,6 +180,7 @@ const WelcomePage = () => {
         </div>
       </div>
     </div>
+  </div>
   );
 };
 export default WelcomePage;

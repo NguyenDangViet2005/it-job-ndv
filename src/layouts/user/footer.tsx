@@ -1,10 +1,6 @@
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/shadcn/avatar";
+"use client";
+
 import { Button } from "@/components/ui/shadcn/button";
-import { Badge } from "@/components/ui/shadcn/badge";
 import {
   Facebook,
   Github,
@@ -16,20 +12,37 @@ import {
   Heart,
   ArrowRight,
 } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useTheme } from "next-themes";
+import { useState, useEffect } from "react";
 
 const UserFooter = () => {
+  const { theme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Determine logo based on theme
+  const logoSrc = mounted && (resolvedTheme === "dark" || theme === "dark")
+    ? "/logo/logo-dark-removebg.png"
+    : "/logo/logo-removebg.png";
   return (
     <footer className="py-12 mx-auto px-4 backdrop-blur-md bg-background/60 border-t border-border/40">
       <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 px-20">
         {/* Logo và Social Links */}
         <div className="md:col-span-4 lg:col-span-3">
-          <div className="flex items-center space-x-3 mb-6">
-            <h1 className="text-3xl font-bold">
-              <span className="text-primary">IT</span>
-              <span className="text-muted-foreground">-</span>
-              <span className="text-primary">Job</span>
-            </h1>
-          </div>
+          <Link href="/" className="flex items-center mb-6">
+            <Image
+              src={logoSrc}
+              width={180}
+              height={80}
+              alt="IT-Job Logo"
+              className="object-contain"
+            />
+          </Link>
 
           <p className="text-muted-foreground/90 mb-6 leading-relaxed">
             Nền tảng kết nối nhân tài IT hàng đầu Việt Nam. Tạo cầu nối giữa các
@@ -40,23 +53,23 @@ const UserFooter = () => {
             <Button
               variant="outline"
               size="icon"
-              className="cursor-target hover:bg-primary  transition-colors"
+              className="cursor-pointer hover:bg-primary transition-colors group"
             >
-              <Github className="cursor-target h-4 w-4" />
+              <Github className="cursor-target h-4 w-4 group-hover:text-white" />
+            </Button>
+           <Button
+              variant="outline"
+              size="icon"
+              className="cursor-pointer hover:bg-primary transition-colors group"
+            >
+              <Facebook className="cursor-target h-4 w-4 group-hover:text-white" />
             </Button>
             <Button
               variant="outline"
               size="icon"
-              className="cursor-target hover:bg-primary  transition-colors"
+              className="cursor-pointer hover:bg-primary transition-colors group"
             >
-              <Linkedin className="cursor-target h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              className="cursor-target hover:bg-primary  transition-colors"
-            >
-              <Facebook className="cursor-target h-4 w-4" />
+              <Linkedin className="cursor-target h-4 w-4 group-hover:text-white" />
             </Button>
           </div>
         </div>
@@ -167,6 +180,49 @@ const UserFooter = () => {
           </ul>
         </div>
 
+        {/* For Employers Section */}
+        <div className="md:col-span-2">
+          <h3 className="font-semibold text-foreground/90 mb-4">Dành cho nhà tuyển dụng</h3>
+          <ul className="space-y-3">
+            <li>
+              <a
+                href="#"
+                className="cursor-target text-muted-foreground hover:text-primary transition-colors flex items-center group"
+              >
+                Đăng tin tuyển dụng
+                <ArrowRight className="cursor-target h-3 w-3 ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />
+              </a>
+            </li>
+            <li>
+              <a
+                href="#"
+                className="cursor-target text-muted-foreground hover:text-primary transition-colors flex items-center group"
+              >
+                Giải pháp tuyển dụng
+                <ArrowRight className="cursor-target h-3 w-3 ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />
+              </a>
+            </li>
+            <li>
+              <a
+                href="#"
+                className="cursor-target text-muted-foreground hover:text-primary transition-colors flex items-center group"
+              >
+                Báo cáo thị trường IT
+                <ArrowRight className="cursor-target h-3 w-3 ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />
+              </a>
+            </li>
+            <li>
+              <a
+                href="#"
+                className="cursor-target text-muted-foreground hover:text-primary transition-colors flex items-center group"
+              >
+                Tạo tài khoản
+                <ArrowRight className="cursor-target h-3 w-3 ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />
+              </a>
+            </li>
+          </ul>
+        </div>
+
         {/* Contact Section */}
         <div className="md:col-span-2">
           <h3 className="font-semibold text-foreground/90 mb-4">Liên hệ</h3>
@@ -188,29 +244,6 @@ const UserFooter = () => {
               <span className="text-sm">www.itjob.vn</span>
             </div>
           </div>
-
-          <div className="mt-4">
-            <Badge
-              variant="secondary"
-              className="cursor-target bg-primary/10 text-primary"
-            >
-              🔥 Mới ra mắt
-            </Badge>
-          </div>
-        </div>
-
-        {/* Interactive Stack */}
-        <div className="md:col-span-2  ">
-          <h3 className="font-semibold text-foreground/90 mb-4">
-            Hình ảnh tiêu biểu
-          </h3>
-
-          <Badge
-            variant="outline"
-            className="cursor-target text-xs bg-card/80 backdrop-blur-sm mt-5"
-          >
-            Kéo thả để tương tác
-          </Badge>
         </div>
       </div>
 

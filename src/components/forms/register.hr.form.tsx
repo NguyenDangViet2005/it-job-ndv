@@ -124,7 +124,7 @@ export default function FormRegisterHR() {
       <h1 className="text-2xl font-bold text-center text-gray-900 dark:text-gray-100">
         Đăng ký Nhà tuyển dụng
       </h1>
-      <div className="w-full mt-5">
+      <div className="w-full mt-5 ">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             {/* Personal Info Section */}
