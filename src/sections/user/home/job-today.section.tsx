@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay } from "swiper/modules";
 import "swiper/css";
@@ -10,6 +10,7 @@ import SectionTitle from "@/components/ui/customs/section-title";
 import { jobApi } from "@/apis";
 import type { JobResponse } from "@/types/api.type";
 import Link from "next/link";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 function JobToday() {
   const [jobs, setJobs] = useState<JobResponse[]>([]);
@@ -114,20 +115,30 @@ function JobToday() {
         {jobs.length > 4 && (
           <>
             <button
-              className="job-today-prev absolute left-1 sm:left-3 top-1/2 -translate-y-1/2 z-10 
-                         bg-primary/10 text-primary p-2 rounded-full w-8 h-8 sm:w-10 sm:h-10 
-                         flex items-center justify-center hover:scale-110 transition hover:bg-primary/20"
+              className="job-today-prev absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-10 
+                         bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 
+                         shadow-lg hover:shadow-xl
+                         p-2 rounded-full w-10 h-10 sm:w-12 sm:h-12 
+                         flex items-center justify-center 
+                         hover:scale-110 transition-all duration-200
+                         border border-slate-200 dark:border-slate-700
+                         disabled:opacity-50 disabled:cursor-not-allowed"
               aria-label="Previous slide"
             >
-              ❮
+              <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
             </button>
             <button
-              className="job-today-next absolute right-1 sm:right-3 top-1/2 -translate-y-1/2 z-10 
-                         bg-primary/10 text-primary p-2 rounded-full w-8 h-8 sm:w-10 sm:h-10 
-                         flex items-center justify-center hover:scale-110 transition hover:bg-primary/20"
+              className="job-today-next absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-10 
+                         bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 
+                         shadow-lg hover:shadow-xl
+                         p-2 rounded-full w-10 h-10 sm:w-12 sm:h-12 
+                         flex items-center justify-center 
+                         hover:scale-110 transition-all duration-200
+                         border border-slate-200 dark:border-slate-700
+                         disabled:opacity-50 disabled:cursor-not-allowed"
               aria-label="Next slide"
             >
-              ❯
+              <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
             </button>
           </>
         )}

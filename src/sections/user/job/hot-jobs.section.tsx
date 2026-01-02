@@ -5,63 +5,105 @@ import { Card } from "@/components/ui/shadcn/card";
 const HotJob = ({ props }: any) => {
   return (
     <div className="h-full">
-      <Card className="border-2 rounded-xl shadow-sm hover:shadow-xl hover:border-blue-200 dark:hover:border-blue-500 transition-all duration-300 p-5 flex flex-col items-center bg-white dark:bg-gray-800 h-full group cursor-pointer">
-        {/* Hot Badge */}
-        <div className="w-full flex justify-end mb-2">
-          <span className="flex items-center gap-1 px-2 py-1 bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-300 rounded-full text-xs font-semibold">
-            <TrendingUp className="w-3 h-3" />
-            HOT
-          </span>
-        </div>
+      <Card className="rounded-lg transition-all duration-300 overflow-hidden bg-white dark:bg-gray-800 h-full group cursor-pointer border-0 shadow-lg hover:shadow-xl">
+        {/* Cover Image Background - Full Card */}
+        <div className="relative h-full flex flex-col">
+          {/* Background Image with Overlay */}
+          <div className="absolute inset-0">
+            <Image 
+              src={props.coverImage || props.logo} 
+              alt={props.company}
+              fill
+              className="object-cover"
+            />
+            {/* Purple/Dark Gradient Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-b from-blue-900/40 via-blue-800/50 to-blue-950/90"></div>
+          </div>
 
-        {/* Company Logo */}
-        <div className="w-24 h-24 relative mb-4 bg-white dark:bg-gray-700 rounded-lg border dark:border-gray-600 p-2 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-          <Image 
-            src={props.logo} 
-            alt={props.company} 
-            width={80} 
-            height={80} 
-            className="object-contain"
-          />
-        </div>
+          {/* Content Over Image - Fixed Structure */}
+          <div className="relative h-full flex flex-col p-4">
+            {/* Top: Logo - Fixed Height */}
+            <div className="flex justify-center mb-3 flex-shrink-0">
+              <div className="w-16 h-16 bg-white rounded-full p-2 flex items-center justify-center shadow-xl ring-2 ring-white/20">
+                <Image 
+                  src={props.logo} 
+                  alt={props.company} 
+                  width={48} 
+                  height={48} 
+                  className="object-contain"
+                />
+              </div>
+            </div>
 
-        {/* Job Position */}
-        <h3 className="font-bold text-center text-base mb-2 line-clamp-2 min-h-[3rem] text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-          {props.position}
-        </h3>
+            {/* Company Name - Fixed Height */}
+            <div className="flex-shrink-0 mb-2">
+              <h3 className="font-bold text-sm text-white text-center line-clamp-1 drop-shadow-lg h-5">
+                {props.company}
+              </h3>
+            </div>
 
-        {/* Company Name */}
-        <div className="flex items-center gap-1.5 mb-4">
-          <Briefcase className="w-3.5 h-3.5 text-gray-500 dark:text-gray-400" />
-          <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">
-            {props.company}
-          </p>
-        </div>
+            {/* Company Description - Fixed Height */}
+            <div className="flex-shrink-0 mb-3">
+              <p className="text-xs text-white/90 text-center line-clamp-2 drop-shadow h-8">
+                {props.companyDescription || "Công ty hàng đầu trong lĩnh vực công nghệ"}
+              </p>
+            </div>
 
-        {/* Skills */}
-        <div className="w-full pt-4 border-t border-gray-100 dark:border-gray-700">
-          <p className="text-xs text-gray-500 dark:text-gray-400 mb-2 text-center font-medium">Kỹ năng yêu cầu:</p>
-          <div className="flex gap-1.5 flex-wrap justify-center">
-            {props.skills.slice(0, 3).map((s: any, i: any) => (
-              <span
-                key={i}
-                className="px-3 py-1 text-xs rounded-md bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-200 border border-blue-200 dark:border-blue-700 font-medium"
-              >
-                {s}
-              </span>
-            ))}
-            {props.skills.length > 3 && (
-              <span className="px-3 py-1 text-xs rounded-md bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-medium">
-                +{props.skills.length - 3}
-              </span>
-            )}
+            {/* Job Position - Fixed Height */}
+            <div className="flex-shrink-0 mb-3">
+              <h2 className="font-bold text-base text-white text-center drop-shadow-lg line-clamp-2 h-12">
+                {props.position}
+              </h2>
+            </div>
+
+            {/* Spacer to push bottom content down */}
+            <div className="flex-1"></div>
+
+            {/* Bottom Section - Fixed at bottom */}
+            <div className="space-y-2 flex-shrink-0">
+              {/* Login to view salary */}
+              <div className="text-center h-5">
+                <p className="text-pink-400 font-semibold text-xs drop-shadow">
+                  Login to view salary
+                </p>
+              </div>
+
+              {/* Location */}
+              <div className="flex items-center justify-center gap-1.5 text-white h-5">
+                <Briefcase className="w-3.5 h-3.5 flex-shrink-0" />
+                <p className="text-xs font-medium drop-shadow truncate">
+                  {props.location || "TP. Hồ Chí Minh"}
+                </p>
+              </div>
+
+              {/* VIP Company Badge */}
+              <div className="flex justify-center h-7">
+                <div className="bg-white rounded-lg px-3 py-1 shadow-lg flex items-center gap-1.5">
+                  <TrendingUp className="w-3.5 h-3.5 text-orange-500" />
+                  <span className="text-orange-500 font-bold text-xs">VIP Company</span>
+                </div>
+              </div>
+
+              {/* Skills - Fixed Height */}
+              <div className="flex gap-1.5 flex-wrap justify-center pt-1 min-h-[24px]">
+                {props.skills && props.skills.length > 0 ? (
+                  props.skills.slice(0, 3).map((s: any, i: any) => (
+                    <span
+                      key={i}
+                      className="px-2 py-0.5 text-xs rounded-full bg-white/20 backdrop-blur-sm text-white border border-white/30 font-medium"
+                    >
+                      {s}
+                    </span>
+                  ))
+                ) : (
+                  <span className="px-2 py-0.5 text-xs rounded-full bg-white/20 backdrop-blur-sm text-white border border-white/30 font-medium">
+                    IT
+                  </span>
+                )}
+              </div>
+            </div>
           </div>
         </div>
-
-        {/* Apply Button */}
-        <button className="mt-4 w-full py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white rounded-lg text-sm font-semibold transition-colors duration-200 opacity-0 group-hover:opacity-100">
-          Xem chi tiết
-        </button>
       </Card>
     </div>
   );

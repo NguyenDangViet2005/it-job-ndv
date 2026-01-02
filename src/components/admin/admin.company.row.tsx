@@ -62,9 +62,13 @@ export function AdminCompanyRow({ company, onEdit, onDelete }: CompanyRowProps) 
       {/* Company Info with Avatar */}
       <td className="p-4 cursor-target">
         <div className="flex items-center gap-3">
-          <Avatar className="h-12 w-12 ring-2 ring-primary/10">
-            <AvatarImage src={company.avatar} alt={company.name} />
-            <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-teal-600 text-white font-bold">
+          <Avatar className="h-12 w-12 rounded-lg ring-2 ring-slate-200 dark:ring-slate-700">
+            <AvatarImage 
+              src={company.avatar} 
+              alt={company.name}
+              className="object-contain p-1 bg-white dark:bg-slate-900"
+            />
+            <AvatarFallback className="rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold">
               {company.name?.charAt(0) || "C"}
             </AvatarFallback>
           </Avatar>

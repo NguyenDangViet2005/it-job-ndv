@@ -5,13 +5,12 @@ import { cn } from "@/lib/utils";
 interface KPICardProps {
   title: string;
   value: number;
-  icon: React.ReactNode;
   trend?: number;
   className?: string;
 }
 
 // KPICard component
-function HrKPICard({ title, value, icon, trend, className }: KPICardProps) {
+function HrKPICard({ title, value, trend, className }: KPICardProps) {
   return (
     <Card className={cn(className, "cursor-target hover:shadow-lg transition-shadow")}>
       <CardContent className="p-6">
@@ -29,7 +28,6 @@ function HrKPICard({ title, value, icon, trend, className }: KPICardProps) {
               </div>
             )}
           </div>
-          <div className="text-primary/60">{icon}</div>
         </div>
       </CardContent>
     </Card>

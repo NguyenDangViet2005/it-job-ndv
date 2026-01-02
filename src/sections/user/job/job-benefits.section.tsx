@@ -89,63 +89,53 @@ const JobBenefits = ({ benefits }: JobBenefitsProps) => {
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {benefitSections.map((section, index) => (
-          <Card key={index} className="hover:shadow-md transition-shadow">
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <section.icon
-                  className={`cursor-target h-5 w-5 ${section.color}`}
-                />
-                {section.title}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {section.items.map((item, itemIndex) => (
-                  <div key={itemIndex} className="flex items-start gap-3">
-                    <div
-                      className={`cursor-target h-2 w-2 rounded-full ${section.color.replace(
-                        "text-",
-                        "bg-"
-                      )} mt-2 flex-shrink-0`}
-                    />
-                    <span className="text-sm leading-relaxed">{item}</span>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+          <div key={index}>
+            <h4 className="font-medium mb-3 flex items-center gap-2">
+              <section.icon className={`h-4 w-4 ${section.color}`} />
+              {section.title}
+            </h4>
+            <div className="space-y-2">
+              {section.items.map((item, itemIndex) => (
+                <div key={itemIndex} className="flex items-start gap-3">
+                  <div
+                    className={`h-2 w-2 rounded-full ${section.color.replace(
+                      "text-",
+                      "bg-"
+                    )} mt-2 flex-shrink-0`}
+                  />
+                  <span className="text-sm leading-relaxed">{item}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         ))}
       </div>
 
       {/* Additional Benefits Highlights */}
-      <Card className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border-primary/20">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Gift className="cursor-target h-5 w-5 text-primary" />
-            Đặc quyền nổi bật
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="flex items-center gap-2">
-              <Clock className="cursor-target h-4 w-4 text-primary" />
-              <span className="text-sm">Flexible Hours</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Car className="cursor-target h-4 w-4 text-primary" />
-              <span className="text-sm">Parking Free</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Shield className="cursor-target h-4 w-4 text-primary" />
-              <span className="text-sm">Job Security</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Users2 className="cursor-target h-4 w-4 text-primary" />
-              <span className="text-sm">Team Building</span>
-            </div>
+      <div className="p-4 rounded-lg bg-primary/10 border border-primary/20">
+        <h4 className="font-medium mb-3 flex items-center gap-2">
+          <Gift className="h-4 w-4 text-primary" />
+          Đặc quyền nổi bật
+        </h4>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="flex items-center gap-2">
+            <Clock className="h-4 w-4 text-primary" />
+            <span className="text-sm">Flexible Hours</span>
           </div>
-        </CardContent>
-      </Card>
+          <div className="flex items-center gap-2">
+            <Car className="h-4 w-4 text-primary" />
+            <span className="text-sm">Parking Free</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Shield className="h-4 w-4 text-primary" />
+            <span className="text-sm">Job Security</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Users2 className="h-4 w-4 text-primary" />
+            <span className="text-sm">Team Building</span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

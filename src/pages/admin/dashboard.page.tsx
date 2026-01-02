@@ -135,7 +135,7 @@ const AdminDashboard = () => {
       </div>
 
       {/* Quick Stats */}
-      <Card className="bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-pink-500/10 border-primary/20">
+      <Card className="border-primary/20">
         <CardContent className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div className="text-center space-y-2">

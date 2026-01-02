@@ -1,9 +1,3 @@
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/shadcn/card";
 import { Badge } from "@/components/ui/shadcn/badge";
 import {
   FileText,
@@ -55,111 +49,91 @@ const JobDescription = ({ description }: JobDescriptionProps) => {
 
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <FileText className="cursor-target h-5 w-5 text-primary" />
-            Tổng quan công việc
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground leading-relaxed">
-            {desc.overview}
-          </p>
-        </CardContent>
-      </Card>
+      <div>
+        <h4 className="font-medium mb-3 flex items-center gap-2">
+          <FileText className="h-4 w-4 text-primary" />
+          Tổng quan công việc
+        </h4>
+        <p className="text-muted-foreground leading-relaxed text-sm">
+          {desc.overview}
+        </p>
+      </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Target className="cursor-target h-5 w-5 text-primary" />
-            Trách nhiệm chính
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {desc.responsibilities.map((responsibility, index) => (
+      <div>
+        <h4 className="font-medium mb-3 flex items-center gap-2">
+          <Target className="h-4 w-4 text-primary" />
+          Trách nhiệm chính
+        </h4>
+        <div className="space-y-2">
+          {desc.responsibilities.map((responsibility, index) => (
+            <div key={index} className="flex items-start gap-3">
+              <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+              <span className="text-sm leading-relaxed">
+                {responsibility}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-6">
+        <div>
+          <h4 className="font-medium mb-3 flex items-center gap-2">
+            <Users className="h-4 w-4 text-primary" />
+            Làm việc nhóm
+          </h4>
+          <div className="space-y-2">
+            {desc.teamWork.map((item, index) => (
               <div key={index} className="flex items-start gap-3">
-                <CheckCircle2 className="cursor-target h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                <span className="text-sm leading-relaxed">
-                  {responsibility}
-                </span>
+                <div className="h-2 w-2 bg-blue-500 rounded-full mt-2 flex-shrink-0" />
+                <span className="text-sm leading-relaxed">{item}</span>
               </div>
             ))}
           </div>
-        </CardContent>
-      </Card>
+        </div>
 
-      <div className="grid md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="cursor-target h-5 w-5 text-primary" />
-              Làm việc nhóm
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {desc.teamWork.map((item, index) => (
-                <div key={index} className="flex items-start gap-3">
-                  <div className="cursor-target h-2 w-2 bg-blue-500 rounded-full mt-2 flex-shrink-0" />
-                  <span className="text-sm leading-relaxed">{item}</span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Lightbulb className="cursor-target h-5 w-5 text-primary" />
-              Tác động & Phát triển
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {desc.impact.map((item, index) => (
-                <div key={index} className="flex items-start gap-3">
-                  <div className="cursor-target h-2 w-2 bg-purple-500 rounded-full mt-2 flex-shrink-0" />
-                  <span className="text-sm leading-relaxed">{item}</span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 border-blue-200 dark:border-blue-800">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-blue-700 dark:text-blue-300">
-            <Code2 className="cursor-target h-5 w-5" />
-            Tech Stack chính
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap gap-2">
-            {[
-              "Flutter",
-              "Dart",
-              "Firebase",
-              "REST API",
-              "Provider/Bloc",
-              "Git",
-              "Android Studio",
-              "Xcode",
-            ].map((tech, index) => (
-              <Badge
-                key={index}
-                variant="secondary"
-                className="cursor-target bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
-              >
-                {tech}
-              </Badge>
+        <div>
+          <h4 className="font-medium mb-3 flex items-center gap-2">
+            <Lightbulb className="h-4 w-4 text-primary" />
+            Tác động & Phát triển
+          </h4>
+          <div className="space-y-2">
+            {desc.impact.map((item, index) => (
+              <div key={index} className="flex items-start gap-3">
+                <div className="h-2 w-2 bg-purple-500 rounded-full mt-2 flex-shrink-0" />
+                <span className="text-sm leading-relaxed">{item}</span>
+              </div>
             ))}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
+
+      <div className="p-4 rounded-lg bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800">
+        <h4 className="font-medium mb-3 flex items-center gap-2 text-blue-700 dark:text-blue-300">
+          <Code2 className="h-4 w-4" />
+          Tech Stack chính
+        </h4>
+        <div className="flex flex-wrap gap-2">
+          {[
+            "Flutter",
+            "Dart",
+            "Firebase",
+            "REST API",
+            "Provider/Bloc",
+            "Git",
+            "Android Studio",
+            "Xcode",
+          ].map((tech, index) => (
+            <Badge
+              key={index}
+              variant="secondary"
+              className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+            >
+              {tech}
+            </Badge>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };

@@ -30,7 +30,6 @@ interface JobHeaderProps {
     level: string;
     postedDate: string;
     applications: number;
-    // Additional fields for dynamic highlights
     skills?: Array<{ id: number; name: string }>;
     quantity?: number;
     deadline?: string;
@@ -80,8 +79,8 @@ const CompanyJobInfo = ({ job }: JobHeaderProps) => {
 
   return (
     <>
-    <Card className="mb-8 overflow-hidden border-0 shadow-lg bg-gradient-to-r from-background via-background to-accent/10">
-      <CardContent className="p-8">
+    <Card className="rounded-none my-8 overflow-hidden border-0 shadow-lg bg-gradient-to-r from-background via-background to-accent/10">
+      <CardContent className="p-5">
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Company Logo */}
           <div className="flex-shrink-0">

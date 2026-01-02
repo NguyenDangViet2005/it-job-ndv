@@ -320,7 +320,7 @@ const BlogManagement = () => {
         headerActions={
           <Button 
             onClick={handleCreate}
-            className="gap-2 bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700"
+            className="gap-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-red-600 hover:to-rose-700"
           >
             <Plus className="h-4 w-4" />
             Viết bài mới

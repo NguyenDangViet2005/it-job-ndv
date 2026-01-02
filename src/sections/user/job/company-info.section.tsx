@@ -79,8 +79,8 @@ const [isApplicationModalOpen, setIsApplicationModalOpen] = useState(false);
   };
 
   return (
-    <Card className="sticky top-6">
-      <CardHeader className="text-center">
+    <>
+      <div className="text-center mb-6">
         <div className="flex justify-center mb-4">
           <div className="relative">
             <Image
@@ -88,45 +88,45 @@ const [isApplicationModalOpen, setIsApplicationModalOpen] = useState(false);
               alt={comp.name}
               width={80}
               height={80}
-              className="cursor-target rounded-lg shadow-md"
+              className="rounded-lg shadow-md"
             />
           </div>
         </div>
-        <CardTitle className="text-xl">{comp.name}</CardTitle>
-        <div className="flex flex-wrap justify-center gap-2 mt-2">
-          <Badge variant="secondary" className="cursor-target text-xs">
-            <Building2 className="cursor-target h-3 w-3 mr-1" />
+        <h3 className="text-xl font-semibold mb-2">{comp.name}</h3>
+        <div className="flex flex-wrap justify-center gap-2">
+          <Badge variant="secondary" className="text-xs">
+            <Building2 className="h-3 w-3 mr-1" />
             {comp.industry}
           </Badge>
-          <Badge variant="secondary" className="cursor-target text-xs">
-            <Users className="cursor-target h-3 w-3 mr-1" />
+          <Badge variant="secondary" className="text-xs">
+            <Users className="h-3 w-3 mr-1" />
             {comp.size}
           </Badge>
         </div>
-      </CardHeader>
+      </div>
 
-      <CardContent className="space-y-4">
+      <div className="space-y-4">
         <div className="space-y-3">
           <div className="flex items-center gap-2 text-sm">
-            <MapPin className="cursor-target h-4 w-4 text-muted-foreground" />
+            <MapPin className="h-4 w-4 text-muted-foreground" />
             <span>{comp.location}</span>
           </div>
 
           <div className="flex items-center gap-2 text-sm">
-            <Calendar className="cursor-target h-4 w-4 text-muted-foreground" />
+            <Calendar className="h-4 w-4 text-muted-foreground" />
             <span>Thành lập năm {comp.founded}</span>
           </div>
 
           <div className="flex items-center gap-2 text-sm">
-            <Globe className="cursor-target h-4 w-4 text-muted-foreground" />
+            <Globe className="h-4 w-4 text-muted-foreground" />
             <a
               href={comp.website}
               target="_blank"
               rel="noopener noreferrer"
-              className="cursor-target text-primary hover:underline"
+              className="text-primary hover:underline"
             >
               Website công ty
-              <ExternalLink className="cursor-target h-3 w-3 ml-1 inline" />
+              <ExternalLink className="h-3 w-3 ml-1 inline" />
             </a>
           </div>
         </div>
@@ -146,19 +146,19 @@ const [isApplicationModalOpen, setIsApplicationModalOpen] = useState(false);
           <h4 className="font-medium">Thông tin liên hệ</h4>
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-sm">
-              <Mail className="cursor-target h-4 w-4 text-muted-foreground" />
+              <Mail className="h-4 w-4 text-muted-foreground" />
               <a
                 href={`mailto:${comp.email}`}
-                className="cursor-target text-primary hover:underline"
+                className="text-primary hover:underline"
               >
                 {comp.email}
               </a>
             </div>
             <div className="flex items-center gap-2 text-sm">
-              <Phone className="cursor-target h-4 w-4 text-muted-foreground" />
+              <Phone className="h-4 w-4 text-muted-foreground" />
               <a
                 href={`tel:${comp.phone}`}
-                className="cursor-target text-primary hover:underline"
+                className="text-primary hover:underline"
               >
                 {comp.phone}
               </a>
@@ -167,7 +167,7 @@ const [isApplicationModalOpen, setIsApplicationModalOpen] = useState(false);
         </div>
 
         <Button 
-          className="cursor-target w-full" 
+          className="w-full" 
           size="lg"
           onClick={handleApply}
           disabled={!jobId}
@@ -177,12 +177,12 @@ const [isApplicationModalOpen, setIsApplicationModalOpen] = useState(false);
 
         <Button 
           variant="outline" 
-          className="cursor-target w-full"
+          className="w-full"
           onClick={handleSaveJob}
         >
           Lưu việc làm
         </Button>
-      </CardContent>
+      </div>
 
       {/* Application Modal */}
       {jobId && (
@@ -194,7 +194,7 @@ const [isApplicationModalOpen, setIsApplicationModalOpen] = useState(false);
           companyName={comp.name}
         />
       )}
-    </Card>
+    </>
   );
 };
 

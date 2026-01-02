@@ -18,7 +18,7 @@ export default function NewestJob() {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const pageSize = 9;
+  const pageSize = 12;
 
   useEffect(() => {
     fetchJobs(currentPage);
@@ -95,7 +95,7 @@ export default function NewestJob() {
         viewAllLink="/jobs"
       />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pb-6">
         {jobs.map((job) => (
           <Link href={`/jobs/${job.id}`} key={job.id}>
             <div

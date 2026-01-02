@@ -30,55 +30,40 @@ export function AdminStatsGrid({ stats, columns = 4 }: AdminStatsGridProps) {
 
   return (
     <div className={`grid ${gridCols[columns]} gap-4`}>
-      {stats.map((stat, index) => (
-        <Card
-          key={index}
-          className="hover:shadow-lg transition-all duration-300 group"
-        >
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <p className="text-sm text-muted-foreground uppercase tracking-wide">
-                  {stat.label}
-                </p>
-                <p className="text-3xl font-bold">{stat.value}</p>
-                {stat.trend && (
-                  <p
-                    className={cn(
-                      "text-sm font-medium",
-                      stat.trend.isPositive ? "text-green-600" : "text-red-600"
-                    )}
-                  >
-                    {stat.trend.isPositive ? "+" : "-"}
-                    {stat.trend.value}%
+      {stats.map((stat, index) => {
+        const Icon = stat.icon;
+        return (
+          <Card
+            key={index}
+            className="hover:shadow-lg transition-all duration-300 group"
+          >
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <p className="text-sm text-muted-foreground uppercase tracking-wide">
+                    {stat.label}
                   </p>
-                )}
-              </div>
-              <div
-                className={cn(
-                  "p-3 rounded-xl bg-gradient-to-br group-hover:scale-110 transition-transform",
-                  stat.color || "from-blue-500/20 to-blue-600/20"
-                )}
-              >
-                <stat.icon
-                  className={cn(
-                    "h-8 w-8",
-                    stat.color?.includes("red")
-                      ? "text-red-600"
-                      : stat.color?.includes("green")
-                      ? "text-green-600"
-                      : stat.color?.includes("purple")
-                      ? "text-purple-600"
-                      : stat.color?.includes("orange")
-                      ? "text-orange-600"
-                      : "text-blue-600"
+                  <p className="text-3xl font-bold">{stat.value}</p>
+                  {stat.trend && (
+                    <p
+                      className={cn(
+                        "text-sm font-medium",
+                        stat.trend.isPositive ? "text-green-600" : "text-red-600"
+                      )}
+                    >
+                      {stat.trend.isPositive ? "+" : "-"}
+                      {stat.trend.value}%
+                    </p>
                   )}
-                />
+                </div>
+                <div className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
+                  <Icon className="h-5 w-5" />
+                </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
+            </CardContent>
+          </Card>
+        );
+      })}
     </div>
   );
 }

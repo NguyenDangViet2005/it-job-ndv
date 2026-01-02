@@ -6,12 +6,8 @@ import JobDescription from "@/sections/user/job/job-description.section";
 import JobRequirements from "@/sections/user/job/job-requirements.section";
 import JobBenefits from "@/sections/user/job/job-benefits.section";
 import CompanyInfo from "@/sections/user/job/company-info.section";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/shadcn/tabs";
+import { Card, CardContent } from "@/components/ui/shadcn/card";
+import { Separator } from "@/components/ui/shadcn/separator";
 import { jobApi } from "@/apis";
 import type { JobResponse } from "@/types/api.type";
 
@@ -29,9 +25,7 @@ export default function JobDetailPage({ jobId }: Props) {
       try {
         setLoading(true);
         const response = await jobApi.getById(Number(jobId));
-        
-        // Response chính là JobResponse object sau khi transform
-        // Không có .data vì apiGetById đã unwrap rồi
+
         setJobData(response as any);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Không thể tải chi tiết công việc");
@@ -127,37 +121,46 @@ export default function JobDetailPage({ jobId }: Props) {
         <CompanyJobInfo job={jobHeaderData} />
 
         {/* Main Content */}
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Left Content */}
+        <div className="grid lg:grid-cols-3 gap-8 mt-8">
+          {/* Left Content - Single Card */}
           <div className="lg:col-span-2">
-            <Tabs defaultValue="description" className="space-y-6">
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="description">Mô tả công việc</TabsTrigger>
-                <TabsTrigger value="requirements">Yêu cầu</TabsTrigger>
-                <TabsTrigger value="benefits">Quyền lợi</TabsTrigger>
-              </TabsList>
+            <Card className="rounded-none">
+              <CardContent className="p-6 space-y-8">
+                <div>
+                  <h3 className="text-xl font-semibold mb-4">Mô tả công việc</h3>
+                  <JobDescription description={descriptionData} />
+                </div>
 
-              <TabsContent value="description">
-                <JobDescription description={descriptionData} />
-              </TabsContent>
+                <Separator />
 
-              <TabsContent value="requirements">
-                <JobRequirements requirements={requirementsData} />
-              </TabsContent>
+                {/* Requirements Section */}
+                <div>
+                  <h3 className="text-xl font-semibold mb-4">Yêu cầu công việc</h3>
+                  <JobRequirements requirements={requirementsData} />
+                </div>
 
-              <TabsContent value="benefits">
-                <JobBenefits benefits={benefitsData} />
-              </TabsContent>
-            </Tabs>
+                <Separator />
+
+                {/* Benefits Section */}
+                <div>
+                  <h3 className="text-xl font-semibold mb-4">Quyền lợi</h3>
+                  <JobBenefits benefits={benefitsData} />
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
-          {/* Right Content */}
+          {/* Right Content - Single Card */}
           <div className="lg:col-span-1">
-            <CompanyInfo 
-              jobId={jobData.id}
-              jobTitle={jobData.title}
-              company={companyInfoData} 
-            />
+            <Card className="rounded-none sticky top-8">
+              <CardContent className="p-6">
+                <CompanyInfo 
+                  jobId={jobData.id}
+                  jobTitle={jobData.title}
+                  company={companyInfoData} 
+                />
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>

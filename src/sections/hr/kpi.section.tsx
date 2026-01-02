@@ -5,24 +5,20 @@ const kpiData = [
   {
     title: "Vị trí đang tuyển",
     value: 24,
-    icon: <Briefcase className="h-8 w-8" />,
     trend: 12,
   },
   {
     title: "Ứng viên mới",
     value: 156,
-    icon: <Users className="h-8 w-8" />,
     trend: 8,
   },
   {
     title: "Phỏng vấn hôm nay",
     value: 7,
-    icon: <Calendar className="h-8 w-8" />,
   },
   {
     title: "Số đơn ứng tuyển",
     value: 342,
-    icon: <FileText className="h-8 w-8" />,
     trend: 15,
   },
 ];
@@ -36,7 +32,6 @@ const KPI = () => {
           key={index}
           title={kpi.title}
           value={kpi.value}
-          icon={kpi.icon}
           trend={kpi.trend}
         />
       ))}

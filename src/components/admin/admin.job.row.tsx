@@ -95,9 +95,13 @@ export function AdminJobRow({ job, onEdit, onDelete }: JobRowProps) {
       {/* Job Info with Company Avatar */}
       <td className="p-4 cursor-target">
         <div className="flex items-center gap-3">
-          <Avatar className="h-12 w-12 rounded-lg ring-2 ring-primary/10">
-            <AvatarImage src={job.company?.avatar} alt={job.company?.name} />
-            <AvatarFallback className="rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 text-white">
+          <Avatar className="h-12 w-12 rounded-lg ring-2 ring-slate-200 dark:ring-slate-700">
+            <AvatarImage 
+              src={job.company?.avatar} 
+              alt={job.company?.name}
+              className="object-contain p-1 bg-white dark:bg-slate-900"
+            />
+            <AvatarFallback className="rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
               <Briefcase className="h-5 w-5" />
             </AvatarFallback>
           </Avatar>

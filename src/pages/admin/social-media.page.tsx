@@ -142,18 +142,18 @@ const SocialMedia = () => {
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="space-y-2">
-          <h1 className="text-4xl font-bold font-mono bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-100">
             Social Media Management
           </h1>
-          <p className="text-muted-foreground text-lg">
+          <p className="text-slate-500 dark:text-slate-400 mt-1">
             Manage your social media presence across platforms
           </p>
         </div>
-        <Button className="gap-2 bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700">
+        <Button className="gap-2 bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-slate-900">
           <Plus className="h-4 w-4" />
           Create Post
         </Button>
@@ -162,30 +162,30 @@ const SocialMedia = () => {
       {/* Platform Overview */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
         {platforms.map((platform, index) => (
-          <Card key={index} className="hover:shadow-lg transition-all duration-300 group">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className={cn("p-3 rounded-xl bg-opacity-10", `bg-${platform.color}`)}>
-                  <platform.icon className={cn("h-6 w-6", platform.color)} />
+          <Card key={index} className="hover:shadow-md transition-all duration-200 border-slate-200 dark:border-slate-800">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800">
+                  <platform.icon className={cn("h-5 w-5", platform.color)} />
                 </div>
-                <Badge variant="outline" className="font-mono text-green-600">
+                <Badge variant="outline" className="text-xs text-green-600 dark:text-green-400 border-green-200 dark:border-green-800">
                   {platform.growth}
                 </Badge>
               </div>
-              <h3 className="font-bold text-lg mb-1">{platform.name}</h3>
-              <p className="text-2xl font-bold mb-2">{platform.followers}</p>
-              <div className="space-y-1 text-sm text-muted-foreground">
+              <h3 className="font-semibold text-sm mb-1 text-slate-900 dark:text-slate-100">{platform.name}</h3>
+              <p className="text-xl font-bold mb-2 text-slate-900 dark:text-slate-100">{platform.followers}</p>
+              <div className="space-y-1 text-xs text-slate-500 dark:text-slate-400">
                 <div className="flex items-center justify-between">
                   <span>Engagement</span>
-                  <span className="font-semibold">{platform.engagement}</span>
+                  <span className="font-semibold text-slate-900 dark:text-slate-100">{platform.engagement}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span>Posts</span>
-                  <span className="font-semibold">{platform.posts}</span>
+                  <span className="font-semibold text-slate-900 dark:text-slate-100">{platform.posts}</span>
                 </div>
               </div>
-              <Button variant="outline" size="sm" className="w-full mt-4 gap-2">
-                <ExternalLink className="h-4 w-4" />
+              <Button variant="outline" size="sm" className="w-full mt-3 gap-2 text-xs h-8 border-slate-200 dark:border-slate-700">
+                <ExternalLink className="h-3 w-3" />
                 View Profile
               </Button>
             </CardContent>
@@ -194,109 +194,117 @@ const SocialMedia = () => {
       </div>
 
       {/* Analytics Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="hover:shadow-lg transition-shadow">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground uppercase tracking-wide">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card className="hover:shadow-md transition-all duration-200 border-slate-200 dark:border-slate-800">
+          <CardContent className="p-4">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-1">
                   Total Reach
                 </p>
-                <p className="text-3xl font-bold mt-2">186K</p>
+                <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">186K</p>
               </div>
-              <Eye className="h-10 w-10 text-blue-600" />
+              <div className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
+                <Eye className="h-5 w-5" />
+              </div>
             </div>
           </CardContent>
         </Card>
-        <Card className="hover:shadow-lg transition-shadow">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground uppercase tracking-wide">
+        <Card className="hover:shadow-md transition-all duration-200 border-slate-200 dark:border-slate-800">
+          <CardContent className="p-4">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-1">
                   Engagement
                 </p>
-                <p className="text-3xl font-bold mt-2">12.4K</p>
+                <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">12.4K</p>
               </div>
-              <Heart className="h-10 w-10 text-red-600" />
+              <div className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
+                <Heart className="h-5 w-5" />
+              </div>
             </div>
           </CardContent>
         </Card>
-        <Card className="hover:shadow-lg transition-shadow">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground uppercase tracking-wide">
+        <Card className="hover:shadow-md transition-all duration-200 border-slate-200 dark:border-slate-800">
+          <CardContent className="p-4">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-1">
                   New Followers
                 </p>
-                <p className="text-3xl font-bold mt-2">+2.8K</p>
+                <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">+2.8K</p>
               </div>
-              <Users className="h-10 w-10 text-purple-600" />
+              <div className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
+                <Users className="h-5 w-5" />
+              </div>
             </div>
           </CardContent>
         </Card>
-        <Card className="hover:shadow-lg transition-shadow">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground uppercase tracking-wide">
+        <Card className="hover:shadow-md transition-all duration-200 border-slate-200 dark:border-slate-800">
+          <CardContent className="p-4">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-1">
                   Avg. Growth
                 </p>
-                <p className="text-3xl font-bold mt-2">+12.6%</p>
+                <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">+12.6%</p>
               </div>
-              <TrendingUp className="h-10 w-10 text-green-600" />
+              <div className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
+                <TrendingUp className="h-5 w-5" />
+              </div>
             </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Recent Posts */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Calendar className="h-5 w-5 text-primary" />
+      <Card className="border-slate-200 dark:border-slate-800">
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <Calendar className="h-5 w-5 text-slate-600 dark:text-slate-400" />
             Recent Posts
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
+          <div className="space-y-3">
             {recentPosts.map((post) => (
               <div
                 key={post.id}
-                className="p-4 rounded-lg border hover:bg-muted/50 transition-colors"
+                className="p-4 rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
               >
-                <div className="flex items-start gap-4">
-                  <div className="flex-shrink-0 p-2 rounded-lg bg-muted">
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 p-2 rounded-lg bg-slate-100 dark:bg-slate-800">
                     {getPlatformIcon(post.platform)}
                   </div>
-                  <div className="flex-1 space-y-3">
+                  <div className="flex-1 space-y-2">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Badge variant="outline" className="font-mono">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Badge variant="outline" className="text-xs border-slate-200 dark:border-slate-700">
                             {post.platform}
                           </Badge>
-                          <span className="text-sm text-muted-foreground">
+                          <span className="text-xs text-slate-500 dark:text-slate-400">
                             {post.timestamp}
                           </span>
                         </div>
-                        <p className="text-sm">{post.content}</p>
+                        <p className="text-sm text-slate-700 dark:text-slate-300">{post.content}</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-6 text-sm">
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <Eye className="h-4 w-4" />
+                    <div className="flex items-center gap-4 text-xs text-slate-500 dark:text-slate-400">
+                      <div className="flex items-center gap-1">
+                        <Eye className="h-3 w-3" />
                         <span>{post.reach.toLocaleString()}</span>
                       </div>
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <Heart className="h-4 w-4" />
+                      <div className="flex items-center gap-1">
+                        <Heart className="h-3 w-3" />
                         <span>{post.likes}</span>
                       </div>
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <MessageSquare className="h-4 w-4" />
+                      <div className="flex items-center gap-1">
+                        <MessageSquare className="h-3 w-3" />
                         <span>{post.comments}</span>
                       </div>
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <Share2 className="h-4 w-4" />
+                      <div className="flex items-center gap-1">
+                        <Share2 className="h-3 w-3" />
                         <span>{post.shares}</span>
                       </div>
                     </div>
@@ -310,29 +318,35 @@ const SocialMedia = () => {
 
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer group">
+        <Card className="hover:shadow-md transition-all duration-200 cursor-pointer group border-slate-200 dark:border-slate-800">
           <CardContent className="p-6 text-center">
-            <Calendar className="h-12 w-12 mx-auto mb-4 text-primary group-hover:scale-110 transition-transform" />
-            <h3 className="font-bold mb-2">Schedule Posts</h3>
-            <p className="text-sm text-muted-foreground">
+            <div className="p-3 rounded-lg bg-slate-100 dark:bg-slate-800 w-fit mx-auto mb-3 group-hover:scale-110 transition-transform">
+              <Calendar className="h-6 w-6 text-slate-600 dark:text-slate-400" />
+            </div>
+            <h3 className="font-semibold mb-1 text-slate-900 dark:text-slate-100">Schedule Posts</h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400">
               Plan and schedule your social media content
             </p>
           </CardContent>
         </Card>
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer group">
+        <Card className="hover:shadow-md transition-all duration-200 cursor-pointer group border-slate-200 dark:border-slate-800">
           <CardContent className="p-6 text-center">
-            <TrendingUp className="h-12 w-12 mx-auto mb-4 text-primary group-hover:scale-110 transition-transform" />
-            <h3 className="font-bold mb-2">Analytics</h3>
-            <p className="text-sm text-muted-foreground">
+            <div className="p-3 rounded-lg bg-slate-100 dark:bg-slate-800 w-fit mx-auto mb-3 group-hover:scale-110 transition-transform">
+              <TrendingUp className="h-6 w-6 text-slate-600 dark:text-slate-400" />
+            </div>
+            <h3 className="font-semibold mb-1 text-slate-900 dark:text-slate-100">Analytics</h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400">
               View detailed analytics and insights
             </p>
           </CardContent>
         </Card>
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer group">
+        <Card className="hover:shadow-md transition-all duration-200 cursor-pointer group border-slate-200 dark:border-slate-800">
           <CardContent className="p-6 text-center">
-            <Users className="h-12 w-12 mx-auto mb-4 text-primary group-hover:scale-110 transition-transform" />
-            <h3 className="font-bold mb-2">Audience</h3>
-            <p className="text-sm text-muted-foreground">
+            <div className="p-3 rounded-lg bg-slate-100 dark:bg-slate-800 w-fit mx-auto mb-3 group-hover:scale-110 transition-transform">
+              <Users className="h-6 w-6 text-slate-600 dark:text-slate-400" />
+            </div>
+            <h3 className="font-semibold mb-1 text-slate-900 dark:text-slate-100">Audience</h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400">
               Understand your audience demographics
             </p>
           </CardContent>

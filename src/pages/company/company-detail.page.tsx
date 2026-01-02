@@ -84,7 +84,7 @@ const CompanyDetailPage = ({ company }: CompanyDetailPageProps) => {
 
         {/* Company Header */}
         <div className="max-w-7xl mx-auto px-4 -mt-20 relative z-10">
-          <Card className="p-6 md:p-8">
+          <Card className="rounded-none p-6 md:p-8">
             <div className="flex flex-col md:flex-row gap-6">
               {/* Logo */}
               <div className="relative w-32 h-32 flex-shrink-0 rounded-xl overflow-hidden bg-white border-4 border-background shadow-lg">
@@ -178,258 +178,255 @@ const CompanyDetailPage = ({ company }: CompanyDetailPageProps) => {
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column - Main Content */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* About */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Building2 className="h-5 w-5" />
-                  Giới thiệu công ty
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="prose prose-sm max-w-none text-muted-foreground whitespace-pre-line">
-                  {company.description}
+          <div className="lg:col-span-2">
+            <Card className="rounded-none ">
+              <CardContent className="p-6 space-y-8">
+                {/* About */}
+                <div>
+                  <h3 className="flex items-center gap-2 text-xl font-semibold mb-4">
+                    <Building2 className="h-5 w-5" />
+                    Giới thiệu công ty
+                  </h3>
+                  <div className="prose prose-sm max-w-none text-muted-foreground whitespace-pre-line">
+                    {company.description}
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
 
-            {/* Location */}
-            {(company.address || company.city) && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <MapPin className="h-5 w-5" />
-                    Địa điểm làm việc
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
-                    <MapPin className="h-5 w-5 text-primary mt-0.5" />
+                {/* Location */}
+                {(company.address || company.city) && (
+                  <>
+                    <Separator />
                     <div>
-                      <div className="font-medium">
-                        {company.city || 'Văn phòng chính'}
-                      </div>
-                      {company.address && (
-                        <div className="text-sm text-muted-foreground mt-1">
-                          {company.address}
+                      <h3 className="flex items-center gap-2 text-xl font-semibold mb-4">
+                        <MapPin className="h-5 w-5" />
+                        Địa điểm làm việc
+                      </h3>
+                      <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
+                        <MapPin className="h-5 w-5 text-primary mt-0.5" />
+                        <div>
+                          <div className="font-medium">
+                            {company.city || 'Văn phòng chính'}
+                          </div>
+                          {company.address && (
+                            <div className="text-sm text-muted-foreground mt-1">
+                              {company.address}
+                            </div>
+                          )}
                         </div>
-                      )}
+                      </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Jobs */}
-            <Card id="jobs">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2">
-                    <Briefcase className="h-5 w-5" />
-                    Vị trí đang tuyển dụng ({openJobsCount})
-                  </CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent>
-                {/* Job Filter */}
-                <div className="mb-6">
-                  <Tabs defaultValue="all" onValueChange={setSelectedJobType}>
-                    <TabsList>
-                      <TabsTrigger value="all" className="cursor-target">
-                        Tất cả
-                      </TabsTrigger>
-                      <TabsTrigger value="full-time" className="cursor-target">
-                        Full-time
-                      </TabsTrigger>
-                      <TabsTrigger value="part-time" className="cursor-target">
-                        Part-time
-                      </TabsTrigger>
-                      <TabsTrigger value="contract" className="cursor-target">
-                        Contract
-                      </TabsTrigger>
-                    </TabsList>
-                  </Tabs>
-                </div>
-
-                {/* Job List */}
-                {filteredJobs && filteredJobs.length > 0 ? (
-                  <div className="space-y-4">
-                    {filteredJobs.map((job) => (
-                      <JobCard
-                        key={job.id}
-                        job={job}
-                        companyName={company.name}
-                        companyLogo={company.avatar || "/logo-company.jpg"}
-                      />
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-8 text-muted-foreground">
-                    Không có vị trí tuyển dụng phù hợp
-                  </div>
+                  </>
                 )}
+
+                {/* Jobs */}
+                <Separator />
+                <div id="jobs">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="flex items-center gap-2 text-xl font-semibold">
+                      <Briefcase className="h-5 w-5" />
+                      Vị trí đang tuyển dụng ({openJobsCount})
+                    </h3>
+                  </div>
+
+                  {/* Job Filter */}
+                  <div className="mb-6">
+                    <Tabs defaultValue="all" onValueChange={setSelectedJobType}>
+                      <TabsList>
+                        <TabsTrigger value="all" className="cursor-target">
+                          Tất cả
+                        </TabsTrigger>
+                        <TabsTrigger value="full-time" className="cursor-target">
+                          Full-time
+                        </TabsTrigger>
+                        <TabsTrigger value="part-time" className="cursor-target">
+                          Part-time
+                        </TabsTrigger>
+                        <TabsTrigger value="contract" className="cursor-target">
+                          Contract
+                        </TabsTrigger>
+                      </TabsList>
+                    </Tabs>
+                  </div>
+
+                  {/* Job List */}
+                  {filteredJobs && filteredJobs.length > 0 ? (
+                    <div className="space-y-4">
+                      {filteredJobs.map((job) => (
+                        <JobCard
+                          key={job.id}
+                          job={job}
+                          companyName={company.name}
+                          companyLogo={company.avatar || "/logo-company.jpg"}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 text-muted-foreground">
+                      Không có vị trí tuyển dụng phù hợp
+                    </div>
+                  )}
+                </div>
               </CardContent>
             </Card>
           </div>
 
           {/* Right Column - Sidebar */}
-          <div className="space-y-6">
-            {/* Contact Info */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Thông tin liên hệ</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {company.website && (
-                  <a
-                    href={company.website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-3 text-sm hover:text-primary transition-colors cursor-target group"
-                  >
-                    <Globe className="h-4 w-4 text-muted-foreground group-hover:text-primary" />
-                    <span className="line-clamp-1">{company.website}</span>
-                  </a>
-                )}
-                {company.phone && (
-                  <a
-                    href={`tel:${company.phone}`}
-                    className="flex items-center gap-3 text-sm hover:text-primary transition-colors cursor-target group"
-                  >
-                    <Phone className="h-4 w-4 text-muted-foreground group-hover:text-primary" />
-                    <span>{company.phone}</span>
-                  </a>
-                )}
-                {company.address && (
-                  <div className="flex items-start gap-3 text-sm">
-                    <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
-                    <span className="line-clamp-2">{company.address}</span>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Quick Actions */}
-            <Card>
-              <CardContent className="pt-6">
-                <Button
-                  className="w-full mb-3 cursor-target"
-                  onClick={() => {
-                    document
-                      .getElementById("jobs")
-                      ?.scrollIntoView({ behavior: "smooth" });
-                  }}
-                >
-                  <Briefcase className="h-4 w-4 mr-2" />
-                  Xem tất cả việc làm
-                </Button>
-                <Button variant="outline" className="w-full cursor-target">
-                  <Share2 className="h-4 w-4 mr-2" />
-                  Chia sẻ công ty
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* Company Stats */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Thống kê</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">
-                    Vị trí tuyển dụng
-                  </span>
-                  <span className="font-semibold">{openJobsCount}</span>
-                </div>
-                <Separator />
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">
-                    Người theo dõi
-                  </span>
-                  <span className="font-semibold">
-                    {followersCount.toLocaleString()}
-                  </span>
-                </div>
-                <Separator />
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">
-                    Đánh giá
-                  </span>
-                  <div className="flex items-center gap-1">
-                    <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                    <span className="font-semibold">{averageRating}</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Reviews */}
-            <Card id="reviews">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <MessageSquare className="h-5 w-5" />
-                  Đánh giá ({reviewsCount})
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {company.reviews && company.reviews.length > 0 ? (
-                  <div className="space-y-6">
-                    {company.reviews
-                      .slice(0, visibleReviews)
-                      .map((review) => (
-                        <div key={review.id} className="flex gap-3">
-                          <div className="relative w-8 h-8 flex-shrink-0 rounded-full overflow-hidden bg-muted">
-                            <div className="w-full h-full flex items-center justify-center bg-primary/10 text-primary font-semibold">
-                              {review.userId.toString().charAt(0)}
-                            </div>
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex items-center justify-between mb-1">
-                              <h4 className="font-semibold text-sm">
-                                User #{review.userId}
-                              </h4>
-                              <span className="text-xs text-muted-foreground">
-                                {new Date(review.createdAt).toLocaleDateString(
-                                  "vi-VN"
-                                )}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-0.5 mb-1">
-                              {Array.from({ length: 5 }).map((_, i) => (
-                                <Star
-                                  key={i}
-                                  className={`h-3 w-3 ${
-                                    i < review.rating
-                                      ? "fill-yellow-400 text-yellow-400"
-                                      : "text-muted-foreground/30"
-                                  }`}
-                                />
-                              ))}
-                            </div>
-                            <p className="text-sm text-muted-foreground line-clamp-3">
-                              {review.comment}
-                            </p>
-                          </div>
-                        </div>
-                      ))}
-
-                    {company.reviews.length > visibleReviews && (
-                      <Button
-                        variant="outline"
-                        className="w-full text-sm cursor-target"
-                        onClick={handleLoadMoreReviews}
+          <div>
+            <Card className="rounded-none ">
+              <CardContent className="p-6 space-y-6">
+                {/* Contact Info */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">Thông tin liên hệ</h3>
+                  <div className="space-y-3">
+                    {company.website && (
+                      <a
+                        href={company.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3 text-sm hover:text-primary transition-colors cursor-target group"
                       >
-                        Xem thêm đánh giá
-                      </Button>
+                        <Globe className="h-4 w-4 text-muted-foreground group-hover:text-primary" />
+                        <span className="line-clamp-1">{company.website}</span>
+                      </a>
+                    )}
+                    {company.phone && (
+                      <a
+                        href={`tel:${company.phone}`}
+                        className="flex items-center gap-3 text-sm hover:text-primary transition-colors cursor-target group"
+                      >
+                        <Phone className="h-4 w-4 text-muted-foreground group-hover:text-primary" />
+                        <span>{company.phone}</span>
+                      </a>
+                    )}
+                    {company.address && (
+                      <div className="flex items-start gap-3 text-sm">
+                        <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
+                        <span className="line-clamp-2">{company.address}</span>
+                      </div>
                     )}
                   </div>
-                ) : (
-                  <div className="text-center py-8 text-muted-foreground text-sm">
-                    Chưa có đánh giá nào
+                </div>
+
+                <Separator />
+
+                {/* Quick Actions */}
+                <div>
+                  <Button
+                    className="w-full mb-3 cursor-target"
+                    onClick={() => {
+                      document
+                        .getElementById("jobs")
+                        ?.scrollIntoView({ behavior: "smooth" });
+                    }}
+                  >
+                    <Briefcase className="h-4 w-4 mr-2" />
+                    Xem tất cả việc làm
+                  </Button>
+                  <Button variant="outline" className="w-full cursor-target">
+                    <Share2 className="h-4 w-4 mr-2" />
+                    Chia sẻ công ty
+                  </Button>
+                </div>
+
+                <Separator />
+
+                {/* Company Stats */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">Thống kê</h3>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">
+                        Vị trí tuyển dụng
+                      </span>
+                      <span className="font-semibold">{openJobsCount}</span>
+                    </div>
+                    <Separator />
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">
+                        Người theo dõi
+                      </span>
+                      <span className="font-semibold">
+                        {followersCount.toLocaleString()}
+                      </span>
+                    </div>
+                    <Separator />
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">
+                        Đánh giá
+                      </span>
+                      <div className="flex items-center gap-1">
+                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                        <span className="font-semibold">{averageRating}</span>
+                      </div>
+                    </div>
                   </div>
-                )}
+                </div>
+
+                <Separator />
+
+                {/* Reviews */}
+                <div id="reviews">
+                  <h3 className="flex items-center gap-2 text-lg font-semibold mb-4">
+                    <MessageSquare className="h-5 w-5" />
+                    Đánh giá ({reviewsCount})
+                  </h3>
+                  {company.reviews && company.reviews.length > 0 ? (
+                    <div className="space-y-6">
+                      {company.reviews
+                        .slice(0, visibleReviews)
+                        .map((review) => (
+                          <div key={review.id} className="flex gap-3">
+                            <div className="relative w-8 h-8 flex-shrink-0 rounded-full overflow-hidden bg-muted">
+                              <div className="w-full h-full flex items-center justify-center bg-primary/10 text-primary font-semibold">
+                                {review.userId.toString().charAt(0)}
+                              </div>
+                            </div>
+                            <div className="flex-1">
+                              <div className="flex items-center justify-between mb-1">
+                                <h4 className="font-semibold text-sm">
+                                  User #{review.userId}
+                                </h4>
+                                <span className="text-xs text-muted-foreground">
+                                  {new Date(review.createdAt).toLocaleDateString(
+                                    "vi-VN"
+                                  )}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-0.5 mb-1">
+                                {Array.from({ length: 5 }).map((_, i) => (
+                                  <Star
+                                    key={i}
+                                    className={`h-3 w-3 ${
+                                      i < review.rating
+                                        ? "fill-yellow-400 text-yellow-400"
+                                        : "text-muted-foreground/30"
+                                    }`}
+                                  />
+                                ))}
+                              </div>
+                              <p className="text-sm text-muted-foreground line-clamp-3">
+                                {review.comment}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+
+                      {company.reviews.length > visibleReviews && (
+                        <Button
+                          variant="outline"
+                          className="w-full text-sm cursor-target"
+                          onClick={handleLoadMoreReviews}
+                        >
+                          Xem thêm đánh giá
+                        </Button>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 text-muted-foreground text-sm">
+                      Chưa có đánh giá nào
+                    </div>
+                  )}
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -464,7 +461,7 @@ const JobCard = ({
   
   return (
     <Link href={`/jobs/${job.id}`} className="block group cursor-target">
-      <Card className="hover:shadow-md hover:border-primary/50 transition-all duration-300">
+      <Card className=" hover:shadow-md hover:border-primary/50 transition-all duration-300">
         <CardContent className="p-4">
           <div className="flex items-start gap-4">
             {/* Company Logo */}

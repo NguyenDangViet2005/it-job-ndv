@@ -8,7 +8,7 @@ import { EffectCoverflow, Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
-import { Bookmark, MoveLeft, MoveRight } from "lucide-react";
+import { Bookmark, Building2, MapPin, MoveLeft, MoveRight } from "lucide-react";
 import SectionTitle from "@/components/ui/customs/section-title";
 import { companyApi } from "@/apis";
 import type { Company } from "@/types/api.type";
@@ -42,7 +42,7 @@ function FeaturedCompanies() {
 
   if (loading) {
     return (
-      <div className="w-full max-w-6xl mx-auto py-10 md:block hidden">
+      <div className="w-full mx-auto py-10 md:block hidden">
         <SectionTitle title="Công Ty Nổi Bật" />
         <div className="flex items-center justify-center h-64">
           <div className="text-muted-foreground">Đang tải...</div>
@@ -53,7 +53,7 @@ function FeaturedCompanies() {
 
   if (error) {
     return (
-      <div className="w-full max-w-6xl mx-auto py-10 md:block hidden">
+      <div className="w-full mx-auto py-10 md:block hidden">
         <SectionTitle title="Công Ty Nổi Bật" />
         <div className="flex items-center justify-center h-64">
           <div className="text-destructive">Lỗi: {error}</div>
@@ -64,7 +64,7 @@ function FeaturedCompanies() {
 
   if (companies.length === 0) {
     return (
-      <div className="w-full max-w-6xl mx-auto py-10 md:block hidden">
+      <div className="w-full mx-auto py-10 md:block hidden">
         <SectionTitle title="Công Ty Nổi Bật" />
         <div className="flex items-center justify-center h-64">
           <div className="text-muted-foreground">Không có công ty nào</div>
@@ -73,7 +73,7 @@ function FeaturedCompanies() {
     );
   }
   return (
-    <div className="w-full max-w-6xl mx-auto py-10 relative md:block hidden">
+    <div className="w-full mx-auto py-10 relative md:block hidden">
       <SectionTitle title="Công Ty Nổi Bật" />
 
       {/* Swiper */}
@@ -102,7 +102,7 @@ function FeaturedCompanies() {
         }}
       >
         {companies.map((company) => (
-          <SwiperSlide key={company.id} className="!w-[800px] !h-[450px]">
+          <SwiperSlide key={company.id} className="!w-[900px] !h-[450px]">
             <Link href={`/companies/${company.id}`} className="block group ">
               <div className="shadow-lg bg-card transition-all duration-300 group-hover:scale-105 w-full mb-12 relative">
                 {/* Cover Image */}
@@ -113,13 +113,13 @@ function FeaturedCompanies() {
                     fill
                     className="object-cover cursor-target"
                     priority={false}
-                    sizes="800px"
+                    sizes="900px"
                     unoptimized={company.coverImage?.includes("picsum.photos")}
                   />
                 </div>
 
                 {/* Info card - positioned below the image */}
-                <div className="p-4 absolute rounded-2xl cursor-target -bottom-16 left-1/2 transform -translate-x-1/2 bg-card w-[720px] shadow-xl cursor-pointer z-10 border group-hover:border-primary/50 transition-colors">
+                <div className="p-4 absolute rounded-2xl cursor-target -bottom-16 left-1/2 transform -translate-x-1/2 bg-card w-[820px] shadow-xl cursor-pointer z-10 border group-hover:border-primary/50 transition-colors">
                   <div className="flex items-center gap-3 mb-3">
                     {/* Company Avatar */}
                     <div className="relative w-12 h-12 rounded-full border overflow-hidden flex-shrink-0 bg-white">
@@ -143,7 +143,6 @@ function FeaturedCompanies() {
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        // TODO: Implement bookmark functionality
                       }}
                     >
                       <Bookmark size={18} />
@@ -161,10 +160,10 @@ function FeaturedCompanies() {
                       </span>
                     )}
                     {company.nationality && (
-                      <span className="text-muted-foreground">📍 {company.nationality}</span>
+                      <span className="text-muted-foreground flex gap-1"><MapPin size={15}/> <div>{company.nationality}</div></span>
                     )}
                     {company.foundedYear && (
-                      <span className="text-muted-foreground">🏢 {company.foundedYear}</span>
+                      <span className="text-muted-foreground flex gap-1"><Building2 size={15}/><div> {company.foundedYear}</div></span>
                     )}
                   </div>
                 </div>

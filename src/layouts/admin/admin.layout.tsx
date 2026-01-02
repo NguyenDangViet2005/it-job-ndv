@@ -14,12 +14,7 @@ import {
   Bell,
   Search,
   Menu,
-  X,
   Shield,
-  Facebook,
-  Twitter,
-  Linkedin,
-  Instagram,
   Plus,
   Building2,
   Home,
@@ -40,6 +35,9 @@ import {
 import Routes from "@/routes";
 import { ScrollArea } from "@/components/ui/shadcn/scroll-area";
 import { useAuth } from "@/providers/auth.provider";
+import Image from "next/image";
+import { useTheme } from "next-themes";
+import { useState, useEffect } from "react";
 
 const NAVIGATION_ITEMS: NavigationItem[] = [
   { href: "/admin", icon: LayoutDashboard, label: "Dashboard" },
@@ -56,6 +54,16 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const pathname = usePathname();
   const { logout } = useAuth();
+  const { theme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  const logoSrc = mounted && (resolvedTheme === "dark" || theme === "dark")
+    ? "/logo/logo-dark-removebg.png"
+    : "/logo/logo-removebg.png";
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const NavigationContent = () => (
     <nav className="space-y-1">
@@ -69,8 +77,8 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
             className={cn(
               "flex items-center cursor-target gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
               isActive
-                ? "bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-lg shadow-red-500/25"
-                : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                ? "bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 shadow-sm"
+                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800"
             )}
           >
             <Icon className="h-4 w-4 flex-shrink-0" />
@@ -80,7 +88,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
                 variant={isActive ? "secondary" : "outline"}
                 className={cn(
                   "text-xs",
-                  isActive && "bg-white/20 text-white border-white/30"
+                  isActive && "bg-white/90 dark:bg-slate-800 text-slate-900 dark:text-slate-100 border-transparent"
                 )}
               >
                 {item.badge}
@@ -93,43 +101,43 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
   );
 
   const ProfileCard = () => (
-    <div className="p-3 bg-gradient-to-br from-red-500/10 to-rose-500/10 rounded-lg border border-red-500/20">
+    <div className="p-3 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm">
       <div className="flex items-center gap-2 mb-2">
-        <div className="p-1.5 rounded-md bg-gradient-to-br from-red-500 to-rose-600 text-white">
+        <div className="p-1.5 rounded-md bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900">
           <Shield className="h-4 w-4" />
         </div>
         <div>
-          <h3 className="text-sm font-semibold">Admin Panel</h3>
-          <p className="text-[10px] text-muted-foreground">
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Admin Panel</h3>
+          <p className="text-[10px] text-slate-500 dark:text-slate-400">
             System Administrator
           </p>
         </div>
       </div>
       <div className="grid grid-cols-4 gap-1.5 text-[10px]">
-        <div className="p-1.5 rounded bg-background/50 text-center">
-          <span className="text-muted-foreground block">Jobs</span>
-          <span className="font-bold text-red-500">156</span>
+        <div className="p-1.5 rounded bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-center">
+          <span className="text-slate-500 dark:text-slate-400 block">Jobs</span>
+          <span className="font-bold text-slate-900 dark:text-slate-100">156</span>
         </div>
-        <div className="p-1.5 rounded bg-background/50 text-center">
-          <span className="text-muted-foreground block">Users</span>
-          <span className="font-bold text-green-500">1.2K</span>
+        <div className="p-1.5 rounded bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-center">
+          <span className="text-slate-500 dark:text-slate-400 block">Users</span>
+          <span className="font-bold text-slate-900 dark:text-slate-100">1.2K</span>
         </div>
-        <div className="p-1.5 rounded bg-background/50 text-center">
-          <span className="text-muted-foreground block">Co.</span>
-          <span className="font-bold text-blue-500">89</span>
+        <div className="p-1.5 rounded bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-center">
+          <span className="text-slate-500 dark:text-slate-400 block">Co.</span>
+          <span className="font-bold text-slate-900 dark:text-slate-100">89</span>
         </div>
-        <div className="p-1.5 rounded bg-background/50 text-center">
-          <span className="text-muted-foreground block">Posts</span>
-          <span className="font-bold text-purple-500">324</span>
+        <div className="p-1.5 rounded bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-center">
+          <span className="text-slate-500 dark:text-slate-400 block">Posts</span>
+          <span className="font-bold text-slate-900 dark:text-slate-100">324</span>
         </div>
       </div>
     </div>
   );
 
   const SidebarFooter = () => (
-    <div className="pt-4 space-y-3 border-t bg-background">
+    <div className="pt-4 space-y-3 border-t border-slate-200 dark:border-slate-800 bg-background">
       {/* Back to Home */}
-      <Button variant="outline" className="w-full justify-start gap-3" asChild>
+      <Button variant="outline" className="w-full justify-start gap-3 border-slate-200 dark:border-slate-700" asChild>
         <Link href={Routes.home}>
           <Home className="h-4 w-4" />
           <span>Về trang chủ</span>
@@ -139,7 +147,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
       {/* Logout */}
       <Button
         variant="ghost"
-        className="w-full justify-start gap-3 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+        className="w-full justify-start gap-3 text-slate-600 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20"
         onClick={logout}
       >
         <LogOut className="h-4 w-4" />
@@ -149,9 +157,9 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Top Header - Gradient Style */}
-      <header className="sticky top-0 z-40 w-full border-b bg-gradient-to-r from-red-500/20 via-rose-500/15 to-pink-500/20 backdrop-blur-xl">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+      {/* Top Header - Clean White Style */}
+      <header className="sticky top-0 z-40 w-full border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
         <div className="flex h-16 items-center justify-between px-4 lg:px-6">
           <div className="flex items-center gap-4">
             <Button
@@ -162,30 +170,30 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
             >
               <Menu className="h-5 w-5" />
             </Button>
-            <div className="flex items-center gap-3">
-              <Link href={Routes.home}>
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-red-500 to-rose-600 text-white font-bold shadow-lg shadow-red-500/25">
-                  A
-                </div>
+            <div className="flex items-center">
+              <Link
+                href={Routes.home}
+                className="cursor-target"
+              >
+                <Image
+                  src={logoSrc}
+                  width={120}
+                  height={40}
+                  alt="IT-Job Logo"
+                  priority
+                  className="object-contain h-10"
+                />
               </Link>
-              <div className="hidden sm:block">
-                <h1 className="text-lg font-bold">
-                  <span className="bg-gradient-to-r from-red-500 to-rose-600 bg-clip-text text-transparent">
-                    Admin
-                  </span>
-                  <span className="text-muted-foreground"> Panel</span>
-                </h1>
-              </div>
             </div>
           </div>
 
           {/* Search */}
           <div className="flex-1 max-w-md mx-4 hidden md:block">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
               <Input
                 placeholder="Tìm kiếm users, jobs, posts..."
-                className="cursor-target pl-10 bg-background/50 border-muted-foreground/20"
+                className="cursor-target pl-10 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700"
               />
             </div>
           </div>
@@ -194,11 +202,11 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="icon" className="relative">
               <Bell className="h-5 w-5" />
-              <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-500 text-[10px] text-white flex items-center justify-center font-bold">
+              <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-slate-900 dark:bg-slate-100 text-[10px] text-white dark:text-slate-900 flex items-center justify-center font-bold">
                 5
               </span>
             </Button>
-            <Button className="hidden sm:flex bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white shadow-lg shadow-red-500/25">
+            <Button className="hidden sm:flex bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-slate-900 shadow-sm">
               <Plus className="h-4 w-4 mr-2" />
               Tạo mới
             </Button>
@@ -209,7 +217,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
 
       <div className="flex">
         {/* Desktop Sidebar */}
-        <aside className="hidden lg:flex lg:flex-col w-64 border-r bg-background h-[calc(100vh-4rem)] sticky top-16">
+        <aside className="hidden lg:flex lg:flex-col w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 h-[calc(100vh-4rem)] sticky top-16">
           <ScrollArea className="flex-1">
             <div className="p-4 space-y-6">
               <ProfileCard />
@@ -223,17 +231,17 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
         <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
           <SheetContent
             side="left"
-            className="w-72 p-0 bg-gradient-to-b from-red-500/25 via-rose-500/15 to-background/95 backdrop-blur-xl border-r-red-500/30"
+            className="w-72 p-0 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800"
           >
             <div className="flex flex-col h-full">
-              <div className="p-4 border-b bg-gradient-to-r from-red-500/10 to-rose-500/10">
+              <div className="p-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-red-500 to-rose-600 text-white font-bold">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 font-bold">
                     A
                   </div>
                   <div>
-                    <h2 className="font-bold">Admin Panel</h2>
-                    <p className="text-xs text-muted-foreground">
+                    <h2 className="font-bold text-slate-900 dark:text-slate-100">Admin Panel</h2>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
                       Quản trị hệ thống
                     </p>
                   </div>
@@ -251,7 +259,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
         </Sheet>
 
         {/* Main Content */}
-        <main className="flex-1 overflow-auto">
+        <main className="flex-1 overflow-auto bg-slate-50 dark:bg-slate-950">
           <div className="p-6 lg:p-8 max-w-7xl mx-auto">{children}</div>
         </main>
       </div>
