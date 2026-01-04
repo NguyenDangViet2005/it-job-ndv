@@ -1,4 +1,4 @@
-import BlogManagement from "@/components/blog/blog-management";
+import BlogManagement from "@/pages/admin/blog-management.page"; 
 
 function MyBlogsPage() {
   return (

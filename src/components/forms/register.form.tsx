@@ -19,22 +19,14 @@ import {
   CardTitle,
   CardContent,
 } from "@/components/ui/shadcn/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/shadcn/select";
 import { FcGoogle } from "react-icons/fc";
-import { authApi } from "@/apis/auth.api";
 import {
   RegisterFormData,
   RegisterFormSchema,
 } from "@/validations/register.validation";
 import { useAuth } from "@/providers/auth.provider";
-import Routes from "@/routes";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ROUTES } from "@/configs";
 
 export default function FormRegister() {
   const { registerUser } = useAuth();
@@ -61,7 +53,7 @@ export default function FormRegister() {
     const result = await registerUser(values);
 
     if (result.success) {
-      router.push(Routes.login);
+      router.push(ROUTES.LOGIN);
     } else {
       setError(result.error || "Đăng ký thất bại. Vui lòng thử lại.");
     }

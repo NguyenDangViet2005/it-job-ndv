@@ -23,46 +23,46 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import Routes from "@/routes";
 import { useState } from "react";
 import { ScrollArea } from "@/components/ui/shadcn/scroll-area";
 import { useAuth } from "@/providers/auth.provider";
+import { ROUTES } from "@/configs";
 
 const sidebarItems = [
   {
     title: "Tổng quan",
-    href: Routes.dashboard,
+    href: ROUTES.USER_DASHBOARD,
     icon: LayoutDashboard,
   },
   {
     title: "Hồ sơ / CV",
-    href: Routes.dashboardResume,
+    href: ROUTES.USER_RESUME,
     icon: FileText,
   },
   {
     title: "Việc đã ứng tuyển",
-    href: Routes.dashboardAppliedJobs,
+    href: ROUTES.USER_APPLIED_JOBS,
     icon: Briefcase,
   },
   {
     title: "Blog của tôi",
-    href: Routes.dashboardMyBlogs,
+    href: ROUTES.USER_MY_BLOGS,
     icon: BookOpen,
   },
   {
     title: "Tin nhắn",
-    href: Routes.dashboardMessages,
+    href: ROUTES.USER_MESSAGES,
     icon: MessageSquare,
   },
   {
     title: "Cài đặt",
-    href: Routes.dashboardSettings,
+    href: ROUTES.USER_SETTINGS,
     icon: Settings,
   },
 ];
 
 console.log("Sidebar items:", sidebarItems);
-console.log("Routes.dashboardMyBlogs:", Routes.dashboardMyBlogs);
+console.log("ROUTES.dashboardMyBlogs:", ROUTES.USER_MY_BLOGS);
 
 export default function UserDashboardSidebar() {
   const pathname = usePathname();
@@ -112,7 +112,7 @@ export default function UserDashboardSidebar() {
 
   const SidebarHeader = () => (
     <div className="flex h-16 items-center border-b px-4 bg-gradient-to-r from-blue-500/25 to-indigo-500/25 backdrop-blur-md">
-      <Link href={Routes.home} className="flex items-center gap-3">
+      <Link href={ROUTES.HOME} className="flex items-center gap-3">
         <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-bold shadow-lg shadow-blue-500/25">
           IJ
         </div>
@@ -137,7 +137,7 @@ export default function UserDashboardSidebar() {
       
       {/* Back to Home */}
       <Button variant="outline" className="w-full justify-start gap-3" asChild>
-        <Link href={Routes.home}>
+        <Link href={ROUTES.HOME}>
           <Home className="h-4 w-4" />
           <span>Về trang chủ</span>
         </Link>

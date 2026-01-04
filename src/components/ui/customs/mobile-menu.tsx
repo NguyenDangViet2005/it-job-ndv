@@ -21,13 +21,13 @@ import {
   LogOut,
 } from "lucide-react";
 import Link from "next/link";
-import Routes from "@/routes";
-import { navigationItems } from "@/routes/navigation";
-import type { User as UserType } from "@/providers/auth.provider";
+import { navigationItems } from "@/configs/navigation.config";
+import type { UserResponse } from "@/types/api.type";
+import { ROUTES } from "@/configs";
 
 interface MobileMenuProps {
   isLoggedIn: boolean;
-  user: UserType | null;
+  user: UserResponse | null;
   onLogout: () => void;
 }
 
@@ -141,28 +141,28 @@ export const MobileMenu = ({
                   TÀI KHOẢN
                 </h3>
                 <Link
-                  href={user?.id ? Routes.profile(user.id) : "#"}
+                  href={user?.id ? ROUTES.PROFILE(user.id) : "#"}
                   className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md hover:bg-muted transition-colors"
                 >
                   <User className="h-4 w-4" />
                   Trang cá nhân
                 </Link>
                 <Link
-                  href={Routes.dashboardResume}
+                  href={ROUTES.USER_RESUME}
                   className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md hover:bg-muted transition-colors"
                 >
                   <FileText className="h-4 w-4" />
                   Hồ sơ / CV
                 </Link>
                 <Link
-                  href={Routes.dashboardAppliedJobs}
+                  href={ROUTES.USER_APPLIED_JOBS}
                   className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md hover:bg-muted transition-colors"
                 >
                   <Briefcase className="h-4 w-4" />
                   Việc đã ứng tuyển
                 </Link>
                 <Link
-                  href={Routes.dashboardSettings}
+                  href={ROUTES.USER_SETTINGS}
                   className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md hover:bg-muted transition-colors"
                 >
                   <Settings className="h-4 w-4" />

@@ -31,22 +31,14 @@ import {
   AvatarImage,
 } from "@/components/ui/shadcn/avatar";
 
-import Routes from "@/routes";
 import { jobApi } from "@/apis/job.api";
 import { applicationApi } from "@/apis/application.api";
 import { useAuth } from "@/providers/auth.provider";
 import Image from "next/image";
 import { useTheme } from "next-themes";
 import { useState, useEffect } from "react";
-
-
-const BASE_NAVIGATION_ITEMS: NavigationItem[] = [
-  { href: "/hr", icon: LayoutDashboard, label: "Bảng Điều Khiển" },
-  { href: "/hr/jobs", icon: Briefcase, label: "Công Việc" },
-  { href: "/hr/candidates", icon: Users, label: "Ứng Viên" },
-  { href: "/hr/blog", icon: FileText, label: "Quản lý Blog" },
-  { href: "/hr/infor", icon: Building2, label: "Thông Tin Công Ty" },
-];
+import { ROUTES } from "@/configs";
+import { hrSidebarItems } from "@/configs";
 
 
 export function HRLayout({ children }: { children: React.ReactNode }) {
@@ -90,7 +82,7 @@ export function HRLayout({ children }: { children: React.ReactNode }) {
   }, [token, company?.id]);
 
   // Dynamic navigation items with badges
-  const navigationItems = BASE_NAVIGATION_ITEMS.map(item => {
+  const navigationItems = hrSidebarItems.map(item => {
     if (item.href === "/hr/jobs") {
       return { ...item, badge: jobCount > 0 ? jobCount : undefined };
     }
@@ -117,7 +109,7 @@ export function HRLayout({ children }: { children: React.ReactNode }) {
             )}
           >
             <Icon className="h-4 w-4 flex-shrink-0" />
-            <span className="flex-1">{item.label}</span>
+            <span className="flex-1">{item.title}</span>
             {item.badge && (
               <Badge
                 variant={isActive ? "secondary" : "outline"}
@@ -172,7 +164,7 @@ export function HRLayout({ children }: { children: React.ReactNode }) {
     <div className="p-4 space-y-3 border-t border-slate-200 dark:border-slate-800">
       {/* Back to Home */}
       <Button variant="outline" className="w-full justify-start gap-3 border-slate-200 dark:border-slate-700" asChild>
-        <Link href={Routes.home}>
+        <Link href={ROUTES.HOME}>
           <Home className="h-4 w-4" />
           <span>Về trang chủ</span>
         </Link>
@@ -206,7 +198,7 @@ export function HRLayout({ children }: { children: React.ReactNode }) {
             </Button>
              <div className="flex items-center">
               <Link
-                href={Routes.home}
+                href={ROUTES.HOME}
                 className="cursor-target"
               >
                 <Image

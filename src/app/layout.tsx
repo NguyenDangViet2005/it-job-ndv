@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   description: "IT Job | Nền tảng công việc IT hàng đầu Việt Nam",
   icons: {
     icon: [
-      { url: '/icon.svg', sizes: 'any' },
+      { url: '/icons/icon.svg', sizes: 'any' },
       { url: '/icon-16x16.png', sizes: '16x16', type: 'image/png' },
       { url: '/icon-32x32.png', sizes: '32x32', type: 'image/png' },
     ]

@@ -10,7 +10,7 @@ import { usePosts, useInfiniteScroll } from "@/hooks/usePost";
 import { interactionApi } from "@/apis/interaction.api";
 import { useAuth } from "@/providers/auth.provider";
 import type { FullPostResponse } from "@/types/api.type";
-import Routes from "@/routes";
+import { ROUTES } from "@/configs";
 
 export default function QAPage() {
   const { user, token, isAuthenticated } = useAuth();
@@ -38,7 +38,7 @@ export default function QAPage() {
       const accessToken = localStorage.getItem("accessToken");
 
       if (!accessToken && !isAuthenticated) {
-        router.push(Routes.accessDenied);
+        router.push(ROUTES.ACCESS_DENIED);
         return;
       }
 

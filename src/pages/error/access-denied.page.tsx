@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/shadcn/button";
 import { Home, ArrowLeft } from "lucide-react";
 import { useAuth } from "@/providers/auth.provider";
 import Image from "next/image";
-import Routes from "@/routes";
+import { ROUTES } from "@/configs";
 import { useEffect, useState } from "react";
 
 export default function AccessDeniedPage() {
@@ -43,7 +43,7 @@ export default function AccessDeniedPage() {
       const redirectPath = getRedirectPath(user.role);
       router.replace(redirectPath);
     } else {
-      router.replace(Routes.home);
+      router.replace(ROUTES.HOME);
     }
   };
 

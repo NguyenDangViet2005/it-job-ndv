@@ -14,14 +14,14 @@ import Link from "next/link";
 import * as React from "react";
 import { ModeToggle } from "@/components/ui/customs/toggle-them";
 import { Input } from "@/components/ui/shadcn/input";
-import Routes from "@/routes";
 import { useAuth } from "@/providers/auth.provider";
-import { navigationItems } from "@/routes/navigation";
+import { navigationItems } from "@/configs/navigation.config";
 import { NavigationLink } from "@/components/ui/customs/navigation-link";
 import { UserDropdown } from "@/components/ui/customs/user-dropdown";
 import { MobileMenu } from "@/components/ui/customs/mobile-menu";
 import Image from "next/image";
 import { useTheme } from "next-themes";
+import { ROUTES } from "@/configs";
 
 const UserHeader = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -74,7 +74,7 @@ const UserHeader = () => {
         {/* Logo */}
         <div className="p-2 h-full flex items-center">
           <Link
-            href={Routes.home}
+            href={ROUTES.HOME}
             className="cursor-target"
           >
             <Image

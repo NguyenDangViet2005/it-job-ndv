@@ -1,4 +1,5 @@
 "use client";
+
 import { jwtDecode } from "jwt-decode";
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
@@ -10,9 +11,12 @@ import type {
   RegisterHRRequest,
   CompanyResponse,
 } from "@/types/api.type";
-import Routes from "@/routes";
+import { ROUTES, ROUTE_GROUPS } from "@/configs";
 
-// JWT Payload interface based on your token structure
+// ============================================
+// TYPES & INTERFACES
+// ============================================
+
 interface JwtPayload {
   nameid: string;
   email: string;
@@ -30,6 +34,7 @@ interface AuthContextType {
   company: CompanyResponse | null;
   token: string | null;
   isAuthenticated: boolean;
+  loading: boolean;
   login: (
     email: string,
     password: string
@@ -42,52 +47,79 @@ interface AuthContextType {
   ) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
   updateUser: (userData: Partial<UserResponse>) => void;
-  loading: boolean;
   getRedirectPath: (role: string) => string;
   checkRouteAccess: (pathname: string) => boolean;
 }
 
+// ============================================
+// CONTEXT
+// ============================================
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Function to check if user has access to a specific route based on role
+// ============================================
+// HELPER FUNCTIONS
+// ============================================
+
+/**
+ * Check if user has access to a specific route based on role
+ */
 const hasRouteAccess = (role: string | undefined, pathname: string): boolean => {
   if (!role) return false;
 
   const normalizedRole = role.toLowerCase().trim();
 
-  // Admin can ONLY access /admin/*
-  if (normalizedRole === "admin") {
-    if (pathname.startsWith("/admin")) {
-      return true;
-    }
-    // Admin cannot access /hr or other routes
-    if (pathname.startsWith("/hr")) {
-      return false;
-    }
-    return true; // Can access public routes
+  // Check if route is in public routes
+  const isPublicRoute = ROUTE_GROUPS.PUBLIC.some((route) =>
+    pathname.startsWith(route)
+  );
+
+  // Admin routes
+  if (pathname.startsWith(ROUTES.ADMIN)) {
+    return normalizedRole === "admin";
   }
 
-  // Employer/HR can ONLY access /hr/* (NOT /admin/*)
-  if (normalizedRole === "employer" || normalizedRole === "hr") {
-    if (pathname.startsWith("/admin")) {
-      return false;
-    }
-    if (pathname.startsWith("/hr")) {
-      return true;
-    }
-    return true; // Can access public routes
+  // HR routes
+  if (pathname.startsWith(ROUTES.HR)) {
+    return normalizedRole === "employer" || normalizedRole === "hr";
   }
 
-  // User can NOT access /hr/* and /admin/*
-  if (normalizedRole === "user") {
-    if (pathname.startsWith("/hr") || pathname.startsWith("/admin")) {
-      return false;
-    }
+  // User dashboard routes
+  if (pathname.startsWith(ROUTES.USER_DASHBOARD)) {
+    return normalizedRole === "user";
+  }
+
+  // Public routes - accessible by all
+  if (isPublicRoute) {
     return true;
   }
 
-  return false;
+  // Default: allow access
+  return true;
 };
+
+/**
+ * Get redirect path based on user role
+ */
+const getRedirectPathByRole = (role: string): string => {
+  const normalizedRole = role.toLowerCase().trim();
+
+  switch (normalizedRole) {
+    case "admin":
+      return ROUTES.ADMIN_DASHBOARD;
+    case "hr":
+    case "employer":
+      return ROUTES.HR_DASHBOARD;
+    case "user":
+      return ROUTES.USER_DASHBOARD;
+    default:
+      return ROUTES.HOME;
+  }
+};
+
+// ============================================
+// PROVIDER
+// ============================================
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<UserResponse | null>(null);
@@ -98,89 +130,100 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
 
+  // ============================================
+  // INITIALIZE AUTH STATE FROM LOCALSTORAGE
+  // ============================================
   useEffect(() => {
-    // Check localStorage for existing session (only in browser)
-    if (typeof window !== "undefined") {
-      const storedUser = localStorage.getItem("userInfo");
-      const storedCompany = localStorage.getItem("company");
-      const storedToken = localStorage.getItem("accessToken");
+    if (typeof window === "undefined") {
+      setLoading(false);
+      return;
+    }
 
-      if (storedUser && storedToken) {
+    const storedUser = localStorage.getItem("userInfo");
+    const storedCompany = localStorage.getItem("company");
+    const storedToken = localStorage.getItem("accessToken");
+
+    if (storedUser && storedToken) {
+      try {
         const parsedUser = JSON.parse(storedUser);
         setUser(parsedUser);
         setToken(storedToken);
-        
-        // Decode JWT token
-        try {
-          const decoded = jwtDecode<JwtPayload>(storedToken);
-          setJwtPayload(decoded);
-        } catch (error) {
-          console.error("Failed to decode JWT token:", error);
-        }
 
-        // If user is HR/Employer but company is missing, fetch it
-        if ((parsedUser.role === 'employer' || parsedUser.role === 'hr') && !storedCompany) {
-          companyApi.getMyCompany(storedToken)
+        // Decode JWT token
+        const decoded = jwtDecode<JwtPayload>(storedToken);
+        setJwtPayload(decoded);
+
+        // Fetch company info if user is HR/Employer and company is missing
+        if (
+          (parsedUser.role === "employer" || parsedUser.role === "hr") &&
+          !storedCompany
+        ) {
+          companyApi
+            .getMyCompany(storedToken)
             .then((companyData) => {
               if (companyData) {
-                setCompany(companyData);
+                setCompany(companyData as CompanyResponse);
                 localStorage.setItem("company", JSON.stringify(companyData));
               }
             })
-            .catch((err) => console.error("Failed to fetch company info:", err));
+            .catch((err) =>
+              console.error("Failed to fetch company info:", err)
+            );
         }
+      } catch (error) {
+        console.error("Failed to parse stored auth data:", error);
+        // Clear invalid data
+        localStorage.removeItem("userInfo");
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
       }
-      if (storedCompany) {
+    }
+
+    if (storedCompany) {
+      try {
         setCompany(JSON.parse(storedCompany));
+      } catch (error) {
+        console.error("Failed to parse stored company data:", error);
       }
     }
 
     setLoading(false);
   }, []);
 
-  // Route protection effect
+  // ============================================
+  // ROUTE PROTECTION
+  // ============================================
   useEffect(() => {
     if (loading || !pathname) return;
 
     // Don't check access-denied page itself
-    if (pathname === "/access-denied") return;
+    if (pathname === ROUTES.ACCESS_DENIED) return;
 
-    // Only check protected routes
-    if (pathname.startsWith("/hr") || pathname.startsWith("/admin")) {
+    // Check protected routes
+    const isProtectedRoute =
+      pathname.startsWith(ROUTES.HR) ||
+      pathname.startsWith(ROUTES.ADMIN) ||
+      pathname.startsWith(ROUTES.USER_DASHBOARD);
+
+    if (isProtectedRoute) {
       const role = jwtPayload?.role || user?.role;
 
+      // Not logged in
       if (!token || !role) {
-        // Not logged in, redirect to login
-        router.push("/login");
+        router.push(ROUTES.LOGIN);
         return;
       }
 
+      // No access to this route
       if (!hasRouteAccess(role, pathname)) {
-        // No access, redirect to access denied page
-        router.push("/access-denied");
+        router.push(ROUTES.ACCESS_DENIED);
       }
     }
   }, [pathname, loading, jwtPayload, user, token, router]);
 
-  // Check if current user has access to a specific route
-  const checkRouteAccess = (routePath: string): boolean => {
-    const role = jwtPayload?.role || user?.role;
-    return hasRouteAccess(role, routePath);
-  };
-
-  // Helper function to get redirect path based on role
-  const getRedirectPath = (role: string): string => {
-    switch (role) {
-      case "admin":
-        return "/admin";
-      case "hr":
-      case "employer":
-        return "/hr";
-      case "user":
-      default:
-        return Routes.home;
-    }
-  };
+  // ============================================
+  // AUTH METHODS
+  // ============================================
 
   const login = async (
     email: string,
@@ -202,12 +245,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(userData);
         setToken(accessToken);
 
-        // If user is HR/Employer, fetch company info
-        if (userData.role === 'employer' || userData.role === 'hr') {
+        // Decode JWT token
+        try {
+          const decoded = jwtDecode<JwtPayload>(accessToken);
+          setJwtPayload(decoded);
+        } catch (error) {
+          console.error("Failed to decode JWT token:", error);
+        }
+
+        // Fetch company info for HR/Employer
+        if (userData.role === "employer" || userData.role === "hr") {
           try {
             const companyData = await companyApi.getMyCompany(accessToken);
             if (companyData) {
-              setCompany(companyData);
+              setCompany(companyData as CompanyResponse);
               if (typeof window !== "undefined") {
                 localStorage.setItem("company", JSON.stringify(companyData));
               }
@@ -215,14 +266,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           } catch (error) {
             console.error("Failed to fetch company info after login:", error);
           }
-        }
-
-        // Decode JWT token immediately after login
-        try {
-          const decoded = jwtDecode<JwtPayload>(accessToken);
-          setJwtPayload(decoded);
-        } catch (error) {
-          console.error("Failed to decode JWT token on login:", error);
         }
 
         return { success: true, role: userData.role };
@@ -260,8 +303,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(userData);
         setToken(accessToken);
 
-        // Redirect to home for regular users
-        router.push(Routes.home);
+        // Redirect to home
+        router.push(ROUTES.HOME);
 
         return { success: true };
       }
@@ -303,7 +346,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setToken(accessToken);
 
         // Redirect to HR dashboard
-        router.push("/hr");
+        router.push(ROUTES.HR_DASHBOARD);
 
         return { success: true };
       }
@@ -319,31 +362,54 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = () => {
-    // Remove from localStorage (only in browser)
+    // Clear localStorage
     if (typeof window !== "undefined") {
       localStorage.removeItem("userInfo");
       localStorage.removeItem("company");
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
     }
+
+    // Clear state
     setUser(null);
     setCompany(null);
     setToken(null);
-    router.push("/");
+    setJwtPayload(null);
+
+    // Redirect to home
+    router.push(ROUTES.HOME);
   };
 
-  // Update user data (for avatar, cover image, etc.)
   const updateUser = (userData: Partial<UserResponse>) => {
     setUser((prev) => {
       if (!prev) return prev;
       const updatedUser = { ...prev, ...userData };
-      // Also update localStorage
+
+      // Update localStorage
       if (typeof window !== "undefined") {
         localStorage.setItem("userInfo", JSON.stringify(updatedUser));
       }
+
       return updatedUser;
     });
   };
+
+  // ============================================
+  // HELPER METHODS
+  // ============================================
+
+  const checkRouteAccess = (routePath: string): boolean => {
+    const role = jwtPayload?.role || user?.role;
+    return hasRouteAccess(role, routePath);
+  };
+
+  const getRedirectPath = (role: string): string => {
+    return getRedirectPathByRole(role);
+  };
+
+  // ============================================
+  // PROVIDER VALUE
+  // ============================================
 
   return (
     <AuthContext.Provider
@@ -352,12 +418,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         company,
         token,
         isAuthenticated: !!user && !!token,
+        loading,
         login,
         registerUser,
         registerHR,
         logout,
         updateUser,
-        loading,
         getRedirectPath,
         checkRouteAccess,
       }}
@@ -366,6 +432,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     </AuthContext.Provider>
   );
 }
+
+// ============================================
+// HOOK
+// ============================================
 
 export function useAuth() {
   const context = useContext(AuthContext);

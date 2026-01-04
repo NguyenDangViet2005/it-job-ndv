@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import RegisterHRPage from "@/pages/auth/register.hr.page";
-import Routes from "@/routes";
+import { ROUTES } from "@/configs";
 
 function Page() {
   const router = useRouter();
@@ -20,7 +20,7 @@ function Page() {
           const role = user.role?.toLowerCase();
 
           // Redirect based on role
-          let redirectPath = Routes.home;
+          let redirectPath = ROUTES.HOME as string;
           if (role === "admin") {
             redirectPath = "/admin";
           } else if (role === "hr" || role === "employer") {
@@ -30,7 +30,7 @@ function Page() {
           router.push(redirectPath);
         } catch (error) {
           console.error("Error parsing user data:", error);
-          router.push(Routes.home);
+          router.push(ROUTES.HOME);
         }
       }
     }

@@ -1,12 +1,13 @@
-import Routes from "@/routes";
+
 import { Link } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../shadcn/avatar";
+import { ROUTES } from "@/configs";
 
 const LogoApp = () => {
   return (
     <>
       <div className="flex items-center space-x-3">
-        <Link href={Routes.home} className="cursor-target">
+        <Link href={ROUTES.HOME} className="cursor-target">
           <Avatar className="h-8 w-8 ring-2 ring-primary/20 cursor-target">
             <AvatarImage src="https://github.com/shadcn.png" alt="IT Job" />
             <AvatarFallback className="bg-gradient-to-br from-sky-400 to-purple-600 text-white font-semibold">
@@ -15,7 +16,7 @@ const LogoApp = () => {
           </Avatar>
         </Link>
         <Link
-          href={Routes.home}
+          href={ROUTES.HOME}
           className="flex items-center space-x-1 cursor-target"
         >
           <h1 className="text-xl font-bold">

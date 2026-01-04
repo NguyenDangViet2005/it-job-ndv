@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/shadcn/button";
-import Routes from "@/routes";
+import { ROUTES } from "@/configs";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
@@ -44,7 +44,7 @@ const WelcomePage = () => {
    <div className="relative z-10 w-full min-h-screen">
      <div className="pt-5 pl-10 flex items-center">
         <Link
-          href={Routes.home}
+          href={ROUTES.HOME}
           className="cursor-target"
         >
           <Image
@@ -163,12 +163,12 @@ const WelcomePage = () => {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 pt-2">
-            <Link href={Routes.home} className="flex-1">
+            <Link href={ROUTES.HOME} className="flex-1">
               <Button className="cursor-pointer w-full text-base font-semibold px-8 h-12 bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/30 hover:shadow-blue-600/40 transition-all duration-300 hover:scale-105">
                 Khám phá việc làm
               </Button>
             </Link>
-            <Link href={Routes.login} className="flex-1">
+            <Link href={ROUTES.LOGIN} className="flex-1">
               <Button
                 variant="outline"
                 className="cursor-pointer w-full text-base font-semibold px-8 h-12 border-2 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-300 hover:scale-105"

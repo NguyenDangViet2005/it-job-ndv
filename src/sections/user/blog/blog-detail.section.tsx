@@ -14,14 +14,6 @@ import type { Components } from "react-markdown";
 import { blogApi } from "@/apis";
 import type { BlogResponse } from "@/types/api.type";
 
-// Fallback mock data for demo purposes
-const fallbackContent = `
-## Nội dung bài viết
-
-Đây là nội dung chi tiết của bài viết. Nội dung sẽ được hiển thị ở đây khi có dữ liệu từ API.
-
-Bạn có thể tùy chỉnh nội dung này theo nhu cầu của mình.
-`;
 
 interface BlogDetailSectionProps {
   id: string;
@@ -105,7 +97,7 @@ function BlogDetailSection({ id }: BlogDetailSectionProps) {
 
       {/* Header */}
       <div className="mb-8">
-        <Badge className="mb-4">{post.category}</Badge>
+        <Badge className="mb-4">{post.categoryName}</Badge>
         <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
         
         <div className="flex flex-wrap items-center gap-4 text-muted-foreground mb-6">
@@ -115,7 +107,7 @@ function BlogDetailSection({ id }: BlogDetailSectionProps) {
           </div>
           <div className="flex items-center gap-2">
             <Calendar className="h-4 w-4" />
-            <span>{new Date(post.date).toLocaleDateString("vi-VN")}</span>
+            <span>{new Date(post.createdAt).toLocaleDateString("vi-VN")}</span>
           </div>
           <div className="flex items-center gap-2">
             <Clock className="h-4 w-4" />

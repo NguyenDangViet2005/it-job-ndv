@@ -3,22 +3,9 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  LayoutDashboard,
-  FileText,
-  Briefcase,
-  MessageSquare,
-  Settings,
-  Bell,
-  Search,
-  Menu,
-  Home,
-  LogOut,
-  User,
-  BookOpen,
-} from "lucide-react";
+import { Menu, Home, LogOut } from "lucide-react";
+import Image from "next/image";
 import { Button } from "@/components/ui/shadcn/button";
-import { Input } from "@/components/ui/shadcn/input";
 import { Sheet, SheetContent } from "@/components/ui/shadcn/sheet";
 import { cn } from "@/lib/utils";
 import { ModeToggle } from "@/components/ui/customs/toggle-them";
@@ -28,21 +15,9 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/components/ui/shadcn/avatar";
-import Routes from "@/routes";
 import { useAuth } from "@/providers/auth.provider";
-
-const sidebarItems = [
-  { title: "Tổng quan", href: Routes.dashboard, icon: LayoutDashboard },
-  { title: "Hồ sơ / CV", href: Routes.dashboardResume, icon: FileText },
-  {
-    title: "Việc đã ứng tuyển",
-    href: Routes.dashboardAppliedJobs,
-    icon: Briefcase,
-  },
-  { title: "Blog của tôi", href: Routes.dashboardMyBlogs, icon: BookOpen },
-  { title: "Tin nhắn", href: Routes.dashboardMessages, icon: MessageSquare },
-  { title: "Cài đặt", href: Routes.dashboardSettings, icon: Settings },
-];
+import { ROUTES } from "@/configs";
+import { userSidebarItems, filterSidebarItemsByRole } from "@/configs/navigation.config";
 
 export function UserDashboardLayout({
   children,
@@ -54,15 +29,11 @@ export function UserDashboardLayout({
   const { user, logout } = useAuth();
 
   const filteredSidebarItems = React.useMemo(() => {
-    // Nếu là admin hoặc employer (HR) thì chỉ hiện Blog và Cài đặt
+    // Filter items based on user role
     if (user?.role === "admin" || user?.role === "employer") {
-      return sidebarItems.filter(
-        (item) =>
-          item.href === Routes.dashboardMyBlogs ||
-          item.href === Routes.dashboardSettings
-      );
+      return filterSidebarItemsByRole(userSidebarItems, user.role);
     }
-    return sidebarItems;
+    return userSidebarItems;
   }, [user]);
 
   const NavigationContent = () => (
@@ -84,6 +55,11 @@ export function UserDashboardLayout({
           >
             <Icon className="h-4 w-4 flex-shrink-0" />
             <span>{item.title}</span>
+            {item.badge && (
+              <span className="ml-auto text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full">
+                {item.badge}
+              </span>
+            )}
           </Link>
         );
       })}
@@ -91,19 +67,19 @@ export function UserDashboardLayout({
   );
 
   const ProfileCard = () => (
-    <div className="p-4 bg-card rounded-xl border">
-      <div className="flex items-center gap-3">
-        <Avatar className="h-12 w-12 ring-2 ring-primary/20">
-          <AvatarImage src={user?.avatar || ""} />
-          <AvatarFallback className="bg-primary text-primary-foreground font-bold">
-            {user?.fullName?.charAt(0) || "U"}
+    <div className="p-3.5 rounded-lg border border-primary/20 overflow-hidden">
+      <div className="flex items-center gap-3 w-full">
+        <Avatar className="h-11 w-11 ring-2 ring-primary/30 flex-shrink-0">
+          <AvatarImage src={user?.avatar || ""} alt={user?.fullName} />
+          <AvatarFallback className="bg-primary text-primary-foreground font-bold text-sm">
+            {user?.fullName?.charAt(0)?.toUpperCase() || "U"}
           </AvatarFallback>
         </Avatar>
-        <div className="flex-1 min-w-0">
-          <h3 className="font-semibold truncate text-foreground">
+        <div className="flex-1 min-w-0 overflow-hidden">
+          <h3 className="font-semibold text-sm text-foreground leading-tight block w-full">
             {user?.fullName || "Người dùng"}
           </h3>
-          <p className="text-xs text-muted-foreground truncate">
+          <p className="text-xs text-muted-foreground mt-0.5 block w-full overflow-hidden text-ellipsis">
             {user?.email || "user@example.com"}
           </p>
         </div>
@@ -112,33 +88,35 @@ export function UserDashboardLayout({
   );
 
   const SidebarFooter = () => (
-    <div className="p-4 space-y-3 border-t bg-card">
+    <div className="p-4 space-y-2 border-t bg-card/80 backdrop-blur-sm flex-shrink-0">
       {/* Theme Toggle */}
-      <div className="flex items-center justify-between px-2">
-        <span className="text-sm text-muted-foreground">Giao diện</span>
+      <div className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-accent/50 transition-colors">
+        <span className="text-sm text-muted-foreground font-medium">Giao diện</span>
         <ModeToggle />
       </div>
 
       {/* Back to Home */}
       <Button
         variant="outline"
-        className="w-full justify-start gap-3 hover:bg-primary/10 hover:text-primary"
+        size="sm"
+        className="w-full justify-start gap-2 hover:bg-primary/10 hover:text-primary hover:border-primary/50 transition-all"
         asChild
       >
-        <Link href={Routes.home}>
-          <Home className="h-4 w-4" />
-          <span>Về trang chủ</span>
+        <Link href={ROUTES.HOME}>
+          <Home className="h-4 w-4 flex-shrink-0" />
+          <span className="text-sm">Về trang chủ</span>
         </Link>
       </Button>
 
       {/* Logout */}
       <Button
         variant="ghost"
-        className="w-full justify-start gap-3 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+        size="sm"
+        className="w-full justify-start gap-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all"
         onClick={logout}
       >
-        <LogOut className="h-4 w-4" />
-        <span>Đăng xuất</span>
+        <LogOut className="h-4 w-4 flex-shrink-0" />
+        <span className="text-sm">Đăng xuất</span>
       </Button>
     </div>
   );
@@ -156,7 +134,7 @@ export function UserDashboardLayout({
             >
               <Menu className="h-5 w-5" />
             </Button>
-            <Link href={Routes.home}>
+            <Link href={ROUTES.HOME}>
               <h1 className="text-lg font-bold">
                 <span className="text-primary">IT-Job</span>
               </h1>
@@ -176,56 +154,63 @@ export function UserDashboardLayout({
 
       <div className="flex">
         {/* Desktop Sidebar - Full height, no header above */}
-        <aside className="hidden lg:flex lg:flex-col w-64 border-r bg-card h-screen fixed left-0 top-0 overflow-hidden">
-          <div className="p-4 border-b bg-card">
-            <Link href={Routes.home} className="flex items-center gap-3">
-              <div>
-                <h2 className="font-bold text-primary">IT-Job</h2>
-                <p className="text-xs text-muted-foreground">Dashboard</p>
+        <aside className="hidden lg:flex lg:flex-col w-72 border-r bg-card/50 backdrop-blur-sm h-screen fixed left-0 top-0 overflow-hidden">
+          {/* Logo Header */}
+          <div className="p-4 border-b bg-card/80 backdrop-blur-sm flex-shrink-0">
+            <Link href={ROUTES.HOME} className="flex items-center gap-2 group">
+              <Image src="/icons/icon.svg" width={36} height={36} alt="IT-Job Logo" className="flex-shrink-0" />
+              <div className="min-w-0 flex-1">
+                <h2 className="font-bold text-primary text-sm truncate">IT-Job</h2>
+                <p className="text-xs text-muted-foreground truncate">Dashboard</p>
               </div>
             </Link>
           </div>
 
-          <ScrollArea className="flex-1 p-4">
-            <div className="space-y-6">
+          {/* Scrollable Content */}
+          <ScrollArea className="flex-1 px-4 py-4 overflow-x-hidden">
+            <div className="space-y-4 w-full">
               <ProfileCard />
               <NavigationContent />
             </div>
           </ScrollArea>
 
+          {/* Footer */}
           <SidebarFooter />
         </aside>
 
         {/* Mobile Sidebar */}
         <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-          <SheetContent side="left" className="w-72 p-0 bg-card">
+          <SheetContent side="left" className="w-72 p-0 bg-card/95 backdrop-blur-sm">
             <div className="flex flex-col h-full">
-              <div className="p-4 border-b bg-card">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground font-bold">
-                    IJ
-                  </div>
+              {/* Mobile Header */}
+              <div className="p-4 border-b bg-card/80">
+                <div className="flex items-center gap-2">
+                  <Image src="/icon.svg" width={36} height={36} alt="IT-Job Logo" />
                   <div>
-                    <h2 className="font-bold text-foreground">Dashboard</h2>
+                    <h2 className="font-bold text-foreground text-sm">IT-Job Dashboard</h2>
                     <p className="text-xs text-muted-foreground">
                       Quản lý tài khoản
                     </p>
                   </div>
                 </div>
               </div>
-              <ScrollArea className="flex-1 p-4 bg-muted/30">
-                <div className="space-y-6">
+              
+              {/* Mobile Content */}
+              <ScrollArea className="flex-1 px-3 py-4">
+                <div className="space-y-4">
                   <ProfileCard />
                   <NavigationContent />
                 </div>
               </ScrollArea>
+              
+              {/* Mobile Footer */}
               <SidebarFooter />
             </div>
           </SheetContent>
         </Sheet>
 
         {/* Main Content */}
-        <main className="flex-1 lg:ml-64 overflow-auto">
+        <main className="flex-1 lg:ml-72 overflow-auto">
           <div className="p-6 lg:p-8 max-w-7xl mx-auto">{children}</div>
         </main>
       </div>

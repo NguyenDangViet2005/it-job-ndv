@@ -2,8 +2,8 @@
 
 import FormLogin from "@/components/forms/login.form";
 import { Button } from "@/components/ui/shadcn/button";
+import { ROUTES } from "@/configs";
 import { ArrowLeft } from "lucide-react";
-import Routes from "@/routes";
 import Link from "next/link";
 
 export default function LoginPage() {
@@ -11,7 +11,7 @@ export default function LoginPage() {
     <div className="relative z-10 w-full min-h-screen flex flex-col lg:flex-row">
       {/* Back Button */}
       <div className="absolute top-6 left-6 z-50">
-        <Link href={Routes.welcome}>
+        <Link href={ROUTES.WELCOME}>
           <Button
             variant="outline"
             size="sm"

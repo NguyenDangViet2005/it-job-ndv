@@ -33,11 +33,11 @@ import {
   BookOpen,
 } from "lucide-react";
 import Link from "next/link";
-import Routes from "@/routes";
-import type { User as UserType } from "@/providers/auth.provider";
+import type { UserResponse } from "@/types/api.type";
+import { ROUTES } from "@/configs";
 
 interface UserDropdownProps {
-  user: UserType | null;
+  user: UserResponse | null;
   onLogout: () => void;
 }
 
@@ -78,7 +78,7 @@ export const UserDropdown = ({ user, onLogout }: UserDropdownProps) => {
 
         <DropdownMenuItem asChild>
           <Link
-            href={user?.id ? Routes.profile(user.id) : "#"}
+            href={user?.id ? ROUTES.PROFILE(user.id) : "#"}
             className="cursor-target flex items-center"
           >
             <User className="mr-2 h-4 w-4" />
@@ -91,7 +91,7 @@ export const UserDropdown = ({ user, onLogout }: UserDropdownProps) => {
           <>
             <DropdownMenuItem asChild>
               <Link
-                href={Routes.dashboardResume}
+                href={ROUTES.USER_RESUME}
                 className="cursor-target flex items-center"
               >
                 <FileText className="mr-2 h-4 w-4" />
@@ -100,7 +100,7 @@ export const UserDropdown = ({ user, onLogout }: UserDropdownProps) => {
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link
-                href={Routes.dashboardAppliedJobs}
+                href={ROUTES.USER_APPLIED_JOBS}
                 className="cursor-target flex items-center"
               >
                 <Briefcase className="mr-2 h-4 w-4" />
@@ -109,7 +109,7 @@ export const UserDropdown = ({ user, onLogout }: UserDropdownProps) => {
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link
-                href={Routes.dashboardMessages}
+                href={ROUTES.USER_MESSAGES}
                 className="cursor-target flex items-center"
               >
                 <MessageSquare className="mr-2 h-4 w-4" />
@@ -122,7 +122,7 @@ export const UserDropdown = ({ user, onLogout }: UserDropdownProps) => {
         {/* Blog - Show for ALL users */}
         <DropdownMenuItem asChild>
           <Link
-            href={Routes.dashboardMyBlogs}
+            href={ROUTES.USER_MY_BLOGS}
             className="cursor-target flex items-center"
           >
             <BookOpen className="mr-2 h-4 w-4" />
@@ -245,7 +245,7 @@ export const UserDropdown = ({ user, onLogout }: UserDropdownProps) => {
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
           <Link
-            href={Routes.dashboardSettings}
+            href={ROUTES.USER_SETTINGS}
             className="cursor-target flex items-center"
           >
             <Settings className="mr-2 h-4 w-4" />

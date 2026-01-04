@@ -1,6 +1,5 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import {
   Card,
   CardContent,
@@ -10,16 +9,15 @@ import {
 
 import {
   Briefcase,
-  Bookmark,
   MessageSquare,
   FileText,
   TrendingUp,
   Clock,
 } from "lucide-react";
 import Link from "next/link";
-import Routes from "@/routes";
 import { Button } from "@/components/ui/shadcn/button";
 import { useAuth } from "@/providers/auth.provider";
+import { ROUTES } from "@/configs";
 
 export default function DashboardOverviewPage() {
   const { user, loading } = useAuth();
@@ -40,19 +38,19 @@ export default function DashboardOverviewPage() {
       title: "Việc đã ứng tuyển",
       value: "8",
       icon: Briefcase,
-      href: Routes.dashboardAppliedJobs,
+      href: ROUTES.USER_APPLIED_JOBS,
     },
     {
       title: "Tin nhắn mới",
       value: "3",
       icon: MessageSquare,
-      href: Routes.dashboardMessages,
+      href: ROUTES.USER_MESSAGES,
     },
     {
       title: "CV đã tải lên",
       value: "2",
       icon: FileText,
-      href: Routes.dashboardResume,
+      href: ROUTES.USER_RESUME,
     },
   ];
 
@@ -157,19 +155,19 @@ export default function DashboardOverviewPage() {
           </CardHeader>
           <CardContent className="space-y-3">
             <Button className="w-full justify-start hover:bg-primary/10 hover:text-primary" variant="outline" asChild>
-              <Link href={Routes.jobs}>
+              <Link href={ROUTES.JOBS}>
                 <Briefcase className="mr-2 h-4 w-4" />
                 Tìm việc làm mới
               </Link>
             </Button>
             <Button className="w-full justify-start hover:bg-primary/10 hover:text-primary" variant="outline" asChild>
-              <Link href={Routes.dashboardResume}>
+              <Link href={ROUTES.USER_RESUME}>
                 <FileText className="mr-2 h-4 w-4" />
                 Cập nhật CV
               </Link>
             </Button>
             <Button className="w-full justify-start hover:bg-primary/10 hover:text-primary" variant="outline" asChild>
-              <Link href={user?.id ? Routes.profile(user.id) : "#"}>
+              <Link href={user?.id ? ROUTES.PROFILE(user.id) : "#"}>
                 <TrendingUp className="mr-2 h-4 w-4" />
                 Xem hồ sơ công khai
               </Link>

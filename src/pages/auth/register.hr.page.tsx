@@ -2,7 +2,7 @@
 
 import FormRegisterHR from "@/components/forms/register.hr.form";
 import { Button } from "@/components/ui/shadcn/button";
-import Routes from "@/routes";
+import { ROUTES } from "@/configs";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -14,7 +14,7 @@ export default function RegisterHRPage() {
     <div className="relative z-10 w-full min-h-screen overflow-y-auto">
       {/* Back Button */}
       <div className="absolute top-4 left-4 z-50">
-        <Link href={Routes.welcome}>
+        <Link href={ROUTES.WELCOME}>
           <Button
             variant="outline"
             size="sm"

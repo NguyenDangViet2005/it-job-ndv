@@ -10,8 +10,6 @@ interface PageProps {
 
 export default async function Page({ params }: PageProps) {
   const { slug } = await params;
-  
-  // Convert slug to ID (assuming slug is the company ID)
   const companyId = parseInt(slug);
   
   if (isNaN(companyId)) {

@@ -4,6 +4,7 @@ import { useAuth } from "@/providers/auth.provider";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
+import Routes from "@/routes";
 
 export default function ProfileRedirect() {
   const { user, loading } = useAuth();
@@ -12,11 +13,9 @@ export default function ProfileRedirect() {
   useEffect(() => {
     if (!loading) {
       if (user?.id) {
-        // Redirect to user's own profile
-        router.replace(`/profile/${user.id}`);
+        router.replace(Routes.profile(user?.id));
       } else {
-        // Redirect to login if not authenticated
-        router.replace("/login");
+        router.replace(Routes.login);
       }
     }
   }, [user, loading, router]);

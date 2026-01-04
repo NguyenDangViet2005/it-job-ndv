@@ -27,17 +27,12 @@ import { Sheet, SheetContent } from "@/components/ui/shadcn/sheet";
 import { cn } from "@/lib/utils";
 import { NavigationItem } from "@/types/test.type";
 import { ModeToggle } from "../../components/ui/customs/toggle-them";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/shadcn/avatar";
-import Routes from "@/routes";
 import { ScrollArea } from "@/components/ui/shadcn/scroll-area";
 import { useAuth } from "@/providers/auth.provider";
 import Image from "next/image";
 import { useTheme } from "next-themes";
 import { useState, useEffect } from "react";
+import { ROUTES } from "@/configs";
 
 const NAVIGATION_ITEMS: NavigationItem[] = [
   { href: "/admin", icon: LayoutDashboard, label: "Dashboard" },
@@ -138,7 +133,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
     <div className="pt-4 space-y-3 border-t border-slate-200 dark:border-slate-800 bg-background">
       {/* Back to Home */}
       <Button variant="outline" className="w-full justify-start gap-3 border-slate-200 dark:border-slate-700" asChild>
-        <Link href={Routes.home}>
+        <Link href={ROUTES.HOME}>
           <Home className="h-4 w-4" />
           <span>Về trang chủ</span>
         </Link>
@@ -172,7 +167,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
             </Button>
             <div className="flex items-center">
               <Link
-                href={Routes.home}
+                href={ROUTES.HOME}
                 className="cursor-target"
               >
                 <Image

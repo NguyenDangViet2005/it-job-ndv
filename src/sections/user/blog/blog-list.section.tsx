@@ -131,7 +131,7 @@ function BlogListSection() {
               </Link>
               <CardHeader>
                 <div className="flex items-center justify-between mb-2">
-                  <Badge variant="secondary">{post.category}</Badge>
+                  <Badge variant="secondary">{post.categoryName}</Badge>
                   <span className="text-xs text-muted-foreground">{post.readTime}</span>
                 </div>
                 <Link href={`/blog/${post.id}`}>
@@ -151,7 +151,7 @@ function BlogListSection() {
                   </div>
                   <div className="flex items-center gap-1">
                     <Calendar className="h-4 w-4" />
-                    <span>{new Date(post.date).toLocaleDateString("vi-VN")}</span>
+                    <span>{new Date(post.createdAt).toLocaleDateString("vi-VN")}</span>
                   </div>
                 </div>
               </CardContent>
