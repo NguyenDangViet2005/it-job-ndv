@@ -1,0 +1,29 @@
+{
+  "name": "it_job_express",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development nodemon ./src/server.js",
+    "start": "cross-env NODE_ENV=production node ./src/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "cross-env": "^10.1.0",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "joi": "^18.0.2",
+    "morgan": "^1.10.1",
+    "mssql": "^12.2.0",
+    "sequelize": "^6.37.7",
+    "tedious": "^19.2.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11",
+    "sequelize-cli": "^6.6.3"
+  }
+}
