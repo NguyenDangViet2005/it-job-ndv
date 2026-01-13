@@ -1,4 +1,3 @@
-// src/configs/sequelize.config.js
 const { Sequelize } = require("sequelize");
 const env = require("./env.config");
 

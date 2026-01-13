@@ -1,0 +1,220 @@
+const {
+  Company,
+  Job,
+  Post,
+  Review,
+  Follow,
+  CompanyMember,
+  Application,
+  SkillJob,
+  Interaction,
+  Attachment,
+} = require("../models");
+const cloudinaryService = require("../services/cloudinary.service");
+
+const getCompanies = async (pageNumber = 1, pageSize = 10) => {
+  try {
+    const offset = (pageNumber - 1) * pageSize;
+    const { count, rows } = await Company.findAndCountAll({
+      include: [
+        { model: Job, attributes: ["id"] },
+        { model: Post },
+        { model: Review },
+        { model: Follow },
+      ],
+      offset,
+      limit: pageSize,
+      order: [["created_at", "DESC"]],
+      distinct: true,
+    });
+    return {
+      data: rows,
+      totalItems: count,
+      pageNumber,
+      pageSize,
+    };
+  } catch (error) {
+    throw error;
+  }
+};
+
+const getCompanyLogos = async (pageNumber = 1, pageSize = 10) => {
+  try {
+    const offset = (pageNumber - 1) * pageSize;
+    const { count, rows } = await Company.findAndCountAll({
+      attributes: ["id", "name", "avatar"],
+      offset,
+      limit: pageSize,
+      order: [["created_at", "DESC"]],
+    });
+
+    return {
+      data: rows,
+      totalItems: count,
+      pageNumber,
+      pageSize,
+    };
+  } catch (error) {
+    throw error;
+  }
+};
+
+const getCompanyById = async (id) => {
+  try {
+    const company = await Company.findByPk(id, {
+      include: [
+        { model: Job },
+        { model: Post },
+        { model: Review },
+        { model: Follow },
+      ],
+    });
+    return company;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const createCompany = async (companyData) => {
+  try {
+    const newCompany = await Company.create({
+      ...companyData,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+    return newCompany;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const updateCompany = async (id, updateData) => {
+  try {
+    const company = await Company.findByPk(id);
+    if (!company) throw new Error("Company not found");
+
+    await company.update({
+      ...updateData,
+      updatedAt: new Date(),
+    });
+    return company;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const deleteCompany = async (id) => {
+  try {
+    const company = await Company.findByPk(id);
+    if (!company) return false;
+
+    // 1. Delete Applications (via Jobs)
+    // Find job IDs
+    const jobs = await Job.findAll({
+      where: { companyId: id },
+      attributes: ["id"],
+    });
+    const jobIds = jobs.map((j) => j.id);
+
+    if (jobIds.length > 0) {
+      await Application.destroy({ where: { jobId: jobIds } });
+      await SkillJob.destroy({ where: { jobId: jobIds } });
+      await Job.destroy({ where: { companyId: id } });
+    }
+
+    // 2. Delete Posts
+    const posts = await Post.findAll({
+      where: { companyId: id },
+      attributes: ["id"],
+    });
+    const postIds = posts.map((p) => p.id);
+
+    if (postIds.length > 0) {
+      await Interaction.destroy({ where: { postId: postIds } });
+      await Attachment.destroy({ where: { postId: postIds } });
+      await Post.destroy({ where: { companyId: id } });
+    }
+
+    // 3. Delete Follows
+    await Follow.destroy({ where: { companyId: id } });
+
+    // 4. Reviews
+    await Review.destroy({ where: { companyId: id } });
+
+    // 5. Members
+    await CompanyMember.destroy({ where: { companyId: id } });
+
+    // 6. Company
+    await company.destroy();
+
+    return true;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const getCompanyByUserId = async (userId) => {
+  try {
+    const company = await Company.findOne({
+      include: [
+        {
+          model: CompanyMember,
+          where: { userId: userId },
+          required: true,
+        },
+        { model: Job },
+        { model: Post },
+        { model: Review },
+        { model: Follow },
+      ],
+    });
+    return company;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const uploadCompanyAvatar = async (companyId, file) => {
+  try {
+    const company = await Company.findByPk(companyId);
+    if (!company) throw new Error("Company not found");
+    // Removed folder argument "company_avatars" as requested
+    const result = await cloudinaryService.uploadImage(file.path);
+
+    company.avatar = result.secure_url;
+    await company.save();
+
+    return company.avatar;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const uploadCompanyCover = async (companyId, file) => {
+  try {
+    const company = await Company.findByPk(companyId);
+    if (!company) throw new Error("Company not found");
+
+    // Removed folder argument "company_covers" as requested
+    const result = await cloudinaryService.uploadImage(file.path);
+
+    company.coverImage = result.secure_url;
+    await company.save();
+
+    return company.coverImage;
+  } catch (error) {
+    throw error;
+  }
+};
+
+module.exports = {
+  getCompanies,
+  getCompanyLogos,
+  getCompanyById,
+  createCompany,
+  updateCompany,
+  deleteCompany,
+  getCompanyByUserId,
+  uploadCompanyAvatar,
+  uploadCompanyCover,
+};

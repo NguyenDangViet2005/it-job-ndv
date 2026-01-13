@@ -1,0 +1,70 @@
+const followService = require("../services/follow.service");
+const jwt = require("jsonwebtoken");
+const env = require("../configs/env.config");
+
+const getCurrentUserId = (req) => {
+  if (req.user) return req.user.id;
+  const authHeader = req.headers.authorization;
+  if (authHeader) {
+    try {
+      const token = authHeader.split(" ")[1];
+      const decoded = jwt.verify(token, env.jwt.accessSecret);
+      return decoded.id;
+    } catch (e) {}
+  }
+  return null;
+};
+
+const toggleFollow = async (req, res, next) => {
+  try {
+    const userId = req.body.userId || getCurrentUserId(req);
+    const companyId = req.body.companyId;
+
+    if (!userId || !companyId) {
+      return res
+        .status(400)
+        .json({ message: "UserId and CompanyId are required" });
+    }
+
+    const result = await followService.toggleFollow(userId, companyId);
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getFollowsByUser = async (req, res, next) => {
+  try {
+    const userId = parseInt(req.params.userId || getCurrentUserId(req));
+    const page = parseInt(req.query.pageNumber) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 10;
+
+    const result = await followService.getFollowsByUser(userId, page, pageSize);
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getFollowsByCompany = async (req, res, next) => {
+  try {
+    const companyId = parseInt(req.params.companyId);
+    const page = parseInt(req.query.pageNumber) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 10;
+
+    const result = await followService.getFollowsByCompany(
+      companyId,
+      page,
+      pageSize
+    );
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = {
+  toggleFollow,
+  getFollowsByUser,
+  getFollowsByCompany,
+};

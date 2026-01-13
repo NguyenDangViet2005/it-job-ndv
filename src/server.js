@@ -4,15 +4,21 @@ dotenv.config();
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
+const cookieParser = require("cookie-parser");
 const env = require("./configs/env.config");
 const { sequelize, testConnection } = require("./configs/sequelize.config");
+const { apiRouter } = require("./routes/index.route");
 
 const app = express();
 
 // Middleware global
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
 app.use(morgan("dev"));
+
+// Routes
+app.use("/api/", apiRouter.Router);
 
 (async () => {
   try {
