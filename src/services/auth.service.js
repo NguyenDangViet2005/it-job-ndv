@@ -15,14 +15,14 @@ const generateTokens = (userId, role) => {
 
 const register = async (userData) => {
   const { email, password, fullName } = userData;
-  
+
   const existingUser = await User.findOne({ where: { email } });
   if (existingUser) {
     throw new Error("Email already registered");
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
-  
+
   const newUser = await User.create({
     email,
     password: hashedPassword,
@@ -54,17 +54,17 @@ const login = async (email, password) => {
 };
 
 const logout = async (userId) => {
-    if (userId) {
-        const user = await User.findByPk(userId);
-        if (user) {
-            user.refreshToken = null;
-            await user.save();
-        }
+  if (userId) {
+    const user = await User.findByPk(userId);
+    if (user) {
+      user.refreshToken = null;
+      await user.save();
     }
+  }
 };
 
 module.exports = {
   register,
   login,
-  logout
+  logout,
 };
