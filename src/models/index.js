@@ -44,6 +44,11 @@ Company.hasMany(Review, { foreignKey: "companyId" });
 Job.belongsTo(Company, { foreignKey: "companyId" });
 Job.hasMany(Application, { foreignKey: "jobId" });
 Job.hasMany(SkillJob, { foreignKey: "jobId" });
+Job.belongsToMany(Skill, {
+  through: SkillJob,
+  foreignKey: "jobId",
+  otherKey: "skillId",
+});
 
 // Application relationships
 Application.belongsTo(Job, { foreignKey: "jobId" });
@@ -65,6 +70,11 @@ Post.hasMany(Interaction, { foreignKey: "postId" });
 // Skill relationships
 Skill.hasMany(SkillJob, { foreignKey: "skillId" });
 Skill.hasMany(SkillUser, { foreignKey: "skillId" });
+Skill.belongsToMany(Job, {
+  through: SkillJob,
+  foreignKey: "skillId",
+  otherKey: "jobId",
+});
 
 // SkillJob relationships
 SkillJob.belongsTo(Skill, { foreignKey: "skillId" });

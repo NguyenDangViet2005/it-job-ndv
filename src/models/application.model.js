@@ -8,22 +8,18 @@ const Application = sequelize.define(
     jobId: {
       type: DataTypes.INTEGER,
       primaryKey: true,
-      field: "job_id",
     },
     userId: {
       type: DataTypes.INTEGER,
       primaryKey: true,
-      field: "user_id",
     },
     cvUrl: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "cv_url",
     },
     coverLetter: {
       type: DataTypes.TEXT,
       allowNull: true,
-      field: "cover_letter",
     },
     status: {
       type: DataTypes.STRING,
@@ -32,10 +28,8 @@ const Application = sequelize.define(
     },
   },
   {
-    tableName: "Applications",
+    tableName: "Application",
     timestamps: true,
-    createdAt: "created_at",
-    updatedAt: "updated_at",
   }
 );
 

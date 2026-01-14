@@ -1,5 +1,6 @@
 const { Blog, User, BlogCategory } = require("../models");
 const cloudinaryService = require("./cloudinary.service");
+const BlogResponse = require("../dtos/BlogResponse.dto");
 
 const getAllBlogs = async (page = 1, pageSize = 10, categoryId = null) => {
   const offset = (page - 1) * pageSize;
@@ -8,31 +9,33 @@ const getAllBlogs = async (page = 1, pageSize = 10, categoryId = null) => {
     where.categoryId = categoryId;
   }
 
-  const { count, rows } = await Blog.findAndCountAll({
-    where,
-    include: [
-      {
-        model: User,
-        as: "User",
-        attributes: ["id", "fullName", "avatar"],
-      },
-      {
-        model: BlogCategory,
-        as: "Category",
-      },
-    ],
-    order: [["createdAt", "DESC"]],
-    limit: pageSize,
-    offset: offset,
-  });
+  try {
+    const { count, rows } = await Blog.findAndCountAll({
+      where,
+      include: [
+        {
+          model: User,
+          attributes: ["id", "fullName", "avatar"],
+        },
+        {
+          model: BlogCategory,
+        },
+      ],
+      order: [["createdAt", "DESC"]],
+      limit: pageSize,
+      offset: offset,
+    });
 
-  return {
-    blogs: rows,
-    totalItems: count,
-    page,
-    pageSize,
-    totalPages: Math.ceil(count / pageSize),
-  };
+    return {
+      data: rows.map((blog) => new BlogResponse(blog)),
+      totalItems: count,
+      page,
+      pageSize,
+      totalPages: Math.ceil(count / pageSize),
+    };
+  } catch (error) {
+    throw error;
+  }
 };
 
 const getBlogById = async (id) => {
@@ -41,16 +44,14 @@ const getBlogById = async (id) => {
       include: [
         {
           model: User,
-          as: "User",
           attributes: ["id", "fullName", "avatar"],
         },
         {
           model: BlogCategory,
-          as: "Category",
         },
       ],
     });
-    return blog;
+    return blog ? new BlogResponse(blog) : null;
   } catch (error) {
     throw error;
   }
@@ -72,7 +73,7 @@ const getBlogsByUserId = async (userId, page = 1, pageSize = 10) => {
   });
 
   return {
-    blogs: rows,
+    data: rows.map((blog) => new BlogResponse(blog)),
     totalItems: count,
     page,
     pageSize,

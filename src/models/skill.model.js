@@ -17,10 +17,8 @@ const Skill = sequelize.define(
     },
   },
   {
-    tableName: "Skills",
+    tableName: "Skill",
     timestamps: true,
-    createdAt: "created_at",
-    updatedAt: "updated_at",
   }
 );
 

@@ -13,12 +13,10 @@ const Post = sequelize.define(
     userId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "user_id",
     },
     companyId: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "company_id",
     },
     content: {
       type: DataTypes.TEXT,
@@ -26,10 +24,8 @@ const Post = sequelize.define(
     },
   },
   {
-    tableName: "Posts",
+    tableName: "Post",
     timestamps: true,
-    createdAt: "created_at",
-    updatedAt: "updated_at",
   }
 );
 

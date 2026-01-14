@@ -17,10 +17,10 @@ const sequelize = new Sequelize(env.db.name, env.db.user, env.db.password, {
     acquire: 30000,
     idle: 10000,
   },
-  logging: env.app.env === "development" ? console.log : false,
+  logging: false, // Tắt logging SQL
   define: {
     timestamps: true,
-    underscored: true, // Dùng snake_case cho DB
+    underscored: false, // Dùng camelCase cho DB
     freezeTableName: true, // Không tự động plural table names
   },
 });

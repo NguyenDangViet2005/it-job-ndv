@@ -13,17 +13,14 @@ const Interaction = sequelize.define(
     postId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "post_id",
     },
     userId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "user_id",
     },
     isLiked: {
       type: DataTypes.BOOLEAN,
       allowNull: true,
-      field: "is_liked",
     },
     content: {
       type: DataTypes.TEXT,
@@ -31,10 +28,8 @@ const Interaction = sequelize.define(
     },
   },
   {
-    tableName: "Interactions",
+    tableName: "Interaction",
     timestamps: true,
-    createdAt: "created_at",
-    updatedAt: "updated_at",
   }
 );
 

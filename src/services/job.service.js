@@ -1,5 +1,6 @@
 const { Job, Company, Skill, SkillJob, CompanyMember } = require("../models");
-const { Op } = require("sequelize");
+const { Op, fn, col, literal } = require("sequelize");
+const { JobResponse } = require("../dtos/JobResponse.dto");
 
 const getAll = async (pageNumber = 1, pageSize = 10) => {
   try {
@@ -12,15 +13,16 @@ const getAll = async (pageNumber = 1, pageSize = 10) => {
         },
         {
           model: Skill,
+          through: { attributes: [] },
         },
       ],
       offset,
       limit: pageSize,
-      order: [["created_at", "DESC"]],
+      order: [["createdAt", "DESC"]],
       distinct: true,
     });
     return {
-      data: rows,
+      data: rows.map((job) => new JobResponse(job)),
       totalItems: count,
       pageNumber,
       pageSize,
@@ -40,10 +42,11 @@ const getById = async (id) => {
         },
         {
           model: Skill,
+          through: { attributes: [] },
         },
       ],
     });
-    return job;
+    return job ? new JobResponse(job) : null;
   } catch (error) {
     throw error;
   }
@@ -137,15 +140,18 @@ const getJobsByCompanyId = async (companyId, pageNumber = 1, pageSize = 10) => {
           model: Company,
           attributes: ["id", "name", "avatar", "website", "address"],
         },
-        { model: Skill },
+        {
+          model: Skill,
+          through: { attributes: [] },
+        },
       ],
       offset,
       limit: pageSize,
-      order: [["created_at", "DESC"]],
+      order: [["createdAt", "DESC"]],
       distinct: true,
     });
     return {
-      data: rows,
+      data: rows.map((job) => new JobResponse(job)),
       totalItems: count,
       pageNumber,
       pageSize,
@@ -157,21 +163,25 @@ const getJobsByCompanyId = async (companyId, pageNumber = 1, pageSize = 10) => {
 
 const getJobsToday = async () => {
   try {
-    const startOfDay = new Date();
-    startOfDay.setHours(0, 0, 0, 0);
+    const now = new Date();
+    const yyyy = now.getFullYear();
+    const mm = String(now.getMonth() + 1).padStart(2, "0");
+    const dd = String(now.getDate()).padStart(2, "0");
 
-    const endOfDay = new Date();
-    endOfDay.setHours(23, 59, 59, 999);
+    const todayDate = `${yyyy}-${mm}-${dd}`;
 
     const jobs = await Job.findAll({
-      where: {
-        created_at: {
-          [Op.between]: [startOfDay, endOfDay],
+      where: literal(`CAST([Job].[createdAt] AS DATE) = '${todayDate}'`),
+      include: [
+        { model: Company },
+        {
+          model: Skill,
+          through: { attributes: [] },
         },
-      },
-      include: [{ model: Company }, { model: Skill }],
+      ],
     });
-    return jobs;
+
+    return jobs.map((job) => new JobResponse(job));
   } catch (error) {
     throw error;
   }
@@ -193,7 +203,7 @@ const getJobsBySkill = async (skillId, pageNumber = 1, pageSize = 10) => {
       distinct: true,
     });
     return {
-      data: rows,
+      data: rows.map((job) => new JobResponse(job)),
       totalItems: count,
       pageNumber,
       pageSize,

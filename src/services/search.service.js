@@ -1,5 +1,7 @@
 const { Job, Company, Skill } = require("../models");
 const { Op } = require("sequelize");
+const { JobResponse } = require("../dtos/JobResponse.dto");
+const CompanyResponse = require("../dtos/CompanyResponse.dto");
 
 const search = async (keyword, page = 1, pageSize = 10) => {
   try {
@@ -30,8 +32,8 @@ const search = async (keyword, page = 1, pageSize = 10) => {
     });
 
     return {
-      jobs,
-      companies,
+      jobs: jobs.map((j) => new JobResponse(j)),
+      companies: companies.map((c) => new CompanyResponse(c)),
       skills,
     };
   } catch (error) {

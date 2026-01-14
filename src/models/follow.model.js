@@ -8,19 +8,15 @@ const Follow = sequelize.define(
     userId: {
       type: DataTypes.INTEGER,
       primaryKey: true,
-      field: "user_id",
     },
     companyId: {
       type: DataTypes.INTEGER,
       primaryKey: true,
-      field: "company_id",
     },
   },
   {
-    tableName: "Follows",
+    tableName: "Follow",
     timestamps: true,
-    createdAt: "created_at",
-    updatedAt: "updated_at",
   }
 );
 

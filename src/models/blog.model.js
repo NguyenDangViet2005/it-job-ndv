@@ -13,12 +13,10 @@ const Blog = sequelize.define(
     userId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "user_id",
     },
     categoryId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "category_id",
     },
     title: {
       type: DataTypes.STRING,
@@ -35,7 +33,6 @@ const Blog = sequelize.define(
     readTime: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "read_time",
     },
     image: {
       type: DataTypes.STRING,
@@ -43,10 +40,8 @@ const Blog = sequelize.define(
     },
   },
   {
-    tableName: "Blogs",
+    tableName: "Blog",
     timestamps: true,
-    createdAt: "created_at",
-    updatedAt: "updated_at",
   }
 );
 

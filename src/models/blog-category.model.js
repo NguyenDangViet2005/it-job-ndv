@@ -17,10 +17,8 @@ const BlogCategory = sequelize.define(
     },
   },
   {
-    tableName: "BlogCategories",
+    tableName: "BlogCategory",
     timestamps: true,
-    createdAt: "created_at",
-    updatedAt: "updated_at",
   }
 );
 

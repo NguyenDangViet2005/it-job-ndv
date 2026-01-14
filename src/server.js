@@ -1,13 +1,13 @@
 const dotenv = require("dotenv");
 dotenv.config();
-
-const express = require("express");
 const cors = require("cors");
+const express = require("express");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const env = require("./configs/env.config");
-const { sequelize, testConnection } = require("./configs/sequelize.config");
+const { testConnection } = require("./configs/sequelize.config");
 const { apiRouter } = require("./routes/index.route");
+const { corsOptions } = require("./configs/cors.config");
 
 const app = express();
 
@@ -17,8 +17,11 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(morgan("dev"));
 
+//CORS
+app.use(cors(corsOptions));
+
 // Routes
-app.use("/api/", apiRouter.Router);
+app.use("/api", apiRouter.Router);
 
 (async () => {
   try {

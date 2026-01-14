@@ -1,4 +1,5 @@
 const { Review, User, Company } = require("../models");
+const ReviewResponse = require("../dtos/ReviewResponse.dto");
 
 const getReviewById = async (id) => {
   try {
@@ -8,7 +9,7 @@ const getReviewById = async (id) => {
         { model: Company, as: "Company", attributes: ["id", "name", "avatar"] },
       ],
     });
-    return review;
+    return review ? new ReviewResponse(review) : null;
   } catch (error) {
     throw error;
   }
@@ -27,7 +28,7 @@ const getReviewsByCompanyId = async (companyId, page = 1, pageSize = 10) => {
   });
 
   return {
-    reviews: rows,
+    reviews: rows.map((r) => new ReviewResponse(r)),
     totalItems: count,
     page,
     pageSize,
@@ -48,7 +49,7 @@ const getReviewsByUserId = async (userId, page = 1, pageSize = 10) => {
   });
 
   return {
-    reviews: rows,
+    reviews: rows.map((r) => new ReviewResponse(r)),
     totalItems: count,
     page,
     pageSize,
@@ -64,7 +65,7 @@ const createReview = async (userId, data) => {
       rating: data.rating,
       comment: data.comment,
     });
-    return await getReviewById(review.id);
+    return await getReviewById(review.id); // Already returns DTO
   } catch (error) {
     throw error;
   }

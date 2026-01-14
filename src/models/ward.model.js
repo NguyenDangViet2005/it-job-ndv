@@ -13,7 +13,6 @@ const Ward = sequelize.define(
     provinceId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "province_id",
     },
     name: {
       type: DataTypes.STRING,

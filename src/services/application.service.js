@@ -1,4 +1,5 @@
 const { Application, Job, Company, User } = require("../models");
+const ApplicationResponse = require("../dtos/ApplicationResponse.dto");
 
 const getAll = async (pageNumber = 1, pageSize = 10) => {
   try {
@@ -16,10 +17,10 @@ const getAll = async (pageNumber = 1, pageSize = 10) => {
       ],
       offset,
       limit: pageSize,
-      order: [["created_at", "DESC"]],
+      order: [["createdAt", "DESC"]],
     });
     return {
-      data: rows,
+      data: rows.map((app) => new ApplicationResponse(app)),
       totalItems: count,
       pageNumber,
       pageSize,
@@ -61,7 +62,7 @@ const create = async (applicationData) => {
         },
       ],
     });
-    return loadedApplication;
+    return new ApplicationResponse(loadedApplication);
   } catch (error) {
     throw error;
   }
@@ -84,10 +85,10 @@ const getByUserId = async (userId, pageNumber = 1, pageSize = 10) => {
       ],
       offset,
       limit: pageSize,
-      order: [["created_at", "DESC"]],
+      order: [["createdAt", "DESC"]],
     });
     return {
-      data: rows,
+      data: rows.map((app) => new ApplicationResponse(app)),
       totalItems: count,
       pageNumber,
       pageSize,
@@ -115,10 +116,10 @@ const getByCompanyId = async (companyId, pageNumber = 1, pageSize = 10) => {
       ],
       offset,
       limit: pageSize,
-      order: [["created_at", "DESC"]],
+      order: [["createdAt", "DESC"]],
     });
     return {
-      data: rows,
+      data: rows.map((app) => new ApplicationResponse(app)),
       totalItems: count,
       pageNumber,
       pageSize,
@@ -132,6 +133,15 @@ const update = async (jobId, userId, updateData) => {
   try {
     const application = await Application.findOne({
       where: { jobId, userId },
+      include: [
+        {
+          model: Job,
+          include: [{ model: Company }],
+        },
+        {
+          model: User,
+        },
+      ],
     });
 
     if (!application) {
@@ -143,7 +153,7 @@ const update = async (jobId, userId, updateData) => {
     if (updateData.status) application.status = updateData.status;
 
     await application.save();
-    return application;
+    return new ApplicationResponse(application);
   } catch (error) {
     throw error;
   }

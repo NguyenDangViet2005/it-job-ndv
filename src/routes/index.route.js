@@ -15,19 +15,19 @@ const userRoutes = require("./user.route");
 
 const Router = express.Router();
 
-Router.use("auth", authRoutes);
-Router.use("company", companyRoutes);
-Router.use("job", jobRoutes);
-Router.use("application", applicationRoutes);
-Router.use("post", postRoutes);
-Router.use("skills", skillRoutes);
-Router.use("locations", locationRoutes);
-Router.use("blogcategory", blogCategoryRoutes);
-Router.use("blog", blogRoutes);
-Router.use("review", reviewRoutes);
-Router.use("follows", followRoutes);
-Router.use("search", searchRoutes);
-Router.use("user", userRoutes);
+Router.use("/auth", authRoutes);
+Router.use("/company", companyRoutes);
+Router.use("/job", jobRoutes);
+Router.use("/application", applicationRoutes);
+Router.use("/post", postRoutes);
+Router.use("/skills", skillRoutes);
+Router.use("/locations", locationRoutes);
+Router.use("/blogcategory", blogCategoryRoutes);
+Router.use("/blog", blogRoutes);
+Router.use("/review", reviewRoutes);
+Router.use("/follows", followRoutes);
+Router.use("/search", searchRoutes);
+Router.use("/user", userRoutes);
 
 const apiRouter = {
   Router,

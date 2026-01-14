@@ -13,7 +13,6 @@ const Job = sequelize.define(
     companyId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "company_id",
     },
     title: {
       type: DataTypes.STRING,
@@ -42,10 +41,8 @@ const Job = sequelize.define(
     },
   },
   {
-    tableName: "Jobs",
+    tableName: "Job",
     timestamps: true,
-    createdAt: "created_at",
-    updatedAt: "updated_at",
   }
 );
 

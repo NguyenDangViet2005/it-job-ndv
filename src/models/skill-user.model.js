@@ -8,19 +8,15 @@ const SkillUser = sequelize.define(
     skillId: {
       type: DataTypes.INTEGER,
       primaryKey: true,
-      field: "skill_id",
     },
     userId: {
       type: DataTypes.INTEGER,
       primaryKey: true,
-      field: "user_id",
     },
   },
   {
-    tableName: "SkillUsers",
+    tableName: "Skill_User",
     timestamps: true,
-    createdAt: "created_at",
-    updatedAt: "updated_at",
   }
 );
 

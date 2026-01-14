@@ -9,8 +9,12 @@ const {
   SkillJob,
   Interaction,
   Attachment,
+  Ward,
+  Province,
 } = require("../models");
 const cloudinaryService = require("../services/cloudinary.service");
+const CompanyResponse = require("../dtos/CompanyResponse.dto");
+const CompanyLogoResponse = require("../dtos/CompanyLogoResponse.dto");
 
 const getCompanies = async (pageNumber = 1, pageSize = 10) => {
   try {
@@ -21,14 +25,18 @@ const getCompanies = async (pageNumber = 1, pageSize = 10) => {
         { model: Post },
         { model: Review },
         { model: Follow },
+        {
+          model: Ward,
+          include: [{ model: Province }],
+        },
       ],
       offset,
       limit: pageSize,
-      order: [["created_at", "DESC"]],
+      order: [["createdAt", "DESC"]],
       distinct: true,
     });
     return {
-      data: rows,
+      data: rows.map((comp) => new CompanyResponse(comp)),
       totalItems: count,
       pageNumber,
       pageSize,
@@ -45,11 +53,10 @@ const getCompanyLogos = async (pageNumber = 1, pageSize = 10) => {
       attributes: ["id", "name", "avatar"],
       offset,
       limit: pageSize,
-      order: [["created_at", "DESC"]],
+      order: [["createdAt", "DESC"]],
     });
-
     return {
-      data: rows,
+      data: rows.map((comp) => new CompanyLogoResponse(comp)),
       totalItems: count,
       pageNumber,
       pageSize,
@@ -69,7 +76,7 @@ const getCompanyById = async (id) => {
         { model: Follow },
       ],
     });
-    return company;
+    return company ? new CompanyResponse(company) : null;
   } catch (error) {
     throw error;
   }
@@ -82,7 +89,7 @@ const createCompany = async (companyData) => {
       createdAt: new Date(),
       updatedAt: new Date(),
     });
-    return newCompany;
+    return new CompanyResponse(newCompany);
   } catch (error) {
     throw error;
   }
@@ -97,7 +104,7 @@ const updateCompany = async (id, updateData) => {
       ...updateData,
       updatedAt: new Date(),
     });
-    return company;
+    return new CompanyResponse(company);
   } catch (error) {
     throw error;
   }

@@ -8,12 +8,10 @@ const CompanyMember = sequelize.define(
     companyId: {
       type: DataTypes.INTEGER,
       primaryKey: true,
-      field: "company_id",
     },
     userId: {
       type: DataTypes.INTEGER,
       primaryKey: true,
-      field: "user_id",
     },
     status: {
       type: DataTypes.STRING,
@@ -22,13 +20,11 @@ const CompanyMember = sequelize.define(
     joinedAt: {
       type: DataTypes.DATE,
       allowNull: true,
-      field: "joined_at",
     },
   },
   {
     tableName: "CompanyMembers",
     timestamps: true,
-    createdAt: "created_at",
     updatedAt: false,
   }
 );

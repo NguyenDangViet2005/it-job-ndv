@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { User } = require("../models");
 const env = require("../configs/env.config");
+const LoginResponse = require("../dtos/LoginResponse.dto");
 
 const generateTokens = (userId, role) => {
   const accessToken = jwt.sign({ id: userId, role }, env.jwt.accessSecret, {
@@ -50,7 +51,7 @@ const login = async (email, password) => {
   user.refreshToken = refreshToken;
   await user.save();
 
-  return { accessToken, refreshToken, user };
+  return new LoginResponse(accessToken, refreshToken, user);
 };
 
 const logout = async (userId) => {

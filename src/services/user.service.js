@@ -9,6 +9,9 @@ const {
 const cloudinaryService = require("./cloudinary.service");
 const bcrypt = require("bcryptjs");
 const { Op } = require("sequelize");
+const UserResponse = require("../dtos/UserResponse.dto");
+const ApplicationResponse = require("../dtos/ApplicationResponse.dto");
+const { PostResponse } = require("../dtos/PostResponse.dto");
 
 const getAllUsers = async (page = 1, pageSize = 10) => {
   const offset = (page - 1) * pageSize;
@@ -19,7 +22,7 @@ const getAllUsers = async (page = 1, pageSize = 10) => {
   });
 
   return {
-    users: rows,
+    users: rows.map((u) => new UserResponse(u)),
     totalItems: count,
     page,
     pageSize,
@@ -32,7 +35,7 @@ const getUserById = async (id) => {
     const user = await User.findByPk(id, {
       attributes: { exclude: ["password"] },
     });
-    return user;
+    return user ? new UserResponse(user) : null;
   } catch (error) {
     throw error;
   }
@@ -127,7 +130,12 @@ const getUserApplications = async (userId, page = 1, pageSize = 10) => {
     limit: pageSize,
     offset,
   });
-  return { applications: rows, totalItems: count, page, pageSize };
+  return {
+    applications: rows.map((app) => new ApplicationResponse(app)),
+    totalItems: count,
+    page,
+    pageSize,
+  };
 };
 
 const getUserPosts = async (userId, page = 1, pageSize = 10) => {
@@ -137,7 +145,12 @@ const getUserPosts = async (userId, page = 1, pageSize = 10) => {
     limit: pageSize,
     offset,
   });
-  return { posts: rows, totalItems: count, page, pageSize };
+  return {
+    posts: rows.map((post) => new PostResponse(post)),
+    totalItems: count,
+    page,
+    pageSize,
+  };
 };
 
 module.exports = {

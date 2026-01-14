@@ -13,26 +13,22 @@ const Attachment = sequelize.define(
     postId: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "post_id",
     },
     interactionId: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "interaction_id",
     },
     fileType: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "file_type",
     },
     fileUrl: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "file_url",
     },
   },
   {
-    tableName: "Attachments",
+    tableName: "Attachment",
     timestamps: false,
   }
 );

@@ -21,7 +21,6 @@ const Company = sequelize.define(
     coverImage: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "cover_image",
     },
     nationality: {
       type: DataTypes.STRING,
@@ -38,7 +37,6 @@ const Company = sequelize.define(
     foundedYear: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "founded_year",
     },
     address: {
       type: DataTypes.STRING,
@@ -47,19 +45,15 @@ const Company = sequelize.define(
     wardId: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "ward_id",
     },
     createdByUserId: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "created_by_user_id",
     },
   },
   {
-    tableName: "Companies",
+    tableName: "Company",
     timestamps: true,
-    createdAt: "created_at",
-    updatedAt: "updated_at",
   }
 );
 

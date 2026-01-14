@@ -13,12 +13,10 @@ const Review = sequelize.define(
     userId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "user_id",
     },
     companyId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "company_id",
     },
     rating: {
       type: DataTypes.INTEGER,
@@ -30,10 +28,8 @@ const Review = sequelize.define(
     },
   },
   {
-    tableName: "Reviews",
+    tableName: "Review",
     timestamps: true,
-    createdAt: "created_at",
-    updatedAt: "updated_at",
   }
 );
 

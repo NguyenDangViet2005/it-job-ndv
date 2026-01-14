@@ -13,7 +13,6 @@ const User = sequelize.define(
     fullName: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "full_name",
     },
     email: {
       type: DataTypes.STRING,
@@ -35,7 +34,6 @@ const User = sequelize.define(
     dateOfBirth: {
       type: DataTypes.DATEONLY,
       allowNull: true,
-      field: "date_of_birth",
     },
     avatar: {
       type: DataTypes.STRING,
@@ -44,12 +42,11 @@ const User = sequelize.define(
     coverImage: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "cover_image",
     },
-    cvUrl: {
+    CVurl: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "cv_url",
+      field: "CVurl",
     },
     role: {
       type: DataTypes.STRING,
@@ -59,14 +56,11 @@ const User = sequelize.define(
     refreshToken: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "refresh_token",
     },
   },
   {
-    tableName: "Users",
+    tableName: "User",
     timestamps: true,
-    createdAt: "created_at",
-    updatedAt: "updated_at",
   }
 );
 

@@ -8,6 +8,7 @@ const {
 } = require("../models");
 const cloudinaryService = require("./cloudinary.service");
 const { Op } = require("sequelize");
+const { PostResponse } = require("../dtos/PostResponse.dto");
 
 const getFormattedPost = async (post, currentUserId) => {
   // 1. Get total likes
@@ -116,7 +117,10 @@ const getAllPosts = async (page = 1, pageSize = 10, currentUserId = null) => {
   });
 
   const posts = await Promise.all(
-    rows.map((post) => getFormattedPost(post, currentUserId))
+    rows.map(async (post) => {
+      const p = await getFormattedPost(post, currentUserId);
+      return new PostResponse(p);
+    })
   );
 
   return {
@@ -150,7 +154,8 @@ const getPostById = async (id, currentUserId = null) => {
 
   if (!post) return null;
 
-  return await getFormattedPost(post, currentUserId);
+  const formatted = await getFormattedPost(post, currentUserId);
+  return new PostResponse(formatted);
 };
 
 const getPostsByUserId = async (
@@ -184,7 +189,10 @@ const getPostsByUserId = async (
   });
 
   const posts = await Promise.all(
-    rows.map((post) => getFormattedPost(post, currentUserId))
+    rows.map(async (post) => {
+      const p = await getFormattedPost(post, currentUserId);
+      return new PostResponse(p);
+    })
   );
 
   return {
@@ -226,7 +234,10 @@ const getPostsByCompanyId = async (
   });
 
   const posts = await Promise.all(
-    rows.map((post) => getFormattedPost(post, currentUserId))
+    rows.map(async (post) => {
+      const p = await getFormattedPost(post, currentUserId);
+      return new PostResponse(p);
+    })
   );
 
   return {

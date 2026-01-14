@@ -1,4 +1,5 @@
 const { Follow, User, Company } = require("../models");
+const FollowResponse = require("../dtos/FollowResponse.dto");
 
 const toggleFollow = async (userId, companyId) => {
   try {
@@ -33,7 +34,7 @@ const getFollowsByUser = async (userId, page = 1, pageSize = 10) => {
   });
 
   return {
-    follows: rows,
+    follows: rows.map((f) => new FollowResponse(f)),
     totalItems: count,
     page,
     pageSize,
@@ -57,7 +58,7 @@ const getFollowsByCompany = async (companyId, page = 1, pageSize = 10) => {
   });
 
   return {
-    follows: rows,
+    follows: rows.map((f) => new FollowResponse(f)),
     totalItems: count,
     page,
     pageSize,
