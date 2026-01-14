@@ -24,6 +24,7 @@ const getAll = async (pageNumber = 1, pageSize = 10) => {
     return {
       data: rows.map((job) => new JobResponse(job)),
       totalItems: count,
+      totalPages: Math.ceil(count / pageSize),
       pageNumber,
       pageSize,
     };
@@ -153,6 +154,7 @@ const getJobsByCompanyId = async (companyId, pageNumber = 1, pageSize = 10) => {
     return {
       data: rows.map((job) => new JobResponse(job)),
       totalItems: count,
+      totalPages: Math.ceil(count / pageSize),
       pageNumber,
       pageSize,
     };
@@ -205,6 +207,7 @@ const getJobsBySkill = async (skillId, pageNumber = 1, pageSize = 10) => {
     return {
       data: rows.map((job) => new JobResponse(job)),
       totalItems: count,
+      totalPages: Math.ceil(count / pageSize),
       pageNumber,
       pageSize,
     };

@@ -39,6 +39,7 @@ const getCompanies = async (pageNumber = 1, pageSize = 10) => {
       data: rows.map((comp) => new CompanyResponse(comp)),
       totalItems: count,
       pageNumber,
+      totalPages: Math.ceil(count / pageSize),
       pageSize,
     };
   } catch (error) {

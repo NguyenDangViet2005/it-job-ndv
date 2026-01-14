@@ -2,7 +2,7 @@ const searchService = require("../services/search.service");
 
 const search = async (req, res, next) => {
   try {
-    const keyword = req.query.keyword || "";
+    const keyword = (req.query.keyword || "").trim();
     if (!keyword) {
       return res
         .status(400)
