@@ -1,45 +1,18 @@
-"use client";
-
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import type { Metadata } from "next";
 import LoginPage from "@/pages/auth/login.page";
-import { ROUTES } from "@/configs";
 
-function Page() {
-  const router = useRouter();
+export const metadata: Metadata = {
+  title: "IT Job | Đăng Nhập",
+  description: "IT Job | Đăng Nhập",
+  icons: {
+    icon: [
+      { url: "/icons/icon.svg", sizes: "any" },
+      { url: "/icon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/icon-32x32.png", sizes: "32x32", type: "image/png" },
+    ],
+  },
+};
 
-  useEffect(() => {
-    // Check if user is already logged in
-    if (typeof window !== "undefined") {
-      const storedUser = localStorage.getItem("userInfo");
-      const storedToken = localStorage.getItem("accessToken");
-
-      if (storedUser && storedToken) {
-        try {
-          const user = JSON.parse(storedUser);
-          const role = user.role?.toLowerCase();
-
-          // Redirect based on role
-          let redirectPath = ROUTES.HOME as string;
-          if (role === "admin") {
-            redirectPath = ROUTES.ADMIN;
-          } else if (role === "hr" || role === "employer") {
-            redirectPath = ROUTES.HR;
-          }
-          router.push(redirectPath);
-        } catch (error) {
-          console.error("Error parsing user data:", error);
-          router.push(ROUTES.HOME);
-        }
-      }
-    }
-  }, [router]);
-
-  return (
-    <>
-      <LoginPage />
-    </>
-  );
+export default function Page() {
+  return <LoginPage />;
 }
-
-export default Page;

@@ -48,7 +48,7 @@ const JobsPage = () => {
       }
 
       // Filter by search term if provided (client-side filtering)
-      let filteredJobs = response.data;
+      let filteredJobs = response.data || [];
       if (searchTerm) {
         const term = searchTerm.toLowerCase();
         filteredJobs = filteredJobs.filter(
@@ -62,14 +62,20 @@ const JobsPage = () => {
       // Filter by job type if provided (client-side filtering)
       if (selectedJobType) {
         filteredJobs = filteredJobs.filter(
-          (job: JobResponse) => job.type?.toLowerCase() === selectedJobType.toLowerCase()
+          (job: JobResponse) =>
+            job.type?.toLowerCase() === selectedJobType.toLowerCase()
         );
       }
 
       setJobs(filteredJobs);
-      setTotalPages(response.totalPages);
+      // Calculate totalPages with fallback
+      const calculatedTotalPages =
+        response.totalPages || Math.ceil((response.totalItems || 0) / pageSize);
+      setTotalPages(calculatedTotalPages || 1);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Không thể tải công việc");
+      setJobs([]); // Set empty array on error
+      setTotalPages(1);
     } finally {
       setLoading(false);
     }
@@ -97,7 +103,7 @@ const JobsPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section with VantaGlobe */}
-      <HeroSection/>
+      <HeroSection />
 
       {/* Main Content with rounded top */}
       <div className="bg-background w-full rounded-t-3xl border-t border-border/50 -mt-20 relative z-10 shadow-2xl">
@@ -108,7 +114,8 @@ const JobsPage = () => {
               Tìm kiếm công việc IT
             </h1>
             <p className="text-muted-foreground">
-              Khám phá hàng nghìn cơ hội việc làm IT hấp dẫn từ các công ty hàng đầu
+              Khám phá hàng nghìn cơ hội việc làm IT hấp dẫn từ các công ty hàng
+              đầu
             </p>
           </div>
 

@@ -80,8 +80,12 @@ export const jobApi = {
     pageSize: number = 10,
     token?: string
   ) => {
+    const trimmedKeyword = keyword.trim();
+    if (!trimmedKeyword) {
+      return Promise.reject(new Error("Keyword is required"));
+    }
     return apiGetPaginated<JobResponse>(ENDPOINT, pageNumber, pageSize, {
-      params: { keyword },
+      params: { keyword: trimmedKeyword },
       token,
     });
   },

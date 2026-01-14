@@ -134,12 +134,16 @@ export default function JobListSection({
     );
   }
 
-  if (jobs.length === 0) {
+  if (!jobs || jobs.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-64 gap-4">
         <Briefcase className="h-12 w-12 text-muted-foreground" />
-        <p className="text-muted-foreground text-lg">Không tìm thấy công việc phù hợp</p>
-        <p className="text-sm text-muted-foreground">Thử thay đổi bộ lọc để xem thêm kết quả</p>
+        <p className="text-muted-foreground text-lg">
+          Không tìm thấy công việc phù hợp
+        </p>
+        <p className="text-sm text-muted-foreground">
+          Thử thay đổi bộ lọc để xem thêm kết quả
+        </p>
       </div>
     );
   }
@@ -149,13 +153,17 @@ export default function JobListSection({
       {/* Results count */}
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
-          Hiển thị <span className="font-medium text-foreground">{jobs.length}</span> công việc
+          Hiển thị{" "}
+          <span className="font-medium text-foreground">
+            {jobs?.length || 0}
+          </span>{" "}
+          công việc
         </p>
       </div>
 
       {/* Jobs list */}
       <div className="space-y-4">
-        {jobs.map((job) => (
+        {jobs?.map((job) => (
           <JobCard key={job.id} job={job} />
         ))}
       </div>
@@ -166,7 +174,9 @@ export default function JobListSection({
           <PaginationContent>
             <PaginationItem>
               <PaginationPrevious
-                onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}
+                onClick={() =>
+                  currentPage > 1 && handlePageChange(currentPage - 1)
+                }
                 className={
                   currentPage === 1
                     ? "pointer-events-none opacity-50"

@@ -2,28 +2,42 @@
 
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { searchApi, SearchData, SearchJob, SearchCompany } from "@/apis/search.api";
+import {
+  searchApi,
+  SearchData,
+  SearchJob,
+  SearchCompany,
+} from "@/apis/search.api";
 import { Button } from "@/components/ui/shadcn/button";
 import { Badge } from "@/components/ui/shadcn/badge";
-import { Building2, MapPin, Calendar, Briefcase, Search, AlertCircle } from "lucide-react";
+import {
+  Building2,
+  MapPin,
+  Calendar,
+  Briefcase,
+  Search,
+  AlertCircle,
+} from "lucide-react";
 import Link from "next/link";
 import SearchBar from "@/components/ui/customs/search-bar";
 import { HeroSection } from "@/sections/user/common/hero.section";
 import { JobCard } from "@/components/cards/job-result.card";
 import { CompanyCard } from "@/components/cards/company-result.card";
 
-
-
 export default function SearchResultsPage() {
   const searchParams = useSearchParams();
   const keyword = searchParams?.get("keyword") || "";
-  
-  const [loading, setLoading] = useState(true);
+
+  const [loading, setLoading] = useState(false);
   const [searchData, setSearchData] = useState<SearchData | null>(null);
 
   useEffect(() => {
-    if (keyword) {
+    const trimmedKeyword = keyword.trim();
+    if (trimmedKeyword) {
       fetchSearchResults();
+    } else {
+      setLoading(false);
+      setSearchData(null);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [keyword]);
@@ -31,13 +45,21 @@ export default function SearchResultsPage() {
   const fetchSearchResults = async () => {
     try {
       setLoading(true);
-      const response = await searchApi.search(keyword);
-      
+      const trimmedKeyword = keyword.trim();
+
+      if (!trimmedKeyword) {
+        setSearchData(null);
+        return;
+      }
+
+      const response = await searchApi.search(trimmedKeyword);
+
       if (response.success && response.data) {
         setSearchData(response.data);
       }
     } catch (error) {
       console.error("Error searching:", error);
+      setSearchData(null);
     } finally {
       setLoading(false);
     }
@@ -59,7 +81,7 @@ export default function SearchResultsPage() {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         {/* Hero Section with VantaGlobe */}
-        <HeroSection/>
+        <HeroSection />
 
         {/* Content */}
         <div className="bg-background w-full rounded-t-3xl border-t border-border/50 -mt-20 relative z-10 shadow-2xl">
@@ -73,8 +95,8 @@ export default function SearchResultsPage() {
                 Không tìm thấy kết quả
               </h2>
               <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-md mx-auto">
-                Chúng tôi không tìm thấy kết quả nào phù hợp với từ khóa "{keyword}". 
-                Hãy thử tìm kiếm với từ khóa khác.
+                Chúng tôi không tìm thấy kết quả nào phù hợp với từ khóa "
+                {keyword}". Hãy thử tìm kiếm với từ khóa khác.
               </p>
               <Link href="/jobs">
                 <Button className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600">
@@ -92,7 +114,7 @@ export default function SearchResultsPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Hero Section with VantaGlobe */}
-      <HeroSection/>
+      <HeroSection />
 
       {/* Content */}
       <div className="bg-background w-full rounded-t-3xl border-t border-border/50 -mt-20 relative z-10 shadow-2xl">
@@ -100,16 +122,19 @@ export default function SearchResultsPage() {
           {/* Header */}
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-              Kết quả tìm kiếm cho: <span className="text-blue-600 dark:text-blue-400">"{keyword}"</span>
+              Kết quả tìm kiếm cho:{" "}
+              <span className="text-blue-600 dark:text-blue-400">
+                "{keyword}"
+              </span>
             </h1>
             <p className="text-gray-600 dark:text-gray-400">
               {searchData.message} • Tìm thấy {searchData.totalResults} kết quả
             </p>
             <div className="mt-4">
               <Badge className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 hover:bg-blue-200 dark:hover:bg-blue-800">
-                {searchData.searchType === 'job' && 'Tìm kiếm theo công việc'}
-                {searchData.searchType === 'skill' && 'Tìm kiếm theo kỹ năng'}
-                {searchData.searchType === 'company' && 'Tìm kiếm theo công ty'}
+                {searchData.searchType === "job" && "Tìm kiếm theo công việc"}
+                {searchData.searchType === "skill" && "Tìm kiếm theo kỹ năng"}
+                {searchData.searchType === "company" && "Tìm kiếm theo công ty"}
               </Badge>
             </div>
           </div>
@@ -148,4 +173,3 @@ export default function SearchResultsPage() {
     </div>
   );
 }
-

@@ -4,7 +4,12 @@ import React from "react";
 import { Badge } from "@/components/ui/shadcn/badge";
 import { Input } from "@/components/ui/shadcn/input";
 import { Button } from "@/components/ui/shadcn/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/shadcn/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/shadcn/card";
 import { Search, Filter, X } from "lucide-react";
 
 interface JobFilterSidebarProps {
@@ -34,7 +39,8 @@ export default function JobFilterSidebar({
     onJobTypeChange?.(null);
   };
 
-  const hasActiveFilters = selectedSkill !== null || searchTerm !== "" || selectedJobType !== null;
+  const hasActiveFilters =
+    selectedSkill !== null || searchTerm !== "" || selectedJobType !== null;
 
   return (
     <Card className="shadow-sm">
@@ -60,7 +66,9 @@ export default function JobFilterSidebar({
       <CardContent className="space-y-4 p-4 pt-0">
         {/* Search Input */}
         <div className="space-y-2">
-          <label className="text-xs font-medium text-muted-foreground">Tìm kiếm</label>
+          <label className="text-xs font-medium text-muted-foreground">
+            Tìm kiếm
+          </label>
           <div className="relative">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
             <Input
@@ -75,9 +83,11 @@ export default function JobFilterSidebar({
         {/* Job Type Filter */}
         {onJobTypeChange && (
           <div className="space-y-2 pb-4 border-b">
-            <label className="text-xs font-medium text-muted-foreground">Loại hình</label>
+            <label className="text-xs font-medium text-muted-foreground">
+              Loại hình
+            </label>
             <div className="flex flex-wrap gap-1.5">
-              {jobTypes.map((type) => (
+              {jobTypes?.map((type) => (
                 <Badge
                   key={type}
                   variant={selectedJobType === type ? "default" : "outline"}
@@ -86,7 +96,9 @@ export default function JobFilterSidebar({
                       ? " hover:text-foreground"
                       : "hover:bg-primary hover:text-foreground"
                   }`}
-                  onClick={() => onJobTypeChange(selectedJobType === type ? null : type)}
+                  onClick={() =>
+                    onJobTypeChange(selectedJobType === type ? null : type)
+                  }
                 >
                   {type}
                 </Badge>
@@ -97,7 +109,9 @@ export default function JobFilterSidebar({
 
         {/* Skills Filter */}
         <div className="space-y-2">
-          <label className="text-xs font-medium text-muted-foreground">Kỹ năng</label>
+          <label className="text-xs font-medium text-muted-foreground">
+            Kỹ năng
+          </label>
           <div className="flex flex-wrap gap-1.5 max-h-[240px] overflow-y-auto p-1">
             <Badge
               variant={selectedSkill === null ? "default" : "outline"}
@@ -110,7 +124,7 @@ export default function JobFilterSidebar({
             >
               Tất cả
             </Badge>
-            {skills.map((skill) => (
+            {skills?.map((skill) => (
               <Badge
                 key={skill.id}
                 variant={selectedSkill === skill.id ? "default" : "outline"}
@@ -131,12 +145,21 @@ export default function JobFilterSidebar({
         {hasActiveFilters && (
           <div className="pt-3 border-t">
             <p className="text-xs font-medium text-muted-foreground mb-2">
-              Đang lọc ({[selectedSkill !== null, selectedJobType, searchTerm].filter(Boolean).length})
+              Đang lọc (
+              {
+                [selectedSkill !== null, selectedJobType, searchTerm].filter(
+                  Boolean
+                ).length
+              }
+              )
             </p>
             <div className="flex flex-wrap gap-1.5">
               {selectedSkill !== null && (
-                <Badge variant="secondary" className="gap-1 text-xs px-2 py-0.5 bg-primary text-foreground">
-                  {skills.find(s => s.id === selectedSkill)?.name}
+                <Badge
+                  variant="secondary"
+                  className="gap-1 text-xs px-2 py-0.5 bg-primary text-foreground"
+                >
+                  {skills?.find((s) => s.id === selectedSkill)?.name}
                   <X
                     className="h-3 w-3 cursor-pointer hover:text-red-600"
                     onClick={() => onSkillChange(null)}
@@ -144,7 +167,10 @@ export default function JobFilterSidebar({
                 </Badge>
               )}
               {selectedJobType && (
-                <Badge variant="secondary" className="gap-1 text-xs px-2 py-0.5 bg-primary text-foreground">
+                <Badge
+                  variant="secondary"
+                  className="gap-1 text-xs px-2 py-0.5 bg-primary text-foreground"
+                >
                   {selectedJobType}
                   <X
                     className="h-3 w-3 cursor-pointer hover:text-red-600"
@@ -153,7 +179,10 @@ export default function JobFilterSidebar({
                 </Badge>
               )}
               {searchTerm && (
-                <Badge variant="secondary" className="gap-1 text-xs px-2 py-0.5 bg-primary text-foreground">
+                <Badge
+                  variant="secondary"
+                  className="gap-1 text-xs px-2 py-0.5 bg-primary text-foreground"
+                >
                   "{searchTerm}"
                   <X
                     className="h-3 w-3 cursor-pointer hover:text-red-600"
