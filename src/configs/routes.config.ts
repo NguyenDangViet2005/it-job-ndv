@@ -5,7 +5,7 @@
 
 export const ROUTES = {
   // Public routes
-  WELCOME: "/",
+  WELCOME: "/" as string,
   HOME: "/home",
   ABOUT: "/about",
   CONTACT: "/contact",

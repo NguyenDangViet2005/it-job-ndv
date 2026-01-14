@@ -1,6 +1,7 @@
 import type { ApiResponse, ResponseData } from "@/types/api.type";
 
-const BE_ENDPOINT = process.env.NEXT_PUBLIC_BE_ENDPOINT;
+const BE_ENDPOINT =
+  process.env.NEXT_PUBLIC_BE_ENDPOINT || "http://localhost:8081/api";
 
 interface ApiConfig extends RequestInit {
   params?: Record<string, string | number | boolean>;
@@ -25,7 +26,12 @@ function buildURL(
   endpoint: string,
   params?: Record<string, string | number | boolean>
 ): string {
-  const url = new URL(endpoint, BE_ENDPOINT);
+  // Ensure BE_ENDPOINT ends with /
+  const baseUrl = BE_ENDPOINT.endsWith("/") ? BE_ENDPOINT : `${BE_ENDPOINT}/`;
+  // Ensure endpoint does not start with / to avoid double slashes or root reset
+  const cleanEndpoint = endpoint.startsWith("/") ? endpoint.slice(1) : endpoint;
+
+  const url = new URL(cleanEndpoint, baseUrl);
 
   // Thêm role vào params nếu có
   const role = getUserRole();

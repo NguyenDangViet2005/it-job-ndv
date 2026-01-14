@@ -13,7 +13,7 @@ import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 function JobToday() {
-  const [jobs, setJobs] = useState<JobResponse[]>([]);
+  const [jobs, setJobs] = useState<JobResponse[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -23,10 +23,10 @@ function JobToday() {
         setLoading(true);
         const response = await jobApi.getToday();
         setJobs(response);
-        
-        
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Không thể tải công việc");
+        setError(
+          err instanceof Error ? err.message : "Không thể tải công việc"
+        );
       } finally {
         setLoading(false);
       }
@@ -37,8 +37,8 @@ function JobToday() {
   if (loading) {
     return (
       <div className="w-full mt-10">
-        <SectionTitle 
-          title="Công Việc Hôm Nay" 
+        <SectionTitle
+          title="Công Việc Hôm Nay"
           subtitle="Cập nhật mới nhất các vị trí tuyển dụng hot trong ngày"
         />
         <div className="flex items-center justify-center h-64">
@@ -51,8 +51,8 @@ function JobToday() {
   if (error) {
     return (
       <div className="w-full mt-10">
-        <SectionTitle 
-          title="Công Việc Hôm Nay" 
+        <SectionTitle
+          title="Công Việc Hôm Nay"
           subtitle="Cập nhật mới nhất các vị trí tuyển dụng hot trong ngày"
         />
         <div className="flex items-center justify-center h-64">
@@ -62,15 +62,17 @@ function JobToday() {
     );
   }
 
-  if (jobs.length === 0) {
+  if (!jobs || jobs.length === 0) {
     return (
       <div className="w-full mt-10">
-        <SectionTitle 
-          title="Công Việc Hôm Nay" 
+        <SectionTitle
+          title="Công Việc Hôm Nay"
           subtitle="Cập nhật mới nhất các vị trí tuyển dụng hot trong ngày"
         />
         <div className="flex items-center justify-center h-64">
-          <div className="text-muted-foreground">Chưa có công việc nào hôm nay</div>
+          <div className="text-muted-foreground">
+            Chưa có công việc nào hôm nay
+          </div>
         </div>
       </div>
     );
@@ -78,8 +80,8 @@ function JobToday() {
 
   return (
     <div className="w-full mt-10">
-      <SectionTitle 
-        title="Công Việc Hôm Nay" 
+      <SectionTitle
+        title="Công Việc Hôm Nay"
         subtitle="Cập nhật mới nhất các vị trí tuyển dụng hot trong ngày"
       />
       <div className="relative w-full px-4 sm:px-6 lg:px-8">
@@ -103,7 +105,7 @@ function JobToday() {
           }}
         >
           {jobs.map((job) => (
-            <SwiperSlide >
+            <SwiperSlide>
               <Link href={`/jobs/${job.id}`} key={job.id}>
                 <HotJob props={job} />
               </Link>

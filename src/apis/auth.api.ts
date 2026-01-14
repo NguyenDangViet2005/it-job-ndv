@@ -9,7 +9,7 @@ import type {
   UserResponse,
 } from "@/types/api.type";
 
-const ENDPOINT = "/api/Auth";
+const ENDPOINT = "/auth";
 
 export const authApi = {
   // Đăng ký ứng viên (role = user)

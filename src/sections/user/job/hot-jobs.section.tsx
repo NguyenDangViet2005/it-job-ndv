@@ -2,7 +2,7 @@ import Image from "next/image";
 import { Briefcase, TrendingUp } from "lucide-react";
 import { Card } from "@/components/ui/shadcn/card";
 
-const HotJob = ({ props }: any) => {
+const HotJob = ({ props }: JobResponse) => {
   return (
     <div className="h-full">
       <Card className="rounded-lg transition-all duration-300 overflow-hidden bg-white dark:bg-gray-800 h-full group cursor-pointer border-0 shadow-lg hover:shadow-xl">
@@ -10,9 +10,9 @@ const HotJob = ({ props }: any) => {
         <div className="relative h-full flex flex-col">
           {/* Background Image with Overlay */}
           <div className="absolute inset-0">
-            <Image 
-              src={props.coverImage || props.logo} 
-              alt={props.company}
+            <Image
+              src={props.company.coverImage || props.logo || "/cover.png"}
+              alt={props.company.name || "Company"}
               fill
               className="object-cover"
             />
@@ -25,11 +25,11 @@ const HotJob = ({ props }: any) => {
             {/* Top: Logo - Fixed Height */}
             <div className="flex justify-center mb-3 flex-shrink-0">
               <div className="w-16 h-16 bg-white rounded-full p-2 flex items-center justify-center shadow-xl ring-2 ring-white/20">
-                <Image 
-                  src={props.logo} 
-                  alt={props.company} 
-                  width={48} 
-                  height={48} 
+                <Image
+                  src={props.company.avatar || "/logo.png"}
+                  alt={props.company.name || "Company"}
+                  width={48}
+                  height={48}
                   className="object-contain"
                 />
               </div>
@@ -38,21 +38,22 @@ const HotJob = ({ props }: any) => {
             {/* Company Name - Fixed Height */}
             <div className="flex-shrink-0 mb-2">
               <h3 className="font-bold text-sm text-white text-center line-clamp-1 drop-shadow-lg h-5">
-                {props.company}
+                {props.company.name}
               </h3>
             </div>
 
             {/* Company Description - Fixed Height */}
             <div className="flex-shrink-0 mb-3">
               <p className="text-xs text-white/90 text-center line-clamp-2 drop-shadow h-8">
-                {props.companyDescription || "Công ty hàng đầu trong lĩnh vực công nghệ"}
+                {props.company.description ||
+                  "Công ty hàng đầu trong lĩnh vực công nghệ"}
               </p>
             </div>
 
             {/* Job Position - Fixed Height */}
             <div className="flex-shrink-0 mb-3">
               <h2 className="font-bold text-base text-white text-center drop-shadow-lg line-clamp-2 h-12">
-                {props.position}
+                {props.title}
               </h2>
             </div>
 
@@ -72,7 +73,7 @@ const HotJob = ({ props }: any) => {
               <div className="flex items-center justify-center gap-1.5 text-white h-5">
                 <Briefcase className="w-3.5 h-3.5 flex-shrink-0" />
                 <p className="text-xs font-medium drop-shadow truncate">
-                  {props.location || "TP. Hồ Chí Minh"}
+                  {props.address || "TP. Hồ Chí Minh"}
                 </p>
               </div>
 
@@ -80,7 +81,9 @@ const HotJob = ({ props }: any) => {
               <div className="flex justify-center h-7">
                 <div className="bg-white rounded-lg px-3 py-1 shadow-lg flex items-center gap-1.5">
                   <TrendingUp className="w-3.5 h-3.5 text-orange-500" />
-                  <span className="text-orange-500 font-bold text-xs">VIP Company</span>
+                  <span className="text-orange-500 font-bold text-xs">
+                    VIP Company
+                  </span>
                 </div>
               </div>
 
@@ -92,7 +95,7 @@ const HotJob = ({ props }: any) => {
                       key={i}
                       className="px-2 py-0.5 text-xs rounded-full bg-white/20 backdrop-blur-sm text-white border border-white/30 font-medium"
                     >
-                      {s}
+                      {s.name}
                     </span>
                   ))
                 ) : (

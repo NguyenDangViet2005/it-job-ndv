@@ -5,12 +5,14 @@ import type {
   AttachmentResponse,
 } from "@/types/api.type";
 
-const ENDPOINT = "/api/User";
+const ENDPOINT = "/user";
 
 export const userApi = {
   // Lấy danh sách tất cả users (admin)
   getAll: (pageNumber: number = 1, pageSize: number = 10, token?: string) => {
-    return apiGetPaginated<UserResponse>(ENDPOINT, pageNumber, pageSize, { token });
+    return apiGetPaginated<UserResponse>(ENDPOINT, pageNumber, pageSize, {
+      token,
+    });
   },
 
   // Lấy thông tin user theo ID

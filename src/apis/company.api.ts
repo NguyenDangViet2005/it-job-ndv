@@ -1,8 +1,21 @@
-import { apiGet, apiPost, apiPut, apiDelete, apiGetPaginated, apiGetById, apiUploadFile } from './api';
-import type { ApiResponse, ResponseData, Company, CompanyUpdateRequest } from '@/types/api.type';
-import { getUserRole } from '@/utils/auth';
+import {
+  apiGet,
+  apiPost,
+  apiPut,
+  apiDelete,
+  apiGetPaginated,
+  apiGetById,
+  apiUploadFile,
+} from "./api";
+import type {
+  ApiResponse,
+  ResponseData,
+  Company,
+  CompanyUpdateRequest,
+} from "@/types/api.type";
+import { getUserRole } from "@/utils/auth";
 
-const ENDPOINT = '/api/Companies';
+const ENDPOINT = "/company";
 
 export const companyApi = {
   // Lấy danh sách công ty với phân trang
@@ -31,7 +44,12 @@ export const companyApi = {
   },
 
   // Tìm kiếm công ty
-  search: (keyword: string, pageNumber: number = 1, pageSize: number = 10, token?: string) => {
+  search: (
+    keyword: string,
+    pageNumber: number = 1,
+    pageSize: number = 10,
+    token?: string
+  ) => {
     return apiGetPaginated<Company>(ENDPOINT, pageNumber, pageSize, {
       params: { keyword },
       token,
@@ -40,7 +58,12 @@ export const companyApi = {
 
   // Lấy danh sách logo công ty
   getLogos: (pageNumber: number = 1, pageSize: number = 10, token?: string) => {
-    return apiGetPaginated<Pick<Company, 'id' | 'name' | 'avatar'>>(`${ENDPOINT}/logos`, pageNumber, pageSize, { token });
+    return apiGetPaginated<Pick<Company, "id" | "name" | "avatar">>(
+      `${ENDPOINT}/logos`,
+      pageNumber,
+      pageSize,
+      { token }
+    );
   },
 
   // ===== HR Company Management =====
@@ -48,21 +71,38 @@ export const companyApi = {
   // Lấy công ty của HR đang đăng nhập
   getMyCompany: (token?: string) => {
     const role = getUserRole();
-    return apiGet<Company>(`${ENDPOINT}/my-company`, { token, params: { role } });
+    return apiGet<Company>(`${ENDPOINT}/my-company`, {
+      token,
+      params: { role },
+    });
   },
 
   // Upload ảnh đại diện công ty
   uploadAvatar: (file: File, token?: string) => {
-    return apiUploadFile<{ avatarUrl: string; message: string }>(`${ENDPOINT}/upload-avatar`, file, 'file', { token });
+    return apiUploadFile<{ avatarUrl: string; message: string }>(
+      `${ENDPOINT}/upload-avatar`,
+      file,
+      "file",
+      { token }
+    );
   },
 
   // Upload ảnh bìa công ty
   uploadCover: (file: File, token?: string) => {
-    return apiUploadFile<{ coverImageUrl: string; message: string }>(`${ENDPOINT}/upload-cover`, file, 'file', { token });
+    return apiUploadFile<{ coverImageUrl: string; message: string }>(
+      `${ENDPOINT}/upload-cover`,
+      file,
+      "file",
+      { token }
+    );
   },
 
   // Cập nhật thông tin công ty
   updateMyCompany: (data: CompanyUpdateRequest, token?: string) => {
-    return apiPut<{ data: Company; message: string }>(`${ENDPOINT}/my-company`, data, { token });
+    return apiPut<{ data: Company; message: string }>(
+      `${ENDPOINT}/my-company`,
+      data,
+      { token }
+    );
   },
 };

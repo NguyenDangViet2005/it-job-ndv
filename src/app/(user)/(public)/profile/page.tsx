@@ -4,8 +4,7 @@ import { useAuth } from "@/providers/auth.provider";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
-import Routes from "@/routes";
-
+import { ROUTES } from "@/configs";
 export default function ProfileRedirect() {
   const { user, loading } = useAuth();
   const router = useRouter();
@@ -13,9 +12,9 @@ export default function ProfileRedirect() {
   useEffect(() => {
     if (!loading) {
       if (user?.id) {
-        router.replace(Routes.profile(user?.id));
+        router.replace(ROUTES.PROFILE(user?.id));
       } else {
-        router.replace(Routes.login);
+        router.replace(ROUTES.LOGIN);
       }
     }
   }, [user, loading, router]);

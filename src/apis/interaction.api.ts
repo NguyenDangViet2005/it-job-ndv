@@ -1,7 +1,7 @@
 import { apiPost, apiDelete, apiGetPaginated } from "./api";
 import type { CommentResponse, LikeResponse } from "@/types/api.type";
 
-const ENDPOINT = "/api/Post";
+const ENDPOINT = "/post";
 
 export const interactionApi = {
   // Toggle like cho bài post

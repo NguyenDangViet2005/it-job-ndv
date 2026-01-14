@@ -6,9 +6,14 @@ import {
   apiGetById,
   apiGet,
 } from "./api";
-import type { ApiResponse, PostResponse, PostRequest, ResponseData } from "@/types/api.type";
+import type {
+  ApiResponse,
+  PostResponse,
+  PostRequest,
+  ResponseData,
+} from "@/types/api.type";
 
-const ENDPOINT = "/api/Post";
+const ENDPOINT = "/post";
 
 export const postApi = {
   // Lấy danh sách bài đăng với pagination

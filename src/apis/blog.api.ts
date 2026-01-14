@@ -7,13 +7,18 @@ import {
   apiGetById,
 } from "./api";
 import type { ApiResponse, BlogResponse } from "@/types/api.type";
-import { getUserRole } from '@/utils/auth';
+import { getUserRole } from "@/utils/auth";
 
-const ENDPOINT = "/api/Blog";
+const ENDPOINT = "/blog";
 
 export const blogApi = {
   // Lấy danh sách blog
-  getAll: (pageNumber: number = 1, pageSize: number = 10, categoryId?: number, token?: string) => {
+  getAll: (
+    pageNumber: number = 1,
+    pageSize: number = 10,
+    categoryId?: number,
+    token?: string
+  ) => {
     return apiGetPaginated<BlogResponse>(ENDPOINT, pageNumber, pageSize, {
       params: categoryId ? { categoryId } : undefined,
       token,
@@ -28,18 +33,21 @@ export const blogApi = {
   // Lấy blog theo userId
   getByUserId: (userId: number, token: string) => {
     const role = getUserRole();
-    return apiGet<ApiResponse<BlogResponse[]>>(`${ENDPOINT}/user/${userId}`, { token, params: { role } });
+    return apiGet<ApiResponse<BlogResponse[]>>(`${ENDPOINT}/user/${userId}`, {
+      token,
+      params: { role },
+    });
   },
 
   // Tạo blog mới với multipart/form-data
   create: async (formData: FormData, token: string) => {
     const BE_ENDPOINT = process.env.NEXT_PUBLIC_BE_ENDPOINT;
-    
+
     console.log("Creating blog with FormData:");
     for (let pair of formData.entries()) {
       console.log(pair[0], pair[1]);
     }
-    
+
     const response = await fetch(`${BE_ENDPOINT}${ENDPOINT}`, {
       method: "POST",
       headers: {

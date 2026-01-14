@@ -1,8 +1,11 @@
-import { apiPost, apiGet, apiGetPaginated, apiPut, apiDelete } from './api';
-import type { ApplicationRequest, ApplicationResponse } from '@/types/application.type';
-import { getUserRole } from '@/utils/auth';
+import { apiPost, apiGet, apiGetPaginated, apiPut, apiDelete } from "./api";
+import type {
+  ApplicationRequest,
+  ApplicationResponse,
+} from "@/types/application.type";
+import { getUserRole } from "@/utils/auth";
 
-const ENDPOINT = '/api/Application';
+const ENDPOINT = "/application";
 
 interface UpdateApplicationStatusRequest {
   cvUrl: string;
@@ -17,22 +20,52 @@ export const applicationApi = {
   },
 
   // Lấy danh sách đơn ứng tuyển của user
-  getByUser: (userId: number, pageNumber: number = 1, pageSize: number = 10, token: string) => {
-    return apiGetPaginated<ApplicationResponse>(`${ENDPOINT}/user/${userId}`, pageNumber, pageSize, { token });
+  getByUser: (
+    userId: number,
+    pageNumber: number = 1,
+    pageSize: number = 10,
+    token: string
+  ) => {
+    return apiGetPaginated<ApplicationResponse>(
+      `${ENDPOINT}/user/${userId}`,
+      pageNumber,
+      pageSize,
+      { token }
+    );
   },
 
   // Lấy danh sách đơn ứng tuyển theo job
-  getByJob: (jobId: number, pageNumber: number = 1, pageSize: number = 10, token: string) => {
-    return apiGetPaginated<ApplicationResponse>(`${ENDPOINT}/job/${jobId}`, pageNumber, pageSize, { token });
+  getByJob: (
+    jobId: number,
+    pageNumber: number = 1,
+    pageSize: number = 10,
+    token: string
+  ) => {
+    return apiGetPaginated<ApplicationResponse>(
+      `${ENDPOINT}/job/${jobId}`,
+      pageNumber,
+      pageSize,
+      { token }
+    );
   },
 
   // Lấy danh sách đơn ứng tuyển theo company
-  getByCompany: (companyId: number, pageNumber: number = 1, pageSize: number = 10, token: string) => {
+  getByCompany: (
+    companyId: number,
+    pageNumber: number = 1,
+    pageSize: number = 10,
+    token: string
+  ) => {
     const role = getUserRole();
-    return apiGetPaginated<ApplicationResponse>(`${ENDPOINT}/company/${companyId}`, pageNumber, pageSize, { 
-      token,
-      params: { role }
-    });
+    return apiGetPaginated<ApplicationResponse>(
+      `${ENDPOINT}/company/${companyId}`,
+      pageNumber,
+      pageSize,
+      {
+        token,
+        params: { role },
+      }
+    );
   },
 
   // Lấy chi tiết đơn ứng tuyển
@@ -41,24 +74,43 @@ export const applicationApi = {
   },
 
   // Cập nhật trạng thái đơn ứng tuyển (chấp nhận/từ chối)
-  updateStatus: (jobId: number, userId: number, data: UpdateApplicationStatusRequest, token: string) => {
-    return apiPut<ApplicationResponse>(`${ENDPOINT}/${jobId}/${userId}`, data, { token });
+  updateStatus: (
+    jobId: number,
+    userId: number,
+    data: UpdateApplicationStatusRequest,
+    token: string
+  ) => {
+    return apiPut<ApplicationResponse>(`${ENDPOINT}/${jobId}/${userId}`, data, {
+      token,
+    });
   },
 
   // Chấp nhận đơn ứng tuyển
-  accept: (jobId: number, userId: number, cvUrl: string, coverLetter: string, token: string) => {
+  accept: (
+    jobId: number,
+    userId: number,
+    cvUrl: string,
+    coverLetter: string,
+    token: string
+  ) => {
     return apiPut<ApplicationResponse>(
       `${ENDPOINT}/${jobId}/${userId}`,
-      { cvUrl, coverLetter, status: 'accepted' },
+      { cvUrl, coverLetter, status: "accepted" },
       { token }
     );
   },
 
   // Từ chối đơn ứng tuyển
-  reject: (jobId: number, userId: number, cvUrl: string, coverLetter: string, token: string) => {
+  reject: (
+    jobId: number,
+    userId: number,
+    cvUrl: string,
+    coverLetter: string,
+    token: string
+  ) => {
     return apiPut<ApplicationResponse>(
       `${ENDPOINT}/${jobId}/${userId}`,
-      { cvUrl, coverLetter, status: 'rejected' },
+      { cvUrl, coverLetter, status: "rejected" },
       { token }
     );
   },

@@ -1,6 +1,6 @@
-import { apiGet } from './api';
+import { apiGet } from "./api";
 
-const ENDPOINT = '/api/Search';
+const ENDPOINT = "/search";
 
 interface SearchCompany {
   id: number;
@@ -35,7 +35,7 @@ interface SearchJob {
 }
 
 interface SearchData {
-  searchType: 'job' | 'skill' | 'company' | 'none';
+  searchType: "job" | "skill" | "company" | "none";
   jobs: SearchJob[];
   companies: SearchCompany[];
   totalResults: number;

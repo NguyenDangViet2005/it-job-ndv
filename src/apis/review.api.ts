@@ -1,12 +1,14 @@
-import { apiPost, apiPut, apiDelete, apiGetPaginated, apiGetById } from './api';
-import type { ApiResponse, ReviewResponse } from '@/types/api.type';
+import { apiPost, apiPut, apiDelete, apiGetPaginated, apiGetById } from "./api";
+import type { ApiResponse, ReviewResponse } from "@/types/api.type";
 
-const ENDPOINT = '/api/Reviews';
+const ENDPOINT = "/review";
 
 export const reviewApi = {
   // Lấy danh sách đánh giá
   getAll: (pageNumber: number = 1, pageSize: number = 10, token?: string) => {
-    return apiGetPaginated<ReviewResponse>(ENDPOINT, pageNumber, pageSize, { token });
+    return apiGetPaginated<ReviewResponse>(ENDPOINT, pageNumber, pageSize, {
+      token,
+    });
   },
 
   // Lấy chi tiết đánh giá
@@ -15,13 +17,33 @@ export const reviewApi = {
   },
 
   // Lấy đánh giá theo công ty
-  getByCompany: (companyId: number, pageNumber: number = 1, pageSize: number = 10, token?: string) => {
-    return apiGetPaginated<ReviewResponse>(`${ENDPOINT}/company/${companyId}`, pageNumber, pageSize, { token });
+  getByCompany: (
+    companyId: number,
+    pageNumber: number = 1,
+    pageSize: number = 10,
+    token?: string
+  ) => {
+    return apiGetPaginated<ReviewResponse>(
+      `${ENDPOINT}/company/${companyId}`,
+      pageNumber,
+      pageSize,
+      { token }
+    );
   },
 
   // Lấy đánh giá theo user
-  getByUser: (userId: number, pageNumber: number = 1, pageSize: number = 10, token: string) => {
-    return apiGetPaginated<ReviewResponse>(`${ENDPOINT}/user/${userId}`, pageNumber, pageSize, { token });
+  getByUser: (
+    userId: number,
+    pageNumber: number = 1,
+    pageSize: number = 10,
+    token: string
+  ) => {
+    return apiGetPaginated<ReviewResponse>(
+      `${ENDPOINT}/user/${userId}`,
+      pageNumber,
+      pageSize,
+      { token }
+    );
   },
 
   // Tạo đánh giá mới
@@ -31,7 +53,9 @@ export const reviewApi = {
 
   // Cập nhật đánh giá
   update: (id: number, data: Partial<ReviewResponse>, token: string) => {
-    return apiPut<ApiResponse<ReviewResponse>>(`${ENDPOINT}/${id}`, data, { token });
+    return apiPut<ApiResponse<ReviewResponse>>(`${ENDPOINT}/${id}`, data, {
+      token,
+    });
   },
 
   // Xóa đánh giá

@@ -1,7 +1,14 @@
-import { apiGet, apiPost, apiPut, apiDelete, apiGetPaginated, apiGetById } from './api';
-import type { ApiResponse, Skill } from '@/types/api.type';
+import {
+  apiGet,
+  apiPost,
+  apiPut,
+  apiDelete,
+  apiGetPaginated,
+  apiGetById,
+} from "./api";
+import type { ApiResponse, Skill } from "@/types/api.type";
 
-const ENDPOINT = '/api/skills';
+const ENDPOINT = "/skills";
 
 export const skillApi = {
   // Lấy danh sách skills
