@@ -6,6 +6,7 @@ const register = async (req, res) => {
   try {
     const user = await authService.register(req.body);
     res.status(201).json({
+      success: true,
       message: "User registered successfully",
       data: {
         id: user.id,
@@ -14,6 +15,7 @@ const register = async (req, res) => {
       },
     });
   } catch (error) {
+    console.error("Register Controller Error:", error);
     res.status(400).json({ message: error.message });
   }
 };
@@ -30,18 +32,56 @@ const login = async (req, res) => {
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: env.app.env === "production",
-      sameSite: "strict",
+      sameSite: "lax", // Lax is better for navigation from external sites/redirects
+      path: "/",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Login successful",
+      data: {
+        accessToken,
+        user,
+      },
+    });
+  } catch (error) {
+    res.status(401).json({ message: error.message });
+  }
+};
+
+const refreshToken = async (req, res) => {
+  try {
+    const refreshToken = req.cookies?.refreshToken; // Get from Cookie
+
+    if (!refreshToken) {
+      return res.status(401).json({ message: "No refresh token provided" });
+    }
+
+    const result = await authService.refreshToken(refreshToken);
+
+    // Set new Refresh Token in HttpOnly Cookie
+    res.cookie("refreshToken", result.refreshToken, {
+      httpOnly: true,
+      secure: env.app.env === "production",
+      sameSite: "lax",
       path: "/",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
     res.status(200).json({
-      message: "Login successful",
-      accessToken,
-      user,
+      success: true,
+      message: "Token refreshed successfully",
+      data: {
+        accessToken: result.accessToken,
+        user: result.user,
+      },
     });
   } catch (error) {
-    res.status(401).json({ message: error.message });
+    res
+      .status(401)
+      .clearCookie("refreshToken")
+      .json({ message: "Invalid refresh token" });
   }
 };
 
@@ -76,4 +116,5 @@ module.exports = {
   register,
   login,
   logout,
+  refreshToken,
 };

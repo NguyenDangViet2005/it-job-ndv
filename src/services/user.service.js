@@ -5,6 +5,8 @@ const {
   Attachment,
   Job,
   Company,
+  SkillUser,
+  Skill,
 } = require("../models");
 const cloudinaryService = require("./cloudinary.service");
 const bcrypt = require("bcryptjs");
@@ -153,6 +155,59 @@ const getUserPosts = async (userId, page = 1, pageSize = 10) => {
   };
 };
 
+const getUserSkills = async (userId) => {
+  try {
+    const skillUsers = await SkillUser.findAll({
+      where: { userId },
+      include: [{ model: Skill }],
+    });
+    // Return only the skill objects, maybe flattened
+    return skillUsers.map((su) => su.Skill);
+  } catch (error) {
+    throw error;
+  }
+};
+
+const addUserSkill = async (userId, skillId) => {
+  try {
+    // Check if user exists
+    const user = await User.findByPk(userId);
+    if (!user) throw new Error("User not found");
+
+    // Check if skill exists
+    const skill = await Skill.findByPk(skillId);
+    if (!skill) throw new Error("Skill not found");
+
+    // Check if user already has skill
+    const existing = await SkillUser.findOne({
+      where: { userId, skillId },
+    });
+
+    if (existing) return existing;
+
+    const newSkillUser = await SkillUser.create({
+      userId,
+      skillId,
+    });
+    return newSkillUser;
+  } catch (error) {
+    console.error("Error in addUserSkill:", error);
+    throw error;
+  }
+};
+
+const removeUserSkill = async (userId, skillId) => {
+  try {
+    const deleted = await SkillUser.destroy({
+      where: { userId, skillId },
+    });
+    return deleted > 0;
+  } catch (error) {
+    console.error("Error in removeUserSkill:", error);
+    throw error;
+  }
+};
+
 module.exports = {
   getAllUsers,
   getUserById,
@@ -163,4 +218,7 @@ module.exports = {
   changePassword,
   getUserApplications,
   getUserPosts,
+  getUserSkills,
+  addUserSkill,
+  removeUserSkill,
 };

@@ -15,7 +15,7 @@ const generateTokens = (userId, role) => {
 };
 
 const register = async (userData) => {
-  const { email, password, fullName } = userData;
+  const { email, password, fullName, gender, dateOfBirth, phone } = userData;
 
   const existingUser = await User.findOne({ where: { email } });
   if (existingUser) {
@@ -28,7 +28,19 @@ const register = async (userData) => {
     email,
     password: hashedPassword,
     fullName,
+    phone,
     role: "user",
+    gender:
+      gender && gender !== "" && gender !== "null" && gender !== "undefined"
+        ? gender
+        : null,
+    dateOfBirth:
+      dateOfBirth &&
+      dateOfBirth !== "" &&
+      dateOfBirth !== "null" &&
+      dateOfBirth !== "undefined"
+        ? dateOfBirth
+        : null,
   });
 
   return newUser;
@@ -64,8 +76,34 @@ const logout = async (userId) => {
   }
 };
 
+const refreshTokenService = async (refreshToken) => {
+  try {
+    const decoded = jwt.verify(refreshToken, env.jwt.refreshSecret);
+    const user = await User.findByPk(decoded.id);
+
+    if (!user || user.refreshToken !== refreshToken) {
+      throw new Error("Invalid refresh token");
+    }
+
+    // Generate NEW Access Token ONLY (Keep existing Refresh Token)
+    const accessToken = jwt.sign(
+      { id: user.id, role: user.role },
+      env.jwt.accessSecret,
+      {
+        expiresIn: env.jwt.accessExpiresIn || "15m",
+      }
+    );
+
+    // Return current refresh token (do NOT rotate/update DB)
+    return { accessToken, refreshToken, user };
+  } catch (error) {
+    throw new Error("Invalid refresh token");
+  }
+};
+
 module.exports = {
   register,
   login,
   logout,
+  refreshToken: refreshTokenService,
 };

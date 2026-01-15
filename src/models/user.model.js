@@ -57,10 +57,20 @@ const User = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: sequelize.literal("GETDATE()"),
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: sequelize.literal("GETDATE()"),
+    },
   },
   {
     tableName: "User",
-    timestamps: true,
+    timestamps: false, // Tắt timestamps tự động của Sequelize để tránh lỗi format ngày tháng với SQL Server
   }
 );
 

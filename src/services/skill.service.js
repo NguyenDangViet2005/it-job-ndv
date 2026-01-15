@@ -16,7 +16,7 @@ const getAllSkills = async (page = 1, pageSize = 10, query = null) => {
   });
 
   return {
-    skills: rows,
+    data: rows,
     totalItems: count,
     page,
     pageSize,

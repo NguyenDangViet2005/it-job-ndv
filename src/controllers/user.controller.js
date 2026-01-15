@@ -149,6 +149,66 @@ const getUserPosts = async (req, res, next) => {
   }
 };
 
+const getUserSkills = async (req, res, next) => {
+  try {
+    const id = parseInt(req.params.id);
+    const result = await userService.getUserSkills(id);
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const addUserSkill = async (req, res, next) => {
+  try {
+    const id = parseInt(req.params.id); // userId
+    const { skillId } = req.body;
+
+    // Check permission: Only current user can add skills to themselves
+    const currentUserId = getCurrentUserId(req);
+    if (currentUserId !== id) {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+
+    if (!skillId) {
+      return res.status(400).json({ message: "Skill ID is required" });
+    }
+
+    const result = await userService.addUserSkill(id, skillId);
+    if (!result) {
+      return res
+        .status(404)
+        .json({ message: "Skill not found or error adding skill" });
+    }
+
+    res.status(200).json({ message: "Skill added successfully", data: result });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const removeUserSkill = async (req, res, next) => {
+  try {
+    const id = parseInt(req.params.id); // userId
+    const skillId = parseInt(req.params.skillId);
+
+    // Check permission
+    const currentUserId = getCurrentUserId(req);
+    if (currentUserId !== id) {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+
+    const result = await userService.removeUserSkill(id, skillId);
+    if (!result) {
+      return res.status(404).json({ message: "Skill not found on user" });
+    }
+
+    res.status(200).json({ message: "Skill removed successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getAll,
   getById,
@@ -159,4 +219,7 @@ module.exports = {
   changePassword,
   getUserApplications,
   getUserPosts,
+  getUserSkills,
+  addUserSkill,
+  removeUserSkill,
 };

@@ -12,7 +12,6 @@ const { corsOptions } = require("./configs/cors.config");
 const app = express();
 
 // Middleware global
-app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
 app.use(morgan("dev"));

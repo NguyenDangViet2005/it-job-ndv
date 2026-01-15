@@ -16,7 +16,7 @@ const SkillUser = sequelize.define(
   },
   {
     tableName: "Skill_User",
-    timestamps: true,
+    timestamps: false,
   }
 );
 
