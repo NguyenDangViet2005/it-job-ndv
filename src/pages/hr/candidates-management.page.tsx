@@ -17,7 +17,7 @@ import {
 import { User, ExternalLink } from "lucide-react";
 import { DataTable } from "@/components/cards/data-table.card";
 import { applicationApi } from "@/apis/application.api";
-import { useAuth } from "@/providers/auth.provider";
+import { useAuth } from "@/hooks/useAuth";
 
 interface Application {
   jobId: number;
@@ -59,7 +59,8 @@ const getStatusBadge = (status: string) => {
         statusColors[status as keyof typeof statusColors] || "bg-gray-500"
       } text-white text-xs`}
     >
-      {statusLabels[status as keyof typeof statusLabels] || status.toUpperCase()}
+      {statusLabels[status as keyof typeof statusLabels] ||
+        status.toUpperCase()}
     </Badge>
   );
 };
@@ -79,10 +80,14 @@ function CandidatesManagement() {
     try {
       setLoading(true);
       const companyId = company.id;
-      
-      const response = await applicationApi.getByCompany(companyId, 1, 50, token);
-      
-      
+
+      const response = await applicationApi.getByCompany(
+        companyId,
+        1,
+        50,
+        token
+      );
+
       // Response structure: { page, pageSize, totalItems, totalPages, data: Application[] }
       if (response && response.data) {
         setApplications(response.data);
@@ -98,7 +103,13 @@ function CandidatesManagement() {
   const handleAccept = async (row: Application) => {
     if (!token) return;
     try {
-      await applicationApi.accept(row.jobId, row.userId, row.cvUrl, row.coverLetter, token);
+      await applicationApi.accept(
+        row.jobId,
+        row.userId,
+        row.cvUrl,
+        row.coverLetter,
+        token
+      );
       console.log(`✅ Đã chấp nhận ứng viên ${row.userFullName}`);
       alert(`✅ Đã chấp nhận ứng viên ${row.userFullName}`);
       await fetchApplications(); // Refresh data
@@ -111,7 +122,13 @@ function CandidatesManagement() {
   const handleReject = async (row: Application) => {
     try {
       const token = "your-token-here"; // TODO: Get from auth context
-      await applicationApi.reject(row.jobId, row.userId, row.cvUrl, row.coverLetter, token);
+      await applicationApi.reject(
+        row.jobId,
+        row.userId,
+        row.cvUrl,
+        row.coverLetter,
+        token
+      );
       console.log(`❌ Đã từ chối ứng viên ${row.userFullName}`);
       alert(`❌ Đã từ chối ứng viên ${row.userFullName}`);
       await fetchApplications(); // Refresh data
@@ -122,7 +139,9 @@ function CandidatesManagement() {
   };
 
   const handleDelete = async (row: Application) => {
-    if (confirm(`⚠️ Bạn có chắc muốn xóa đơn ứng tuyển của ${row.userFullName}?`)) {
+    if (
+      confirm(`⚠️ Bạn có chắc muốn xóa đơn ứng tuyển của ${row.userFullName}?`)
+    ) {
       try {
         const token = "your-token-here"; // TODO: Get from auth context
         await applicationApi.delete(row.jobId, row.userId, token);
@@ -140,12 +159,14 @@ function CandidatesManagement() {
     // Prepare email content
     const recipient = encodeURIComponent(row.userEmail);
     const subject = encodeURIComponent(`Về đơn ứng tuyển ${row.jobTitle}`);
-    const body = encodeURIComponent(`Xin chào ${row.userFullName},\n\nChúng tôi đã xem xét đơn ứng tuyển của bạn cho vị trí ${row.jobTitle}.\n\n`);
-    
+    const body = encodeURIComponent(
+      `Xin chào ${row.userFullName},\n\nChúng tôi đã xem xét đơn ứng tuyển của bạn cho vị trí ${row.jobTitle}.\n\n`
+    );
+
     // Open Gmail compose in new tab
     const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${recipient}&su=${subject}&body=${body}`;
-    
-    window.open(gmailUrl, '_blank', 'noopener,noreferrer');
+
+    window.open(gmailUrl, "_blank", "noopener,noreferrer");
   };
 
   const columns = [
@@ -234,9 +255,15 @@ function CandidatesManagement() {
               <div>
                 <h3 className="font-semibold mb-2">Thông Tin Ứng Viên</h3>
                 <div className="space-y-2 text-sm">
-                  <p><strong>Họ tên:</strong> {row.userFullName}</p>
-                  <p><strong>Email:</strong> {row.userEmail}</p>
-                  <p><strong>Vị trí:</strong> {row.jobTitle}</p>
+                  <p>
+                    <strong>Họ tên:</strong> {row.userFullName}
+                  </p>
+                  <p>
+                    <strong>Email:</strong> {row.userEmail}
+                  </p>
+                  <p>
+                    <strong>Vị trí:</strong> {row.jobTitle}
+                  </p>
                 </div>
               </div>
               <div>

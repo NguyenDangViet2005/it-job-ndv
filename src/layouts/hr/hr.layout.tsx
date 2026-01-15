@@ -33,13 +33,12 @@ import {
 
 import { jobApi } from "@/apis/job.api";
 import { applicationApi } from "@/apis/application.api";
-import { useAuth } from "@/providers/auth.provider";
+import { useAuth } from "@/hooks/useAuth";
 import Image from "next/image";
 import { useTheme } from "next-themes";
 import { useState, useEffect } from "react";
 import { ROUTES } from "@/configs";
 import { hrSidebarItems } from "@/configs";
-
 
 export function HRLayout({ children }: { children: React.ReactNode }) {
   const { logout, user, company, token } = useAuth();
@@ -50,12 +49,13 @@ export function HRLayout({ children }: { children: React.ReactNode }) {
   const companyName = company?.name || user?.fullName || "Đội ngũ HR";
   const companyAvatar = company?.avatar || user?.avatar || "";
   const pathname = usePathname();
-    const { theme, resolvedTheme } = useTheme();
+  const { theme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
-  const logoSrc = mounted && (resolvedTheme === "dark" || theme === "dark")
-  ? "/logo/logo-dark-removebg.png"
-  : "/logo/logo-removebg.png";
+  const logoSrc =
+    mounted && (resolvedTheme === "dark" || theme === "dark")
+      ? "/logo/logo-dark-removebg.png"
+      : "/logo/logo-removebg.png";
 
   useEffect(() => {
     setMounted(true);
@@ -71,7 +71,12 @@ export function HRLayout({ children }: { children: React.ReactNode }) {
         const jobsResponse = await jobApi.getByCompany(companyId, 1, 1, token);
         setJobCount(jobsResponse.totalItems || 0);
 
-        const candidatesResponse = await applicationApi.getByCompany(companyId, 1, 1, token);
+        const candidatesResponse = await applicationApi.getByCompany(
+          companyId,
+          1,
+          1,
+          token
+        );
         setCandidateCount(candidatesResponse.totalItems || 0);
       } catch (error) {
         console.error("Error fetching layout data:", error);
@@ -82,12 +87,15 @@ export function HRLayout({ children }: { children: React.ReactNode }) {
   }, [token, company?.id]);
 
   // Dynamic navigation items with badges
-  const navigationItems = hrSidebarItems.map(item => {
+  const navigationItems = hrSidebarItems.map((item) => {
     if (item.href === "/hr/jobs") {
       return { ...item, badge: jobCount > 0 ? jobCount : undefined };
     }
     if (item.href === "/hr/candidates") {
-      return { ...item, badge: candidateCount > 0 ? candidateCount : undefined };
+      return {
+        ...item,
+        badge: candidateCount > 0 ? candidateCount : undefined,
+      };
     }
     return item;
   });
@@ -115,7 +123,8 @@ export function HRLayout({ children }: { children: React.ReactNode }) {
                 variant={isActive ? "secondary" : "outline"}
                 className={cn(
                   "text-xs",
-                  isActive && "bg-white/90 dark:bg-slate-800 text-slate-900 dark:text-slate-100 border-transparent"
+                  isActive &&
+                    "bg-white/90 dark:bg-slate-800 text-slate-900 dark:text-slate-100 border-transparent"
                 )}
               >
                 {item.badge}
@@ -132,24 +141,38 @@ export function HRLayout({ children }: { children: React.ReactNode }) {
       <div className="space-y-3">
         <div className="flex items-center gap-3">
           <Avatar className="h-10 w-10 ring-2 ring-slate-200 dark:ring-slate-700">
-            <AvatarImage src={companyAvatar || "https://github.com/shadcn.png"} />
+            <AvatarImage
+              src={companyAvatar || "https://github.com/shadcn.png"}
+            />
             <AvatarFallback className="bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 font-bold">
               HR
             </AvatarFallback>
           </Avatar>
           <div>
-            <h3 className="font-semibold text-slate-900 dark:text-slate-100">{companyName}</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400">Tuyển Dụng Nhân Tài</p>
+            <h3 className="font-semibold text-slate-900 dark:text-slate-100">
+              {companyName}
+            </h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              Tuyển Dụng Nhân Tài
+            </p>
           </div>
         </div>
         <div className="grid grid-cols-2 gap-2 text-xs">
           <div className="p-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700">
-            <span className="text-slate-500 dark:text-slate-400 block">Công việc</span>
-            <span className="font-bold text-slate-900 dark:text-slate-100">{jobCount}</span>
+            <span className="text-slate-500 dark:text-slate-400 block">
+              Công việc
+            </span>
+            <span className="font-bold text-slate-900 dark:text-slate-100">
+              {jobCount}
+            </span>
           </div>
           <div className="p-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700">
-            <span className="text-slate-500 dark:text-slate-400 block">Ứng viên</span>
-            <span className="font-bold text-slate-900 dark:text-slate-100">{candidateCount}</span>
+            <span className="text-slate-500 dark:text-slate-400 block">
+              Ứng viên
+            </span>
+            <span className="font-bold text-slate-900 dark:text-slate-100">
+              {candidateCount}
+            </span>
           </div>
         </div>
       </div>
@@ -163,16 +186,20 @@ export function HRLayout({ children }: { children: React.ReactNode }) {
   const SidebarFooter = () => (
     <div className="p-4 space-y-3 border-t border-slate-200 dark:border-slate-800">
       {/* Back to Home */}
-      <Button variant="outline" className="w-full justify-start gap-3 border-slate-200 dark:border-slate-700" asChild>
+      <Button
+        variant="outline"
+        className="w-full justify-start gap-3 border-slate-200 dark:border-slate-700"
+        asChild
+      >
         <Link href={ROUTES.HOME}>
           <Home className="h-4 w-4" />
           <span>Về trang chủ</span>
         </Link>
       </Button>
-      
+
       {/* Logout */}
-      <Button 
-        variant="ghost" 
+      <Button
+        variant="ghost"
         className="w-full justify-start gap-3 text-slate-600 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20"
         onClick={handleLogout}
       >
@@ -196,11 +223,8 @@ export function HRLayout({ children }: { children: React.ReactNode }) {
             >
               <Menu className="h-5 w-5" />
             </Button>
-             <div className="flex items-center">
-              <Link
-                href={ROUTES.HOME}
-                className="cursor-target"
-              >
+            <div className="flex items-center">
+              <Link href={ROUTES.HOME} className="cursor-target">
                 <Image
                   src={logoSrc}
                   width={120}
@@ -259,7 +283,10 @@ export function HRLayout({ children }: { children: React.ReactNode }) {
 
         {/* Mobile Sidebar */}
         <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-          <SheetContent side="left" className="w-72 p-0 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800">
+          <SheetContent
+            side="left"
+            className="w-72 p-0 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800"
+          >
             <div className="flex flex-col h-full">
               <div className="p-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800">
                 <div className="flex items-center gap-3">
@@ -267,8 +294,12 @@ export function HRLayout({ children }: { children: React.ReactNode }) {
                     HR
                   </div>
                   <div>
-                    <h2 className="font-bold text-slate-900 dark:text-slate-100">Cổng HR</h2>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">Quản lý tuyển dụng</p>
+                    <h2 className="font-bold text-slate-900 dark:text-slate-100">
+                      Cổng HR
+                    </h2>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                      Quản lý tuyển dụng
+                    </p>
                   </div>
                 </div>
               </div>

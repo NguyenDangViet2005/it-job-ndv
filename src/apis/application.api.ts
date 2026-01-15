@@ -56,7 +56,7 @@ export const applicationApi = {
     pageSize: number = 10,
     token: string
   ) => {
-    const role = getUserRole();
+    const role = getUserRole(token);
     return apiGetPaginated<ApplicationResponse>(
       `${ENDPOINT}/company/${companyId}`,
       pageNumber,

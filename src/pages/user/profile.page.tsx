@@ -1,6 +1,6 @@
 "use client";
 
-import { useAuth } from "@/providers/auth.provider";
+import { useAuth } from "@/hooks/useAuth";
 import {
   Card,
   CardContent,
@@ -59,12 +59,12 @@ interface ProfilePageProps {
 export default function ProfilePage({ userId }: ProfilePageProps) {
   const { user, token, updateUser } = useAuth();
   const router = useRouter();
-  
+
   // Profile user data (người được xem profile)
   const [profileUser, setProfileUser] = useState<any>(null);
   const [profileLoading, setProfileLoading] = useState(true);
   const [profileError, setProfileError] = useState<string | null>(null);
-  
+
   // Check if current user is viewing their own profile
   const isOwnProfile = user?.id === Number(userId) || (!userId && user);
   const displayUser = isOwnProfile ? user : profileUser;
@@ -137,7 +137,6 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
       const targetId = Number(userId);
       const isOwn = user?.id === targetId;
 
-
       if (isOwn) {
         // Viewing own profile, use current user data
         setProfileLoading(false);
@@ -148,12 +147,15 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
       try {
         setProfileLoading(true);
         setProfileError(null);
-        
+
         // Try with token first, if no token, try without (public profile)
         const response = await userApi.getById(targetId, token || undefined);
         setProfileUser(response);
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Không thể tải thông tin người dùng';
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : "Không thể tải thông tin người dùng";
         setProfileError(errorMessage);
         setProfileUser(null);
       } finally {
@@ -173,12 +175,14 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
 
   const loadUserSkills = async () => {
     if (!targetUserId || !token) return;
-    
+
     try {
       setSkillsLoading(true);
       const response = await userApi.getSkills(targetUserId, token);
       // Handle both array response and object with data property
-      const skillsData = Array.isArray(response) ? response : (response as any)?.data || [];
+      const skillsData = Array.isArray(response)
+        ? response
+        : (response as any)?.data || [];
       setUserSkills(skillsData);
     } catch (error) {
       setUserSkills([]);
@@ -448,7 +452,9 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
         <Card>
           <CardContent className="pt-6">
             <p className="text-center text-muted-foreground mb-2">
-              {!user ? "Vui lòng đăng nhập để xem trang cá nhân" : "Không tìm thấy người dùng"}
+              {!user
+                ? "Vui lòng đăng nhập để xem trang cá nhân"
+                : "Không tìm thấy người dùng"}
             </p>
             {profileError && (
               <p className="text-center text-destructive text-sm mb-4">
@@ -548,7 +554,10 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
                 {/* Avatar */}
                 <div className="relative group">
                   <Avatar className="h-48 w-48 border-4 border-background shadow-lg transition-all duration-300 hover:shadow-2xl hover:scale-105">
-                    <AvatarImage src={displayUser.avatar} alt={displayUser.fullName} />
+                    <AvatarImage
+                      src={displayUser.avatar}
+                      alt={displayUser.fullName}
+                    />
                     <AvatarFallback className="text-5xl bg-primary text-primary-foreground">
                       {displayUser.fullName?.charAt(0)}
                     </AvatarFallback>
@@ -584,7 +593,9 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
                     {displayUser.fullName}
                   </h1>
                   <p className="text-muted-foreground">
-                    {displayUser.role === "hr" ? "Nhà tuyển dụng" : "Người tìm việc"}
+                    {displayUser.role === "hr"
+                      ? "Nhà tuyển dụng"
+                      : "Người tìm việc"}
                   </p>
                   <p className="text-sm text-muted-foreground flex items-center justify-center md:justify-start gap-1 mt-1 cursor-target hover:text-primary transition-colors duration-300">
                     <Users className="h-4 w-4" />
@@ -632,7 +643,9 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
                 <div className="flex items-center gap-2 text-muted-foreground cursor-target hover:text-primary hover:translate-x-2 transition-all duration-300">
                   <Briefcase className="h-4 w-4" />
                   <span>
-                    {displayUser.role === "hr" ? "Nhà tuyển dụng" : "Người tìm việc"}
+                    {displayUser.role === "hr"
+                      ? "Nhà tuyển dụng"
+                      : "Người tìm việc"}
                   </span>
                 </div>
                 <div className="flex items-center gap-2 text-muted-foreground cursor-target hover:text-primary hover:translate-x-2 transition-all duration-300">
@@ -641,8 +654,18 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
                 </div>
                 {displayUser.phone && (
                   <div className="flex items-center gap-2 text-muted-foreground cursor-target hover:text-primary hover:translate-x-2 transition-all duration-300">
-                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                    <svg
+                      className="h-4 w-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                      />
                     </svg>
                     <span>{displayUser.phone}</span>
                   </div>
@@ -656,15 +679,36 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
                 {displayUser.dateOfBirth && (
                   <div className="flex items-center gap-2 text-muted-foreground cursor-target hover:text-primary hover:translate-x-2 transition-all duration-300">
                     <Calendar className="h-4 w-4" />
-                    <span>Sinh ngày {new Date(displayUser.dateOfBirth).toLocaleDateString('vi-VN')}</span>
+                    <span>
+                      Sinh ngày{" "}
+                      {new Date(displayUser.dateOfBirth).toLocaleDateString(
+                        "vi-VN"
+                      )}
+                    </span>
                   </div>
                 )}
                 {displayUser.gender && (
                   <div className="flex items-center gap-2 text-muted-foreground cursor-target hover:text-primary hover:translate-x-2 transition-all duration-300">
-                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    <svg
+                      className="h-4 w-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                      />
                     </svg>
-                    <span>{displayUser.gender === 'male' ? 'Nam' : displayUser.gender === 'female' ? 'Nữ' : 'Khác'}</span>
+                    <span>
+                      {displayUser.gender === "male"
+                        ? "Nam"
+                        : displayUser.gender === "female"
+                        ? "Nữ"
+                        : "Khác"}
+                    </span>
                   </div>
                 )}
                 <div className="flex items-center gap-2 text-muted-foreground cursor-target hover:text-primary hover:translate-x-2 transition-all duration-300">
@@ -692,7 +736,7 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
                     variant="link"
                     size="sm"
                     className="cursor-target hover:scale-105 transition-transform duration-300"
-                    onClick={() => router.push('/user/resume')}
+                    onClick={() => router.push("/user/resume")}
                   >
                     Chỉnh sửa
                   </Button>
@@ -704,14 +748,20 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
                     <div className="flex items-center gap-3 p-3 border rounded-lg bg-primary/5 hover:bg-primary/10 transition-colors">
                       <FileText className="h-8 w-8 text-primary flex-shrink-0" />
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-foreground">CV của {isOwnProfile ? 'bạn' : displayUser.fullName}</p>
-                        <p className="text-sm text-muted-foreground">Đã tải lên</p>
+                        <p className="font-medium text-foreground">
+                          CV của {isOwnProfile ? "bạn" : displayUser.fullName}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          Đã tải lên
+                        </p>
                       </div>
                     </div>
                     <Button
                       variant="outline"
                       className="w-full cursor-target hover:scale-105 transition-transform duration-300"
-                      onClick={() => window.open((displayUser as any).cvUrl, '_blank')}
+                      onClick={() =>
+                        window.open((displayUser as any).cvUrl, "_blank")
+                      }
                     >
                       <FileText className="h-4 w-4 mr-2" />
                       Xem CV
@@ -719,7 +769,7 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
                   </div>
                 ) : (
                   <p className="text-center text-muted-foreground py-4">
-                    {isOwnProfile ? 'Bạn chưa tải CV lên' : 'Chưa có CV'}
+                    {isOwnProfile ? "Bạn chưa tải CV lên" : "Chưa có CV"}
                   </p>
                 )}
               </CardContent>
@@ -734,7 +784,7 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
                     variant="link"
                     size="sm"
                     className="cursor-target hover:scale-105 transition-transform duration-300"
-                    onClick={() => router.push('/user/resume')}
+                    onClick={() => router.push("/user/resume")}
                   >
                     Chỉnh sửa
                   </Button>
@@ -851,107 +901,109 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
                   <div className="flex gap-3">
                     <Avatar className="cursor-target hover:scale-110 transition-transform duration-300">
                       <AvatarImage src={user.avatar} />
-                      <AvatarFallback>{user.fullName?.charAt(0)}</AvatarFallback>
+                      <AvatarFallback>
+                        {user.fullName?.charAt(0)}
+                      </AvatarFallback>
                     </Avatar>
-                  <textarea
-                    placeholder="Bạn đang nghĩ gì?"
-                    value={newPost}
-                    onChange={(e) => setNewPost(e.target.value)}
-                    className="cursor-target flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 hover:border-primary/50 transition-colors duration-300 disabled:cursor-not-allowed disabled:opacity-50"
-                  />
-                </div>
-
-                {/* Selected images preview */}
-                {selectedImages.length > 0 && (
-                  <div className="flex gap-2 mt-4 flex-wrap">
-                    {selectedImages.map((img, index) => (
-                      <div key={index} className="relative">
-                        <img
-                          src={URL.createObjectURL(img)}
-                          alt={`Selected ${index + 1}`}
-                          className="w-20 h-20 object-cover rounded-lg"
-                        />
-                        <Button
-                          variant="destructive"
-                          size="icon"
-                          className="absolute -top-2 -right-2 h-5 w-5 rounded-full"
-                          onClick={() => removeSelectedImage(index)}
-                        >
-                          <X className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* Selected video preview */}
-                {selectedVideo && (
-                  <div className="relative mt-4 inline-block">
-                    <video
-                      src={URL.createObjectURL(selectedVideo)}
-                      className="w-40 h-24 object-cover rounded-lg"
+                    <textarea
+                      placeholder="Bạn đang nghĩ gì?"
+                      value={newPost}
+                      onChange={(e) => setNewPost(e.target.value)}
+                      className="cursor-target flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 hover:border-primary/50 transition-colors duration-300 disabled:cursor-not-allowed disabled:opacity-50"
                     />
-                    <Button
-                      variant="destructive"
-                      size="icon"
-                      className="absolute -top-2 -right-2 h-5 w-5 rounded-full"
-                      onClick={() => setSelectedVideo(null)}
-                    >
-                      <X className="h-3 w-3" />
-                    </Button>
                   </div>
-                )}
 
-                <Separator className="my-4" />
-                <div className="flex justify-between items-center">
-                  <div className="flex gap-2">
+                  {/* Selected images preview */}
+                  {selectedImages.length > 0 && (
+                    <div className="flex gap-2 mt-4 flex-wrap">
+                      {selectedImages.map((img, index) => (
+                        <div key={index} className="relative">
+                          <img
+                            src={URL.createObjectURL(img)}
+                            alt={`Selected ${index + 1}`}
+                            className="w-20 h-20 object-cover rounded-lg"
+                          />
+                          <Button
+                            variant="destructive"
+                            size="icon"
+                            className="absolute -top-2 -right-2 h-5 w-5 rounded-full"
+                            onClick={() => removeSelectedImage(index)}
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Selected video preview */}
+                  {selectedVideo && (
+                    <div className="relative mt-4 inline-block">
+                      <video
+                        src={URL.createObjectURL(selectedVideo)}
+                        className="w-40 h-24 object-cover rounded-lg"
+                      />
+                      <Button
+                        variant="destructive"
+                        size="icon"
+                        className="absolute -top-2 -right-2 h-5 w-5 rounded-full"
+                        onClick={() => setSelectedVideo(null)}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  )}
+
+                  <Separator className="my-4" />
+                  <div className="flex justify-between items-center">
+                    <div className="flex gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="cursor-target hover:bg-green-50 dark:hover:bg-green-950 hover:scale-105 transition-all duration-300"
+                        onClick={() => imageInputRef.current?.click()}
+                      >
+                        <ImageIcon className="h-4 w-4 mr-2 text-green-600" />
+                        Ảnh
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="cursor-target hover:bg-red-50 dark:hover:bg-red-950 hover:scale-105 transition-all duration-300"
+                        onClick={() => videoInputRef.current?.click()}
+                      >
+                        <Video className="h-4 w-4 mr-2 text-red-600" />
+                        Video
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="cursor-target hover:bg-yellow-50 dark:hover:bg-yellow-950 hover:scale-105 transition-all duration-300"
+                      >
+                        <Smile className="h-4 w-4 mr-2 text-yellow-600" />
+                        Cảm xúc
+                      </Button>
+                    </div>
                     <Button
-                      variant="ghost"
                       size="sm"
-                      className="cursor-target hover:bg-green-50 dark:hover:bg-green-950 hover:scale-105 transition-all duration-300"
-                      onClick={() => imageInputRef.current?.click()}
+                      className="cursor-target hover:scale-105 transition-transform duration-300"
+                      onClick={handleCreatePost}
+                      disabled={
+                        isCreatingPost ||
+                        (!newPost.trim() &&
+                          selectedImages.length === 0 &&
+                          !selectedVideo)
+                      }
                     >
-                      <ImageIcon className="h-4 w-4 mr-2 text-green-600" />
-                      Ảnh
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="cursor-target hover:bg-red-50 dark:hover:bg-red-950 hover:scale-105 transition-all duration-300"
-                      onClick={() => videoInputRef.current?.click()}
-                    >
-                      <Video className="h-4 w-4 mr-2 text-red-600" />
-                      Video
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="cursor-target hover:bg-yellow-50 dark:hover:bg-yellow-950 hover:scale-105 transition-all duration-300"
-                    >
-                      <Smile className="h-4 w-4 mr-2 text-yellow-600" />
-                      Cảm xúc
+                      {isCreatingPost ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        "Đăng"
+                      )}
                     </Button>
                   </div>
-                  <Button
-                    size="sm"
-                    className="cursor-target hover:scale-105 transition-transform duration-300"
-                    onClick={handleCreatePost}
-                    disabled={
-                      isCreatingPost ||
-                      (!newPost.trim() &&
-                        selectedImages.length === 0 &&
-                        !selectedVideo)
-                    }
-                  >
-                    {isCreatingPost ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      "Đăng"
-                    )}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
             )}
 
             {/* Posts List */}
@@ -980,7 +1032,9 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
                     onToggleComments={handleToggleComments}
                     onAddComment={handleAddComment}
                     onSavePost={(postId) => console.log("Save post:", postId)}
-                    onReportPost={(postId) => console.log("Report post:", postId)}
+                    onReportPost={(postId) =>
+                      console.log("Report post:", postId)
+                    }
                     onEditPost={handleEditPost}
                     onDeletePost={async (postId) => {
                       const token = localStorage.getItem("accessToken");

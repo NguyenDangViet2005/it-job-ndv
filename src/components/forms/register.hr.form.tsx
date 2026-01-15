@@ -26,15 +26,16 @@ import {
   RegisterHRFormData,
   RegisterHRFormSchema,
 } from "@/validations/register.validation";
-import { useAuth } from "@/providers/auth.provider";
+import { useAuth } from "@/hooks/useAuth";
+import { authApi } from "@/apis/auth.api";
 import { locationApi } from "@/apis/location.api";
 import type { ProvinceResponse, WardResponse } from "@/types/api.type";
 import { Textarea } from "../ui/shadcn/textarea";
+import { toast } from "sonner";
 
 export default function FormRegisterHR() {
-  const { registerHR } = useAuth();
+  const { setAuth, setCompany } = useAuth();
   const router = useRouter();
-  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [provinces, setProvinces] = useState<ProvinceResponse[]>([]);
   const [wards, setWards] = useState<WardResponse[]>([]);
@@ -102,21 +103,30 @@ export default function FormRegisterHR() {
   };
 
   const onSubmit = async (values: RegisterHRFormData) => {
-    setError("");
     setIsLoading(true);
 
-    const result = await registerHR({
-      ...values,
-      companyWebsite: values.companyWebsite || undefined,
-    });
+    try {
+      const response = await authApi.registerHR({
+        ...values,
+        companyWebsite: values.companyWebsite || undefined,
+      });
 
-    if (result.success) {
-      router.push("/hr");
-    } else {
-      setError(result.error || "Đăng ký thất bại. Vui lòng thử lại.");
+      if (response.success && response.data) {
+        const { user, accessToken, company } = response.data;
+
+        setAuth(user, accessToken);
+        if (company) setCompany(company);
+
+        toast.success("Đăng ký nhà tuyển dụng thành công!");
+        router.push("/hr");
+      } else {
+        toast.error(response.message || "Đăng ký thất bại. Vui lòng thử lại.");
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Đăng ký thất bại. Vui lòng thử lại.");
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   };
 
   return (
@@ -402,13 +412,6 @@ export default function FormRegisterHR() {
                 )}
               />
             </div>
-
-            {/* Error Message */}
-            {error && (
-              <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20">
-                <p className="text-sm text-destructive">{error}</p>
-              </div>
-            )}
 
             {/* Submit */}
             <Button

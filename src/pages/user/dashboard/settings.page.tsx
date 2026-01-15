@@ -11,13 +11,13 @@ import {
 import { Button } from "@/components/ui/shadcn/button";
 import { Input } from "@/components/ui/shadcn/input";
 import { Label } from "@/components/ui/shadcn/label";
-import { useAuth } from "@/providers/auth.provider";
+import { useAuth } from "@/hooks/useAuth";
 import { userApi } from "@/apis/user.api";
 import { toast } from "sonner";
 
 export default function SettingsPage() {
   const { user, token } = useAuth();
-  
+
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -129,7 +129,10 @@ export default function SettingsPage() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
               />
             </div>
-            <Button onClick={handleChangePassword} disabled={isChangingPassword}>
+            <Button
+              onClick={handleChangePassword}
+              disabled={isChangingPassword}
+            >
               {isChangingPassword ? "Đang xử lý..." : "Đổi mật khẩu"}
             </Button>
           </CardContent>

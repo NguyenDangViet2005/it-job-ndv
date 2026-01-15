@@ -31,7 +31,7 @@ export const jobApi = {
     pageSize: number = 10,
     token?: string
   ) => {
-    const role = getUserRole();
+    const role = getUserRole(token);
     return apiGetPaginated<JobResponse>(
       `${ENDPOINT}/by-company`,
       pageNumber,
@@ -120,7 +120,7 @@ export const jobApi = {
     pageSize: number = 10,
     token?: string
   ) => {
-    const role = getUserRole();
+    const role = getUserRole(token);
     return apiGetPaginated<JobResponse>(
       `${ENDPOINT}/by-user/${userId}`,
       pageNumber,

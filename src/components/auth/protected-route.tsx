@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { useAuth } from "@/providers/auth.provider";
+import { useAuth } from "@/hooks/useAuth";
+import { hasRouteAccess } from "@/utils/auth.utils";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -13,7 +14,7 @@ export default function ProtectedRoute({
   children,
   allowedRoles,
 }: ProtectedRouteProps) {
-  const { user, token, loading, checkRouteAccess } = useAuth();
+  const { user, token, loading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const [isChecking, setIsChecking] = useState(true);
@@ -34,13 +35,13 @@ export default function ProtectedRoute({
     }
 
     // Check route access
-    if (pathname && !checkRouteAccess(pathname)) {
+    if (pathname && user?.role && !hasRouteAccess(user.role, pathname)) {
       router.push("/access-denied");
       return;
     }
 
     setIsChecking(false);
-  }, [loading, token, user, allowedRoles, pathname, router, checkRouteAccess]);
+  }, [loading, token, user, allowedRoles, pathname, router]);
 
   // Show loading while checking
   if (loading || isChecking) {

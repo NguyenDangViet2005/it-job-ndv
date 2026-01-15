@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/providers/auth.provider";
+import { useAuth } from "@/hooks/useAuth";
 import { blogApi } from "@/apis/blog.api";
 import { Card, CardContent } from "@/components/ui/shadcn/card";
 import { Button } from "@/components/ui/shadcn/button";
@@ -133,10 +133,10 @@ export default function MyBlogsPage() {
 
     try {
       setSaving(true);
-      
+
       // Tạo FormData để gửi multipart/form-data
       const data = new FormData();
-      
+
       if (createMode) {
         // Create mode: gửi đầy đủ fields
         data.append("UserId", user.id.toString());
@@ -153,7 +153,7 @@ export default function MyBlogsPage() {
         data.append("Content", formData.content);
         data.append("ReadTime", formData.readTime || "5 phút đọc");
       }
-      
+
       if (imageFile) {
         data.append("Image", imageFile);
       }
@@ -178,9 +178,7 @@ export default function MyBlogsPage() {
     } catch (error: any) {
       console.error("Save error:", error);
       const errorMessage =
-        error?.response?.data?.message ||
-        error?.message ||
-        "Lưu blog thất bại";
+        error?.response?.data?.message || error?.message || "Lưu blog thất bại";
       toast.error(errorMessage);
     } finally {
       setSaving(false);
@@ -205,10 +203,7 @@ export default function MyBlogsPage() {
             Quản lý các bài viết blog của bạn
           </p>
         </div>
-        <Button
-          onClick={handleCreate}
-          className="gap-2"
-        >
+        <Button onClick={handleCreate} className="gap-2">
           <Plus className="h-4 w-4" />
           Tạo blog mới
         </Button>
@@ -228,10 +223,7 @@ export default function MyBlogsPage() {
                   Bắt đầu chia sẻ kiến thức của bạn bằng cách tạo blog đầu tiên
                 </p>
               </div>
-              <Button
-                onClick={handleCreate}
-                className="gap-2"
-              >
+              <Button onClick={handleCreate} className="gap-2">
                 <Plus className="h-4 w-4" />
                 Tạo blog đầu tiên
               </Button>

@@ -40,7 +40,12 @@ export async function handleResponse<T>(response: Response): Promise<T> {
 
   // Parse JSON response
   try {
-    return await response.json();
+    const data = await response.json();
+    // Auto inject success: true if missing and status is OK
+    if (data && typeof data === "object" && !("success" in data)) {
+      data.success = true;
+    }
+    return data;
   } catch (error) {
     return {} as T;
   }

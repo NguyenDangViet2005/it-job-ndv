@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/shadcn/card";
 import { Button } from "@/components/ui/shadcn/button";
 import { FileText, Upload, Plus, X, Loader2 } from "lucide-react";
-import { useAuth } from "@/providers/auth.provider";
+import { useAuth } from "@/hooks/useAuth";
 import { userApi } from "@/apis/user.api";
 import { skillApi } from "@/apis/skill.api";
 import {
@@ -46,21 +46,33 @@ export default function ResumePage() {
 
   const loadUserSkills = async () => {
     if (!user?.id || !token) return;
-    
+
     try {
       setLoading(true);
       const response = await userApi.getSkills(user.id, token);
-      
+
       // Handle different response formats
       let skills: Skill[] = [];
       if (Array.isArray(response)) {
         skills = response;
-      } else if (response && typeof response === 'object' && 'data' in response) {
-        skills = Array.isArray((response as any).data) ? (response as any).data : [];
-      } else if (response && typeof response === 'object' && '$values' in response) {
-        skills = Array.isArray((response as any).$values) ? (response as any).$values : [];
+      } else if (
+        response &&
+        typeof response === "object" &&
+        "data" in response
+      ) {
+        skills = Array.isArray((response as any).data)
+          ? (response as any).data
+          : [];
+      } else if (
+        response &&
+        typeof response === "object" &&
+        "$values" in response
+      ) {
+        skills = Array.isArray((response as any).$values)
+          ? (response as any).$values
+          : [];
       }
-      
+
       setUserSkills(skills);
     } catch (error) {
       setUserSkills([]);
@@ -72,7 +84,7 @@ export default function ResumePage() {
   // Load all skills when dialog opens
   const loadAllSkills = async () => {
     if (!token) return;
-    
+
     try {
       const response = await skillApi.getAll(1, 100, token);
       setAllSkills(response.data || []);
@@ -84,7 +96,7 @@ export default function ResumePage() {
   // Handle add skill
   const handleAddSkill = async (skillId: number) => {
     if (!user?.id || !token) return;
-    
+
     try {
       setAddingSkill(true);
       await userApi.addSkill(user.id, skillId, token);
@@ -101,7 +113,7 @@ export default function ResumePage() {
   // Handle remove skill
   const handleRemoveSkill = async (skillId: number) => {
     if (!user?.id || !token) return;
-    
+
     try {
       await userApi.removeSkill(user.id, skillId, token);
       await loadUserSkills();
@@ -118,27 +130,30 @@ export default function ResumePage() {
     try {
       setUploadingCV(true);
       const response = await userApi.updateCV(user.id, file, token);
-      
+
       // Update user with new CV URL
       if (response.data && response.data.cvUrl) {
         updateUser({ cvUrl: response.data.cvUrl } as any);
       }
-      
+
       alert("Tải CV lên thành công!");
     } catch (error) {
       alert("Tải CV lên thất bại");
     } finally {
       setUploadingCV(false);
-      event.target.value = '';
+      event.target.value = "";
     }
   };
 
   // Filter skills
-  const filteredSkills = Array.isArray(allSkills) ? allSkills.filter(
-    (skill) =>
-      skill.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-      !Array.isArray(userSkills) ? true : !userSkills.some((us) => us.id === skill.id)
-  ) : [];
+  const filteredSkills = Array.isArray(allSkills)
+    ? allSkills.filter((skill) =>
+        skill.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+        !Array.isArray(userSkills)
+          ? true
+          : !userSkills.some((us) => us.id === skill.id)
+      )
+    : [];
 
   if (!user) {
     return (
@@ -159,7 +174,6 @@ export default function ResumePage() {
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold">Hồ sơ / CV của tôi</h1>
-          
         </div>
 
         <Card className="bg-card">
@@ -169,22 +183,30 @@ export default function ResumePage() {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium text-foreground">Họ và tên</label>
+                <label className="text-sm font-medium text-foreground">
+                  Họ và tên
+                </label>
                 <p className="text-muted-foreground">{user.fullName}</p>
               </div>
               <div>
-                <label className="text-sm font-medium text-foreground">Email</label>
+                <label className="text-sm font-medium text-foreground">
+                  Email
+                </label>
                 <p className="text-muted-foreground">{user.email}</p>
               </div>
               {user.phone && (
                 <div>
-                  <label className="text-sm font-medium text-foreground">Số điện thoại</label>
+                  <label className="text-sm font-medium text-foreground">
+                    Số điện thoại
+                  </label>
                   <p className="text-muted-foreground">{user.phone}</p>
                 </div>
               )}
               {user.address && (
                 <div>
-                  <label className="text-sm font-medium text-foreground">Địa chỉ</label>
+                  <label className="text-sm font-medium text-foreground">
+                    Địa chỉ
+                  </label>
                   <p className="text-muted-foreground">{user.address}</p>
                 </div>
               )}
@@ -208,7 +230,9 @@ export default function ResumePage() {
               </DialogTrigger>
               <DialogContent className="bg-card">
                 <DialogHeader>
-                  <DialogTitle className="text-foreground">Chọn kỹ năng</DialogTitle>
+                  <DialogTitle className="text-foreground">
+                    Chọn kỹ năng
+                  </DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4">
                   <Input
@@ -221,7 +245,9 @@ export default function ResumePage() {
                     <div className="space-y-2">
                       {filteredSkills.length === 0 ? (
                         <p className="text-center text-muted-foreground py-4">
-                          {searchQuery ? "Không tìm thấy kỹ năng" : "Không có kỹ năng khả dụng"}
+                          {searchQuery
+                            ? "Không tìm thấy kỹ năng"
+                            : "Không có kỹ năng khả dụng"}
                         </p>
                       ) : (
                         filteredSkills.map((skill) => (
@@ -284,14 +310,16 @@ export default function ResumePage() {
                     <FileText className="h-8 w-8 text-primary" />
                     <div>
                       <p className="font-medium text-foreground">CV của bạn</p>
-                      <p className="text-sm text-muted-foreground">Đã tải lên</p>
+                      <p className="text-sm text-muted-foreground">
+                        Đã tải lên
+                      </p>
                     </div>
                   </div>
                   <div className="flex gap-2">
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => window.open((user as any).cvUrl, '_blank')}
+                      onClick={() => window.open((user as any).cvUrl, "_blank")}
                       className="hover:bg-primary/10 hover:text-primary"
                     >
                       Xem CV
@@ -324,8 +352,8 @@ export default function ResumePage() {
                 <p className="text-muted-foreground mb-4">
                   Chưa có CV nào được tải lên
                 </p>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   className="hover:bg-primary/10 hover:text-primary relative"
                   disabled={uploadingCV}
                 >

@@ -23,9 +23,12 @@ import {
   CardContent,
   CardDescription,
 } from "@/components/ui/shadcn/card";
-import { applicationFormSchema, ApplicationFormData } from "@/validations/application.validation";
+import {
+  applicationFormSchema,
+  ApplicationFormData,
+} from "@/validations/application.validation";
 import { applicationApi } from "@/apis/application.api";
-import { useAuth } from "@/providers/auth.provider";
+import { useAuth } from "@/hooks/useAuth";
 
 interface ApplicationFormProps {
   jobId: number;
@@ -35,9 +38,9 @@ interface ApplicationFormProps {
   isModal?: boolean;
 }
 
-export default function ApplicationForm({ 
-  jobId, 
-  jobTitle, 
+export default function ApplicationForm({
+  jobId,
+  jobTitle,
   companyName,
   onClose,
   isModal = false,
@@ -87,7 +90,7 @@ export default function ApplicationForm({
 
       setSuccess(true);
       form.reset();
-      
+
       // Đóng modal hoặc redirect sau 2 giây
       setTimeout(() => {
         if (isModal && onClose) {
@@ -97,7 +100,9 @@ export default function ApplicationForm({
         }
       }, 2000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Có lỗi xảy ra khi ứng tuyển");
+      setError(
+        err instanceof Error ? err.message : "Có lỗi xảy ra khi ứng tuyển"
+      );
     } finally {
       setIsLoading(false);
     }
@@ -110,7 +115,8 @@ export default function ApplicationForm({
         {/* Success Message */}
         {success && (
           <div className="p-4 text-sm text-green-600 bg-green-50 dark:bg-green-900/20 dark:text-green-400 rounded-lg">
-            ✓ Ứng tuyển thành công! {isModal ? "Đang đóng..." : "Đang chuyển hướng..."}
+            ✓ Ứng tuyển thành công!{" "}
+            {isModal ? "Đang đóng..." : "Đang chuyển hướng..."}
           </div>
         )}
 
@@ -171,7 +177,11 @@ export default function ApplicationForm({
             disabled={isLoading || success}
             className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-semibold disabled:opacity-50"
           >
-            {isLoading ? "Đang gửi..." : success ? "Đã gửi thành công" : "Gửi đơn ứng tuyển"}
+            {isLoading
+              ? "Đang gửi..."
+              : success
+              ? "Đã gửi thành công"
+              : "Gửi đơn ứng tuyển"}
           </Button>
           <Button
             type="button"
@@ -198,15 +208,17 @@ export default function ApplicationForm({
         <CardTitle className="text-2xl">Ứng tuyển công việc</CardTitle>
         <CardDescription>
           <div className="mt-2">
-            <p className="font-semibold text-gray-900 dark:text-gray-100">{jobTitle}</p>
-            <p className="text-sm text-gray-600 dark:text-gray-400">{companyName}</p>
+            <p className="font-semibold text-gray-900 dark:text-gray-100">
+              {jobTitle}
+            </p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              {companyName}
+            </p>
           </div>
         </CardDescription>
       </CardHeader>
 
-      <CardContent>
-        {formContent}
-      </CardContent>
+      <CardContent>{formContent}</CardContent>
     </Card>
   );
 }

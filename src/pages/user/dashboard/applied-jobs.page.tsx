@@ -1,16 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useAuth } from "@/providers/auth.provider";
+import { useAuth } from "@/hooks/useAuth";
 import { applicationApi } from "@/apis/application.api";
 import type { ApplicationResponse } from "@/types/application.type";
-import {
-  Card,
-  CardContent,
-} from "@/components/ui/shadcn/card";
+import { Card, CardContent } from "@/components/ui/shadcn/card";
 import { Badge } from "@/components/ui/shadcn/badge";
 import { Button } from "@/components/ui/shadcn/button";
-import {  Briefcase, Clock, ExternalLink, FileText } from "lucide-react";
+import { Briefcase, Clock, ExternalLink, FileText } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
@@ -44,10 +41,19 @@ export default function AppliedJobsPage() {
     async function fetchApplications() {
       try {
         setLoading(true);
-        const response = await applicationApi.getByUser(user!.id, 1, 50, token!);
+        const response = await applicationApi.getByUser(
+          user!.id,
+          1,
+          50,
+          token!
+        );
         setApplications(response.data || []);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Không thể tải danh sách ứng tuyển");
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Không thể tải danh sách ứng tuyển"
+        );
       } finally {
         setLoading(false);
       }
@@ -93,9 +99,7 @@ export default function AppliedJobsPage() {
               <p className="text-muted-foreground mb-4">
                 Bạn chưa có đơn ứng tuyển nào
               </p>
-              <Button onClick={() => router.push("/jobs")}>
-                Tìm việc làm
-              </Button>
+              <Button onClick={() => router.push("/jobs")}>Tìm việc làm</Button>
             </CardContent>
           </Card>
         ) : (
@@ -106,15 +110,29 @@ export default function AppliedJobsPage() {
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex gap-4 flex-1">
                       <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <Image src={app.companyLogo} alt={app.companyName} width="150" height="150"/>
+                        <Image
+                          src={app.companyLogo}
+                          alt={app.companyName}
+                          width="150"
+                          height="150"
+                        />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-lg truncate">{app.jobTitle}</h3>
-                        <p className="text-muted-foreground">{app.companyName}</p>
+                        <h3 className="font-semibold text-lg truncate">
+                          {app.jobTitle}
+                        </h3>
+                        <p className="text-muted-foreground">
+                          {app.companyName}
+                        </p>
                         <div className="flex flex-wrap gap-3 mt-2 text-sm text-muted-foreground">
                           <div className="flex items-center gap-1">
                             <Clock className="h-4 w-4 flex-shrink-0" />
-                            <span>Ứng tuyển: {new Date(app.createdAt).toLocaleDateString("vi-VN")}</span>
+                            <span>
+                              Ứng tuyển:{" "}
+                              {new Date(app.createdAt).toLocaleDateString(
+                                "vi-VN"
+                              )}
+                            </span>
                           </div>
                           <div className="flex items-center gap-1">
                             <FileText className="h-4 w-4 flex-shrink-0" />
@@ -132,11 +150,15 @@ export default function AppliedJobsPage() {
                         </div>
                       </div>
                     </div>
-                    <Badge className={statusColors[app.status] || statusColors.pending}>
+                    <Badge
+                      className={
+                        statusColors[app.status] || statusColors.pending
+                      }
+                    >
                       {statusText[app.status] || app.status}
                     </Badge>
                   </div>
-                  
+
                   {/* Cover Letter */}
                   <div className="mt-4 p-3 bg-muted/50 rounded-lg">
                     <p className="text-sm font-semibold mb-1">Thư xin việc:</p>
@@ -146,8 +168,8 @@ export default function AppliedJobsPage() {
                   </div>
 
                   <div className="flex gap-2 mt-4">
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       size="sm"
                       onClick={() => router.push(`/jobs/${app.jobId}`)}
                     >

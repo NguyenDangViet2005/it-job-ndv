@@ -5,13 +5,23 @@ import { Button } from "@/components/ui/shadcn/button";
 import { Input } from "@/components/ui/shadcn/input";
 import { Textarea } from "@/components/ui/shadcn/textarea";
 import { Label } from "@/components/ui/shadcn/label";
-import { Plus, FileText, User, Tag, Clock, Loader2, Edit, Trash2, Eye } from "lucide-react";
-import { 
-  AdminDataTable, 
-  AdminStatsGrid, 
-  AdminBlogRow, 
+import {
+  Plus,
+  FileText,
+  User,
+  Tag,
+  Clock,
+  Loader2,
+  Edit,
+  Trash2,
+  Eye,
+} from "lucide-react";
+import {
+  AdminDataTable,
+  AdminStatsGrid,
+  AdminBlogRow,
   getBlogTableColumns,
-  type AdminBlog 
+  type AdminBlog,
 } from "@/components/admin";
 import { blogApi } from "@/apis";
 import { toast } from "sonner";
@@ -40,7 +50,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/shadcn/alert-dialog";
-import { useAuth } from "@/providers/auth.provider";
+import { useAuth } from "@/hooks/useAuth";
 
 // Helper to get token from localStorage
 const getAuthToken = () => {
@@ -87,19 +97,30 @@ const BlogManagement = () => {
       setLoading(true);
       setError(null);
       const authToken = token || getAuthToken();
-      const response = await blogApi.getAll(currentPage, pageSize, undefined, authToken);
-      
+      const response = await blogApi.getAll(
+        currentPage,
+        pageSize,
+        undefined,
+        authToken
+      );
+
       // Handle backend response format with $values
       let blogsData = response.data;
-      if (blogsData && typeof blogsData === "object" && "$values" in blogsData) {
+      if (
+        blogsData &&
+        typeof blogsData === "object" &&
+        "$values" in blogsData
+      ) {
         blogsData = (blogsData as any).$values;
       }
-      
+
       setBlogs(Array.isArray(blogsData) ? blogsData : []);
       setTotalPages(response.totalPages || 1);
       setTotalItems(response.totalItems || 0);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Không thể tải danh sách bài viết");
+      setError(
+        err instanceof Error ? err.message : "Không thể tải danh sách bài viết"
+      );
     } finally {
       setLoading(false);
     }
@@ -144,7 +165,9 @@ const BlogManagement = () => {
   }, [editBlog, createMode]);
 
   // Get unique category names from blogs for filtering
-  const blogCategories = [...new Set(blogs.map((b) => b.category).filter(Boolean))];
+  const blogCategories = [
+    ...new Set(blogs.map((b) => b.category).filter(Boolean)),
+  ];
 
   // Filter blogs client-side
   const filteredBlogs = blogs.filter((blog) => {
@@ -183,7 +206,10 @@ const BlogManagement = () => {
         if (!b.createdAt) return false;
         const date = new Date(b.createdAt);
         const now = new Date();
-        return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
+        return (
+          date.getMonth() === now.getMonth() &&
+          date.getFullYear() === now.getFullYear()
+        );
       }).length,
       icon: Clock,
       color: "from-orange-500/20 to-orange-600/20",
@@ -271,7 +297,8 @@ const BlogManagement = () => {
       fetchBlogs();
     } catch (error: any) {
       console.error("Save error:", error);
-      const errorMessage = error?.response?.data?.message || error?.message || "Lưu blog thất bại";
+      const errorMessage =
+        error?.response?.data?.message || error?.message || "Lưu blog thất bại";
       toast.error(errorMessage);
     } finally {
       setSaving(false);
@@ -310,15 +337,15 @@ const BlogManagement = () => {
         onFilterChange={setFilterCategory}
         onRefresh={fetchBlogs}
         renderRow={(blog) => (
-          <AdminBlogRow 
-            key={blog.id} 
-            blog={blog} 
+          <AdminBlogRow
+            key={blog.id}
+            blog={blog}
             onEdit={handleEdit}
             onDelete={handleDelete}
           />
         )}
         headerActions={
-          <Button 
+          <Button
             onClick={handleCreate}
             className="gap-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-red-600 hover:to-rose-700"
           >
@@ -326,7 +353,9 @@ const BlogManagement = () => {
             Viết bài mới
           </Button>
         }
-        emptyIcon={<FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />}
+        emptyIcon={
+          <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+        }
         emptyTitle="Chưa có bài viết nào"
         emptyDescription="Tạo bài viết mới để bắt đầu"
       />
@@ -345,9 +374,7 @@ const BlogManagement = () => {
               {createMode ? "Tạo blog mới" : "Chỉnh sửa blog"}
             </DialogTitle>
             <DialogDescription>
-              {createMode
-                ? "Tạo bài viết blog mới"
-                : "Cập nhật thông tin blog"}
+              {createMode ? "Tạo bài viết blog mới" : "Cập nhật thông tin blog"}
             </DialogDescription>
           </DialogHeader>
 
@@ -367,7 +394,9 @@ const BlogManagement = () => {
             <div className="space-y-2">
               <Label htmlFor="category">Danh mục *</Label>
               <Select
-                value={formData.categoryId > 0 ? formData.categoryId.toString() : ""}
+                value={
+                  formData.categoryId > 0 ? formData.categoryId.toString() : ""
+                }
                 onValueChange={(value) =>
                   setFormData({ ...formData, categoryId: parseInt(value) })
                 }

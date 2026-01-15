@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/shadcn/button";
 import { Home, ArrowLeft } from "lucide-react";
-import { useAuth } from "@/providers/auth.provider";
+import { useAuth } from "@/hooks/useAuth";
 import Image from "next/image";
 import { ROUTES } from "@/configs";
 import { useEffect, useState } from "react";
@@ -50,8 +50,7 @@ export default function AccessDeniedPage() {
   const getRoleDisplay = () => {
     if (!user?.role) return "Khách";
     if (user.role === "user") return "Ứng viên";
-    if (user.role === "hr" || user.role === "employer")
-      return "Nhà tuyển dụng";
+    if (user.role === "hr" || user.role === "employer") return "Nhà tuyển dụng";
     if (user.role === "admin") return "Quản trị viên";
     return user.role;
   };

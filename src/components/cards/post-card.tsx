@@ -7,7 +7,7 @@ import PostMedia from "@/components/post/post-media";
 import PostActions from "@/components/post/post-actions";
 import PostComments from "@/components/post/post-comments.section";
 import PostLightbox from "@/components/modals/post-lightbox.modal";
-import { getUserId } from "@/utils/auth";
+import { useAuth } from "@/hooks/useAuth";
 import type {
   PostCardProps,
   NormalizedPost,
@@ -35,7 +35,8 @@ export default function PostCard({
   onDeletePost,
   loadingComments = false,
 }: PostCardProps) {
-  const currentUserId = getUserId();
+  const { user } = useAuth();
+  const currentUserId = user?.id;
 
   // Lightbox state
   const [lightboxOpen, setLightboxOpen] = useState(false);

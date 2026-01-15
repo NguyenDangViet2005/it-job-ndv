@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/providers/auth.provider";
+import { useAuth } from "@/hooks/useAuth";
 import { blogApi } from "@/apis/blog.api";
 import { Card, CardContent } from "@/components/ui/shadcn/card";
 import { Button } from "@/components/ui/shadcn/button";
@@ -209,7 +209,8 @@ export default function HRBlogManagementPage() {
       setCreateMode(false);
     } catch (error: any) {
       console.error("Save error:", error);
-      const errorMessage = error?.response?.data?.message || error?.message || "Lưu blog thất bại";
+      const errorMessage =
+        error?.response?.data?.message || error?.message || "Lưu blog thất bại";
       toast.error(errorMessage);
     } finally {
       setSaving(false);
@@ -342,9 +343,7 @@ export default function HRBlogManagementPage() {
               {createMode ? "Tạo blog mới" : "Chỉnh sửa blog"}
             </DialogTitle>
             <DialogDescription>
-              {createMode
-                ? "Tạo bài viết blog mới"
-                : "Cập nhật thông tin blog"}
+              {createMode ? "Tạo bài viết blog mới" : "Cập nhật thông tin blog"}
             </DialogDescription>
           </DialogHeader>
 
@@ -364,7 +363,9 @@ export default function HRBlogManagementPage() {
             <div className="space-y-2">
               <Label htmlFor="category">Danh mục *</Label>
               <Select
-                value={formData.categoryId > 0 ? formData.categoryId.toString() : ""}
+                value={
+                  formData.categoryId > 0 ? formData.categoryId.toString() : ""
+                }
                 onValueChange={(value) =>
                   setFormData({ ...formData, categoryId: parseInt(value) })
                 }

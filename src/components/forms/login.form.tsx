@@ -24,12 +24,14 @@ import { LoginFormData, loginFormSchema } from "@/validations/login.validation";
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useAuth } from "@/providers/auth.provider";
+import { useAuth } from "@/hooks/useAuth";
+import { authApi } from "@/apis/auth.api";
+import { getRedirectPathByRole } from "@/utils/auth.utils";
+import { toast } from "sonner";
 
 export default function FormLogin() {
-  const { login, getRedirectPath } = useAuth();
+  const { setAuth } = useAuth();
   const router = useRouter();
-  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<LoginFormData>({
@@ -41,20 +43,33 @@ export default function FormLogin() {
   });
 
   const onSubmit = async (values: LoginFormData) => {
-    setError("");
     setIsLoading(true);
 
-    const result = await login(values.email, values.password);
+    try {
+      const response = await authApi.login({
+        email: values.email,
+        password: values.password,
+      });
 
-    if (result.success && result.role) {
-      // Redirect based on role
-      const redirectPath = getRedirectPath(result.role);
-      router.push(redirectPath);
-    } else {
-      setError(result.error || "Email hoặc mật khẩu không đúng");
+      if (response.success && response.data) {
+        const { user, accessToken } = response.data;
+
+        // Set auth state
+        setAuth(user, accessToken);
+
+        toast.success("Đăng nhập thành công!");
+
+        // Redirect based on role
+        const redirectPath = getRedirectPathByRole(user.role);
+        router.push(redirectPath);
+      } else {
+        toast.error(response.message || "Đăng nhập thất bại");
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Email hoặc mật khẩu không đúng");
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   };
 
   const handleGoogleLogin = () => {
@@ -73,13 +88,6 @@ export default function FormLogin() {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            {/* Error Message */}
-            {error && (
-              <div className="p-2 text-sm text-red-600 bg-red-50 dark:bg-red-900/20 dark:text-red-400 rounded-lg">
-                {error}
-              </div>
-            )}
-
             {/* Email */}
             <FormField
               control={form.control}
@@ -88,7 +96,11 @@ export default function FormLogin() {
                 <FormItem>
                   <FormLabel className="text-sm">Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="you@example.com" className="h-9" {...field} />
+                    <Input
+                      placeholder="you@example.com"
+                      className="h-9"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -103,7 +115,12 @@ export default function FormLogin() {
                 <FormItem>
                   <FormLabel className="text-sm">Mật khẩu</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="••••••••" className="h-9" {...field} />
+                    <Input
+                      type="password"
+                      placeholder="••••••••"
+                      className="h-9"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

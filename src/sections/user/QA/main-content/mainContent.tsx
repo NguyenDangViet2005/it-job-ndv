@@ -12,7 +12,7 @@ import PostCard from "@/components/cards/post-card";
 import EditPostDialog from "@/components/post/edit-post-dialog";
 import type { FullPostResponse } from "@/types/api.type";
 import { postApi } from "@/apis/post.api";
-import { useAuth } from "@/providers/auth.provider";
+import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 
 interface MainContentProps {

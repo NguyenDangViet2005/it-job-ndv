@@ -14,7 +14,7 @@ import Link from "next/link";
 import * as React from "react";
 import { ModeToggle } from "@/components/ui/customs/toggle-them";
 import { Input } from "@/components/ui/shadcn/input";
-import { useAuth } from "@/providers/auth.provider";
+import { useAuth } from "@/hooks/useAuth";
 import { navigationItems } from "@/configs/navigation.config";
 import { NavigationLink } from "@/components/ui/customs/navigation-link";
 import { UserDropdown } from "@/components/ui/customs/user-dropdown";
@@ -55,9 +55,10 @@ const UserHeader = () => {
     logout();
   };
 
-  const logoSrc = mounted && (resolvedTheme === "dark" || theme === "dark")
-    ? "/logo/logo-dark-removebg.png"
-    : "/logo/logo-removebg.png";
+  const logoSrc =
+    mounted && (resolvedTheme === "dark" || theme === "dark")
+      ? "/logo/logo-dark-removebg.png"
+      : "/logo/logo-removebg.png";
 
   return (
     <header
@@ -66,17 +67,18 @@ const UserHeader = () => {
         container fixed top-2 left-1/2 translate-x-[-50%] z-50 
         w-[95%] md:w-full max-w-[1200px] px-4 rounded-2xl shadow-md border border-border/40 backdrop-blur-lg
         transition-all duration-300
-        ${scrolled ? "dark:bg-white/20 shadow-lg bg-black/20" : "bg-background/50"}
+        ${
+          scrolled
+            ? "dark:bg-white/20 shadow-lg bg-black/20"
+            : "bg-background/50"
+        }
         hover:bg-white dark:hover:bg-black/95 hover:shadow-xl
       `}
     >
       <div className="flex h-14 items-center justify-between">
         {/* Logo */}
         <div className="p-2 h-full flex items-center">
-          <Link
-            href={ROUTES.HOME}
-            className="cursor-target"
-          >
+          <Link href={ROUTES.HOME} className="cursor-target">
             <Image
               src={logoSrc}
               width={80}

@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/providers/auth.provider";
+import { useAuth } from "@/hooks/useAuth";
 import ApplicationModal from "@/components/modals/application.modal";
 
 interface CompanyInfoProps {
@@ -44,7 +44,7 @@ interface CompanyInfoProps {
 const CompanyInfo = ({ jobId, jobTitle, company }: CompanyInfoProps) => {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
-const [isApplicationModalOpen, setIsApplicationModalOpen] = useState(false);
+  const [isApplicationModalOpen, setIsApplicationModalOpen] = useState(false);
   const defaultCompany = {
     name: "CÔNG TY TNHH L.C.S",
     logo: "/logo-company.jpg",
@@ -60,14 +60,14 @@ const [isApplicationModalOpen, setIsApplicationModalOpen] = useState(false);
   };
 
   const comp = company || defaultCompany;
-  
+
   const handleApply = () => {
-     setIsApplicationModalOpen(true); 
+    setIsApplicationModalOpen(true);
   };
 
   const handleSaveJob = () => {
     const accessToken = localStorage.getItem("accessToken");
-    
+
     if (!accessToken && !isAuthenticated) {
       alert("Vui lòng đăng nhập để lưu công việc");
       router.push("/login");
@@ -166,8 +166,8 @@ const [isApplicationModalOpen, setIsApplicationModalOpen] = useState(false);
           </div>
         </div>
 
-        <Button 
-          className="w-full" 
+        <Button
+          className="w-full"
           size="lg"
           onClick={handleApply}
           disabled={!jobId}
@@ -175,11 +175,7 @@ const [isApplicationModalOpen, setIsApplicationModalOpen] = useState(false);
           Ứng tuyển ngay
         </Button>
 
-        <Button 
-          variant="outline" 
-          className="w-full"
-          onClick={handleSaveJob}
-        >
+        <Button variant="outline" className="w-full" onClick={handleSaveJob}>
           Lưu việc làm
         </Button>
       </div>

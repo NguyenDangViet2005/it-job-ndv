@@ -6,8 +6,11 @@ import { Button } from "@/components/ui/shadcn/button";
 import { DataTable } from "../../components/cards/data-table.card";
 import { jobApi } from "@/apis/job.api";
 import { JobDetailModal } from "@/components/modals/job-detail.modal";
-import { CreateJobForm, CreateJobData } from "@/components/forms/create-job.form";
-import { useAuth } from "@/providers/auth.provider";
+import {
+  CreateJobForm,
+  CreateJobData,
+} from "@/components/forms/create-job.form";
+import { useAuth } from "@/hooks/useAuth";
 
 interface JobData {
   id: number;
@@ -42,7 +45,7 @@ const JobsManagement = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"view" | "edit">("view");
   const [selectedJob, setSelectedJob] = useState<JobData | null>(null);
-  
+
   // Create job modal
   const [createModalOpen, setCreateModalOpen] = useState(false);
 
@@ -66,15 +69,19 @@ const JobsManagement = () => {
   const fetchJobs = async () => {
     try {
       setLoading(true);
-      
+
       if (!user?.id) {
         console.error("No user found");
         setLoading(false);
         return;
       }
 
-      const response = await jobApi.getByUser(user.id, 1, 50, token || undefined);
-
+      const response = await jobApi.getByUser(
+        user.id,
+        1,
+        50,
+        token || undefined
+      );
 
       if (response && response.data) {
         setJobs(response.data as JobData[]);
@@ -166,7 +173,9 @@ const JobsManagement = () => {
       key: "quantity" as keyof JobData,
       header: "SL",
       sortable: true,
-      render: (value: number) => <span className="font-bold text-xs">{value}</span>,
+      render: (value: number) => (
+        <span className="font-bold text-xs">{value}</span>
+      ),
     },
     {
       key: "skills" as keyof JobData,
@@ -196,7 +205,9 @@ const JobsManagement = () => {
       header: "Hạn",
       sortable: true,
       render: (value: string) => (
-        <span className="text-[10px] whitespace-nowrap">{formatDate(value)}</span>
+        <span className="text-[10px] whitespace-nowrap">
+          {formatDate(value)}
+        </span>
       ),
     },
   ];
@@ -320,12 +331,11 @@ const JobsManagement = () => {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="space-y-2">
           <h1 className="text-3xl font-bold font-mono">Quản Lý Công Việc</h1>
-          <p className="text-muted-foreground">Quản lý {totalItems} tin tuyển dụng</p>
+          <p className="text-muted-foreground">
+            Quản lý {totalItems} tin tuyển dụng
+          </p>
         </div>
-        <Button 
-          className="font-mono"
-          onClick={() => setCreateModalOpen(true)}
-        >
+        <Button className="font-mono" onClick={() => setCreateModalOpen(true)}>
           Đăng Tin Tuyển Dụng
         </Button>
       </div>

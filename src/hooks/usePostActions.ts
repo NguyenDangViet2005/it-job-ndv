@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { postApi } from "@/apis";
-import { getUserId } from "@/utils/auth";
+import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner"; // hoặc notification library bạn đang dùng
 
 export function usePostActions() {
   const [loading, setLoading] = useState(false);
-  const currentUserId = getUserId();
+  const { user } = useAuth();
+  const currentUserId = user?.id;
 
   const handleSavePost = async (postId: number) => {
     try {
@@ -59,7 +60,7 @@ export function usePostActions() {
       await postApi.delete(postId, token);
       console.log("Deleted post:", postId);
       toast?.success?.("Đã xóa bài viết");
-      
+
       // Refresh posts list
       window.location.reload(); // hoặc dùng state management để update
     } catch (error) {

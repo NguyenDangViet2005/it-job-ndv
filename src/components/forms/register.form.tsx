@@ -24,14 +24,13 @@ import {
   RegisterFormData,
   RegisterFormSchema,
 } from "@/validations/register.validation";
-import { useAuth } from "@/providers/auth.provider";
+import { authApi } from "@/apis/auth.api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ROUTES } from "@/configs";
+import { toast } from "sonner";
 
 export default function FormRegister() {
-  const { registerUser } = useAuth();
   const router = useRouter();
-  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<RegisterFormData>({
@@ -47,18 +46,29 @@ export default function FormRegister() {
   });
 
   const onSubmit = async (values: RegisterFormData) => {
-    setError("");
     setIsLoading(true);
 
-    const result = await registerUser(values);
+    // Filter out empty string values for dateOfBirth
+    const payload = {
+      ...values,
+      dateOfBirth: values.dateOfBirth === "" ? undefined : values.dateOfBirth,
+      gender: values.gender === "" ? undefined : values.gender,
+    };
 
-    if (result.success) {
-      router.push(ROUTES.LOGIN);
-    } else {
-      setError(result.error || "Đăng ký thất bại. Vui lòng thử lại.");
+    try {
+      const response = await authApi.registerUser(payload);
+
+      if (response.success) {
+        toast.success("Đăng ký thành công!");
+        router.push(ROUTES.LOGIN);
+      } else {
+        toast.error(response.message || "Đăng ký thất bại. Vui lòng thử lại.");
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Đăng ký thất bại. Vui lòng thử lại.");
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   };
 
   const handleGoogleRegister = () => {
@@ -154,12 +164,6 @@ export default function FormRegister() {
                 </FormItem>
               )}
             />
-            {/* Error Message */}
-            {error && (
-              <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20">
-                <p className="text-sm text-destructive">{error}</p>
-              </div>
-            )}
             {/* Submit */}
             <Button
               type="submit"

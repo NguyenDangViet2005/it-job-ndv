@@ -8,7 +8,7 @@ import LeftSidebar from "@/sections/user/QA/left-sidebar/leftSidebar";
 import { companyPosts, followList } from "@/types/test.type";
 import { usePosts, useInfiniteScroll } from "@/hooks/usePost";
 import { interactionApi } from "@/apis/interaction.api";
-import { useAuth } from "@/providers/auth.provider";
+import { useAuth } from "@/hooks/useAuth";
 import type { FullPostResponse } from "@/types/api.type";
 import { ROUTES } from "@/configs";
 
@@ -47,8 +47,6 @@ export default function QAPage() {
 
     checkAuthentication();
   }, [isAuthenticated, router]);
-
-
 
   // Show loading while checking auth (conditional return after all hooks)
   if (isCheckingAuth) {

@@ -32,7 +32,7 @@ export const blogApi = {
 
   // Lấy blog theo userId
   getByUserId: (userId: number, token: string) => {
-    const role = getUserRole();
+    const role = getUserRole(token);
     return apiGet<ApiResponse<BlogResponse[]>>(`${ENDPOINT}/user/${userId}`, {
       token,
       params: { role },

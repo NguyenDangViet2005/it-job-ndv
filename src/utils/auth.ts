@@ -1,4 +1,5 @@
-// Utility functions để làm việc với user authentication
+import { jwtDecode } from "jwt-decode";
+import { UserResponse } from "@/types/api.type";
 
 export interface UserInfo {
   id: number;
@@ -9,78 +10,79 @@ export interface UserInfo {
   // Thêm các field khác nếu cần
 }
 
-/**
- * Lấy thông tin user từ localStorage
- */
-export const getUserInfo = (): UserInfo | null => {
-  if (typeof window === "undefined") return null;
+interface JwtPayload {
+  nameid: string; // ID
+  email: string;
+  unique_name: string; // Name
+  role: string;
+  nbf: number;
+  exp: number;
+  iat: number;
+}
 
-  const userInfo = localStorage.getItem("userInfo");
-  if (!userInfo) return null;
+/**
+ * Lấy thông tin user từ token
+ */
+export const getUserInfo = (token?: string | null): UserInfo | null => {
+  if (!token) return null;
 
   try {
-    return JSON.parse(userInfo);
-  } catch {
+    const decoded = jwtDecode<JwtPayload>(token);
+
+    return {
+      id: parseInt(decoded.nameid),
+      name: decoded.unique_name,
+      email: decoded.email,
+      role: decoded.role as any,
+    };
+  } catch (error) {
+    console.error("Error decoding token:", error);
     return null;
   }
 };
 
 /**
- * Lấy role của user hiện tại
+ * Lấy role của user từ token
  */
-export const getUserRole = (): string => {
-  const userInfo = getUserInfo();
+export const getUserRole = (token?: string | null): string => {
+  const userInfo = getUserInfo(token);
   return userInfo?.role || "";
 };
 
 /**
- * Lấy ID của user hiện tại
+ * Lấy ID của user từ token
  */
-export const getUserId = (): number | null => {
-  const userInfo = getUserInfo();
+export const getUserId = (token?: string | null): number | null => {
+  const userInfo = getUserInfo(token);
   return userInfo?.id || null;
 };
 
 /**
- * Kiểm tra user có phải là admin không
+ * Các hàm check role
  */
-export const isAdmin = (): boolean => {
-  return getUserRole() === "admin";
+export const isAdmin = (token?: string | null): boolean => {
+  return getUserRole(token) === "admin";
+};
+
+export const isEmployer = (token?: string | null): boolean => {
+  return getUserRole(token) === "employer";
+};
+
+export const isUser = (token?: string | null): boolean => {
+  return getUserRole(token) === "user";
 };
 
 /**
- * Kiểm tra user có phải là employer không
- */
-export const isEmployer = (): boolean => {
-  return getUserRole() === "employer";
-};
-
-/**
- * Kiểm tra user có phải là user thường không
- */
-export const isUser = (): boolean => {
-  return getUserRole() === "user";
-};
-
-/**
- * Kiểm tra user đã đăng nhập chưa
+ * Các hàm legacy (đã deprecated/xóa)
  */
 export const isAuthenticated = (): boolean => {
-  return getUserInfo() !== null;
+  return false; // Deprecated
 };
 
-/**
- * Lưu thông tin user vào localStorage
- */
 export const setUserInfo = (userInfo: UserInfo): void => {
-  if (typeof window === "undefined") return;
-  localStorage.setItem("userInfo", JSON.stringify(userInfo));
+  // Deprecated
 };
 
-/**
- * Xóa thông tin user khỏi localStorage
- */
 export const clearUserInfo = (): void => {
-  if (typeof window === "undefined") return;
-  localStorage.removeItem("userInfo");
+  // Deprecated
 };

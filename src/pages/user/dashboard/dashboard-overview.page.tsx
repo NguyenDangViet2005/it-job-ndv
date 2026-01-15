@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/shadcn/button";
-import { useAuth } from "@/providers/auth.provider";
+import { useAuth } from "@/hooks/useAuth";
 import { ROUTES } from "@/configs";
 
 export default function DashboardOverviewPage() {
@@ -79,7 +79,9 @@ export default function DashboardOverviewPage() {
     <div className="space-y-6">
       {/* Welcome Header */}
       <div>
-        <h1 className="text-3xl font-bold">Chào mừng trở lại, {user?.fullName}!</h1>
+        <h1 className="text-3xl font-bold">
+          Chào mừng trở lại, {user?.fullName}!
+        </h1>
         <p className="text-muted-foreground mt-2">
           Đây là tổng quan về hoạt động tìm việc của bạn
         </p>
@@ -96,7 +98,9 @@ export default function DashboardOverviewPage() {
                     <p className="text-sm text-muted-foreground">
                       {stat.title}
                     </p>
-                    <p className="text-3xl font-bold mt-2 text-foreground">{stat.value}</p>
+                    <p className="text-3xl font-bold mt-2 text-foreground">
+                      {stat.value}
+                    </p>
                   </div>
                   <div className="p-3 rounded-lg bg-primary/10">
                     <stat.icon className="h-6 w-6 text-primary" />
@@ -130,7 +134,10 @@ export default function DashboardOverviewPage() {
                       <span className="text-muted-foreground">
                         {activity.action}
                       </span>
-                      <span className="font-semibold text-foreground"> {activity.target}</span>
+                      <span className="font-semibold text-foreground">
+                        {" "}
+                        {activity.target}
+                      </span>
                     </p>
                     <p className="text-sm text-muted-foreground">
                       {activity.company}
@@ -154,19 +161,31 @@ export default function DashboardOverviewPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <Button className="w-full justify-start hover:bg-primary/10 hover:text-primary" variant="outline" asChild>
+            <Button
+              className="w-full justify-start hover:bg-primary/10 hover:text-primary"
+              variant="outline"
+              asChild
+            >
               <Link href={ROUTES.JOBS}>
                 <Briefcase className="mr-2 h-4 w-4" />
                 Tìm việc làm mới
               </Link>
             </Button>
-            <Button className="w-full justify-start hover:bg-primary/10 hover:text-primary" variant="outline" asChild>
+            <Button
+              className="w-full justify-start hover:bg-primary/10 hover:text-primary"
+              variant="outline"
+              asChild
+            >
               <Link href={ROUTES.USER_RESUME}>
                 <FileText className="mr-2 h-4 w-4" />
                 Cập nhật CV
               </Link>
             </Button>
-            <Button className="w-full justify-start hover:bg-primary/10 hover:text-primary" variant="outline" asChild>
+            <Button
+              className="w-full justify-start hover:bg-primary/10 hover:text-primary"
+              variant="outline"
+              asChild
+            >
               <Link href={user?.id ? ROUTES.PROFILE(user.id) : "#"}>
                 <TrendingUp className="mr-2 h-4 w-4" />
                 Xem hồ sơ công khai
@@ -185,21 +204,38 @@ export default function DashboardOverviewPage() {
           <div className="space-y-4">
             <div>
               <div className="flex justify-between mb-2">
-                <span className="text-sm font-medium text-foreground">Độ hoàn thiện hồ sơ</span>
+                <span className="text-sm font-medium text-foreground">
+                  Độ hoàn thiện hồ sơ
+                </span>
                 <span className="text-sm font-medium text-primary">75%</span>
               </div>
               <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                <div className="h-full bg-primary transition-all" style={{ width: "75%" }} />
+                <div
+                  className="h-full bg-primary transition-all"
+                  style={{ width: "75%" }}
+                />
               </div>
             </div>
             <div className="flex gap-2 flex-wrap">
-              <Button size="sm" variant="outline" className="hover:bg-primary/10 hover:text-primary hover:border-primary">
+              <Button
+                size="sm"
+                variant="outline"
+                className="hover:bg-primary/10 hover:text-primary hover:border-primary"
+              >
                 Thêm kỹ năng
               </Button>
-              <Button size="sm" variant="outline" className="hover:bg-primary/10 hover:text-primary hover:border-primary">
+              <Button
+                size="sm"
+                variant="outline"
+                className="hover:bg-primary/10 hover:text-primary hover:border-primary"
+              >
                 Thêm kinh nghiệm
               </Button>
-              <Button size="sm" variant="outline" className="hover:bg-primary/10 hover:text-primary hover:border-primary">
+              <Button
+                size="sm"
+                variant="outline"
+                className="hover:bg-primary/10 hover:text-primary hover:border-primary"
+              >
                 Tải CV lên
               </Button>
             </div>

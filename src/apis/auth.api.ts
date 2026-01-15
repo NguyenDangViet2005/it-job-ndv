@@ -1,4 +1,4 @@
-import { apiPost } from "./api";
+import { apiPost, apiGet } from "./api";
 import type {
   ApiResponse,
   LoginRequest,
@@ -14,94 +14,52 @@ const ENDPOINT = "/auth";
 export const authApi = {
   // Đăng ký ứng viên (role = user)
   registerUser: async (data: RegisterRequest) => {
-    const response = await apiPost<ApiResponse<LoginResponse>>(
-      `${ENDPOINT}/register-user`,
-      data
+    return await apiPost<ApiResponse<LoginResponse>>(
+      `${ENDPOINT}/register`,
+      data,
+      { credentials: "include" }
     );
-
-    // Lưu userInfo vào localStorage sau khi đăng ký thành công
-    if (response.data?.user) {
-      localStorage.setItem("userInfo", JSON.stringify(response.data.user));
-    }
-
-    return response;
   },
 
   // Đăng ký nhà tuyển dụng (role = employer)
   registerHR: async (data: RegisterHRRequest) => {
-    const response = await apiPost<ApiResponse<RegisterHRResponse>>(
+    return await apiPost<ApiResponse<RegisterHRResponse>>(
       `${ENDPOINT}/register-hr`,
-      data
+      data,
+      { credentials: "include" }
     );
-
-    // Lưu userInfo vào localStorage sau khi đăng ký thành công
-    if (response.data?.user) {
-      localStorage.setItem("userInfo", JSON.stringify(response.data.user));
-    }
-
-    return response;
   },
 
-  // Đăng ký (legacy)
-  register: async (data: RegisterRequest) => {
-    const response = await apiPost<ApiResponse<LoginResponse>>(
-      `${ENDPOINT}/register`,
-      data
-    );
-
-    // Lưu userInfo vào localStorage
-    if (response.data?.user) {
-      localStorage.setItem("userInfo", JSON.stringify(response.data.user));
-    }
-
-    return response;
-  },
-
-  // Đăng nhập
+  // Login
   login: async (data: LoginRequest) => {
-    const response = await apiPost<ApiResponse<LoginResponse>>(
+    return await apiPost<ApiResponse<LoginResponse>>(
       `${ENDPOINT}/login`,
-      data
+      data,
+      { credentials: "include" }
     );
-
-    // Lưu userInfo vào localStorage sau khi login thành công
-    if (response.data?.user) {
-      localStorage.setItem("userInfo", JSON.stringify(response.data.user));
-    }
-
-    return response;
   },
 
-  // Làm mới token
-  refreshToken: async (refreshToken: string) => {
-    const response = await apiPost<ApiResponse<LoginResponse>>(
+  // Refresh Token (Uses HttpOnly Cookie)
+  refreshToken: async () => {
+    return await apiPost<ApiResponse<LoginResponse>>(
       `${ENDPOINT}/refresh-token`,
-      {
-        refreshToken,
-      }
+      undefined, // No body
+      { credentials: "include" } // Send cookies
     );
-
-    // Cập nhật userInfo nếu có
-    if (response.data?.user) {
-      localStorage.setItem("userInfo", JSON.stringify(response.data.user));
-    }
-
-    return response;
   },
 
-  // Đăng xuất
-  logout: (token: string) => {
-    // Xóa userInfo khi logout
-    localStorage.removeItem("userInfo");
-    return apiPost<ApiResponse<void>>(`${ENDPOINT}/logout`, undefined, {
-      token,
+  // Logout
+  logout: async () => {
+    return await apiPost<ApiResponse<void>>(`${ENDPOINT}/logout`, undefined, {
+      credentials: "include",
     });
   },
 
   // Lấy thông tin user hiện tại
   getCurrentUser: (token: string) => {
-    return apiPost<ApiResponse<UserResponse>>(`${ENDPOINT}/me`, undefined, {
+    return apiGet<ApiResponse<UserResponse>>(`${ENDPOINT}/me`, {
       token,
+      credentials: "include", // Optional but good practice
     });
   },
 };

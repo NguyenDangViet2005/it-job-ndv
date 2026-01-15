@@ -1,415 +1,94 @@
 "use client";
 
-import { jwtDecode } from "jwt-decode";
-import React, { createContext, useContext, useState, useEffect } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { authApi } from "@/apis/auth.api";
 import { companyApi } from "@/apis/company.api";
-import type {
-  UserResponse,
-  RegisterRequest,
-  RegisterHRRequest,
-  CompanyResponse,
-} from "@/types/api.type";
-import { ROUTES, ROUTE_GROUPS } from "@/configs";
-
-// ============================================
-// TYPES & INTERFACES
-// ============================================
-
-interface JwtPayload {
-  nameid: string;
-  email: string;
-  unique_name: string;
-  role: string;
-  nbf: number;
-  exp: number;
-  iat: number;
-  iss: string;
-  aud: string;
-}
-
-interface AuthContextType {
-  user: UserResponse | null;
-  company: CompanyResponse | null;
-  token: string | null;
-  isAuthenticated: boolean;
-  loading: boolean;
-  login: (
-    email: string,
-    password: string
-  ) => Promise<{ success: boolean; role?: string; error?: string }>;
-  registerUser: (
-    data: RegisterRequest
-  ) => Promise<{ success: boolean; error?: string }>;
-  registerHR: (
-    data: RegisterHRRequest
-  ) => Promise<{ success: boolean; error?: string }>;
-  logout: () => void;
-  updateUser: (userData: Partial<UserResponse>) => void;
-  getRedirectPath: (role: string) => string;
-  checkRouteAccess: (pathname: string) => boolean;
-}
-
-// ============================================
-// CONTEXT
-// ============================================
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-// ============================================
-// HELPER FUNCTIONS
-// ============================================
-
-/**
- * Check if user has access to a specific route based on role
- */
-const hasRouteAccess = (role: string | undefined, pathname: string): boolean => {
-  if (!role) return false;
-
-  const normalizedRole = role.toLowerCase().trim();
-
-  // Check if route is in public routes
-  const isPublicRoute = ROUTE_GROUPS.PUBLIC.some((route) =>
-    pathname.startsWith(route)
-  );
-
-  // Admin routes
-  if (pathname.startsWith(ROUTES.ADMIN)) {
-    return normalizedRole === "admin";
-  }
-
-  // HR routes
-  if (pathname.startsWith(ROUTES.HR)) {
-    return normalizedRole === "employer" || normalizedRole === "hr";
-  }
-
-  // User dashboard routes
-  if (pathname.startsWith(ROUTES.USER_DASHBOARD)) {
-    return normalizedRole === "user";
-  }
-
-  // Public routes - accessible by all
-  if (isPublicRoute) {
-    return true;
-  }
-
-  // Default: allow access
-  return true;
-};
-
-/**
- * Get redirect path based on user role
- */
-const getRedirectPathByRole = (role: string): string => {
-  const normalizedRole = role.toLowerCase().trim();
-
-  switch (normalizedRole) {
-    case "admin":
-      return ROUTES.ADMIN_DASHBOARD;
-    case "hr":
-    case "employer":
-      return ROUTES.HR_DASHBOARD;
-    case "user":
-      return ROUTES.USER_DASHBOARD;
-    default:
-      return ROUTES.HOME;
-  }
-};
-
-// ============================================
-// PROVIDER
-// ============================================
+import { AuthContext } from "@/contexts/auth.context";
+import { AuthGuard } from "@/components/auth/auth.guard";
+import { ROUTES } from "@/configs";
+import type { UserResponse, CompanyResponse } from "@/types/api.type";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<UserResponse | null>(null);
   const [company, setCompany] = useState<CompanyResponse | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [jwtPayload, setJwtPayload] = useState<JwtPayload | null>(null);
   const router = useRouter();
-  const pathname = usePathname();
 
-  // ============================================
-  // INITIALIZE AUTH STATE FROM LOCALSTORAGE
-  // ============================================
+  // Initialize Auth (Silent Refresh)
   useEffect(() => {
-    if (typeof window === "undefined") {
-      setLoading(false);
-      return;
-    }
-
-    const storedUser = localStorage.getItem("userInfo");
-    const storedCompany = localStorage.getItem("company");
-    const storedToken = localStorage.getItem("accessToken");
-
-    if (storedUser && storedToken) {
+    const initAuth = async () => {
       try {
-        const parsedUser = JSON.parse(storedUser);
-        setUser(parsedUser);
-        setToken(storedToken);
+        setLoading(true);
+        // Try to refresh token using httpOnly cookie
+        const response = await authApi.refreshToken();
 
-        // Decode JWT token
-        const decoded = jwtDecode<JwtPayload>(storedToken);
-        setJwtPayload(decoded);
+        if (response.success && response.data) {
+          const { accessToken, user: userData } = response.data;
+          console.log(accessToken);
 
-        // Fetch company info if user is HR/Employer and company is missing
-        if (
-          (parsedUser.role === "employer" || parsedUser.role === "hr") &&
-          !storedCompany
-        ) {
-          companyApi
-            .getMyCompany(storedToken)
-            .then((companyData) => {
-              if (companyData) {
-                setCompany(companyData as CompanyResponse);
-                localStorage.setItem("company", JSON.stringify(companyData));
-              }
-            })
-            .catch((err) =>
-              console.error("Failed to fetch company info:", err)
-            );
+          handleSetAuth(userData, accessToken);
         }
       } catch (error) {
-        console.error("Failed to parse stored auth data:", error);
-        // Clear invalid data
-        localStorage.removeItem("userInfo");
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
+        console.log("No active session or refresh failed");
+      } finally {
+        setLoading(false);
       }
-    }
+    };
 
-    if (storedCompany) {
-      try {
-        setCompany(JSON.parse(storedCompany));
-      } catch (error) {
-        console.error("Failed to parse stored company data:", error);
-      }
-    }
-
-    setLoading(false);
+    initAuth();
   }, []);
 
-  // ============================================
-  // ROUTE PROTECTION
-  // ============================================
-  useEffect(() => {
-    if (loading || !pathname) return;
+  // Internal helper to set state and fetch extra data if needed
+  const handleSetAuth = async (userData: UserResponse, accessToken: string) => {
+    setUser(userData);
+    setToken(accessToken);
 
-    // Don't check access-denied page itself
-    if (pathname === ROUTES.ACCESS_DENIED) return;
-
-    // Check protected routes
-    const isProtectedRoute =
-      pathname.startsWith(ROUTES.HR) ||
-      pathname.startsWith(ROUTES.ADMIN) ||
-      pathname.startsWith(ROUTES.USER_DASHBOARD);
-
-    if (isProtectedRoute) {
-      const role = jwtPayload?.role || user?.role;
-
-      // Not logged in
-      if (!token || !role) {
-        router.push(ROUTES.LOGIN);
-        return;
-      }
-
-      // No access to this route
-      if (!hasRouteAccess(role, pathname)) {
-        router.push(ROUTES.ACCESS_DENIED);
-      }
-    }
-  }, [pathname, loading, jwtPayload, user, token, router]);
-
-  // ============================================
-  // AUTH METHODS
-  // ============================================
-
-  const login = async (
-    email: string,
-    password: string
-  ): Promise<{ success: boolean; role?: string; error?: string }> => {
-    try {
-      const response = await authApi.login({ email, password });
-
-      if (response.success && response.data) {
-        const { accessToken, refreshToken, user: userData } = response.data;
-
-        // Save to localStorage
-        if (typeof window !== "undefined") {
-          localStorage.setItem("userInfo", JSON.stringify(userData));
-          localStorage.setItem("accessToken", accessToken);
-          localStorage.setItem("refreshToken", refreshToken);
+    // Fetch company info if user is HR/Employer
+    if (userData.role === "employer" || userData.role === "hr") {
+      try {
+        const companyData = await companyApi.getMyCompany(accessToken);
+        if (companyData) {
+          setCompany(companyData as CompanyResponse);
         }
-
-        setUser(userData);
-        setToken(accessToken);
-
-        // Decode JWT token
-        try {
-          const decoded = jwtDecode<JwtPayload>(accessToken);
-          setJwtPayload(decoded);
-        } catch (error) {
-          console.error("Failed to decode JWT token:", error);
-        }
-
-        // Fetch company info for HR/Employer
-        if (userData.role === "employer" || userData.role === "hr") {
-          try {
-            const companyData = await companyApi.getMyCompany(accessToken);
-            if (companyData) {
-              setCompany(companyData as CompanyResponse);
-              if (typeof window !== "undefined") {
-                localStorage.setItem("company", JSON.stringify(companyData));
-              }
-            }
-          } catch (error) {
-            console.error("Failed to fetch company info after login:", error);
-          }
-        }
-
-        return { success: true, role: userData.role };
+      } catch (error) {
+        console.error("Failed to fetch company info:", error);
       }
-
-      return {
-        success: false,
-        error: response.message || "Đăng nhập thất bại",
-      };
-    } catch (error: any) {
-      console.error("Login error:", error);
-      return {
-        success: false,
-        error: error.message || "Email hoặc mật khẩu không đúng",
-      };
     }
   };
 
-  const registerUser = async (
-    data: RegisterRequest
-  ): Promise<{ success: boolean; error?: string }> => {
-    try {
-      const response = await authApi.registerUser(data);
+  // ============================================
+  // PUBLIC ACTIONS (State Updates Only)
+  // ============================================
 
-      if (response.success && response.data) {
-        const { accessToken, refreshToken, user: userData } = response.data;
-
-        // Save to localStorage
-        if (typeof window !== "undefined") {
-          localStorage.setItem("userInfo", JSON.stringify(userData));
-          localStorage.setItem("accessToken", accessToken);
-          localStorage.setItem("refreshToken", refreshToken);
-        }
-
-        setUser(userData);
-        setToken(accessToken);
-
-        // Redirect to home
-        router.push(ROUTES.HOME);
-
-        return { success: true };
-      }
-
-      return { success: false, error: response.message || "Đăng ký thất bại" };
-    } catch (error: any) {
-      console.error("Register user error:", error);
-      return {
-        success: false,
-        error: error.message || "Đăng ký thất bại. Vui lòng thử lại.",
-      };
-    }
+  const setAuth = (userData: UserResponse, accessToken: string) => {
+    handleSetAuth(userData, accessToken);
   };
 
-  const registerHR = async (
-    data: RegisterHRRequest
-  ): Promise<{ success: boolean; error?: string }> => {
-    try {
-      const response = await authApi.registerHR(data);
-
-      if (response.success && response.data) {
-        const {
-          accessToken,
-          refreshToken,
-          user: userData,
-          company: companyData,
-        } = response.data;
-
-        // Save to localStorage
-        if (typeof window !== "undefined") {
-          localStorage.setItem("userInfo", JSON.stringify(userData));
-          localStorage.setItem("company", JSON.stringify(companyData));
-          localStorage.setItem("accessToken", accessToken);
-          localStorage.setItem("refreshToken", refreshToken);
-        }
-
-        setUser(userData);
-        setCompany(companyData);
-        setToken(accessToken);
-
-        // Redirect to HR dashboard
-        router.push(ROUTES.HR_DASHBOARD);
-
-        return { success: true };
-      }
-
-      return { success: false, error: response.message || "Đăng ký thất bại" };
-    } catch (error: any) {
-      console.error("Register HR error:", error);
-      return {
-        success: false,
-        error: error.message || "Đăng ký thất bại. Vui lòng thử lại.",
-      };
-    }
-  };
-
-  const logout = () => {
-    // Clear localStorage
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("userInfo");
-      localStorage.removeItem("company");
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
-    }
-
-    // Clear state
-    setUser(null);
-    setCompany(null);
-    setToken(null);
-    setJwtPayload(null);
-
-    // Redirect to home
-    router.push(ROUTES.HOME);
+  const handleSetCompany = (companyData: CompanyResponse) => {
+    setCompany(companyData);
   };
 
   const updateUser = (userData: Partial<UserResponse>) => {
     setUser((prev) => {
       if (!prev) return prev;
-      const updatedUser = { ...prev, ...userData };
-
-      // Update localStorage
-      if (typeof window !== "undefined") {
-        localStorage.setItem("userInfo", JSON.stringify(updatedUser));
-      }
-
-      return updatedUser;
+      return { ...prev, ...userData };
     });
   };
 
-  // ============================================
-  // HELPER METHODS
-  // ============================================
+  const logout = () => {
+    // We can call API purely for server-side cookie clearing,
+    // but we don't await blocking the UI.
+    authApi.logout().catch((err) => console.error("Logout api failed", err));
 
-  const checkRouteAccess = (routePath: string): boolean => {
-    const role = jwtPayload?.role || user?.role;
-    return hasRouteAccess(role, routePath);
+    // Clear Client State
+    setUser(null);
+    setCompany(null);
+    setToken(null);
+
+    router.push(ROUTES.LOGIN);
   };
-
-  const getRedirectPath = (role: string): string => {
-    return getRedirectPathByRole(role);
-  };
-
-  // ============================================
-  // PROVIDER VALUE
-  // ============================================
 
   return (
     <AuthContext.Provider
@@ -419,28 +98,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         token,
         isAuthenticated: !!user && !!token,
         loading,
-        login,
-        registerUser,
-        registerHR,
-        logout,
+        setAuth,
+        setCompany: handleSetCompany,
         updateUser,
-        getRedirectPath,
-        checkRouteAccess,
+        logout,
       }}
     >
-      {children}
+      <AuthGuard>{children}</AuthGuard>
     </AuthContext.Provider>
   );
-}
-
-// ============================================
-// HOOK
-// ============================================
-
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
 }

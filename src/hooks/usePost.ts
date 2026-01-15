@@ -34,13 +34,11 @@ export function usePosts(
           token || undefined
         );
 
+        const newPosts = (response.data || []) as unknown as FullPostResponse[];
         if (reset) {
-          setPosts(response.data as unknown as FullPostResponse[]);
+          setPosts(newPosts);
         } else {
-          setPosts((prev) => [
-            ...prev,
-            ...(response.data as unknown as FullPostResponse[]),
-          ]);
+          setPosts((prev) => [...prev, ...newPosts]);
         }
 
         setHasMore(pageNumber < response.totalPages);
@@ -103,13 +101,11 @@ export function useUserPosts(
           token || undefined
         );
 
+        const newPosts = (response.data || []) as unknown as FullPostResponse[];
         if (reset) {
-          setPosts(response.data as unknown as FullPostResponse[]);
+          setPosts(newPosts);
         } else {
-          setPosts((prev) => [
-            ...prev,
-            ...(response.data as unknown as FullPostResponse[]),
-          ]);
+          setPosts((prev) => [...prev, ...newPosts]);
         }
 
         setHasMore(pageNumber < response.totalPages);
@@ -170,10 +166,11 @@ export function useUserMedia(
           token || undefined
         );
 
+        const newMedia = response.data || [];
         if (reset) {
-          setMedia(response.data);
+          setMedia(newMedia);
         } else {
-          setMedia((prev) => [...prev, ...response.data]);
+          setMedia((prev) => [...prev, ...newMedia]);
         }
 
         setTotalItems(response.totalItems);
@@ -229,10 +226,11 @@ export function useComments(
           token || undefined
         );
 
+        const newComments = response.data || [];
         if (reset) {
-          setComments(response.data);
+          setComments(newComments);
         } else {
-          setComments((prev) => [...prev, ...response.data]);
+          setComments((prev) => [...prev, ...newComments]);
         }
 
         setHasMore(pageNumber < response.totalPages);

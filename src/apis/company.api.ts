@@ -70,7 +70,7 @@ export const companyApi = {
 
   // Lấy công ty của HR đang đăng nhập
   getMyCompany: (token?: string) => {
-    const role = getUserRole();
+    const role = getUserRole(token);
     return apiGet<Company>(`${ENDPOINT}/my-company`, {
       token,
       params: { role },

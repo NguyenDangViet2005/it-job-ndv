@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/providers/auth.provider";
+import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { ROUTES } from "@/configs";
 import ApplicationModal from "@/components/modals/application.modal";

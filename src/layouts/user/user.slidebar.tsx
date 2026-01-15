@@ -3,7 +3,11 @@
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/shadcn/button";
 import { ModeToggle } from "@/components/ui/customs/toggle-them";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/shadcn/avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/ui/shadcn/avatar";
 
 import {
   Sheet,
@@ -25,7 +29,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { ScrollArea } from "@/components/ui/shadcn/scroll-area";
-import { useAuth } from "@/providers/auth.provider";
+import { useAuth } from "@/hooks/useAuth";
 import { ROUTES } from "@/configs";
 
 const sidebarItems = [
@@ -79,8 +83,12 @@ export default function UserDashboardSidebar() {
           </AvatarFallback>
         </Avatar>
         <div className="flex-1 min-w-0">
-          <h3 className="font-semibold truncate">{user?.fullName || "Người dùng"}</h3>
-          <p className="text-xs text-muted-foreground truncate">{user?.email || "user@example.com"}</p>
+          <h3 className="font-semibold truncate">
+            {user?.fullName || "Người dùng"}
+          </h3>
+          <p className="text-xs text-muted-foreground truncate">
+            {user?.email || "user@example.com"}
+          </p>
         </div>
       </div>
     </div>
@@ -134,7 +142,7 @@ export default function UserDashboardSidebar() {
         <span className="text-sm text-muted-foreground">Giao diện</span>
         <ModeToggle />
       </div>
-      
+
       {/* Back to Home */}
       <Button variant="outline" className="w-full justify-start gap-3" asChild>
         <Link href={ROUTES.HOME}>
@@ -142,10 +150,10 @@ export default function UserDashboardSidebar() {
           <span>Về trang chủ</span>
         </Link>
       </Button>
-      
+
       {/* Logout */}
-      <Button 
-        variant="ghost" 
+      <Button
+        variant="ghost"
         className="w-full justify-start gap-3 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
         onClick={logout}
       >
@@ -158,7 +166,7 @@ export default function UserDashboardSidebar() {
   const SidebarContent = () => (
     <div className="flex h-full flex-col bg-gradient-to-b from-blue-500/15 via-indigo-500/10 to-background/95 backdrop-blur-md">
       <SidebarHeader />
-      
+
       <ScrollArea className="flex-1 p-4">
         <div className="space-y-6">
           <ProfileCard />
@@ -176,8 +184,8 @@ export default function UserDashboardSidebar() {
       <div className="lg:hidden fixed top-4 left-4 z-50">
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
-            <Button 
-              size="icon" 
+            <Button
+              size="icon"
               className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/25 hover:from-blue-600 hover:to-indigo-700"
             >
               <Menu className="h-5 w-5" />

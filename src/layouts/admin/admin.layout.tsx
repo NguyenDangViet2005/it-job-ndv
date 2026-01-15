@@ -28,7 +28,7 @@ import { cn } from "@/lib/utils";
 import { NavigationItem } from "@/types/test.type";
 import { ModeToggle } from "../../components/ui/customs/toggle-them";
 import { ScrollArea } from "@/components/ui/shadcn/scroll-area";
-import { useAuth } from "@/providers/auth.provider";
+import { useAuth } from "@/hooks/useAuth";
 import Image from "next/image";
 import { useTheme } from "next-themes";
 import { useState, useEffect } from "react";
@@ -52,9 +52,10 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
   const { theme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
-  const logoSrc = mounted && (resolvedTheme === "dark" || theme === "dark")
-    ? "/logo/logo-dark-removebg.png"
-    : "/logo/logo-removebg.png";
+  const logoSrc =
+    mounted && (resolvedTheme === "dark" || theme === "dark")
+      ? "/logo/logo-dark-removebg.png"
+      : "/logo/logo-removebg.png";
 
   useEffect(() => {
     setMounted(true);
@@ -83,7 +84,8 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
                 variant={isActive ? "secondary" : "outline"}
                 className={cn(
                   "text-xs",
-                  isActive && "bg-white/90 dark:bg-slate-800 text-slate-900 dark:text-slate-100 border-transparent"
+                  isActive &&
+                    "bg-white/90 dark:bg-slate-800 text-slate-900 dark:text-slate-100 border-transparent"
                 )}
               >
                 {item.badge}
@@ -102,7 +104,9 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
           <Shield className="h-4 w-4" />
         </div>
         <div>
-          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Admin Panel</h3>
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+            Admin Panel
+          </h3>
           <p className="text-[10px] text-slate-500 dark:text-slate-400">
             System Administrator
           </p>
@@ -111,19 +115,31 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
       <div className="grid grid-cols-4 gap-1.5 text-[10px]">
         <div className="p-1.5 rounded bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-center">
           <span className="text-slate-500 dark:text-slate-400 block">Jobs</span>
-          <span className="font-bold text-slate-900 dark:text-slate-100">156</span>
+          <span className="font-bold text-slate-900 dark:text-slate-100">
+            156
+          </span>
         </div>
         <div className="p-1.5 rounded bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-center">
-          <span className="text-slate-500 dark:text-slate-400 block">Users</span>
-          <span className="font-bold text-slate-900 dark:text-slate-100">1.2K</span>
+          <span className="text-slate-500 dark:text-slate-400 block">
+            Users
+          </span>
+          <span className="font-bold text-slate-900 dark:text-slate-100">
+            1.2K
+          </span>
         </div>
         <div className="p-1.5 rounded bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-center">
           <span className="text-slate-500 dark:text-slate-400 block">Co.</span>
-          <span className="font-bold text-slate-900 dark:text-slate-100">89</span>
+          <span className="font-bold text-slate-900 dark:text-slate-100">
+            89
+          </span>
         </div>
         <div className="p-1.5 rounded bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-center">
-          <span className="text-slate-500 dark:text-slate-400 block">Posts</span>
-          <span className="font-bold text-slate-900 dark:text-slate-100">324</span>
+          <span className="text-slate-500 dark:text-slate-400 block">
+            Posts
+          </span>
+          <span className="font-bold text-slate-900 dark:text-slate-100">
+            324
+          </span>
         </div>
       </div>
     </div>
@@ -132,7 +148,11 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
   const SidebarFooter = () => (
     <div className="pt-4 space-y-3 border-t border-slate-200 dark:border-slate-800 bg-background">
       {/* Back to Home */}
-      <Button variant="outline" className="w-full justify-start gap-3 border-slate-200 dark:border-slate-700" asChild>
+      <Button
+        variant="outline"
+        className="w-full justify-start gap-3 border-slate-200 dark:border-slate-700"
+        asChild
+      >
         <Link href={ROUTES.HOME}>
           <Home className="h-4 w-4" />
           <span>Về trang chủ</span>
@@ -166,10 +186,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
               <Menu className="h-5 w-5" />
             </Button>
             <div className="flex items-center">
-              <Link
-                href={ROUTES.HOME}
-                className="cursor-target"
-              >
+              <Link href={ROUTES.HOME} className="cursor-target">
                 <Image
                   src={logoSrc}
                   width={120}
@@ -235,7 +252,9 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
                     A
                   </div>
                   <div>
-                    <h2 className="font-bold text-slate-900 dark:text-slate-100">Admin Panel</h2>
+                    <h2 className="font-bold text-slate-900 dark:text-slate-100">
+                      Admin Panel
+                    </h2>
                     <p className="text-xs text-slate-500 dark:text-slate-400">
                       Quản trị hệ thống
                     </p>

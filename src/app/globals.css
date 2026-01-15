@@ -239,12 +239,12 @@
   * {
     @apply border-border outline-ring/50;
   }
-  
+
   html {
     overflow-y: scroll;
     overflow-x: hidden;
   }
-  
+
   body {
     @apply bg-background text-foreground font-sans;
     overflow-x: hidden;
@@ -324,5 +324,5 @@ body[data-scroll-locked] {
 .dark .custom-next-1:hover,
 .dark .custom-prev-2:hover,
 .dark .custom-next-2:hover {
-  background-color: #d9daf0c0; 
+  background-color: #d9daf0c0;
 }

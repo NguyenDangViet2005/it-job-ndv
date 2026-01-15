@@ -15,9 +15,12 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/components/ui/shadcn/avatar";
-import { useAuth } from "@/providers/auth.provider";
+import { useAuth } from "@/hooks/useAuth";
 import { ROUTES } from "@/configs";
-import { userSidebarItems, filterSidebarItemsByRole } from "@/configs/navigation.config";
+import {
+  userSidebarItems,
+  filterSidebarItemsByRole,
+} from "@/configs/navigation.config";
 
 export function UserDashboardLayout({
   children,
@@ -91,7 +94,9 @@ export function UserDashboardLayout({
     <div className="p-4 space-y-2 border-t bg-card/80 backdrop-blur-sm flex-shrink-0">
       {/* Theme Toggle */}
       <div className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-accent/50 transition-colors">
-        <span className="text-sm text-muted-foreground font-medium">Giao diện</span>
+        <span className="text-sm text-muted-foreground font-medium">
+          Giao diện
+        </span>
         <ModeToggle />
       </div>
 
@@ -158,10 +163,20 @@ export function UserDashboardLayout({
           {/* Logo Header */}
           <div className="p-4 border-b bg-card/80 backdrop-blur-sm flex-shrink-0">
             <Link href={ROUTES.HOME} className="flex items-center gap-2 group">
-              <Image src="/icons/icon.svg" width={36} height={36} alt="IT-Job Logo" className="flex-shrink-0" />
+              <Image
+                src="/icons/icon.svg"
+                width={36}
+                height={36}
+                alt="IT-Job Logo"
+                className="flex-shrink-0"
+              />
               <div className="min-w-0 flex-1">
-                <h2 className="font-bold text-primary text-sm truncate">IT-Job</h2>
-                <p className="text-xs text-muted-foreground truncate">Dashboard</p>
+                <h2 className="font-bold text-primary text-sm truncate">
+                  IT-Job
+                </h2>
+                <p className="text-xs text-muted-foreground truncate">
+                  Dashboard
+                </p>
               </div>
             </Link>
           </div>
@@ -180,21 +195,31 @@ export function UserDashboardLayout({
 
         {/* Mobile Sidebar */}
         <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-          <SheetContent side="left" className="w-72 p-0 bg-card/95 backdrop-blur-sm">
+          <SheetContent
+            side="left"
+            className="w-72 p-0 bg-card/95 backdrop-blur-sm"
+          >
             <div className="flex flex-col h-full">
               {/* Mobile Header */}
               <div className="p-4 border-b bg-card/80">
                 <div className="flex items-center gap-2">
-                  <Image src="/icon.svg" width={36} height={36} alt="IT-Job Logo" />
+                  <Image
+                    src="/icons/icon.svg"
+                    width={36}
+                    height={36}
+                    alt="IT-Job Logo"
+                  />
                   <div>
-                    <h2 className="font-bold text-foreground text-sm">IT-Job Dashboard</h2>
+                    <h2 className="font-bold text-foreground text-sm">
+                      IT-Job Dashboard
+                    </h2>
                     <p className="text-xs text-muted-foreground">
                       Quản lý tài khoản
                     </p>
                   </div>
                 </div>
               </div>
-              
+
               {/* Mobile Content */}
               <ScrollArea className="flex-1 px-3 py-4">
                 <div className="space-y-4">
@@ -202,7 +227,7 @@ export function UserDashboardLayout({
                   <NavigationContent />
                 </div>
               </ScrollArea>
-              
+
               {/* Mobile Footer */}
               <SidebarFooter />
             </div>

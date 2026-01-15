@@ -9,7 +9,7 @@ import { Card, CardContent } from "@/components/ui/shadcn/card";
 import { Button } from "@/components/ui/shadcn/button";
 import { Separator } from "@/components/ui/shadcn/separator";
 import { Users, Bookmark, TrendingUp, Eye, Loader2 } from "lucide-react";
-import { useAuth } from "@/providers/auth.provider";
+import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
 
 export default function ProfileSection() {
@@ -64,7 +64,10 @@ export default function ProfileSection() {
             </Avatar>
           </Link>
 
-          <Link href={`/profile/${user?.id}`} className="cursor-target hover:underline">
+          <Link
+            href={`/profile/${user?.id}`}
+            className="cursor-target hover:underline"
+          >
             <h3 className="font-semibold text-sm mt-2">
               {user?.fullName || "Người dùng"}
             </h3>
