@@ -22,7 +22,8 @@ interface EditPostDialogProps {
   onSave: (
     postId: number,
     content: string,
-    newImages: File[]
+    newImages: File[],
+    keepImageUrls: string[]
   ) => Promise<void>;
 }
 
@@ -56,7 +57,7 @@ export default function EditPostDialog({
 
     setIsSaving(true);
     try {
-      await onSave(post.id, content, newImages);
+      await onSave(post.id, content, newImages, currentImages);
       onOpenChange(false);
     } catch (error) {
       console.error("Error saving post:", error);

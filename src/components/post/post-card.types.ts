@@ -82,6 +82,7 @@ export interface NormalizedPost {
     content: string;
     timestamp: string;
     likes: number;
+    attachments?: AttachmentResponse[];
   }>;
   totalComments: number;
   showComments: boolean;

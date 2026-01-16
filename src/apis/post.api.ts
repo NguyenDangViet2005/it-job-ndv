@@ -120,12 +120,20 @@ export const postApi = {
     id: number,
     data: { content: string; userId?: number; companyId?: number },
     images?: File[],
+    keepImageUrls?: string[],
     token?: string
   ) => {
     const formData = new FormData();
     formData.append("content", data.content);
     if (data.userId) formData.append("userId", data.userId.toString());
     if (data.companyId) formData.append("companyId", data.companyId.toString());
+
+    // Add keepImageUrls array
+    if (keepImageUrls && keepImageUrls.length > 0) {
+      keepImageUrls.forEach((url) => {
+        formData.append("keepImageUrls[]", url);
+      });
+    }
 
     if (images && images.length > 0) {
       images.forEach((image) => {
@@ -179,56 +187,5 @@ export const postApi = {
       { userId },
       { token }
     );
-  },
-
-  // Thêm comment
-  addComment: async (
-    postId: number,
-    content: string,
-    userId: number,
-    attachments?: File[],
-    token?: string
-  ) => {
-    const formData = new FormData();
-    formData.append("Content", content);
-    formData.append("UserId", userId.toString());
-    formData.append("PostId", postId.toString());
-
-    if (attachments && attachments.length > 0) {
-      attachments.forEach((file) => {
-        formData.append("Attachments", file);
-      });
-    }
-
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BE_ENDPOINT}${ENDPOINT}/${postId}/comment`,
-      {
-        method: "POST",
-        headers: {
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: formData,
-      }
-    );
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || "Failed to add comment");
-    }
-
-    return response.json();
-  },
-
-  // Xóa comment
-  deleteComment: (
-    postId: number,
-    commentId: number,
-    userId: number,
-    token?: string
-  ) => {
-    return apiDelete<void>(`${ENDPOINT}/${postId}/comment/${commentId}`, {
-      params: { userId },
-      token,
-    });
   },
 };

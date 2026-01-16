@@ -49,11 +49,6 @@ export const blogApi = {
   create: async (formData: FormData, token: string) => {
     const BE_ENDPOINT = process.env.NEXT_PUBLIC_BE_ENDPOINT;
 
-    console.log("Creating blog with FormData:");
-    for (let pair of formData.entries()) {
-      console.log(pair[0], pair[1]);
-    }
-
     const response = await fetch(`${BE_ENDPOINT}${ENDPOINT}`, {
       method: "POST",
       headers: {
@@ -63,8 +58,6 @@ export const blogApi = {
       body: formData,
     });
 
-    console.log("Response status:", response.status);
-    console.log("Response headers:", response.headers);
 
     if (!response.ok) {
       const error = await response.json().catch(() => ({

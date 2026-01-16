@@ -46,6 +46,7 @@ import { interactionApi } from "@/apis/interaction.api";
 
 import type { FullPostResponse, AttachmentResponse } from "@/types/api.type";
 import { useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
 import { useInfiniteScroll, useUserMedia, useUserPosts } from "@/hooks/usePost";
 
 interface Skill {
@@ -381,7 +382,12 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
   };
 
   // Handle save edited post
-  const handleSaveEditedPost = async (postId: number, content: string) => {
+  const handleSaveEditedPost = async (
+    postId: number,
+    content: string,
+    newImages: File[],
+    keepImageUrls: string[]
+  ) => {
     if (!token) return;
 
     try {
@@ -399,13 +405,22 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
         updateData.companyId = post.company.id;
       }
 
-      await postApi.update(postId, updateData, token);
+      // Always use updateWithImages to handle both new images and keepImageUrls
+      await postApi.updateWithImages(
+        postId,
+        updateData,
+        newImages.length > 0 ? newImages : undefined,
+        keepImageUrls,
+        token
+      );
+
       // Update local state
       setPosts((prev: FullPostResponse[]) =>
         prev.map((p: FullPostResponse) =>
           p.id === postId ? { ...p, content } : p
         )
       );
+      toast.success("Cập nhật bài viết thành công!");
     } catch (error) {
       console.error("Error updating post:", error);
       toast.error("Không thể cập nhật bài viết!");
@@ -514,19 +529,35 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
       {/* Cover Photo */}
       <div className="relative h-72 md:h-96 bg-white overflow-hidden group border-b-1">
         {displayUser.coverImage ? (
-          <>
+          <div className="relative w-full h-full">
             <img
               src={displayUser.coverImage}
               alt="Cover"
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              className={cn(
+                "w-full h-full object-cover transition-transform duration-500 group-hover:scale-105",
+                isUploadingCover && "blur-sm opacity-50"
+              )}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          </>
+            {isUploadingCover && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/20">
+                <Loader2 className="h-12 w-12 text-white animate-spin mb-2" />
+                <span className="text-white font-medium bg-black/40 px-3 py-1 rounded-full text-sm">Đang cập nhật ảnh bìa...</span>
+              </div>
+            )}
+          </div>
         ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <p className="text-muted-foreground text-lg">
-              {isOwnProfile ? "Chưa có ảnh bìa" : ""}
-            </p>
+          <div className="w-full h-full flex items-center justify-center relative">
+            {isUploadingCover ? (
+              <div className="flex flex-col items-center gap-2">
+                <Loader2 className="h-10 w-10 text-primary animate-spin" />
+                <span className="text-muted-foreground text-sm font-medium">Đang tải ảnh bìa...</span>
+              </div>
+            ) : (
+              <p className="text-muted-foreground text-lg">
+                {isOwnProfile ? "Chưa có ảnh bìa" : ""}
+              </p>
+            )}
           </div>
         )}
         {isOwnProfile && (
@@ -557,7 +588,10 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
               <div className="flex flex-col md:flex-row gap-4 items-center md:items-end pt-6">
                 {/* Avatar */}
                 <div className="relative group">
-                  <Avatar className="h-48 w-48 border-4 border-background shadow-lg transition-all duration-300 hover:shadow-2xl hover:scale-105">
+                  <Avatar className={cn(
+                    "h-48 w-48 shadow-lg transition-all duration-300 hover:shadow-2xl hover:scale-105",
+                    isUploadingAvatar && "blur-[2px] opacity-70"
+                  )}>
                     <AvatarImage
                       src={displayUser.avatar}
                       alt={displayUser.fullName}
@@ -569,11 +603,17 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
                   {isOwnProfile && (
                     <>
                       <div
-                        className="absolute inset-0 rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center cursor-pointer"
-                        onClick={() => avatarInputRef.current?.click()}
+                        className={cn(
+                          "absolute inset-0 rounded-full bg-black/40 transition-all duration-300 flex items-center justify-center cursor-pointer",
+                          isUploadingAvatar ? "opacity-100 cursor-wait" : "opacity-0 group-hover:opacity-100"
+                        )}
+                        onClick={() => !isUploadingAvatar && avatarInputRef.current?.click()}
                       >
                         {isUploadingAvatar ? (
-                          <Loader2 className="h-8 w-8 text-white animate-spin" />
+                          <div className="flex flex-col items-center gap-2">
+                            <Loader2 className="h-10 w-10 text-white animate-spin" />
+                            <span className="text-white text-xs font-medium animate-pulse">Đang tải...</span>
+                          </div>
                         ) : (
                           <Camera className="h-8 w-8 text-white" />
                         )}

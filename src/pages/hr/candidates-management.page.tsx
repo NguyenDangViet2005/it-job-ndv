@@ -110,11 +110,9 @@ function CandidatesManagement() {
         row.coverLetter,
         token
       );
-      console.log(`✅ Đã chấp nhận ứng viên ${row.userFullName}`);
       alert(`✅ Đã chấp nhận ứng viên ${row.userFullName}`);
       await fetchApplications(); // Refresh data
     } catch (error) {
-      console.error("❌ Error accepting application:", error);
       alert("❌ Có lỗi xảy ra khi chấp nhận ứng viên");
     }
   };
@@ -129,11 +127,9 @@ function CandidatesManagement() {
         row.coverLetter,
         token
       );
-      console.log(`❌ Đã từ chối ứng viên ${row.userFullName}`);
       alert(`❌ Đã từ chối ứng viên ${row.userFullName}`);
       await fetchApplications(); // Refresh data
     } catch (error) {
-      console.error("❌ Error rejecting application:", error);
       alert("❌ Có lỗi xảy ra khi từ chối ứng viên");
     }
   };
@@ -145,11 +141,9 @@ function CandidatesManagement() {
       try {
         const token = "your-token-here"; // TODO: Get from auth context
         await applicationApi.delete(row.jobId, row.userId, token);
-        console.log(`🗑️ Đã xóa đơn ứng tuyển của ${row.userFullName}`);
         alert(`✅ Đã xóa đơn ứng tuyển của ${row.userFullName} thành công`);
         await fetchApplications(); // Refresh data
       } catch (error) {
-        console.error("❌ Error deleting application:", error);
         alert("❌ Có lỗi xảy ra khi xóa đơn ứng tuyển");
       }
     }

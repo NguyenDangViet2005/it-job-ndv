@@ -83,14 +83,15 @@ export default function PostCard({
         comments: getCommentsArray(post.interaction?.comments).map(
           (c: CommentResponse) => ({
             id: c.id,
-            userId: c.user?.id,
-            author: c.user?.fullName || "Unknown",
-            avatar: c.user?.avatar || "",
+            userId: c.User?.id || c.user?.id,
+            author: c.User?.fullName || c.user?.fullName || "Unknown",
+            avatar: c.User?.avatar || c.user?.avatar || "",
             content: c.content,
             timestamp: c.createdAt
               ? new Date(c.createdAt).toLocaleDateString("vi-VN")
               : "Vừa xong",
             likes: 0,
+            attachments: c.Attachments || c.attachments || [],
           })
         ),
         totalComments: post.interaction?.totalComments || 0,

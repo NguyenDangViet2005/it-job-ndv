@@ -137,7 +137,8 @@ export default function QAPage() {
     postId: number,
     commentId: number,
     content: string,
-    attachments?: File[]
+    attachments?: File[],
+    keepImageUrls?: string[]
   ) => {
     if (!isAuthenticated || !user || !token) return;
 
@@ -148,7 +149,8 @@ export default function QAPage() {
         user.id,
         content,
         token,
-        attachments
+        attachments,
+        keepImageUrls
       );
 
       setPosts((prev: FullPostResponse[]) =>

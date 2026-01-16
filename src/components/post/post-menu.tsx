@@ -57,7 +57,7 @@ export default function PostMenu({
 
   const handleDelete = async () => {
     if (!onDelete) return;
-    
+
     setIsDeleting(true);
     try {
       await onDelete(postId);
@@ -76,7 +76,7 @@ export default function PostMenu({
           <Button
             variant="ghost"
             size="icon"
-            className="cursor-target hover:bg-accent hover:rotate-90 transition-all duration-300"
+            className="cursor-target hover:bg-accent transition-all duration-300"
           >
             <MoreHorizontal className="h-4 w-4" />
           </Button>
@@ -117,7 +117,7 @@ export default function PostMenu({
           {isOwner && (
             <>
               <DropdownMenuSeparator />
-              
+
               {/* Edit Post */}
               {onEdit && (
                 <DropdownMenuItem
@@ -150,7 +150,8 @@ export default function PostMenu({
           <AlertDialogHeader>
             <AlertDialogTitle>Xác nhận xóa bài viết</AlertDialogTitle>
             <AlertDialogDescription>
-              Bạn có chắc chắn muốn xóa bài viết này? Hành động này không thể hoàn tác.
+              Bạn có chắc chắn muốn xóa bài viết này? Hành động này không thể
+              hoàn tác.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

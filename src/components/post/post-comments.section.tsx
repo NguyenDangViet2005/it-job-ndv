@@ -25,6 +25,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/shadcn/dropdown-menu";
 import type { NormalizedPost } from "./post-card.types";
+import type { AttachmentResponse } from "@/types/api.type";
 
 interface PostCommentsProps {
   post: NormalizedPost;
@@ -36,7 +37,8 @@ interface PostCommentsProps {
   onEditComment?: (
     commentId: number,
     content: string,
-    attachments?: File[]
+    newAttachments?: File[],
+    keepImageUrls?: string[]
   ) => Promise<void>;
   onDeleteComment?: (commentId: number) => Promise<void>;
   onToggleComments: () => void;
@@ -60,7 +62,15 @@ export default function PostComments({
   const [commentAttachments, setCommentAttachments] = useState<File[]>([]);
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
   const [editingContent, setEditingContent] = useState("");
+  const [editingAttachments, setEditingAttachments] = useState<File[]>([]);
+  const [existingAttachments, setExistingAttachments] = useState<
+    AttachmentResponse[]
+  >([]);
+  const [keepExistingAttachments, setKeepExistingAttachments] = useState<
+    AttachmentResponse[]
+  >([]);
   const attachmentInputRef = useRef<HTMLInputElement>(null);
+  const editAttachmentInputRef = useRef<HTMLInputElement>(null);
 
   const getTopComments = (limit: number = 3) => {
     return [...post.comments].slice(0, limit);
@@ -89,11 +99,15 @@ export default function PostComments({
         await onEditComment(
           commentId,
           editingContent,
-          commentAttachments.length > 0 ? commentAttachments : undefined
+          editingAttachments.length > 0 ? editingAttachments : undefined,
+          keepExistingAttachments.length > 0
+            ? keepExistingAttachments.map((a) => a.fileUrl)
+            : undefined
         );
         setEditingCommentId(null);
         setEditingContent("");
-        setCommentAttachments([]);
+        setEditingAttachments([]);
+        setKeepExistingAttachments([]);
       } finally {
         setIsSubmitting(false);
       }
@@ -110,16 +124,25 @@ export default function PostComments({
     }
   };
 
-  const startEditingComment = (commentId: number, currentContent: string) => {
+  const startEditingComment = (
+    commentId: number,
+    currentContent: string,
+    existingAttachments?: AttachmentResponse[]
+  ) => {
     setEditingCommentId(commentId);
     setEditingContent(currentContent);
-    setCommentAttachments([]);
+    setEditingAttachments([]);
+    const attachments = existingAttachments || [];
+    setExistingAttachments(attachments);
+    setKeepExistingAttachments(attachments); // Initially keep all existing
   };
 
   const cancelEditing = () => {
     setEditingCommentId(null);
     setEditingContent("");
-    setCommentAttachments([]);
+    setEditingAttachments([]);
+    setExistingAttachments([]);
+    setKeepExistingAttachments([]);
   };
 
   const handleAttachmentSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -129,8 +152,31 @@ export default function PostComments({
     }
   };
 
+  const handleEditAttachmentSelect = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length > 0) {
+      setEditingAttachments((prev) => [...prev, ...files].slice(0, 4));
+    }
+    // Reset input to allow selecting same file again
+    if (editAttachmentInputRef.current) {
+      editAttachmentInputRef.current.value = "";
+    }
+  };
+
   const removeAttachment = (index: number) => {
     setCommentAttachments((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const removeEditingAttachment = (index: number) => {
+    setEditingAttachments((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const removeExistingAttachment = (attachmentToRemove: AttachmentResponse) => {
+    setKeepExistingAttachments((prev) =>
+      prev.filter((att) => att.fileUrl !== attachmentToRemove.fileUrl)
+    );
   };
 
   if (post.comments.length === 0 && !post.showComments) {
@@ -157,12 +203,70 @@ export default function PostComments({
               <div className="flex-1">
                 {editingCommentId === comment.id ? (
                   <div className="space-y-2">
-                    <input
-                      type="text"
+                    <textarea
                       value={editingContent}
                       onChange={(e) => setEditingContent(e.target.value)}
-                      className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm"
+                      className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm min-h-[80px]"
                       autoFocus
+                      placeholder="Nội dung bình luận..."
+                    />
+                    {/* Display existing attachments */}
+                    {keepExistingAttachments.length > 0 && (
+                      <div className="space-y-2">
+                        <p className="text-xs text-muted-foreground">
+                          Ảnh hiện tại:
+                        </p>
+                        <div className="flex gap-2 flex-wrap">
+                          {keepExistingAttachments.map((att, idx) => (
+                            <div key={idx} className="relative group">
+                              <img
+                                src={att.fileUrl}
+                                alt={`Attachment ${idx + 1}`}
+                                className="w-16 h-16 object-cover rounded-lg"
+                              />
+                              <button
+                                onClick={() => removeExistingAttachment(att)}
+                                className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                              >
+                                <X className="h-3 w-3" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {/* New attachments preview */}
+                    {editingAttachments.length > 0 && (
+                      <div className="space-y-2">
+                        <p className="text-xs text-muted-foreground">
+                          Ảnh mới:
+                        </p>
+                        <div className="flex gap-2 flex-wrap">
+                          {editingAttachments.map((file, idx) => (
+                            <div key={idx} className="relative group">
+                              <img
+                                src={URL.createObjectURL(file)}
+                                alt={`New attachment ${idx + 1}`}
+                                className="w-16 h-16 object-cover rounded-lg"
+                              />
+                              <button
+                                onClick={() => removeEditingAttachment(idx)}
+                                className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                              >
+                                <X className="h-3 w-3" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    <input
+                      ref={editAttachmentInputRef}
+                      type="file"
+                      accept="image/*,video/*"
+                      multiple
+                      onChange={handleEditAttachmentSelect}
+                      className="hidden"
                     />
                     <div className="flex gap-2">
                       <Button
@@ -175,6 +279,15 @@ export default function PostComments({
                         ) : (
                           "Lưu"
                         )}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => editAttachmentInputRef.current?.click()}
+                        disabled={isSubmitting}
+                      >
+                        <ImageIcon className="h-3 w-3 mr-1" />
+                        Ảnh
                       </Button>
                       <Button
                         size="sm"
@@ -192,6 +305,26 @@ export default function PostComments({
                         {comment.author}
                       </p>
                       <p className="text-sm">{comment.content}</p>
+                      {/* Display comment attachments if any */}
+                      {(comment as any).attachments &&
+                        (comment as any).attachments.length > 0 && (
+                          <div className="flex gap-2 flex-wrap mt-2">
+                            {(comment as any).attachments.map(
+                              (att: AttachmentResponse, idx: number) => (
+                                <img
+                                  key={idx}
+                                  src={att.fileUrl}
+                                  alt={`Comment attachment ${idx + 1}`}
+                                  className="w-20 h-20 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    window.open(att.fileUrl, "_blank");
+                                  }}
+                                />
+                              )
+                            )}
+                          </div>
+                        )}
                       {currentUserId === comment.userId &&
                         onEditComment &&
                         onDeleteComment && (
@@ -210,7 +343,8 @@ export default function PostComments({
                                 onClick={() =>
                                   startEditingComment(
                                     comment.id,
-                                    comment.content
+                                    comment.content,
+                                    (comment as any).attachments
                                   )
                                 }
                               >

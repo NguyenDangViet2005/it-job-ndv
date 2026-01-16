@@ -226,12 +226,10 @@ const JobsManagement = () => {
   const handleViewJob = async (jobId: number) => {
     try {
       const response = await jobApi.getById(jobId);
-      console.log("📦 Job Detail:", response);
       setSelectedJob(response as any);
       setModalMode("view");
       setModalOpen(true);
     } catch (error) {
-      console.error("❌ Error fetching job detail:", error);
       alert("Không thể tải thông tin công việc");
     }
   };

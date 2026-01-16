@@ -14,6 +14,7 @@ import type { FullPostResponse } from "@/types/api.type";
 import { postApi } from "@/apis/post.api";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
+import { DEFAULT_AVATARS } from "@/configs/constants";
 
 interface MainContentProps {
   posts: FullPostResponse[];
@@ -97,8 +98,7 @@ function MainContent({
   };
 
   const handlePostSubmit = async () => {
-    if (!newPost.trim() && selectedImages.length === 0 && !selectedVideo)
-      return;
+    if (!newPost.trim()) return;
     if (!checkAuth()) return;
     if (!user || !token) return;
 
@@ -136,7 +136,8 @@ function MainContent({
   const handleSaveEditedPost = async (
     postId: number,
     content: string,
-    newImages: File[]
+    newImages: File[],
+    keepImageUrls: string[]
   ) => {
     if (!token) return;
 
@@ -155,12 +156,14 @@ function MainContent({
         updateData.companyId = post.company.id;
       }
 
-      // Use updateWithImages if there are new images, otherwise use regular update
-      if (newImages.length > 0) {
-        await postApi.updateWithImages(postId, updateData, newImages, token);
-      } else {
-        await postApi.update(postId, updateData, token);
-      }
+      // Always use updateWithImages to handle both new images and keepImageUrls
+      await postApi.updateWithImages(
+        postId,
+        updateData,
+        newImages.length > 0 ? newImages : undefined,
+        keepImageUrls,
+        token
+      );
 
       // Refresh to show updated post
       window.location.reload();
@@ -200,7 +203,7 @@ function MainContent({
                   src={
                     currentUserAvatar ||
                     user?.avatar ||
-                    "https://ui-avatars.com/api/?name=User&background=random&color=fff"
+                    DEFAULT_AVATARS.USER
                   }
                 />
                 <AvatarFallback>
@@ -291,12 +294,7 @@ function MainContent({
               <Button
                 size="sm"
                 onClick={handlePostSubmit}
-                disabled={
-                  isCreatingPost ||
-                  (!newPost.trim() &&
-                    selectedImages.length === 0 &&
-                    !selectedVideo)
-                }
+                disabled={isCreatingPost || !newPost.trim()}
                 className="cursor-target hover:scale-105 transition-transform duration-300"
               >
                 {isCreatingPost ? (

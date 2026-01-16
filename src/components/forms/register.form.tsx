@@ -72,7 +72,6 @@ export default function FormRegister() {
   };
 
   const handleGoogleRegister = () => {
-    console.log("Google register clicked");
     // Ở đây bạn có thể gọi API đăng ký bằng Google
   };
 

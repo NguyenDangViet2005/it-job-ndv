@@ -13,10 +13,8 @@ export function usePostActions() {
       setLoading(true);
       // TODO: Implement save post API
       // await postApi.savePost(postId, currentUserId);
-      console.log("Save post:", postId);
       toast?.success?.("Đã lưu bài viết");
     } catch (error) {
-      console.error("Error saving post:", error);
       toast?.error?.("Không thể lưu bài viết");
     } finally {
       setLoading(false);
@@ -28,10 +26,8 @@ export function usePostActions() {
       setLoading(true);
       // TODO: Implement report post API
       // await postApi.reportPost(postId, currentUserId);
-      console.log("Report post:", postId);
       toast?.success?.("Đã báo cáo bài viết");
     } catch (error) {
-      console.error("Error reporting post:", error);
       toast?.error?.("Không thể báo cáo bài viết");
     } finally {
       setLoading(false);
@@ -40,9 +36,7 @@ export function usePostActions() {
 
   const handleEditPost = async (postId: number) => {
     try {
-      // TODO: Open edit dialog/modal
-      console.log("Edit post:", postId);
-      // You can dispatch an action to open edit modal here
+
     } catch (error) {
       console.error("Error editing post:", error);
     }
@@ -58,7 +52,6 @@ export function usePostActions() {
       }
 
       await postApi.delete(postId, token);
-      console.log("Deleted post:", postId);
       toast?.success?.("Đã xóa bài viết");
 
       // Refresh posts list

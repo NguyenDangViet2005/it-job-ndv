@@ -98,7 +98,6 @@ const UsersManagement = () => {
 
   // Handle actions
   const handleEdit = (user: AdminUser) => {
-    console.log("Edit user:", user);
   };
 
   const handleDelete = async (user: AdminUser) => {

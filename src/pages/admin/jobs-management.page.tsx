@@ -97,8 +97,6 @@ const JobsManagement = () => {
 
   // Handle actions
   const handleEdit = (job: AdminJob) => {
-    console.log("Edit job:", job);
-    // TODO: Open edit modal
   };
 
   const handleDelete = async (job: AdminJob) => {

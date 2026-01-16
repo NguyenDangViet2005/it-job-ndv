@@ -53,7 +53,7 @@ export const UserDropdown = ({ user, onLogout }: UserDropdownProps) => {
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className="cursor-target relative h-9 w-9 rounded-full hover:ring-2 hover:ring-primary/20 transition-all"
+          className="cursor-target relative h-9 w-9 p-0 rounded-full hover:ring-2 hover:ring-primary/20 transition-all"
         >
           <Avatar className="h-9 w-9">
             <AvatarImage src={user?.avatar} alt={user?.fullName} />

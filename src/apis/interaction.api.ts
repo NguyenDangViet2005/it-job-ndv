@@ -73,12 +73,21 @@ export const interactionApi = {
     userId: number,
     content: string,
     token: string,
-    attachments?: File[]
+    attachments?: File[],
+    keepImageUrls?: string[]
   ) => {
     const formData = new FormData();
     formData.append("userId", userId.toString());
     formData.append("content", content);
 
+    // Add URLs of images to keep as separate fields
+    if (keepImageUrls && keepImageUrls.length > 0) {
+      keepImageUrls.forEach((url) => {
+        formData.append("keepImageUrls[]", url);
+      });
+    }
+
+    // Add new attachments
     if (attachments && attachments.length > 0) {
       attachments.forEach((file) => {
         formData.append("attachments", file);

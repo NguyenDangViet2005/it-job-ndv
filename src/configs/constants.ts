@@ -154,7 +154,7 @@ export const VALIDATION = {
 
 // Default avatars
 export const DEFAULT_AVATARS = {
-  USER: "https://ui-avatars.com/api/?name=User&background=random&color=fff",
+  USER: "https://res.cloudinary.com/duc6z828y/image/upload/c_crop,w_650,h_650,ar_1:1/v1768581047/avatar_nbspgd.avif",
   COMPANY: "https://ui-avatars.com/api/?name=Company&background=random&color=fff",
 } as const;
 

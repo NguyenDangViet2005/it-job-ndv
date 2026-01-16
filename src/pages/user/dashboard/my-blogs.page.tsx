@@ -158,11 +158,6 @@ export default function MyBlogsPage() {
         data.append("Image", imageFile);
       }
 
-      // Debug: Log FormData content
-      console.log("FormData entries:");
-      for (let pair of data.entries()) {
-        console.log(pair[0], pair[1]);
-      }
 
       if (createMode) {
         await blogApi.create(data, token);

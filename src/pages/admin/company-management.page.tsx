@@ -105,7 +105,6 @@ const CompanyManagement = () => {
 
   // Handle actions
   const handleEdit = (company: AdminCompany) => {
-    console.log("Edit company:", company);
   };
 
   const handleDelete = async (company: AdminCompany) => {

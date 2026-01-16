@@ -73,7 +73,6 @@ export default function FormLogin() {
   };
 
   const handleGoogleLogin = () => {
-    console.log("Google login clicked");
     // Ở đây bạn có thể gọi API đăng nhập Google
   };
 

@@ -65,9 +65,6 @@ const sidebarItems = [
   },
 ];
 
-console.log("Sidebar items:", sidebarItems);
-console.log("ROUTES.dashboardMyBlogs:", ROUTES.USER_MY_BLOGS);
-
 export default function UserDashboardSidebar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);

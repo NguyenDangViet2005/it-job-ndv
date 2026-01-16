@@ -26,12 +26,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         if (response.success && response.data) {
           const { accessToken, user: userData } = response.data;
-          console.log(accessToken);
-
           handleSetAuth(userData, accessToken);
         }
       } catch (error) {
-        console.log("No active session or refresh failed");
       } finally {
         setLoading(false);
       }
