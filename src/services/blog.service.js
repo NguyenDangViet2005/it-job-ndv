@@ -59,16 +59,20 @@ const getBlogById = async (id) => {
 
 const getBlogsByUserId = async (userId, page = 1, pageSize = 10) => {
   const offset = (page - 1) * pageSize;
+  const limit = parseInt(pageSize);
   const { count, rows } = await Blog.findAndCountAll({
     where: { userId },
     include: [
       {
+        model: User,
+        attributes: ["id", "fullName", "avatar"],
+      },
+      {
         model: BlogCategory,
-        as: "Category",
       },
     ],
     order: [["createdAt", "DESC"]],
-    limit: pageSize,
+    limit: limit,
     offset: offset,
   });
 
@@ -85,7 +89,7 @@ const createBlog = async (data, file) => {
   try {
     let imageUrl = "";
     if (file) {
-      const result = await cloudinaryService.uploadImage(file.path);
+      const result = await cloudinaryService.uploadFile(file.path);
       imageUrl = result.secure_url;
     }
 
@@ -115,8 +119,13 @@ const updateBlog = async (id, data, file) => {
     if (data.categoryId) blog.categoryId = data.categoryId;
 
     if (file) {
+      // Delete old image from Cloudinary if exists
+      if (blog.image) {
+        await cloudinaryService.deleteFile(blog.image);
+      }
+
       // Update image
-      const result = await cloudinaryService.uploadImage(file.path);
+      const result = await cloudinaryService.uploadFile(file.path);
       blog.image = result.secure_url;
     }
 
@@ -133,8 +142,7 @@ const deleteBlog = async (id) => {
     if (!blog) return false;
 
     if (blog.image) {
-      const publicId = cloudinaryService.getPublicIdFromUrl(blog.image);
-      if (publicId) await cloudinaryService.deleteImage(publicId);
+      await cloudinaryService.deleteFile(blog.image);
     }
 
     await blog.destroy();

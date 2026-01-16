@@ -1,13 +1,7 @@
-const {
-  Post,
-  User,
-  Company,
-  Attachment,
-  Interaction,
-  sequelize,
-} = require("../models");
+const { Post, User, Company, Attachment, Interaction } = require("../models");
 const cloudinaryService = require("./cloudinary.service");
 const { Op } = require("sequelize");
+const { sequelize } = require("../configs/sequelize.config");
 const { PostResponse } = require("../dtos/PostResponse.dto");
 
 const getFormattedPost = async (post, currentUserId) => {
@@ -52,14 +46,7 @@ const getFormattedPost = async (post, currentUserId) => {
     limit: 3,
   });
 
-  const formattedComments = recentComments.map((c) => ({
-    id: c.id,
-    content: c.content,
-    createdAt: c.createdAt,
-    user: c.User,
-    isLiked: c.isLiked,
-    attachments: c.Attachments,
-  }));
+  const formattedComments = recentComments.map((c) => c.toJSON());
 
   return {
     id: post.id,
@@ -124,7 +111,7 @@ const getAllPosts = async (page = 1, pageSize = 10, currentUserId = null) => {
   );
 
   return {
-    posts,
+    data: posts,
     totalItems: count,
     page,
     pageSize,
@@ -264,24 +251,25 @@ const createPost = async (data, files) => {
       for (const file of files) {
         let fileUrl;
         let fileType;
+        let publicId;
 
         if (file.mimetype.startsWith("video/")) {
-          // Upload Video
-          const result = await cloudinaryService.uploadVideo(file.path);
-          fileUrl = result.secure_url;
           fileType = "video";
         } else {
-          // Upload Image
-          const result = await cloudinaryService.uploadImage(file.path);
-          fileUrl = result.secure_url;
           fileType = "image";
         }
+
+        // Upload file
+        const result = await cloudinaryService.uploadFile(file.path);
+        fileUrl = result.secure_url;
+        publicId = result.public_id;
 
         await Attachment.create(
           {
             postId: post.id,
             fileUrl,
             fileType,
+            publicId,
           },
           { transaction }
         );
@@ -319,14 +307,10 @@ const updatePost = async (id, data, files) => {
         where: { postId: id },
       });
 
+      // Delete old attachments from Cloudinary
       for (const att of existingAttachments) {
-        const publicId = cloudinaryService.getPublicIdFromUrl(att.fileUrl);
-        if (publicId) {
-          if (att.fileType === "video") {
-            await cloudinaryService.deleteVideo(publicId);
-          } else {
-            await cloudinaryService.deleteImage(publicId);
-          }
+        if (att.fileUrl) {
+          await cloudinaryService.deleteFile(att.fileUrl);
         }
         await att.destroy({ transaction });
       }
@@ -336,15 +320,14 @@ const updatePost = async (id, data, files) => {
         let fileType;
 
         if (file.mimetype.startsWith("video/")) {
-          // Upload Video
-          const result = await cloudinaryService.uploadVideo(file.path);
-          fileUrl = result.secure_url;
           fileType = "video";
         } else {
-          const result = await cloudinaryService.uploadImage(file.path);
-          fileUrl = result.secure_url;
           fileType = "image";
         }
+
+        // Upload file
+        const result = await cloudinaryService.uploadFile(file.path);
+        fileUrl = result.secure_url;
 
         await Attachment.create(
           {
@@ -374,19 +357,17 @@ const deletePost = async (id) => {
     });
 
     if (!post) return false;
+
+    // Delete all attachments from Cloudinary
     if (post.Attachments && post.Attachments.length > 0) {
       for (const att of post.Attachments) {
-        const publicId = cloudinaryService.getPublicIdFromUrl(att.fileUrl);
-        if (publicId) {
-          if (att.fileType === "video") {
-            await cloudinaryService.deleteVideo(publicId);
-          } else {
-            await cloudinaryService.deleteImage(publicId);
-          }
+        if (att.fileUrl) {
+          await cloudinaryService.deleteFile(att.fileUrl);
         }
       }
       await Attachment.destroy({ where: { postId: id } });
     }
+
     await Interaction.destroy({ where: { postId: id } });
     await post.destroy();
     return true;

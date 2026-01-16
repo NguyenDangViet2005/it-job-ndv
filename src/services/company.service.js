@@ -116,6 +116,14 @@ const deleteCompany = async (id) => {
     const company = await Company.findByPk(id);
     if (!company) return false;
 
+    // Delete company avatar and cover from Cloudinary
+    if (company.avatar) {
+      await cloudinaryService.deleteFile(company.avatar);
+    }
+    if (company.coverImage) {
+      await cloudinaryService.deleteFile(company.coverImage);
+    }
+
     // 1. Delete Applications (via Jobs)
     // Find job IDs
     const jobs = await Job.findAll({
@@ -130,13 +138,24 @@ const deleteCompany = async (id) => {
       await Job.destroy({ where: { companyId: id } });
     }
 
-    // 2. Delete Posts
+    // 2. Delete Posts and their attachments
     const posts = await Post.findAll({
       where: { companyId: id },
-      attributes: ["id"],
+      include: [{ model: Attachment, as: "Attachments" }],
     });
-    const postIds = posts.map((p) => p.id);
 
+    for (const post of posts) {
+      // Delete all attachments from Cloudinary
+      if (post.Attachments && post.Attachments.length > 0) {
+        for (const att of post.Attachments) {
+          if (att.fileUrl) {
+            await cloudinaryService.deleteFile(att.fileUrl);
+          }
+        }
+      }
+    }
+
+    const postIds = posts.map((p) => p.id);
     if (postIds.length > 0) {
       await Interaction.destroy({ where: { postId: postIds } });
       await Attachment.destroy({ where: { postId: postIds } });
@@ -186,8 +205,14 @@ const uploadCompanyAvatar = async (companyId, file) => {
   try {
     const company = await Company.findByPk(companyId);
     if (!company) throw new Error("Company not found");
+
+    // Delete old avatar from Cloudinary if exists
+    if (company.avatar) {
+      await cloudinaryService.deleteFile(company.avatar);
+    }
+
     // Removed folder argument "company_avatars" as requested
-    const result = await cloudinaryService.uploadImage(file.path);
+    const result = await cloudinaryService.uploadFile(file.path);
 
     company.avatar = result.secure_url;
     await company.save();
@@ -203,8 +228,13 @@ const uploadCompanyCover = async (companyId, file) => {
     const company = await Company.findByPk(companyId);
     if (!company) throw new Error("Company not found");
 
+    // Delete old cover image from Cloudinary if exists
+    if (company.coverImage) {
+      await cloudinaryService.deleteFile(company.coverImage);
+    }
+
     // Removed folder argument "company_covers" as requested
-    const result = await cloudinaryService.uploadImage(file.path);
+    const result = await cloudinaryService.uploadFile(file.path);
 
     company.coverImage = result.secure_url;
     await company.save();

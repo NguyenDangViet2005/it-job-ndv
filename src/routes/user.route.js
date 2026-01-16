@@ -32,6 +32,7 @@ router.post("/:id/change-password", verifyToken, userController.changePassword);
 
 router.get("/:id/applications", userController.getUserApplications);
 router.get("/:id/posts", userController.getUserPosts);
+router.get("/:id/media", userController.getUserMedia);
 router.get("/:id/skills", userController.getUserSkills);
 router.post("/:id/skills", verifyToken, userController.addUserSkill);
 router.delete(

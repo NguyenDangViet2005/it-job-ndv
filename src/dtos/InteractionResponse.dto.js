@@ -1,5 +1,12 @@
-const { PostUserResponse } = require("./PostResponse.dto");
 const AttachmentResponse = require("./AttachmentResponse.dto");
+
+class PostUserResponse {
+  constructor(user) {
+    this.id = user.id;
+    this.fullName = user.fullName;
+    this.avatar = user.avatar;
+  }
+}
 
 class CommentResponse {
   constructor(comment) {
@@ -8,6 +15,7 @@ class CommentResponse {
     this.content = comment.content;
     this.isLiked = comment.isLiked || false; // Depends on if we calculate this per user
     this.createdAt = comment.createdAt;
+    this.updatedAt = comment.updatedAt;
     this.attachments = comment.Attachments
       ? comment.Attachments.map((a) => new AttachmentResponse(a))
       : [];

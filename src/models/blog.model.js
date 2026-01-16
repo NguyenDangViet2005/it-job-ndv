@@ -38,10 +38,20 @@ const Blog = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: sequelize.literal("GETDATE()"),
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: sequelize.literal("GETDATE()"),
+    },
   },
   {
     tableName: "Blog",
-    timestamps: true,
+    timestamps: false, // Để database tự động xử lý với DEFAULT GETDATE()
   }
 );
 

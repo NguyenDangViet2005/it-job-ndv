@@ -194,6 +194,28 @@ const addComment = async (req, res, next) => {
   }
 };
 
+const updateComment = async (req, res, next) => {
+  try {
+    const commentId = parseInt(req.params.commentId);
+    const userId = req.body.userId || getCurrentUserId(req);
+    const content = req.body.content;
+
+    if (!userId) {
+      return res.status(400).json({ message: "UserId is required" });
+    }
+
+    const result = await interactionService.updateComment(
+      commentId,
+      userId,
+      content,
+      req.files
+    );
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
 const deleteComment = async (req, res, next) => {
   try {
     const commentId = parseInt(req.params.commentId);
@@ -226,5 +248,6 @@ module.exports = {
   getComments,
   toggleLike,
   addComment,
+  updateComment,
   deleteComment,
 };

@@ -39,10 +39,20 @@ const Job = sequelize.define(
       allowNull: true,
       defaultValue: "active",
     },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: sequelize.literal("GETDATE()"),
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: sequelize.literal("GETDATE()"),
+    },
   },
   {
     tableName: "Job",
-    timestamps: true,
+    timestamps: false,
   }
 );
 

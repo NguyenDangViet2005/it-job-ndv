@@ -28,6 +28,7 @@ class JobResponse {
     this.quantity = job.quantity;
     this.deadline = job.deadline;
     this.createdAt = job.createdAt;
+    this.updatedAt = job.updatedAt;
     this.company = job.Company ? new JobCompanyResponse(job.Company) : null;
     this.skills = job.Skills
       ? job.Skills.map((skill) => new JobSkillResponse(skill))

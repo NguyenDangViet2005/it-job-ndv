@@ -64,6 +64,14 @@ const updateProfile = async (req, res, next) => {
 const updateAvatar = async (req, res, next) => {
   try {
     const id = parseInt(req.params.id);
+
+    // Check if user is updating their own avatar or is admin
+    if (req.user.id !== id && req.user.role !== "admin") {
+      return res
+        .status(403)
+        .json({ message: "You can only update your own avatar" });
+    }
+
     if (!req.file)
       return res.status(400).json({ message: "Avatar file is required" });
 
@@ -81,6 +89,14 @@ const updateAvatar = async (req, res, next) => {
 const updateCover = async (req, res, next) => {
   try {
     const id = parseInt(req.params.id);
+
+    // Check if user is updating their own cover or is admin
+    if (req.user.id !== id && req.user.role !== "admin") {
+      return res
+        .status(403)
+        .json({ message: "You can only update your own cover image" });
+    }
+
     if (!req.file)
       return res.status(400).json({ message: "Cover file is required" });
 
@@ -98,6 +114,14 @@ const updateCover = async (req, res, next) => {
 const updateCV = async (req, res, next) => {
   try {
     const id = parseInt(req.params.id);
+
+    // Check if user is updating their own CV or is admin
+    if (req.user.id !== id && req.user.role !== "admin") {
+      return res
+        .status(403)
+        .json({ message: "You can only update your own CV" });
+    }
+
     if (!req.file)
       return res.status(400).json({ message: "CV file is required" });
 
@@ -209,6 +233,17 @@ const removeUserSkill = async (req, res, next) => {
   }
 };
 
+const getUserMedia = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { pageNumber, pageSize } = req.query;
+    const result = await userService.getUserMedia(id, pageNumber, pageSize);
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getAll,
   getById,
@@ -222,4 +257,5 @@ module.exports = {
   getUserSkills,
   addUserSkill,
   removeUserSkill,
+  getUserMedia,
 };

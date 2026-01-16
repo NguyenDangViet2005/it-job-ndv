@@ -22,8 +22,9 @@ const getAll = async (pageNumber = 1, pageSize = 10) => {
     return {
       data: rows.map((app) => new ApplicationResponse(app)),
       totalItems: count,
-      pageNumber,
-      pageSize,
+      page: pageNumber,
+      pageSize: pageSize,
+      totalPages: Math.ceil(count / pageSize),
     };
   } catch (error) {
     throw error;
@@ -33,6 +34,8 @@ const getAll = async (pageNumber = 1, pageSize = 10) => {
 const create = async (applicationData) => {
   try {
     const { jobId, userId, cvUrl, coverLetter } = applicationData;
+
+    // Check if application already exists
     const existingApplication = await Application.findOne({
       where: {
         jobId,
@@ -42,13 +45,17 @@ const create = async (applicationData) => {
     if (existingApplication) {
       throw new Error("Bạn đã ứng tuyển vào công việc này rồi");
     }
-    await Application.create({
+
+    // Create application
+    const newApplication = await Application.create({
       jobId,
       userId,
-      cvUrl,
-      coverLetter,
+      cvUrl: cvUrl || null,
+      coverLetter: coverLetter || null,
       status: "pending",
     });
+
+    // Load with relations
     const loadedApplication = await Application.findOne({
       where: { jobId, userId },
       include: [
@@ -62,8 +69,10 @@ const create = async (applicationData) => {
         },
       ],
     });
+
     return new ApplicationResponse(loadedApplication);
   } catch (error) {
+    console.error("Error creating application:", error);
     throw error;
   }
 };
@@ -90,8 +99,9 @@ const getByUserId = async (userId, pageNumber = 1, pageSize = 10) => {
     return {
       data: rows.map((app) => new ApplicationResponse(app)),
       totalItems: count,
-      pageNumber,
-      pageSize,
+      page: pageNumber,
+      pageSize: pageSize,
+      totalPages: Math.ceil(count / pageSize),
     };
   } catch (error) {
     throw error;
@@ -121,8 +131,9 @@ const getByCompanyId = async (companyId, pageNumber = 1, pageSize = 10) => {
     return {
       data: rows.map((app) => new ApplicationResponse(app)),
       totalItems: count,
-      pageNumber,
-      pageSize,
+      page: pageNumber,
+      pageSize: pageSize,
+      totalPages: Math.ceil(count / pageSize),
     };
   } catch (error) {
     throw error;

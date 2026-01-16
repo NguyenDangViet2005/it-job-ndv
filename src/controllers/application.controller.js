@@ -20,27 +20,36 @@ const getAll = async (req, res) => {
 const create = async (req, res) => {
   try {
     if (req.user.role !== "user") {
-      return res.status(403).json({ message: "Access denied. User only." });
+      return res.status(403).json({
+        message: "Access denied. User only.",
+      });
     }
     const userId = req.user.id;
     const { jobId, cvUrl, coverLetter } = req.body;
+
     if (!jobId) {
       return res.status(400).json({ message: "JobId is required" });
     }
+
     const result = await applicationService.create({
       userId,
       jobId,
       cvUrl,
       coverLetter,
     });
+
     res.status(201).json(result);
   } catch (error) {
+    console.error("Application create error:", error);
+
     if (error.message === "Bạn đã ứng tuyển vào công việc này rồi") {
       return res.status(400).json({ message: error.message });
     }
-    res
-      .status(500)
-      .json({ message: "Error creating application", error: error.message });
+
+    res.status(500).json({
+      message: "Error creating application",
+      error: error.message,
+    });
   }
 };
 

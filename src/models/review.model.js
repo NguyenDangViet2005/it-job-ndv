@@ -26,10 +26,20 @@ const Review = sequelize.define(
       type: DataTypes.TEXT,
       allowNull: true,
     },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: sequelize.literal("GETDATE()"),
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: sequelize.literal("GETDATE()"),
+    },
   },
   {
     tableName: "Review",
-    timestamps: true,
+    timestamps: false,
   }
 );
 

@@ -22,10 +22,20 @@ const Post = sequelize.define(
       type: DataTypes.TEXT,
       allowNull: true,
     },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: sequelize.literal("GETDATE()"),
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: sequelize.literal("GETDATE()"),
+    },
   },
   {
     tableName: "Post",
-    timestamps: true,
+    timestamps: false,
   }
 );
 

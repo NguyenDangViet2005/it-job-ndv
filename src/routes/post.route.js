@@ -59,6 +59,12 @@ router.post(
   postController.addComment
 );
 
+router.put(
+  "/:id/comment/:commentId",
+  upload.array("attachments", 10),
+  postController.updateComment
+);
+
 router.delete("/:id/comment/:commentId", postController.deleteComment);
 
 module.exports = router;

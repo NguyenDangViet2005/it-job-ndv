@@ -64,11 +64,18 @@ const updateAvatar = async (id, file) => {
     const user = await User.findByPk(id);
     if (!user) return null;
 
-    const result = await cloudinaryService.uploadImage(file.path);
+    // Delete old avatar from Cloudinary if exists
+    if (user.avatar) {
+      await cloudinaryService.deleteFile(user.avatar);
+    }
+
+    const result = await cloudinaryService.uploadFile(file.path);
     user.avatar = result.secure_url;
 
     await user.save();
-    return user.avatar;
+
+    // Return full user object without password
+    return new UserResponse(user);
   } catch (error) {
     throw error;
   }
@@ -79,11 +86,18 @@ const updateCover = async (id, file) => {
     const user = await User.findByPk(id);
     if (!user) return null;
 
-    const result = await cloudinaryService.uploadImage(file.path);
+    // Delete old cover image from Cloudinary if exists
+    if (user.coverImage) {
+      await cloudinaryService.deleteFile(user.coverImage);
+    }
+
+    const result = await cloudinaryService.uploadFile(file.path);
     user.coverImage = result.secure_url;
 
     await user.save();
-    return user.coverImage;
+
+    // Return full user object without password
+    return new UserResponse(user);
   } catch (error) {
     throw error;
   }
@@ -94,12 +108,21 @@ const updateCV = async (id, file) => {
     const user = await User.findByPk(id);
     if (!user) return null;
 
-    const result = await cloudinaryService.uploadImage(file.path);
-    user.cv = result.secure_url;
+    // Delete old CV from Cloudinary if exists
+    if (user.cvUrl) {
+      await cloudinaryService.deleteFile(user.cvUrl);
+    }
+
+    // Upload CV as raw file (not image)
+    const result = await cloudinaryService.uploadFile(file.path);
+    user.cvUrl = result.secure_url;
 
     await user.save();
-    return user.cv;
+
+    // Return full user object without password
+    return new UserResponse(user);
   } catch (error) {
+    console.error("Error updating CV:", error);
     throw error;
   }
 };
@@ -208,6 +231,36 @@ const removeUserSkill = async (userId, skillId) => {
   }
 };
 
+const getUserMedia = async (userId, page = 1, pageSize = 6) => {
+  const offset = (page - 1) * pageSize;
+  const limit = parseInt(pageSize);
+
+  const { count, rows } = await Attachment.findAndCountAll({
+    include: [
+      {
+        model: Post,
+        where: { userId: userId },
+        attributes: [],
+      },
+    ],
+    where: {
+      fileType: {
+        [Op.in]: ["image", "video"],
+      },
+    },
+    order: [["id", "DESC"]],
+    limit,
+    offset,
+  });
+
+  return {
+    data: rows,
+    totalItems: count,
+    totalPages: Math.ceil(count / pageSize),
+    currentPage: parseInt(page),
+  };
+};
+
 module.exports = {
   getAllUsers,
   getUserById,
@@ -221,4 +274,5 @@ module.exports = {
   getUserSkills,
   addUserSkill,
   removeUserSkill,
+  getUserMedia,
 };

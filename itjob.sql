@@ -40,7 +40,7 @@ CREATE TABLE [User]  (
   dateOfBirth DATE,
   avatar VARCHAR(255),
   coverImage VARCHAR(255),
-  CVurl VARCHAR(255),
+  cvUrl VARCHAR(255),
 
   role VARCHAR(20) CHECK (role IN ('user', 'employer', 'admin')) DEFAULT 'user',
 
@@ -305,7 +305,7 @@ GO
 
 -- 1. INSERT USER (10 bản ghi)
 INSERT INTO [User]
-(fullName, email, password, phone, gender, dateOfBirth, avatar, coverImage, CVurl, role)
+(fullName, email, password, phone, gender, dateOfBirth, avatar, coverImage, cvUrl, role)
 VALUES
 (N'Nguyễn Minh Huy', 'hr.fpt@demo.com',    '$2a$12$XRcYOwPoThhwZlCGE1XPouOQCSQvHQQxTWQEtJd.WJ4wXPdGQoEk6', '0901000001', 'male',   '1999-04-12', 'https://i.pravatar.cc/150?img=11', 'https://picsum.photos/seed/u11/1200/400', 'https://drive.google.com/file/d/cv_nguyen_minh_huy.pdf', 'employer'),
 (N'Trần Thảo Vy',    'hr.vng@demo.com',    '$2a$12$XRcYOwPoThhwZlCGE1XPouOQCSQvHQQxTWQEtJd.WJ4wXPdGQoEk6', '0901000002', 'female', '2000-08-21', 'https://i.pravatar.cc/150?img=12', 'https://picsum.photos/seed/u12/1200/400', 'https://drive.google.com/file/d/cv_tran_thao_vy.pdf', 'employer'),

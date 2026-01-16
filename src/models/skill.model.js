@@ -15,10 +15,20 @@ const Skill = sequelize.define(
       allowNull: false,
       unique: true,
     },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: sequelize.literal("GETDATE()"),
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: sequelize.literal("GETDATE()"),
+    },
   },
   {
     tableName: "Skill",
-    timestamps: true,
+    timestamps: false,
   }
 );
 

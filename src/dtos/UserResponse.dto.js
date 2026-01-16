@@ -9,8 +9,10 @@ class UserResponse {
     this.avatar = user.avatar;
     this.coverImage = user.coverImage;
     this.address = user.address;
-    this.cvUrl = user.cvUrl; // Assuming this exists on User model or is derived
+    this.cvUrl = user.cvUrl;
     this.role = user.role || "user";
+    this.createdAt = user.createdAt;
+    this.updatedAt = user.updatedAt;
   }
 }
 

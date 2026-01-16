@@ -21,11 +21,15 @@ const CompanyMember = sequelize.define(
       type: DataTypes.DATE,
       allowNull: true,
     },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: sequelize.literal("GETDATE()"),
+    },
   },
   {
     tableName: "CompanyMembers",
-    timestamps: true,
-    updatedAt: false,
+    timestamps: false,
   }
 );
 

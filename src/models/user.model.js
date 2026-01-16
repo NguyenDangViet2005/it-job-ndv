@@ -43,10 +43,10 @@ const User = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
-    CVurl: {
+    cvUrl: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "CVurl",
+      field: "cvUrl",
     },
     role: {
       type: DataTypes.STRING,
@@ -70,7 +70,7 @@ const User = sequelize.define(
   },
   {
     tableName: "User",
-    timestamps: false, // Tắt timestamps tự động của Sequelize để tránh lỗi format ngày tháng với SQL Server
+    timestamps: false,
   }
 );
 

@@ -1,5 +1,3 @@
-// src/models/index.js - Export tất cả models và setup relationships
-
 const User = require("./user.model");
 const Company = require("./company.model");
 const Job = require("./job.model");
@@ -65,6 +63,7 @@ BlogCategory.hasMany(Blog, { foreignKey: "categoryId" });
 Post.belongsTo(User, { foreignKey: "userId" });
 Post.belongsTo(Company, { foreignKey: "companyId" });
 Post.hasMany(Attachment, { foreignKey: "postId" });
+Attachment.belongsTo(Post, { foreignKey: "postId" });
 Post.hasMany(Interaction, { foreignKey: "postId" });
 
 // Skill relationships

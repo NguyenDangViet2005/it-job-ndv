@@ -7,11 +7,8 @@ class BlogResponse {
     this.readTime = blog.readTime;
     this.image = blog.image;
     this.author = blog.User ? blog.User.fullName : null;
-    this.category =
-      blog.Category || blog.BlogCategory
-        ? (blog.Category || blog.BlogCategory).name
-        : null;
-    this.date = blog.created_at || blog.createdAt; // Assuming date maps to created_at if not present
+    this.category = blog.BlogCategory ? blog.BlogCategory.name : null;
+    this.date = blog.created_at || blog.createdAt;
     this.createdAt = blog.createdAt;
     this.updatedAt = blog.updatedAt;
   }
