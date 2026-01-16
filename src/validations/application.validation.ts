@@ -1,10 +1,6 @@
 import { z } from "zod";
 
 export const applicationFormSchema = z.object({
-  cvUrl: z
-    .string()
-    .min(1, "Vui lòng nhập link CV của bạn")
-    .url("Link CV không hợp lệ"),
   coverLetter: z
     .string()
     .min(10, "Thư xin việc phải có ít nhất 10 ký tự")

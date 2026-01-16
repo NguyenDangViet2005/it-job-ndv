@@ -1,18 +1,44 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { ThumbsUp, Send, Loader2, X, ImageIcon } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/shadcn/avatar";
+import {
+  ThumbsUp,
+  Send,
+  Loader2,
+  X,
+  ImageIcon,
+  MoreVertical,
+  Edit,
+  Trash,
+} from "lucide-react";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/ui/shadcn/avatar";
 import { Button } from "@/components/ui/shadcn/button";
 import { Separator } from "@/components/ui/shadcn/separator";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/shadcn/dropdown-menu";
 import type { NormalizedPost } from "./post-card.types";
 
 interface PostCommentsProps {
   post: NormalizedPost;
   currentUserAvatar?: string;
   currentUserName: string;
+  currentUserId?: number;
   loadingComments: boolean;
-  onAddComment: (content: string) => Promise<void>;
+  onAddComment: (content: string, attachments?: File[]) => Promise<void>;
+  onEditComment?: (
+    commentId: number,
+    content: string,
+    attachments?: File[]
+  ) => Promise<void>;
+  onDeleteComment?: (commentId: number) => Promise<void>;
   onToggleComments: () => void;
   onLoadMoreComments?: () => Promise<void>;
 }
@@ -21,14 +47,19 @@ export default function PostComments({
   post,
   currentUserAvatar,
   currentUserName,
+  currentUserId,
   loadingComments,
   onAddComment,
+  onEditComment,
+  onDeleteComment,
   onToggleComments,
   onLoadMoreComments,
 }: PostCommentsProps) {
   const [commentInput, setCommentInput] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [commentAttachments, setCommentAttachments] = useState<File[]>([]);
+  const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
+  const [editingContent, setEditingContent] = useState("");
   const attachmentInputRef = useRef<HTMLInputElement>(null);
 
   const getTopComments = (limit: number = 3) => {
@@ -39,12 +70,56 @@ export default function PostComments({
     if (commentInput.trim() && !isSubmitting) {
       setIsSubmitting(true);
       try {
-        await onAddComment(commentInput);
+        await onAddComment(
+          commentInput,
+          commentAttachments.length > 0 ? commentAttachments : undefined
+        );
         setCommentInput("");
+        setCommentAttachments([]);
       } finally {
         setIsSubmitting(false);
       }
     }
+  };
+
+  const handleEditComment = async (commentId: number) => {
+    if (editingContent.trim() && !isSubmitting && onEditComment) {
+      setIsSubmitting(true);
+      try {
+        await onEditComment(
+          commentId,
+          editingContent,
+          commentAttachments.length > 0 ? commentAttachments : undefined
+        );
+        setEditingCommentId(null);
+        setEditingContent("");
+        setCommentAttachments([]);
+      } finally {
+        setIsSubmitting(false);
+      }
+    }
+  };
+
+  const handleDeleteComment = async (commentId: number) => {
+    if (onDeleteComment && confirm("Đồng ý xóa bình luận này?")) {
+      try {
+        await onDeleteComment(commentId);
+      } catch (error) {
+        console.error("Failed to delete comment", error);
+      }
+    }
+  };
+
+  const startEditingComment = (commentId: number, currentContent: string) => {
+    setEditingCommentId(commentId);
+    setEditingContent(currentContent);
+    setCommentAttachments([]);
+  };
+
+  const cancelEditing = () => {
+    setEditingCommentId(null);
+    setEditingContent("");
+    setCommentAttachments([]);
   };
 
   const handleAttachmentSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -68,41 +143,112 @@ export default function PostComments({
 
       {/* Comments List */}
       <div className="space-y-3 max-h-96 overflow-y-auto">
-        {(post.showComments ? post.comments : getTopComments(3)).map((comment, idx) => (
-          <div
-            key={comment.id}
-            className="flex gap-3 animate-in fade-in slide-in-from-left-2"
-            style={{ animationDelay: `${idx * 50}ms` }}
-          >
-            <Avatar className="h-10 w-10 cursor-target hover:scale-110 transition-transform duration-300">
-              <AvatarImage src={comment.avatar} />
-              <AvatarFallback>{comment.author.charAt(0)}</AvatarFallback>
-            </Avatar>
-            <div className="flex-1">
-              <div className="bg-muted rounded-2xl px-4 py-2 hover:bg-muted/80 transition-colors duration-300">
-                <p className="font-semibold text-sm cursor-target hover:text-primary transition-colors duration-300">
-                  {comment.author}
-                </p>
-                <p className="text-sm">{comment.content}</p>
-              </div>
-              <div className="flex items-center gap-3 mt-1 px-4 text-xs text-muted-foreground">
-                <span className="cursor-target hover:text-primary hover:underline transition-all duration-300">
-                  Thích
-                </span>
-                <span className="cursor-target hover:text-primary hover:underline transition-all duration-300">
-                  Trả lời
-                </span>
-                <span>{comment.timestamp}</span>
-                {comment.likes > 0 && (
-                  <span className="flex items-center gap-1">
-                    <ThumbsUp className="h-3 w-3 fill-blue-600 text-blue-600" />
-                    {comment.likes}
-                  </span>
+        {(post.showComments ? post.comments : getTopComments(3)).map(
+          (comment, idx) => (
+            <div
+              key={comment.id}
+              className="flex gap-3 animate-in fade-in slide-in-from-left-2"
+              style={{ animationDelay: `${idx * 50}ms` }}
+            >
+              <Avatar className="h-10 w-10 cursor-target hover:scale-110 transition-transform duration-300">
+                <AvatarImage src={comment.avatar} />
+                <AvatarFallback>{comment.author.charAt(0)}</AvatarFallback>
+              </Avatar>
+              <div className="flex-1">
+                {editingCommentId === comment.id ? (
+                  <div className="space-y-2">
+                    <input
+                      type="text"
+                      value={editingContent}
+                      onChange={(e) => setEditingContent(e.target.value)}
+                      className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm"
+                      autoFocus
+                    />
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        onClick={() => handleEditComment(comment.id)}
+                        disabled={isSubmitting}
+                      >
+                        {isSubmitting ? (
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                        ) : (
+                          "Lưu"
+                        )}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={cancelEditing}
+                      >
+                        Hủy
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="bg-muted rounded-2xl px-4 py-2 hover:bg-muted/80 transition-colors duration-300 relative group">
+                      <p className="font-semibold text-sm cursor-target hover:text-primary transition-colors duration-300">
+                        {comment.author}
+                      </p>
+                      <p className="text-sm">{comment.content}</p>
+                      {currentUserId === comment.userId &&
+                        onEditComment &&
+                        onDeleteComment && (
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="absolute top-2 right-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                              >
+                                <MoreVertical className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  startEditingComment(
+                                    comment.id,
+                                    comment.content
+                                  )
+                                }
+                              >
+                                <Edit className="h-4 w-4 mr-2" />
+                                Chỉnh sửa
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => handleDeleteComment(comment.id)}
+                                className="text-destructive"
+                              >
+                                <Trash className="h-4 w-4 mr-2" />
+                                Xóa
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        )}
+                    </div>
+                    <div className="flex items-center gap-3 mt-1 px-4 text-xs text-muted-foreground">
+                      <span className="cursor-target hover:text-primary hover:underline transition-all duration-300">
+                        Thích
+                      </span>
+                      <span className="cursor-target hover:text-primary hover:underline transition-all duration-300">
+                        Trả lời
+                      </span>
+                      <span>{comment.timestamp}</span>
+                      {comment.likes > 0 && (
+                        <span className="flex items-center gap-1">
+                          <ThumbsUp className="h-3 w-3 fill-blue-600 text-blue-600" />
+                          {comment.likes}
+                        </span>
+                      )}
+                    </div>
+                  </>
                 )}
               </div>
             </div>
-          </div>
-        ))}
+          )
+        )}
       </div>
 
       {/* Show more comments button */}
@@ -117,24 +263,26 @@ export default function PostComments({
         </Button>
       )}
 
-      {post.showComments && post.comments.length < post.totalComments && onLoadMoreComments && (
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onLoadMoreComments}
-          disabled={loadingComments}
-          className="cursor-target w-full hover:bg-muted transition-all duration-300"
-        >
-          {loadingComments ? (
-            <>
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              Đang tải...
-            </>
-          ) : (
-            `Xem thêm ${post.totalComments - post.comments.length} bình luận`
-          )}
-        </Button>
-      )}
+      {post.showComments &&
+        post.comments.length < post.totalComments &&
+        onLoadMoreComments && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onLoadMoreComments}
+            disabled={loadingComments}
+            className="cursor-target w-full hover:bg-muted transition-all duration-300"
+          >
+            {loadingComments ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Đang tải...
+              </>
+            ) : (
+              `Xem thêm ${post.totalComments - post.comments.length} bình luận`
+            )}
+          </Button>
+        )}
 
       {post.showComments && post.comments.length > 3 && (
         <Button

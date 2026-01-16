@@ -51,7 +51,7 @@ export const getRedirectPathByRole = (role: string): string => {
       return ROUTES.ADMIN_DASHBOARD;
     case "hr":
     case "employer":
-      return ROUTES.HR_DASHBOARD;
+      return ROUTES.HR;
     case "user":
       return ROUTES.USER_DASHBOARD;
     default:

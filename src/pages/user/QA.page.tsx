@@ -13,11 +13,10 @@ import type { FullPostResponse } from "@/types/api.type";
 import { ROUTES } from "@/configs";
 
 export default function QAPage() {
-  const { user, token, isAuthenticated } = useAuth();
+  const { user, token, isAuthenticated, loading: authLoading } = useAuth();
   const router = useRouter();
 
   // All useState hooks must be at the top, before any conditional returns
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [loadingCommentsForPost, setLoadingCommentsForPost] = useState<
     number | null
   >(null);
@@ -31,25 +30,22 @@ export default function QAPage() {
   // Infinite scroll ref - must be called before conditional return
   const loadMoreRef = useInfiniteScroll(loadMore, hasMore, loading);
 
-  // Check authentication on mount
+  // Check authentication using context loading state
   useEffect(() => {
-    const checkAuthentication = () => {
-      // Check localStorage for token
-      const accessToken = localStorage.getItem("accessToken");
+    if (!authLoading && !isAuthenticated) {
+      router.push(ROUTES.ACCESS_DENIED);
+    }
+  }, [authLoading, isAuthenticated, router]);
 
-      if (!accessToken && !isAuthenticated) {
-        router.push(ROUTES.ACCESS_DENIED);
-        return;
-      }
-
-      setIsCheckingAuth(false);
-    };
-
-    checkAuthentication();
-  }, [isAuthenticated, router]);
+  // Scroll to top when content is ready to prevent auto-scrolling to bottom
+  useEffect(() => {
+    if (!authLoading) {
+      window.scrollTo(0, 0);
+    }
+  }, [authLoading]);
 
   // Show loading while checking auth (conditional return after all hooks)
-  if (isCheckingAuth) {
+  if (authLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
@@ -99,7 +95,11 @@ export default function QAPage() {
   };
 
   // Handle add comment with auth check
-  const handleAddComment = async (postId: number, content: string) => {
+  const handleAddComment = async (
+    postId: number,
+    content: string,
+    attachments?: File[]
+  ) => {
     if (!isAuthenticated) return;
     if (!user || !token) return;
 
@@ -108,7 +108,8 @@ export default function QAPage() {
         postId,
         user.id,
         content,
-        token
+        token,
+        attachments
       );
 
       setPosts((prev: FullPostResponse[]) =>
@@ -128,6 +129,73 @@ export default function QAPage() {
       );
     } catch (error) {
       console.error("Failed to add comment:", error);
+    }
+  };
+
+  // Handle edit comment
+  const handleEditComment = async (
+    postId: number,
+    commentId: number,
+    content: string,
+    attachments?: File[]
+  ) => {
+    if (!isAuthenticated || !user || !token) return;
+
+    try {
+      const updatedComment = await interactionApi.updateComment(
+        postId,
+        commentId,
+        user.id,
+        content,
+        token,
+        attachments
+      );
+
+      setPosts((prev: FullPostResponse[]) =>
+        prev.map((post: FullPostResponse) =>
+          post.id === postId
+            ? {
+                ...post,
+                interaction: {
+                  ...post.interaction,
+                  comments: post.interaction.comments.map((c) =>
+                    c.id === commentId ? updatedComment : c
+                  ),
+                },
+              }
+            : post
+        )
+      );
+    } catch (error) {
+      console.error("Failed to edit comment:", error);
+    }
+  };
+
+  // Handle delete comment
+  const handleDeleteComment = async (postId: number, commentId: number) => {
+    if (!isAuthenticated || !user || !token) return;
+
+    try {
+      await interactionApi.deleteComment(postId, commentId, user.id, token);
+
+      setPosts((prev: FullPostResponse[]) =>
+        prev.map((post: FullPostResponse) =>
+          post.id === postId
+            ? {
+                ...post,
+                interaction: {
+                  ...post.interaction,
+                  totalComments: post.interaction.totalComments - 1,
+                  comments: post.interaction.comments.filter(
+                    (c) => c.id !== commentId
+                  ),
+                },
+              }
+            : post
+        )
+      );
+    } catch (error) {
+      console.error("Failed to delete comment:", error);
     }
   };
 
@@ -187,10 +255,17 @@ export default function QAPage() {
               onLikePost={handleLikePost}
               onToggleComments={handleToggleComments}
               onAddComment={handleAddComment}
+              onEditComment={(postId, commentId, content, attachments) =>
+                handleEditComment(postId, commentId, content, attachments)
+              }
+              onDeleteComment={(postId, commentId) =>
+                handleDeleteComment(postId, commentId)
+              }
               onLoadMoreComments={handleLoadMoreComments}
               loadingCommentsForPost={loadingCommentsForPost}
               currentUserAvatar={user?.avatar}
               currentUserName={user?.fullName}
+              currentUserId={user?.id}
             />
             {/* Infinite scroll trigger */}
             <div ref={loadMoreRef} className="h-10" />

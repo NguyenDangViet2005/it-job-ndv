@@ -5,8 +5,28 @@ import { Button } from "@/components/ui/shadcn/button";
 import { ROUTES } from "@/configs";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
+import { useEffect } from "react";
 
 export default function LoginPage() {
+  const router = useRouter();
+  const { token, loading } = useAuth();
+
+  useEffect(() => {
+    if (!loading && token) {
+      router.push(ROUTES.HOME);
+    }
+  }, [token, loading, router]);
+
+  if (loading || token) {
+    return (
+      <div className="w-full h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="relative z-10 w-full min-h-screen flex flex-col lg:flex-row">
       {/* Back Button */}

@@ -170,7 +170,7 @@ export const userSidebarItems: SidebarItem[] = [
 export const hrSidebarItems: SidebarItem[] = [
   {
     title: "Tổng quan",
-    href: ROUTES.HR_DASHBOARD,
+    href: ROUTES.HR,
     icon: LayoutDashboard,
   },
   {

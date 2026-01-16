@@ -75,18 +75,18 @@ export const postApi = {
     token?: string
   ) => {
     const formData = new FormData();
-    formData.append("Content", data.content);
-    if (data.userId) formData.append("UserId", data.userId.toString());
-    if (data.companyId) formData.append("CompanyId", data.companyId.toString());
+    formData.append("content", data.content);
+    if (data.userId) formData.append("userId", data.userId.toString());
+    if (data.companyId) formData.append("companyId", data.companyId.toString());
 
     if (images && images.length > 0) {
       images.forEach((image) => {
-        formData.append("Images", image);
+        formData.append("images", image);
       });
     }
 
     if (video) {
-      formData.append("Video", video);
+      formData.append("video", video);
     }
 
     const response = await fetch(
@@ -123,13 +123,13 @@ export const postApi = {
     token?: string
   ) => {
     const formData = new FormData();
-    formData.append("Content", data.content);
-    if (data.userId) formData.append("UserId", data.userId.toString());
-    if (data.companyId) formData.append("CompanyId", data.companyId.toString());
+    formData.append("content", data.content);
+    if (data.userId) formData.append("userId", data.userId.toString());
+    if (data.companyId) formData.append("companyId", data.companyId.toString());
 
     if (images && images.length > 0) {
       images.forEach((image) => {
-        formData.append("Images", image);
+        formData.append("images", image);
       });
     }
 

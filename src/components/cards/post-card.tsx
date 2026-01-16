@@ -24,10 +24,13 @@ export default function PostCard({
   index = 0,
   currentUserAvatar,
   currentUserName = "Bạn",
+  currentUserId,
   isSaved = false,
   onLikePost,
   onToggleComments,
   onAddComment,
+  onEditComment,
+  onDeleteComment,
   onLoadMoreComments,
   onSavePost,
   onReportPost,
@@ -36,7 +39,7 @@ export default function PostCard({
   loadingComments = false,
 }: PostCardProps) {
   const { user } = useAuth();
-  const currentUserId = user?.id;
+  const userId = currentUserId || user?.id;
 
   // Lightbox state
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -107,8 +110,24 @@ export default function PostCard({
         shares: post.shares || 0,
       };
 
-  const handleAddComment = async (content: string) => {
-    await onAddComment(post.id, content);
+  const handleAddComment = async (content: string, attachments?: File[]) => {
+    await onAddComment(post.id, content, attachments);
+  };
+
+  const handleEditComment = async (
+    commentId: number,
+    content: string,
+    attachments?: File[]
+  ) => {
+    if (onEditComment) {
+      await onEditComment(commentId, content, attachments);
+    }
+  };
+
+  const handleDeleteComment = async (commentId: number) => {
+    if (onDeleteComment) {
+      await onDeleteComment(commentId);
+    }
   };
 
   const handleLoadMoreComments = async () => {
@@ -168,8 +187,11 @@ export default function PostCard({
             post={normalizedPost}
             currentUserAvatar={currentUserAvatar}
             currentUserName={currentUserName}
+            currentUserId={userId}
             loadingComments={loadingComments}
             onAddComment={handleAddComment}
+            onEditComment={onEditComment ? handleEditComment : undefined}
+            onDeleteComment={onDeleteComment ? handleDeleteComment : undefined}
             onToggleComments={() => onToggleComments(post.id)}
             onLoadMoreComments={handleLoadMoreComments}
           />

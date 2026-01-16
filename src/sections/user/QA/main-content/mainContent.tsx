@@ -20,11 +20,19 @@ interface MainContentProps {
   loading: boolean;
   onLikePost: (postId: number) => void;
   onToggleComments: (postId: number) => void;
-  onAddComment: (postId: number, content: string) => void;
+  onAddComment: (postId: number, content: string, attachments?: File[]) => void;
+  onEditComment?: (
+    postId: number,
+    commentId: number,
+    content: string,
+    attachments?: File[]
+  ) => void;
+  onDeleteComment?: (postId: number, commentId: number) => void;
   onLoadMoreComments?: (postId: number) => Promise<void>;
   loadingCommentsForPost?: number | null;
   currentUserAvatar?: string;
   currentUserName?: string;
+  currentUserId?: number;
 }
 
 function MainContent({
@@ -33,10 +41,13 @@ function MainContent({
   onLikePost,
   onToggleComments,
   onAddComment,
+  onEditComment,
+  onDeleteComment,
   onLoadMoreComments,
   loadingCommentsForPost,
   currentUserAvatar,
-  currentUserName = "Bạn",
+  currentUserName = "Đồng ý xóaБạn",
+  currentUserId,
 }: MainContentProps) {
   const { user, token, isAuthenticated } = useAuth();
   const router = useRouter();
@@ -315,9 +326,23 @@ function MainContent({
               index={index}
               currentUserAvatar={currentUserAvatar || user?.avatar}
               currentUserName={currentUserName || user?.fullName || "Bạn"}
+              currentUserId={currentUserId || user?.id}
               onLikePost={onLikePost}
               onToggleComments={onToggleComments}
-              onAddComment={onAddComment}
+              onAddComment={async (postId, content, attachments) =>
+                onAddComment(postId, content, attachments)
+              }
+              onEditComment={
+                onEditComment
+                  ? async (commentId, content, attachments) =>
+                      onEditComment(post.id, commentId, content, attachments)
+                  : undefined
+              }
+              onDeleteComment={
+                onDeleteComment
+                  ? async (commentId) => onDeleteComment(post.id, commentId)
+                  : undefined
+              }
               onLoadMoreComments={onLoadMoreComments}
               loadingComments={loadingCommentsForPost === post.id}
               onSavePost={(postId) => console.log("Save post:", postId)}

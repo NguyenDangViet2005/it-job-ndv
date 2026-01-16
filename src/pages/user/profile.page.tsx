@@ -7,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/shadcn/card";
+import { toast } from "sonner";
 import {
   Avatar,
   AvatarFallback,
@@ -164,7 +165,7 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
     };
 
     loadData();
-  }, [userId, user?.id, token]);
+  }, [userId, user?.id, token, user?.cvUrl]); // Re-run when cvUrl changes
 
   // Load user skills
   useEffect(() => {
@@ -206,9 +207,10 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
           ? `${response.data.avatar}&t=${Date.now()}`
           : `${response.data.avatar}?t=${Date.now()}`;
         updateUser({ avatar: avatarUrl });
+        toast.success("Cập nhật avatar thành công!");
       }
     } catch (error) {
-      alert("Cập nhật avatar thất bại");
+      toast.error("Cập nhật avatar thất bại!");
     } finally {
       setIsUploadingAvatar(false);
     }
@@ -229,9 +231,10 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
           ? `${response.data.coverImage}&t=${Date.now()}`
           : `${response.data.coverImage}?t=${Date.now()}`;
         updateUser({ coverImage: coverImageUrl });
+        toast.success("Cập nhật ảnh bìa thành công!");
       }
     } catch (error) {
-      alert("Cập nhật ảnh bìa thất bại");
+      toast.error("Cập nhật ảnh bìa thất bại!");
     } finally {
       setIsUploadingCover(false);
     }
@@ -285,8 +288,9 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
       setNewPost("");
       setSelectedImages([]);
       setSelectedVideo(null);
+      toast.success("Đăng bài thành công!");
     } catch (error) {
-      alert("Đăng bài thất bại");
+      toast.error("Đăng bài thất bại!");
     } finally {
       setIsCreatingPost(false);
     }
@@ -404,7 +408,7 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
       );
     } catch (error) {
       console.error("Error updating post:", error);
-      alert("Không thể cập nhật bài viết");
+      toast.error("Không thể cập nhật bài viết!");
       throw error;
     }
   };
@@ -475,7 +479,7 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
   const displayMedia = showAllMedia ? media : media.slice(0, 6);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background mb-4">
       {/* Hidden file inputs */}
       <input
         type="file"
@@ -508,7 +512,7 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
       />
 
       {/* Cover Photo */}
-      <div className="relative h-72 md:h-96 bg-white overflow-hidden group">
+      <div className="relative h-72 md:h-96 bg-white overflow-hidden group border-b-1">
         {displayUser.coverImage ? (
           <>
             <img
@@ -537,7 +541,7 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
               {isUploadingCover ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
               ) : (
-                <Camera className="h-4 w-4 mr-2" />
+                <Camera className="h-4 w-4" />
               )}
               {displayUser.coverImage ? "Chỉnh sửa ảnh bìa" : "Thêm ảnh bìa"}
             </Button>
@@ -577,7 +581,7 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
                       <Button
                         size="icon"
                         variant="secondary"
-                        className="cursor-target absolute bottom-0 right-0 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110"
+                        className="cursor-target absolute bottom-2 right-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110"
                         onClick={() => avatarInputRef.current?.click()}
                         disabled={isUploadingAvatar}
                       >
@@ -1042,10 +1046,11 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
                       try {
                         const { postApi } = await import("@/apis/post.api");
                         await postApi.delete(postId, token);
-                        window.location.reload();
+                        setPosts(posts.filter((p) => p.id !== postId));
+                        toast.success("Xóa bài viết thành công!");
                       } catch (error) {
                         console.error("Error deleting post:", error);
-                        alert("Không thể xóa bài viết");
+                        toast.error("Không thể xóa bài viết!");
                       }
                     }}
                   />

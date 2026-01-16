@@ -12,6 +12,7 @@ import { FileText, Upload, Plus, X, Loader2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { userApi } from "@/apis/user.api";
 import { skillApi } from "@/apis/skill.api";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -103,8 +104,9 @@ export default function ResumePage() {
       await loadUserSkills();
       setDialogOpen(false);
       setSearchQuery("");
+      toast.success("Thêm kỹ năng thành công!");
     } catch (error) {
-      alert("Thêm kỹ năng thất bại");
+      toast.error("Thêm kỹ năng thất bại!");
     } finally {
       setAddingSkill(false);
     }
@@ -117,8 +119,9 @@ export default function ResumePage() {
     try {
       await userApi.removeSkill(user.id, skillId, token);
       await loadUserSkills();
+      toast.success("Xóa kỹ năng thành công!");
     } catch (error) {
-      alert("Xóa kỹ năng thất bại");
+      toast.error("Xóa kỹ năng thất bại!");
     }
   };
 
@@ -131,14 +134,14 @@ export default function ResumePage() {
       setUploadingCV(true);
       const response = await userApi.updateCV(user.id, file, token);
 
-      // Update user with new CV URL
-      if (response.data && response.data.cvUrl) {
-        updateUser({ cvUrl: response.data.cvUrl } as any);
+      // Update user with full user data from response
+      if (response.data) {
+        updateUser(response.data);
+        toast.success("Tải CV lên thành công!");
       }
-
-      alert("Tải CV lên thành công!");
     } catch (error) {
-      alert("Tải CV lên thất bại");
+      console.error("Upload CV error:", error);
+      toast.error("Tải CV lên thất bại!");
     } finally {
       setUploadingCV(false);
       event.target.value = "";
@@ -338,6 +341,7 @@ export default function ResumePage() {
                       Tải lại
                       <input
                         type="file"
+                        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.webp"
                         onChange={handleUploadCV}
                         className="absolute inset-0 opacity-0 cursor-pointer"
                         disabled={uploadingCV}
@@ -365,6 +369,7 @@ export default function ResumePage() {
                   Tải CV lên
                   <input
                     type="file"
+                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.webp"
                     onChange={handleUploadCV}
                     className="absolute inset-0 opacity-0 cursor-pointer"
                     disabled={uploadingCV}

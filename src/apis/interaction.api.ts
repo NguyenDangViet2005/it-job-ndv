@@ -37,9 +37,9 @@ export const interactionApi = {
     attachments?: File[]
   ) => {
     const formData = new FormData();
-    formData.append("PostId", postId.toString());
-    formData.append("UserId", userId.toString());
-    formData.append("Content", content);
+    formData.append("postId", postId.toString());
+    formData.append("userId", userId.toString());
+    formData.append("content", content);
 
     if (attachments && attachments.length > 0) {
       attachments.forEach((file) => {
@@ -61,6 +61,44 @@ export const interactionApi = {
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.message || "Failed to add comment");
+    }
+
+    return response.json() as Promise<CommentResponse>;
+  },
+
+  // Cập nhật comment
+  updateComment: async (
+    postId: number,
+    commentId: number,
+    userId: number,
+    content: string,
+    token: string,
+    attachments?: File[]
+  ) => {
+    const formData = new FormData();
+    formData.append("userId", userId.toString());
+    formData.append("content", content);
+
+    if (attachments && attachments.length > 0) {
+      attachments.forEach((file) => {
+        formData.append("attachments", file);
+      });
+    }
+
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BE_ENDPOINT}${ENDPOINT}/${postId}/comment/${commentId}`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      }
+    );
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || "Failed to update comment");
     }
 
     return response.json() as Promise<CommentResponse>;

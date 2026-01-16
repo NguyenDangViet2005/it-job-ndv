@@ -109,12 +109,13 @@ export default function AppliedJobsPage() {
                 <CardContent className="pt-6">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex gap-4 flex-1">
-                      <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <div className="h-16 w-16 rounded-xl border-2 border-border bg-white dark:bg-muted p-2 flex items-center justify-center flex-shrink-0 shadow-sm hover:shadow-md transition-shadow">
                         <Image
                           src={app.companyLogo}
                           alt={app.companyName}
-                          width="150"
-                          height="150"
+                          width={64}
+                          height={64}
+                          className="h-full w-full object-contain"
                         />
                       </div>
                       <div className="flex-1 min-w-0">

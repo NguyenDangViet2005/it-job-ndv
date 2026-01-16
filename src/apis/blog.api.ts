@@ -31,12 +31,18 @@ export const blogApi = {
   },
 
   // Lấy blog theo userId
-  getByUserId: (userId: number, token: string) => {
-    const role = getUserRole(token);
-    return apiGet<ApiResponse<BlogResponse[]>>(`${ENDPOINT}/user/${userId}`, {
-      token,
-      params: { role },
-    });
+  getByUserId: (
+    userId: number,
+    pageNumber: number = 1,
+    pageSize: number = 10,
+    token?: string
+  ) => {
+    return apiGetPaginated<BlogResponse>(
+      `${ENDPOINT}/user/${userId}`,
+      pageNumber,
+      pageSize,
+      { token }
+    );
   },
 
   // Tạo blog mới với multipart/form-data

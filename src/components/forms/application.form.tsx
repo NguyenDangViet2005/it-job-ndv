@@ -2,7 +2,7 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import {
   Form,
@@ -28,7 +28,10 @@ import {
   ApplicationFormData,
 } from "@/validations/application.validation";
 import { applicationApi } from "@/apis/application.api";
+import { userApi } from "@/apis/user.api";
 import { useAuth } from "@/hooks/useAuth";
+import { FileText, Upload, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 interface ApplicationFormProps {
   jobId: number;
@@ -45,16 +48,15 @@ export default function ApplicationForm({
   onClose,
   isModal = false,
 }: ApplicationFormProps) {
-  const { user, token } = useAuth();
+  const { user, token, updateUser } = useAuth();
   const router = useRouter();
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [uploadingCV, setUploadingCV] = useState(false);
+  const cvInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<ApplicationFormData>({
     resolver: zodResolver(applicationFormSchema),
     defaultValues: {
-      cvUrl: "",
       coverLetter: "",
     },
   });
@@ -67,14 +69,43 @@ export default function ApplicationForm({
     }
   };
 
+  // Handle upload CV
+  const handleUploadCV = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !user?.id || !token) return;
+
+    try {
+      setUploadingCV(true);
+      const response = await userApi.updateCV(user.id, file, token);
+
+      // Update user with full user data from response
+      if (response.data) {
+        updateUser(response.data);
+        toast.success("Tải CV lên thành công!");
+      }
+    } catch (error) {
+      console.error("Upload CV error:", error);
+      toast.error("Tải CV lên thất bại!");
+    } finally {
+      setUploadingCV(false);
+      event.target.value = "";
+    }
+  };
+
   const onSubmit = async (values: ApplicationFormData) => {
     if (!user || !token) {
-      setError("Vui lòng đăng nhập để ứng tuyển");
+      toast.error("Vui lòng đăng nhập để ứng tuyển");
       return;
     }
 
-    setError("");
-    setSuccess(false);
+    // Sử dụng CV URL đã upload
+    const cvUrl = (user as any).cvUrl || "";
+
+    if (!cvUrl) {
+      toast.error("Vui lòng tải CV lên trước khi ứng tuyển");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -82,25 +113,25 @@ export default function ApplicationForm({
         {
           jobId,
           userId: user.id,
-          cvUrl: values.cvUrl,
+          cvUrl: cvUrl,
           coverLetter: values.coverLetter,
         },
         token
       );
 
-      setSuccess(true);
+      toast.success("Ứng tuyển thành công!");
       form.reset();
 
-      // Đóng modal hoặc redirect sau 2 giây
+      // Đóng modal hoặc redirect sau 1 giây
       setTimeout(() => {
         if (isModal && onClose) {
           onClose();
         } else {
           router.push("/user/applied-jobs");
         }
-      }, 2000);
+      }, 1000);
     } catch (err) {
-      setError(
+      toast.error(
         err instanceof Error ? err.message : "Có lỗi xảy ra khi ứng tuyển"
       );
     } finally {
@@ -112,41 +143,87 @@ export default function ApplicationForm({
   const formContent = (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        {/* Success Message */}
-        {success && (
-          <div className="p-4 text-sm text-green-600 bg-green-50 dark:bg-green-900/20 dark:text-green-400 rounded-lg">
-            ✓ Ứng tuyển thành công!{" "}
-            {isModal ? "Đang đóng..." : "Đang chuyển hướng..."}
-          </div>
-        )}
-
-        {/* Error Message */}
-        {error && (
-          <div className="p-4 text-sm text-red-600 bg-red-50 dark:bg-red-900/20 dark:text-red-400 rounded-lg">
-            {error}
-          </div>
-        )}
-
-        {/* CV URL */}
-        <FormField
-          control={form.control}
-          name="cvUrl"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Link CV của bạn *</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="https://drive.google.com/cv/yourname.pdf"
-                  {...field}
+        {/* CV Upload */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+            CV của bạn *
+          </label>
+          {!(user as any)?.cvUrl ? (
+            <div className="border-2 border-dashed rounded-lg p-6 text-center">
+              <FileText className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
+              <p className="text-sm text-muted-foreground mb-3">
+                Chưa có CV nào được tải lên
+              </p>
+              <Button
+                type="button"
+                variant="outline"
+                className="hover:bg-primary/10 hover:text-primary relative"
+                disabled={uploadingCV}
+              >
+                {uploadingCV ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <Upload className="h-4 w-4 mr-2" />
+                )}
+                Tải CV lên
+                <input
+                  ref={cvInputRef}
+                  type="file"
+                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.webp"
+                  onChange={handleUploadCV}
+                  className="absolute inset-0 opacity-0 cursor-pointer"
+                  disabled={uploadingCV}
                 />
-              </FormControl>
-              <FormDescription>
-                Nhập link Google Drive, Dropbox hoặc link CV online của bạn
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
+              </Button>
+            </div>
+          ) : (
+            <div className="flex items-center justify-between p-3 border rounded-lg bg-primary/5">
+              <div className="flex items-center gap-3">
+                <FileText className="h-8 w-8 text-primary" />
+                <div>
+                  <p className="font-medium text-foreground">CV của bạn</p>
+                  <p className="text-sm text-muted-foreground">Đã tải lên</p>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => window.open((user as any).cvUrl, "_blank")}
+                  className="hover:bg-primary/10 hover:text-primary"
+                >
+                  Xem CV
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="hover:bg-primary/10 hover:text-primary relative"
+                  disabled={uploadingCV}
+                >
+                  {uploadingCV ? (
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  ) : (
+                    <Upload className="h-4 w-4 mr-2" />
+                  )}
+                  Tải lại
+                  <input
+                    ref={cvInputRef}
+                    type="file"
+                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.webp"
+                    onChange={handleUploadCV}
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                    disabled={uploadingCV}
+                  />
+                </Button>
+              </div>
+            </div>
           )}
-        />
+          <p className="text-sm text-muted-foreground">
+            Tải CV lên dạng PDF, DOC, DOCX hoặc hình ảnh
+          </p>
+        </div>
 
         {/* Cover Letter */}
         <FormField
@@ -174,14 +251,10 @@ export default function ApplicationForm({
         <div className="flex gap-3">
           <Button
             type="submit"
-            disabled={isLoading || success}
+            disabled={isLoading}
             className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-semibold disabled:opacity-50"
           >
-            {isLoading
-              ? "Đang gửi..."
-              : success
-              ? "Đã gửi thành công"
-              : "Gửi đơn ứng tuyển"}
+            {isLoading ? "Đang gửi..." : "Gửi đơn ứng tuyển"}
           </Button>
           <Button
             type="button"

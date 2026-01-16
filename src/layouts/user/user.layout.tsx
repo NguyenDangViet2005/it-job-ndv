@@ -70,24 +70,26 @@ export function UserDashboardLayout({
   );
 
   const ProfileCard = () => (
-    <div className="p-3.5 rounded-lg border border-primary/20 overflow-hidden">
-      <div className="flex items-center gap-3 w-full">
-        <Avatar className="h-11 w-11 ring-2 ring-primary/30 flex-shrink-0">
-          <AvatarImage src={user?.avatar || ""} alt={user?.fullName} />
-          <AvatarFallback className="bg-primary text-primary-foreground font-bold text-sm">
-            {user?.fullName?.charAt(0)?.toUpperCase() || "U"}
-          </AvatarFallback>
-        </Avatar>
-        <div className="flex-1 min-w-0 overflow-hidden">
-          <h3 className="font-semibold text-sm text-foreground leading-tight block w-full">
-            {user?.fullName || "Người dùng"}
-          </h3>
-          <p className="text-xs text-muted-foreground mt-0.5 block w-full overflow-hidden text-ellipsis">
-            {user?.email || "user@example.com"}
-          </p>
+    <Link href={ROUTES.PROFILE()} className="block w-full">
+      <div className="p-3.5 rounded-lg border border-primary/20 overflow-hidden">
+        <div className="flex items-center gap-3 w-full">
+          <Avatar className="h-11 w-11 ring-2 ring-primary/30 flex-shrink-0">
+            <AvatarImage src={user?.avatar || ""} alt={user?.fullName} />
+            <AvatarFallback className="bg-primary text-primary-foreground font-bold text-sm">
+              {user?.fullName?.charAt(0)?.toUpperCase() || "U"}
+            </AvatarFallback>
+          </Avatar>
+          <div className="flex-1 min-w-0 overflow-hidden">
+            <h3 className="font-semibold text-sm text-foreground leading-tight block w-full">
+              {user?.fullName || "Người dùng"}
+            </h3>
+            <p className="text-xs text-muted-foreground mt-0.5 block w-full overflow-hidden text-ellipsis">
+              {user?.email || "user@example.com"}
+            </p>
+          </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 
   const SidebarFooter = () => (

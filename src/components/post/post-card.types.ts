@@ -32,17 +32,26 @@ export interface LegacyPost {
 }
 
 // Union type for both formats
-export type PostType = LegacyPost | (FullPostResponse & { showComments?: boolean });
+export type PostType =
+  | LegacyPost
+  | (FullPostResponse & { showComments?: boolean });
 
 export interface PostCardProps {
   post: PostType;
   index?: number;
   currentUserAvatar?: string;
   currentUserName?: string;
+  currentUserId?: number;
   isSaved?: boolean;
   onLikePost: (postId: number) => void;
   onToggleComments: (postId: number) => void;
-  onAddComment: (postId: number, content: string) => void;
+  onAddComment: (postId: number, content: string, attachments?: File[]) => void;
+  onEditComment?: (
+    commentId: number,
+    content: string,
+    attachments?: File[]
+  ) => void;
+  onDeleteComment?: (commentId: number) => void;
   onLoadMoreComments?: (postId: number) => Promise<void>;
   onSavePost?: (postId: number) => void;
   onReportPost?: (postId: number) => void;
