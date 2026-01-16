@@ -1,12 +1,20 @@
 const cloudinary = require("cloudinary").v2;
-const fs = require("fs");
 const env = require("../configs/env.config");
 require("../configs/cloudinary.config");
 
-const getResourceTypeFromPath = (filePath) => {
-  const ext = filePath.toLowerCase().split(".").pop();
+const getResourceTypeFromFile = (file) => {
+  const mimetype = file.mimetype || "";
+
+  if (mimetype.startsWith("video/")) return "video";
+  if (mimetype.startsWith("image/")) return "image";
+
+  // Check by filename extension
+  const filename = file.originalname || "";
+  const ext = filename.toLowerCase().split(".").pop();
+
   const videoExtensions = ["mp4", "avi", "mov", "mkv", "webm", "flv"];
   if (videoExtensions.includes(ext)) return "video";
+
   const documentExtensions = [
     "pdf",
     "doc",
@@ -58,19 +66,17 @@ const getPublicIdFromUrl = (url) => {
   }
 };
 
-const uploadFile = async (filePath) => {
+const uploadFile = async (file) => {
   try {
-    if (!filePath) {
-      throw new Error("File path is required");
+    if (!file || !file.buffer) {
+      throw new Error("File buffer is required");
     }
 
     const targetFolder = env.cloudinary.cloudFolder;
-    const resourceType = getResourceTypeFromPath(filePath);
+    const resourceType = getResourceTypeFromFile(file);
 
     const uploadOptions = {
       folder: targetFolder,
-      use_filename: true,
-      unique_filename: true,
       resource_type: resourceType,
     };
 
@@ -80,17 +86,23 @@ const uploadFile = async (filePath) => {
       ];
     }
 
-    const result = await cloudinary.uploader.upload(filePath, uploadOptions);
+    // Upload from buffer using upload_stream
+    return new Promise((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        uploadOptions,
+        (error, result) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(result);
+          }
+        }
+      );
 
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
-    }
-
-    return result;
+      // Write buffer to stream
+      uploadStream.end(file.buffer);
+    });
   } catch (error) {
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
-    }
     throw error;
   }
 };

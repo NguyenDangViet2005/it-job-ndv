@@ -115,7 +115,19 @@ const update = async (req, res, next) => {
       companyId: req.body.companyId,
     };
 
-    const result = await postService.updatePost(id, postData, req.files);
+    let keepImageUrls = [];
+    
+    if (req.body.keepImageUrls) {
+      keepImageUrls = Array.isArray(req.body.keepImageUrls)
+        ? req.body.keepImageUrls
+        : [req.body.keepImageUrls];
+    } else if (req.body["keepImageUrls[]"]) {
+      keepImageUrls = Array.isArray(req.body["keepImageUrls[]"])
+        ? req.body["keepImageUrls[]"]
+        : [req.body["keepImageUrls[]"]];
+    }
+
+    const result = await postService.updatePost(id, postData, req.files, keepImageUrls);
     res.status(200).json(result);
   } catch (error) {
     next(error);
@@ -199,6 +211,12 @@ const updateComment = async (req, res, next) => {
     const commentId = parseInt(req.params.commentId);
     const userId = req.body.userId || getCurrentUserId(req);
     const content = req.body.content;
+    // keepImageUrls is sent as array: keepImageUrls[]
+    const keepImageUrls = req.body["keepImageUrls[]"]
+      ? Array.isArray(req.body["keepImageUrls[]"])
+        ? req.body["keepImageUrls[]"]
+        : [req.body["keepImageUrls[]"]]
+      : [];
 
     if (!userId) {
       return res.status(400).json({ message: "UserId is required" });
@@ -208,7 +226,8 @@ const updateComment = async (req, res, next) => {
       commentId,
       userId,
       content,
-      req.files
+      req.files,
+      keepImageUrls
     );
     res.status(200).json(result);
   } catch (error) {

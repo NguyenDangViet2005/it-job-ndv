@@ -251,7 +251,6 @@ const createPost = async (data, files) => {
       for (const file of files) {
         let fileUrl;
         let fileType;
-        let publicId;
 
         if (file.mimetype.startsWith("video/")) {
           fileType = "video";
@@ -259,17 +258,15 @@ const createPost = async (data, files) => {
           fileType = "image";
         }
 
-        // Upload file
-        const result = await cloudinaryService.uploadFile(file.path);
+        // Upload file buffer to cloudinary
+        const result = await cloudinaryService.uploadFile(file);
         fileUrl = result.secure_url;
-        publicId = result.public_id;
 
         await Attachment.create(
           {
             postId: post.id,
             fileUrl,
             fileType,
-            publicId,
           },
           { transaction }
         );
@@ -284,7 +281,7 @@ const createPost = async (data, files) => {
   }
 };
 
-const updatePost = async (id, data, files) => {
+const updatePost = async (id, data, files, keepImageUrls = []) => {
   const transaction = await sequelize.transaction();
   try {
     const post = await Post.findByPk(id);
@@ -302,19 +299,26 @@ const updatePost = async (id, data, files) => {
     if (data.content !== undefined) {
       post.content = data.content;
     }
-    if (files && files.length > 0) {
-      const existingAttachments = await Attachment.findAll({
-        where: { postId: id },
-      });
 
-      // Delete old attachments from Cloudinary
-      for (const att of existingAttachments) {
+    // Handle attachments update
+    const existingAttachments = await Attachment.findAll({
+      where: { postId: id },
+    });
+
+    // Delete attachments that are NOT in keepImageUrls
+    for (const att of existingAttachments) {
+      const shouldKeep = keepImageUrls.includes(att.fileUrl);
+      
+      if (!shouldKeep) {
         if (att.fileUrl) {
           await cloudinaryService.deleteFile(att.fileUrl);
         }
         await att.destroy({ transaction });
       }
+    }
 
+    // Add new files
+    if (files && files.length > 0) {
       for (const file of files) {
         let fileUrl;
         let fileType;
@@ -325,8 +329,8 @@ const updatePost = async (id, data, files) => {
           fileType = "image";
         }
 
-        // Upload file
-        const result = await cloudinaryService.uploadFile(file.path);
+        // Upload file buffer to cloudinary
+        const result = await cloudinaryService.uploadFile(file);
         fileUrl = result.secure_url;
 
         await Attachment.create(

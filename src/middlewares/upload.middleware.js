@@ -1,26 +1,14 @@
 const multer = require("multer");
-const path = require("path");
 
-// Configure storage
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/");
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(
-      null,
-      file.fieldname + "-" + uniqueSuffix + path.extname(file.originalname)
-    );
-  },
-});
+// Use memory storage instead of disk storage
+const storage = multer.memoryStorage();
 
 // File filter
 const fileFilter = (req, file, cb) => {
   // Accept images, videos, and PDF files
   if (
     !file.originalname.match(
-      /\.(jpg|jpeg|png|gif|mp4|avi|mov|mkv|pdf|doc|docx)$/i
+      /\.(jpg|jpeg|png|gif|mp4|avi|mov|mkv|webm|pdf|doc|docx|txt|xls|xlsx|ppt|pptx)$/i
     )
   ) {
     return cb(
@@ -34,7 +22,7 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({
   storage: storage,
   limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB for documents
+    fileSize: 100 * 1024 * 1024, // 100MB for videos
   },
   fileFilter: fileFilter,
 });

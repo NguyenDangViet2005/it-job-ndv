@@ -69,7 +69,7 @@ const updateAvatar = async (id, file) => {
       await cloudinaryService.deleteFile(user.avatar);
     }
 
-    const result = await cloudinaryService.uploadFile(file.path);
+    const result = await cloudinaryService.uploadFile(file);
     user.avatar = result.secure_url;
 
     await user.save();
@@ -91,7 +91,7 @@ const updateCover = async (id, file) => {
       await cloudinaryService.deleteFile(user.coverImage);
     }
 
-    const result = await cloudinaryService.uploadFile(file.path);
+    const result = await cloudinaryService.uploadFile(file);
     user.coverImage = result.secure_url;
 
     await user.save();
@@ -113,8 +113,8 @@ const updateCV = async (id, file) => {
       await cloudinaryService.deleteFile(user.cvUrl);
     }
 
-    // Upload CV as raw file (not image)
-    const result = await cloudinaryService.uploadFile(file.path);
+    // Upload CV from buffer
+    const result = await cloudinaryService.uploadFile(file);
     user.cvUrl = result.secure_url;
 
     await user.save();
