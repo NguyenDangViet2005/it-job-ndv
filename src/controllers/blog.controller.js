@@ -3,16 +3,7 @@ const jwt = require("jsonwebtoken");
 const env = require("../configs/env.config");
 
 const getCurrentUserId = (req) => {
-  if (req.user) return req.user.id;
-  const authHeader = req.headers.authorization;
-  if (authHeader) {
-    try {
-      const token = authHeader.split(" ")[1];
-      const decoded = jwt.verify(token, env.jwt.accessSecret);
-      return decoded.id;
-    } catch (e) {}
-  }
-  return null;
+  return req.user ? req.user.id : null;
 };
 
 const getAll = async (req, res, next) => {

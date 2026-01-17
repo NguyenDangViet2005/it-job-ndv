@@ -89,7 +89,7 @@ const createBlog = async (data, file) => {
   try {
     let imageUrl = "";
     if (file) {
-      const result = await cloudinaryService.uploadFile(file.path);
+      const result = await cloudinaryService.uploadFile(file);
       imageUrl = result.secure_url;
     }
 
@@ -99,6 +99,7 @@ const createBlog = async (data, file) => {
       title: data.title,
       excerpt: data.excerpt,
       content: data.content,
+      readTime: data.readTime,
       image: imageUrl,
     });
 
@@ -117,6 +118,7 @@ const updateBlog = async (id, data, file) => {
     if (data.excerpt) blog.excerpt = data.excerpt;
     if (data.content) blog.content = data.content;
     if (data.categoryId) blog.categoryId = data.categoryId;
+    if (data.readTime) blog.readTime = data.readTime;
 
     if (file) {
       // Delete old image from Cloudinary if exists
@@ -125,7 +127,7 @@ const updateBlog = async (id, data, file) => {
       }
 
       // Update image
-      const result = await cloudinaryService.uploadFile(file.path);
+      const result = await cloudinaryService.uploadFile(file);
       blog.image = result.secure_url;
     }
 

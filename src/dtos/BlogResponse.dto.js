@@ -1,6 +1,8 @@
 class BlogResponse {
   constructor(blog) {
     this.id = blog.id;
+    this.userId = blog.userId;
+    this.categoryId = blog.categoryId;
     this.title = blog.title;
     this.excerpt = blog.excerpt;
     this.content = blog.content;
@@ -11,6 +13,7 @@ class BlogResponse {
     this.date = blog.created_at || blog.createdAt;
     this.createdAt = blog.createdAt;
     this.updatedAt = blog.updatedAt;
+
   }
 }
 
