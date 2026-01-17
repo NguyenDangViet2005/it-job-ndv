@@ -1,8 +1,10 @@
 import Image from "next/image";
-import { Briefcase, TrendingUp } from "lucide-react";
+import { Briefcase, TrendingUp, MoveRight } from "lucide-react";
 import { Card } from "@/components/ui/shadcn/card";
+import { useAuth } from "@/hooks/useAuth"; 
 
 const HotJob = ({ props }: JobResponse) => {
+  const { user } = useAuth();
   return (
     <div className="h-full">
       <Card className="transition-all duration-300 overflow-hidden bg-white dark:bg-gray-800 h-full group cursor-pointer border-0 rounded-none p-0">
@@ -46,10 +48,11 @@ const HotJob = ({ props }: JobResponse) => {
             </div>
             <div className="flex-1"></div>
             <div className="space-y-2 flex-shrink-0">
-              <div className="text-center h-5">
+              <div className="text-center h-5 flex items-center justify-center gap-1">
                 <p className="text-pink-400 font-semibold text-xs drop-shadow">
-                  Login to view salary
+                  {user ? "Xem chi tiết lương" : "Đăng nhập để xem chi tiết lương"}
                 </p>
+                <MoveRight className="w-3.5 h-3.5 flex-shrink-0 text-pink-400"/>
               </div>
               <div className="flex items-center justify-center gap-1.5 text-white h-5">
                 <Briefcase className="w-3.5 h-3.5 flex-shrink-0" />

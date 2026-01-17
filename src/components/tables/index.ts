@@ -1,6 +1,6 @@
 // Admin table components
 export { AdminDataTable, type TableColumn, type FilterOption } from "./admin.data-table";
-export { AdminStatsGrid } from "./admin.stats-grid";
+export { AdminStatsGrid } from "../cards/manageCards/admin.stats-grid";
 
 // Admin row components with types
 export { AdminUserRow, getUserTableColumns, type AdminUser } from "./admin.user.row";
@@ -9,4 +9,4 @@ export { AdminCompanyRow, getCompanyTableColumns, type AdminCompany } from "./ad
 export { AdminBlogRow, getBlogTableColumns, type AdminBlog } from "./admin.blog.row";
 
 // Admin KPI card
-export { default as AdminKPICard } from "./admin.kpi.card";
+export { default as AdminKPICard } from "../cards/adminCards/admin.kpi.card";

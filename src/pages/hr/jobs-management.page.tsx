@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/shadcn/badge";
 import { Button } from "@/components/ui/shadcn/button";
-import { DataTable } from "../../components/cards/data-table.card";
+import { DataTable } from "../../components/tables/data-table.card";
 import { jobApi } from "@/apis/job.api";
 import { JobDetailModal } from "@/components/modals/job-detail.modal";
 import {

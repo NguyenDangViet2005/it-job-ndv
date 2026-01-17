@@ -9,7 +9,7 @@ import {
   AdminJobRow, 
   getJobTableColumns,
   type AdminJob 
-} from "@/components/admin";
+} from "@/components/tables";
 import { jobApi } from "@/apis";
 
 // Helper to get token from localStorage

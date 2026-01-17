@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/shadcn/avatar";
-import PostMenu from "@/components/post/post-menu";
-import type { NormalizedPost } from "./post-card.types";
+import PostMenu from "@/components/cards/postCards/post-menu";
+import type { NormalizedPost } from "../../../types/post-card.types";
 import { ROUTES } from "@/configs";
 
 interface PostHeaderProps {

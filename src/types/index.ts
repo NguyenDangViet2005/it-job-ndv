@@ -4,6 +4,7 @@ export * from "./follow.type";
 export * from "./form.type";
 export * from "./post.type";
 export * from "./test.type";
+export * from "./post-card.types";
 export * from "./application.type";
 
 // Re-export company types with explicit names to avoid conflicts

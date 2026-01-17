@@ -24,7 +24,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/shadcn/dropdown-menu";
-import type { NormalizedPost } from "./post-card.types";
+import type { NormalizedPost } from "@/types/post-card.types";
 import type { AttachmentResponse } from "@/types/api.type";
 
 interface PostCommentsProps {

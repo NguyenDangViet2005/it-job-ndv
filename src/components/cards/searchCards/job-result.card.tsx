@@ -1,7 +1,7 @@
 import { SearchJob } from "@/apis/search.api";
 import { Building2, Calendar } from "lucide-react";
 import Link from "next/link";
-import { Badge } from "../ui/shadcn/badge";
+import { Badge } from "../../ui/shadcn/badge";
 
 export function JobCard({ job }: { job: SearchJob }) {
   const getTypeLabel = (type: string) => {

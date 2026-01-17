@@ -4,7 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { AuthProvider } from "@/providers/auth.provider";
 import { Toaster } from "@/components/ui/shadcn/sonner";
-import { NavigationTracker } from "@/components/auth/navigation-tracker";
+import { NavigationTracker } from "@/routes/navigation-tracker";
 
 export const metadata: Metadata = {
   title: "IT Job | Nền tảng công việc IT hàng đầu Việt Nam",

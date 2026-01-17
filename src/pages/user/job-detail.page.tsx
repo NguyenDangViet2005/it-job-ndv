@@ -61,7 +61,7 @@ export default function JobDetailPage({ jobId }: Props) {
     company: jobData.company?.name || "",
     logo: jobData.company?.avatar || "/logo-company.jpg",
     location: jobData.company?.city || jobData.company?.address || "",
-    salary: "Thỏa thuận",
+    salary: jobData.salary || "Thỏa thuận",
     type: jobData.type,
     level: "Middle",
     postedDate: new Date(jobData.createdAt).toLocaleDateString("vi-VN"),
@@ -95,7 +95,11 @@ export default function JobDetailPage({ jobId }: Props) {
   };
 
   const benefitsData = {
-    salary: ["Mức lương cạnh tranh", "Thưởng theo hiệu suất"],
+    salary: [
+      `Mức lương: ${jobData.salary || "Thỏa thuận"}`,
+      "Mức lương cạnh tranh",
+      "Thưởng theo hiệu suất",
+    ],
     welfare: ["Bảo hiểm y tế", "Bảo hiểm xã hội", "Du lịch hàng năm"],
     growth: ["Đào tạo nâng cao kỹ năng", "Tham gia hội thảo công nghệ"],
     environment: ["Văn phòng hiện đại", "Trang thiết bị đầy đủ"],

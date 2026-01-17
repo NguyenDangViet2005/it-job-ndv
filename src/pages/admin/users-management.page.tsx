@@ -9,7 +9,7 @@ import {
   AdminUserRow, 
   getUserTableColumns,
   type AdminUser 
-} from "@/components/admin";
+} from "@/components/tables";
 import { userApi } from "@/apis";
 
 // Helper to get token from localStorage

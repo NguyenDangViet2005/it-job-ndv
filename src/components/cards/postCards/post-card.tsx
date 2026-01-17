@@ -2,21 +2,21 @@
 
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/shadcn/card";
-import PostHeader from "@/components/post/post-header";
-import PostMedia from "@/components/post/post-media";
-import PostActions from "@/components/post/post-actions";
-import PostComments from "@/components/post/post-comments.section";
+import PostHeader from "@/components/cards/postCards/post-header";
+import PostMedia from "@/components/cards/postCards/post-media";
+import PostActions from "@/components/cards/postCards/post-actions";
+import PostComments from "@/components/cards/postCards/post-comments";
 import PostLightbox from "@/components/modals/post-lightbox.modal";
 import { useAuth } from "@/hooks/useAuth";
 import type {
   PostCardProps,
   NormalizedPost,
-} from "@/components/post/post-card.types";
+} from "@/types/post-card.types";
 import {
   isApiPost,
   getAttachmentsArray,
   getCommentsArray,
-} from "@/components/post/post-card.types";
+} from "@/types/post-card.types";
 import type { CommentResponse, AttachmentResponse } from "@/types/api.type";
 
 export default function PostCard({

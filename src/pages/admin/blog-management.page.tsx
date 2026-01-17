@@ -22,7 +22,7 @@ import {
   AdminBlogRow,
   getBlogTableColumns,
   type AdminBlog,
-} from "@/components/admin";
+} from "@/components/tables";
 import { blogApi } from "@/apis";
 import { toast } from "sonner";
 import {

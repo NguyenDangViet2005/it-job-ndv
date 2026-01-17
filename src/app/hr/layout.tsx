@@ -1,7 +1,7 @@
 "use client";
 
 import { HRLayout } from "@/layouts/hr/hr.layout";
-import ProtectedRoute from "@/components/auth/protected-route";
+import ProtectedRoute from "@/routes/protected-route";
 
 export default function RootLayout({
   children,

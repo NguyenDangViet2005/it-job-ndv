@@ -15,7 +15,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/shadcn/dialog";
 import { User, ExternalLink } from "lucide-react";
-import { DataTable } from "@/components/cards/data-table.card";
+import { DataTable } from "@/components/tables/data-table.card";
 import { applicationApi } from "@/apis/application.api";
 import { useAuth } from "@/hooks/useAuth";
 

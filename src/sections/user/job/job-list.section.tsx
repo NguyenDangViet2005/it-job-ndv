@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import JobCard from "@/components/cards/job.card";
+import JobCard from "@/components/cards/jobCards/job.card";
 import {
   Pagination,
   PaginationContent,

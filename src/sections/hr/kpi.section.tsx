@@ -1,4 +1,4 @@
-import HrKPICard from "@/components/cards/hr.kpi.card";
+import HrKPICard from "@/components/cards/hrCards/hr.kpi.card";
 import { Briefcase, Users, Calendar, FileText } from "lucide-react";
 
 const kpiData = [

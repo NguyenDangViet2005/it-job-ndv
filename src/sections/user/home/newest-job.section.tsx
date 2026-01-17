@@ -9,6 +9,8 @@ import { jobApi } from "@/apis";
 import type { JobResponse } from "@/types/api.type";
 import type { Swiper as SwiperType } from "swiper";
 import Link from "next/link";
+import { formatDate } from "@/utils";
+import { useAuth } from "@/hooks/useAuth";
 
 
 
@@ -18,6 +20,7 @@ export default function NewestJob() {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const { user } = useAuth();
   const pageSize = 12;
 
   useEffect(() => {
@@ -146,23 +149,28 @@ export default function NewestJob() {
                 )}
               </div>
 
-              {/* Quantity and Deadline */}
-              <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                {job.quantity && (
-                  <span className="flex items-center gap-1">
-                    <span className="font-semibold text-foreground">{job.quantity}</span> vị trí
-                  </span>
-                )}
-                {job.deadline && (
-                  <span className="flex items-center gap-1">
-                     Hạn: <span className="font-medium text-foreground">
-                      {new Date(job.deadline).toLocaleDateString('vi-VN', {
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: 'numeric'
-                      })}
+              {/* Quantity, Deadline and Salary */}
+              <div className="flex flex-col gap-2 text-xs text-muted-foreground">
+                <div className="flex items-center gap-3">
+                  {job.quantity && (
+                    <span className="flex items-center gap-1">
+                      <span className="font-semibold text-foreground">{job.quantity}</span> vị trí
                     </span>
-                  </span>
+                  )}
+                  {job.deadline && (
+                    <span className="flex items-center gap-1">
+                       Hạn: <span className="font-medium text-foreground">
+                        {formatDate(job.deadline)}
+                      </span>
+                    </span>
+                  )}
+                </div>
+                {job.salary && (
+                  <div className="flex items-center gap-1 text-primary font-medium">
+                    <span>{user ? "Xem chi tiết lương" : "Đăng nhập để xem chi tiết lương"} 
+                    </span>
+                    <MoveRight className="w-4 h-4"/>
+                  </div>
                 )}
               </div>
 
@@ -199,10 +207,7 @@ export default function NewestJob() {
                   </span>
                   {job.createdAt && (
                     <span className="text-xs text-muted-foreground">
-                      {new Date(job.createdAt).toLocaleDateString('vi-VN', {
-                        day: '2-digit',
-                        month: '2-digit'
-                      })}
+                      {formatDate(job.createdAt)}
                     </span>
                   )}
                 </div>

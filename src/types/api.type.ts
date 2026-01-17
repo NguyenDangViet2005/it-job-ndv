@@ -124,6 +124,7 @@ export interface JobRequest {
   type: string;
   quantity: number;
   deadline: string;
+  salary?: string;
   status: string;
 }
 
@@ -135,6 +136,7 @@ export interface JobResponse {
   status: string;
   quantity: number;
   deadline: string;
+  salary?: string;
   createdAt: string;
   company?: {
     id: number;

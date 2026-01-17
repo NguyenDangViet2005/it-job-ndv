@@ -21,7 +21,7 @@ import {
 import Link from "next/link";
 import SearchBar from "@/components/ui/customs/search-bar";
 import { HeroSection } from "@/sections/user/common/hero.section";
-import { JobCard } from "@/components/cards/job-result.card";
+import { JobCard } from "@/components/cards/searchCards/job-result.card";
 import { CompanyCard } from "@/components/cards/company-result.card";
 
 export default function SearchResultsPage() {

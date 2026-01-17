@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { authApi } from "@/apis/auth.api";
 import { companyApi } from "@/apis/company.api";
 import { AuthContext } from "@/contexts/auth.context";
-import { AuthGuard } from "@/components/auth/auth.guard";
+import { AuthGuard } from "@/routes/auth.guard";
 import { ROUTES } from "@/configs";
 import type { UserResponse, CompanyResponse } from "@/types/api.type";
 

@@ -37,8 +37,8 @@ import {
 import { useState, useRef, useEffect } from "react";
 import { Dialog, DialogContent } from "@/components/ui/shadcn/dialog";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import PostCard from "@/components/cards/post-card";
-import EditPostDialog from "@/components/post/edit-post-dialog";
+import PostCard from "@/components/cards/postCards/post-card";
+import EditPostDialog from "@/components/modals/edit-post-modal";
 
 import { userApi } from "@/apis/user.api";
 import { postApi } from "@/apis/post.api";

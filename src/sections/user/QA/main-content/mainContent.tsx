@@ -8,8 +8,8 @@ import {
 import { Button } from "@/components/ui/shadcn/button";
 import { Separator } from "@/components/ui/shadcn/separator";
 import React, { useState, useRef } from "react";
-import PostCard from "@/components/cards/post-card";
-import EditPostDialog from "@/components/post/edit-post-dialog";
+import PostCard from "@/components/cards/postCards/post-card";
+import EditPostDialog from "@/components/modals/edit-post-modal";
 import type { FullPostResponse } from "@/types/api.type";
 import { postApi } from "@/apis/post.api";
 import { useAuth } from "@/hooks/useAuth";

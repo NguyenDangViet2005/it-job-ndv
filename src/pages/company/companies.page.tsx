@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { companyApi } from "@/apis";
 import type { Company } from "@/types/api.type";
-import { CompanyCard } from "@/components/cards/company.card";
+import { CompanyCard } from "@/components/cards/companyCards/company.card";
 import { HeroSection } from "@/sections/user/common/hero.section";
 
 interface CompanyFilters {

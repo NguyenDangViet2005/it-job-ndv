@@ -26,6 +26,7 @@ interface JobData {
   status: string;
   quantity: number;
   deadline: string;
+  salary?: string;
   createdAt: string;
   company: {
     id: number;
@@ -48,6 +49,7 @@ interface JobEditForm {
   type: string;
   quantity: number;
   deadline: string;
+  salary?: string;
   status: string;
 }
 
@@ -212,6 +214,14 @@ export function JobDetailModal({
                 <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-md">
                   <p className="text-sm text-gray-900">{formatDate(job.deadline)}</p>
                 </div>
+              </div>
+            </div>
+
+            {/* Salary */}
+            <div className="space-y-2">
+              <Label className="text-sm text-gray-600">Mức lương</Label>
+              <div className="px-4 py-3 bg-green-50 border border-green-200 rounded-md">
+                <p className="font-semibold text-green-700">{job.salary || "Thỏa thuận"}</p>
               </div>
             </div>
 
@@ -383,6 +393,22 @@ export function JobDetailModal({
                     className="h-11"
                   />
                 </div>
+              </div>
+
+              {/* Salary Edit */}
+              <div className="space-y-2">
+                <Label htmlFor="salary" className="text-base font-semibold">
+                  Mức lương
+                </Label>
+                <Input
+                  id="salary"
+                  value={form.salary || ""}
+                  onChange={(e) =>
+                    onFormChange({ ...form, salary: e.target.value })
+                  }
+                  placeholder="VD: 15 - 25 triệu, Thỏa thuận..."
+                  className="h-11"
+                />
               </div>
             </div>
           )

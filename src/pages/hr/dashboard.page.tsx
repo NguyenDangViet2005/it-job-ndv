@@ -1,6 +1,6 @@
 import KPI from "@/sections/hr/kpi.section";
-import QuickActions from "@/components/cards/quick.action.card";
-import ActivityFeed from "@/components/cards/activity-feed.card";
+import QuickActions from "@/components/cards/hrCards/quick.action.card";
+import ActivityFeed from "@/components/cards/adminCards/activity-feed.card";
 
 const HRDashboard = () => {
   return (

@@ -1,9 +1,9 @@
 import Image from "next/image";
-import { Card, CardContent } from "../ui/shadcn/card";
+import { Card, CardContent } from "@/components/ui/shadcn/card";
 import Link from "next/link";
 import {  Briefcase, Building2, MapPin } from "lucide-react";
-import { Button } from "../ui/shadcn/button";
-import { Badge } from "../ui/shadcn/badge";
+import { Button } from "@/components/ui/shadcn/button";
+import { Badge } from "@/components/ui/shadcn/badge";
 import { Company } from "@/types";
 
 export const CompanyCard = ({ company}: { company: Company  }) => {

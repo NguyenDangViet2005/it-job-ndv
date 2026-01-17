@@ -9,7 +9,7 @@ import {
   AdminCompanyRow, 
   getCompanyTableColumns,
   type AdminCompany 
-} from "@/components/admin";
+} from "@/components/tables";
 import { companyApi } from "@/apis";
 
 // Helper to get token from localStorage

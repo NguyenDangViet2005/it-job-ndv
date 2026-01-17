@@ -27,6 +27,7 @@ export interface AdminJob {
   status?: string;
   quantity?: number;
   deadline?: string;
+  salary?: string;
   createdAt?: string;
   company?: {
     id: number;
@@ -121,15 +122,20 @@ export function AdminJobRow({ job, onEdit, onDelete }: JobRowProps) {
         </div>
       </td>
 
-      {/* Type & Status */}
+      {/* Type, Status & Salary */}
       <td className="p-4 cursor-target">
         <div className="flex flex-col gap-2">
           <Badge className={cn("text-xs w-fit", getTypeColor(job.type))}>
             {job.type || "N/A"}
           </Badge>
-          <Badge className={cn("text-xs w-fit", getStatusColor(job.status))}>
-            {job.status?.toUpperCase() || "ACTIVE"}
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Badge className={cn("text-xs w-fit", getStatusColor(job.status))}>
+              {job.status?.toUpperCase() || "ACTIVE"}
+            </Badge>
+            <span className="text-xs font-semibold text-green-600 dark:text-green-400 truncate max-w-[100px]">
+              {job.salary || "N/A"}
+            </span>
+          </div>
         </div>
       </td>
 
@@ -223,7 +229,7 @@ export function AdminJobRow({ job, onEdit, onDelete }: JobRowProps) {
 export function getJobTableColumns() {
   return [
     { key: "job", header: "Công việc", width: "25%" },
-    { key: "type", header: "Loại / Trạng thái", width: "12%" },
+    { key: "type", header: "Loại / Lương", width: "15%" },
     { key: "skills", header: "Kỹ năng", width: "18%" },
     { key: "quantity", header: "Số lượng", width: "10%" },
     { key: "deadline", header: "Hạn nộp", width: "12%" },
