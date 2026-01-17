@@ -88,7 +88,7 @@ export function BlogFormModal({
         title: blog.title || "",
         excerpt: blog.excerpt || "",
         content: blog.content || "",
-        categoryId: blog.categoryId || blog.category?.id || 0,
+        categoryId: Number(blog.categoryId || blog.category?.id || 0),
         readTime: blog.readTime || "",
         image: blog.image || "",
       });
@@ -164,10 +164,10 @@ export function BlogFormModal({
             <Label htmlFor="category">Danh mục *</Label>
             <Select
               value={
-                formData.categoryId > 0 ? formData.categoryId.toString() : ""
+                formData.categoryId > 0 ? String(formData.categoryId) : undefined
               }
               onValueChange={(value) =>
-                setFormData({ ...formData, categoryId: parseInt(value) })
+                setFormData({ ...formData, categoryId: Number(value) })
               }
             >
               <SelectTrigger>

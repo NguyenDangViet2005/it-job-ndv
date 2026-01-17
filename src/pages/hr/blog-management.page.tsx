@@ -98,7 +98,7 @@ export default function HRBlogManagementPage() {
         title: editBlog.title || "",
         excerpt: editBlog.excerpt || "",
         content: editBlog.content || "",
-        categoryId: editBlog.categoryId || editBlog.category?.id || 0,
+        categoryId: Number(editBlog.categoryId || editBlog.category?.id || 0),
         readTime: editBlog.readTime || "",
         image: editBlog.image || "",
       });
@@ -119,7 +119,7 @@ export default function HRBlogManagementPage() {
 
     try {
       setLoading(true);
-      const response = await blogApi.getByUserId(user.id, token);
+      const response = await blogApi.getByUserId(user.id, 1, 10, token);
       setBlogs(response.data || []);
     } catch (error) {
       toast.error("Không thể tải danh sách blog");
@@ -364,10 +364,10 @@ export default function HRBlogManagementPage() {
               <Label htmlFor="category">Danh mục *</Label>
               <Select
                 value={
-                  formData.categoryId > 0 ? formData.categoryId.toString() : ""
+                  formData.categoryId > 0 ? String(formData.categoryId) : undefined
                 }
                 onValueChange={(value) =>
-                  setFormData({ ...formData, categoryId: parseInt(value) })
+                  setFormData({ ...formData, categoryId: Number(value) })
                 }
               >
                 <SelectTrigger>

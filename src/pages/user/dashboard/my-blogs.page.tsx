@@ -61,7 +61,7 @@ export default function MyBlogsPage() {
 
     try {
       setLoading(true);
-      const response = await blogApi.getByUserId(user.id, token);
+      const response = await blogApi.getByUserId(user.id, 1, 10, token);
       setBlogs(response.data || []);
     } catch (error) {
       toast.error("Không thể tải danh sách blog");
@@ -139,23 +139,23 @@ export default function MyBlogsPage() {
 
       if (createMode) {
         // Create mode: gửi đầy đủ fields
-        data.append("UserId", user.id.toString());
-        data.append("CategoryId", formData.categoryId.toString());
-        data.append("Title", formData.title);
-        data.append("Excerpt", formData.excerpt);
-        data.append("Content", formData.content);
-        data.append("ReadTime", formData.readTime || "5 phút đọc");
+        data.append("userId", user.id.toString());
+        data.append("categoryId", formData.categoryId.toString());
+        data.append("title", formData.title);
+        data.append("excerpt", formData.excerpt);
+        data.append("content", formData.content);
+        data.append("readTime", formData.readTime || "5 phút đọc");
       } else {
         // Update mode: chỉ gửi các fields có trong BlogUpdateRequest
-        data.append("CategoryId", formData.categoryId.toString());
-        data.append("Title", formData.title);
-        data.append("Excerpt", formData.excerpt);
-        data.append("Content", formData.content);
-        data.append("ReadTime", formData.readTime || "5 phút đọc");
+        data.append("categoryId", formData.categoryId.toString());
+        data.append("title", formData.title);
+        data.append("excerpt", formData.excerpt);
+        data.append("content", formData.content);
+        data.append("readTime", formData.readTime || "5 phút đọc");
       }
 
       if (imageFile) {
-        data.append("Image", imageFile);
+        data.append("image", imageFile);
       }
 
 
@@ -229,7 +229,7 @@ export default function MyBlogsPage() {
         <div className="grid gap-4">
           {blogs.map((blog) => (
             <Card key={blog.id} className="hover:shadow-md transition-shadow">
-              <CardContent className="p-6">
+              <CardContent>
                 <div className="flex gap-4">
                   {/* Thumbnail */}
                   {blog.image && (

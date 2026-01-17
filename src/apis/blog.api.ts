@@ -45,19 +45,19 @@ export const blogApi = {
     );
   },
 
-  // Tạo blog mới với multipart/form-data
-  create: async (formData: FormData, token: string) => {
-    const BE_ENDPOINT = process.env.NEXT_PUBLIC_BE_ENDPOINT;
+  // Tạo blog mới
+  create: async (data: FormData | any, token: string) => {
+    const BE_ENDPOINT = process.env.NEXT_PUBLIC_BE_ENDPOINT || "http://localhost:8081/api";
+    const isFormData = data instanceof FormData;
 
     const response = await fetch(`${BE_ENDPOINT}${ENDPOINT}`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
-        // Không set Content-Type, để browser tự động set với boundary
+        ...(isFormData ? {} : { "Content-Type": "application/json" }),
       },
-      body: formData,
+      body: isFormData ? data : JSON.stringify(data),
     });
-
 
     if (!response.ok) {
       const error = await response.json().catch(() => ({
@@ -70,15 +70,18 @@ export const blogApi = {
     return response.json();
   },
 
-  // Cập nhật blog với multipart/form-data
-  update: async (id: number, formData: FormData, token: string) => {
-    const BE_ENDPOINT = process.env.NEXT_PUBLIC_BE_ENDPOINT;
+  // Cập nhật blog
+  update: async (id: number, data: FormData | any, token: string) => {
+    const BE_ENDPOINT = process.env.NEXT_PUBLIC_BE_ENDPOINT || "http://localhost:8081/api";
+    const isFormData = data instanceof FormData;
+
     const response = await fetch(`${BE_ENDPOINT}${ENDPOINT}/${id}`, {
       method: "PUT",
       headers: {
         Authorization: `Bearer ${token}`,
+        ...(isFormData ? {} : { "Content-Type": "application/json" }),
       },
-      body: formData,
+      body: isFormData ? data : JSON.stringify(data),
     });
 
     if (!response.ok) {
@@ -111,7 +114,7 @@ export const blogApi = {
 
   // Lấy danh sách categories
   getCategories: (token?: string) => {
-    return apiGet<Array<{ id: number; name: string }>>("/api/BlogCategory", {
+    return apiGet<Array<{ id: number; name: string }>>("/blogcategory", {
       token,
     });
   },

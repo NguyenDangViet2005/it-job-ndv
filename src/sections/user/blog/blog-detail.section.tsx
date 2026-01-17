@@ -10,9 +10,9 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import rehypeRaw from "rehype-raw";
-import type { Components } from "react-markdown";
 import { blogApi } from "@/apis";
 import type { BlogResponse } from "@/types/api.type";
+import { formatDate } from "@/utils/date.utils";
 
 
 interface BlogDetailSectionProps {
@@ -97,7 +97,7 @@ function BlogDetailSection({ id }: BlogDetailSectionProps) {
 
       {/* Header */}
       <div className="mb-8">
-        <Badge className="mb-4">{post.categoryName}</Badge>
+        <Badge className="mb-4">{post.category}</Badge>
         <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
         
         <div className="flex flex-wrap items-center gap-4 text-muted-foreground mb-6">
@@ -107,7 +107,7 @@ function BlogDetailSection({ id }: BlogDetailSectionProps) {
           </div>
           <div className="flex items-center gap-2">
             <Calendar className="h-4 w-4" />
-            <span>{new Date(post.createdAt).toLocaleDateString("vi-VN")}</span>
+            <span>{formatDate(post.createdAt, 'long')}</span>
           </div>
           <div className="flex items-center gap-2">
             <Clock className="h-4 w-4" />

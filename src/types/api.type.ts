@@ -247,7 +247,7 @@ export interface BlogResponse {
   id: number;
   userId: number;
   categoryId: number;
-  categoryName?: string;
+  category?: string;
   title: string;
   excerpt: string;
   content: string;
