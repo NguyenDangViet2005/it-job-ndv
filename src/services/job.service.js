@@ -4,8 +4,17 @@ const { JobResponse } = require("../dtos/JobResponse.dto");
 
 const getAll = async (pageNumber = 1, pageSize = 10) => {
   try {
+    const now = new Date();
+    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
+      2,
+      "0"
+    )}-${String(now.getDate()).padStart(2, "0")}`;
     const offset = (pageNumber - 1) * pageSize;
     const { count, rows } = await Job.findAndCountAll({
+      where: {
+        status: { [Op.ne]: "closed" },
+        deadline: { [Op.gt]: today },
+      },
       include: [
         {
           model: Company,
@@ -65,7 +74,7 @@ const create = async (userId, jobData) => {
     if (!companyMember) {
       throw new Error("User is not a member of any company");
     }
-    const { title, description, type, quantity, deadline, skillIds } = jobData;
+    const { title, description, type, quantity, deadline, salary, skillIds } = jobData;
 
     const newJob = await Job.create({
       title,
@@ -73,6 +82,7 @@ const create = async (userId, jobData) => {
       type: type || "full-time",
       quantity,
       deadline,
+      salary,
       companyId: companyMember.companyId,
       status: "open",
     });
@@ -93,7 +103,7 @@ const update = async (id, jobData) => {
   try {
     const job = await Job.findByPk(id);
     if (!job) return null;
-    const { title, description, type, quantity, deadline, status, skillIds } =
+    const { title, description, type, quantity, deadline, status, salary, skillIds } =
       jobData;
     if (title) job.title = title;
     if (description) job.description = description;
@@ -101,6 +111,7 @@ const update = async (id, jobData) => {
     if (quantity) job.quantity = quantity;
     if (deadline) job.deadline = deadline;
     if (status) job.status = status;
+    if (salary) job.salary = salary;
     await job.save();
     if (skillIds) {
       await SkillJob.destroy({ where: { jobId: id } });
@@ -131,11 +142,28 @@ const deleteJob = async (id) => {
   }
 };
 
-const getJobsByCompanyId = async (companyId, pageNumber = 1, pageSize = 10) => {
+const getJobsByCompanyId = async (
+  companyId,
+  pageNumber = 1,
+  pageSize = 10,
+  onlyActive = false
+) => {
   try {
     const offset = (pageNumber - 1) * pageSize;
+    const now = new Date();
+    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
+      2,
+      "0"
+    )}-${String(now.getDate()).padStart(2, "0")}`;
+
+    let whereClause = { companyId };
+    if (onlyActive) {
+      whereClause.status = { [Op.ne]: "closed" };
+      whereClause.deadline = { [Op.gt]: today };
+    }
+
     const { count, rows } = await Job.findAndCountAll({
-      where: { companyId },
+      where: whereClause,
       include: [
         {
           model: Company,
@@ -173,7 +201,15 @@ const getJobsToday = async () => {
     const todayDate = `${yyyy}-${mm}-${dd}`;
 
     const jobs = await Job.findAll({
-      where: literal(`CAST([Job].[createdAt] AS DATE) = '${todayDate}'`),
+      where: {
+        [Op.and]: [
+          literal(`CAST([Job].[createdAt] AS DATE) = '${todayDate}'`),
+          {
+            status: { [Op.ne]: "closed" },
+            deadline: { [Op.gt]: todayDate },
+          },
+        ],
+      },
       include: [
         { model: Company },
         {
@@ -192,7 +228,16 @@ const getJobsToday = async () => {
 const getJobsBySkill = async (skillId, pageNumber = 1, pageSize = 10) => {
   try {
     const offset = (pageNumber - 1) * pageSize;
+    const now = new Date();
+    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
+      2,
+      "0"
+    )}-${String(now.getDate()).padStart(2, "0")}`;
     const { count, rows } = await Job.findAndCountAll({
+      where: {
+        status: { [Op.ne]: "closed" },
+        deadline: { [Op.gt]: today },
+      },
       include: [
         { model: Company },
         {
@@ -216,7 +261,12 @@ const getJobsBySkill = async (skillId, pageNumber = 1, pageSize = 10) => {
   }
 };
 
-const getJobsByUserId = async (userId, pageNumber = 1, pageSize = 10) => {
+const getJobsByUserId = async (
+  userId,
+  pageNumber = 1,
+  pageSize = 10,
+  onlyActive = false
+) => {
   try {
     const companyMember = await CompanyMember.findOne({
       where: { userId: userId, status: "active" },
@@ -227,7 +277,8 @@ const getJobsByUserId = async (userId, pageNumber = 1, pageSize = 10) => {
     return await getJobsByCompanyId(
       companyMember.companyId,
       pageNumber,
-      pageSize
+      pageSize,
+      onlyActive
     );
   } catch (error) {
     throw error;

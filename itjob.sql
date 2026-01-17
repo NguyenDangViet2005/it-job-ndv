@@ -102,6 +102,7 @@ CREATE TABLE Job (
     type VARCHAR(20) CHECK (type IN ('full-time', 'part-time')),
     quantity INT DEFAULT 1,
     deadline DATE,
+    salary NVARCHAR(100),
     status VARCHAR(20) CHECK (status IN ('open', 'closed')) DEFAULT 'open',
     createdAt DATETIME DEFAULT GETDATE(),
     updatedAt DATETIME DEFAULT GETDATE(),
@@ -441,18 +442,18 @@ VALUES
 GO
 
 -- 3. INSERT JOB (10 bản ghi)
-INSERT INTO Job (companyId, title, description, type, quantity, deadline, status)
+INSERT INTO Job (companyId, title, description, type, quantity, deadline, salary, status)
 VALUES 
-(1, N'Senior Frontend Developer (ReactJS)', N'Phát triển ứng dụng web với ReactJS, NextJS. Yêu cầu 3+ năm kinh nghiệm, thành thạo TypeScript, Redux.', 'full-time', 2, '2025-12-31', 'open'),
-(2, N'Backend Developer (Java Spring Boot)', N'Xây dựng API RESTful với Spring Boot, MySQL. Yêu cầu 2+ năm kinh nghiệm Java, hiểu biết về Microservices.', 'full-time', 3, '2025-11-30', 'open'),
-(3, N'DevOps Engineer', N'Quản lý hạ tầng AWS/Azure, CI/CD pipeline. Yêu cầu kinh nghiệm Docker, Kubernetes, Jenkins.', 'full-time', 1, '2025-12-15', 'open'),
-(4, N'Mobile Developer (Flutter)', N'Phát triển ứng dụng di động đa nền tảng với Flutter. Yêu cầu 1+ năm kinh nghiệm Flutter/Dart.', 'full-time', 2, '2025-11-25', 'open'),
-(5, N'UI/UX Designer', N'Thiết kế giao diện ứng dụng web/mobile. Thành thạo Figma, Adobe XD, hiểu biết về Design System.', 'full-time', 1, '2025-12-10', 'open'),
-(6, N'Data Analyst', N'Phân tích dữ liệu kinh doanh, xây dựng dashboard. Yêu cầu SQL, Python, Power BI/Tableau.', 'full-time', 2, '2025-11-20', 'open'),
-(7, N'QA/Tester (Manual & Automation)', N'Kiểm thử phần mềm thủ công và tự động. Yêu cầu kinh nghiệm Selenium, API Testing.', 'part-time', 3, '2025-12-05', 'open'),
-(8, N'Business Analyst', N'Phân tích yêu cầu nghiệp vụ, viết tài liệu đặc tả. Yêu cầu kỹ năng giao tiếp tốt, hiểu quy trình phát triển phần mềm.', 'full-time', 1, '2025-11-28', 'open'),
-(9, N'AI Engineer (Machine Learning)', N'Phát triển mô hình Machine Learning/Deep Learning. Yêu cầu Python, TensorFlow/PyTorch, kinh nghiệm NLP/Computer Vision.', 'full-time', 1, '2025-12-20', 'open'),
-(10, N'Product Manager', N'Quản lý sản phẩm công nghệ từ ý tưởng đến triển khai. Yêu cầu 3+ năm kinh nghiệm, tư duy sản phẩm tốt.', 'full-time', 1, '2025-12-01', 'closed');
+(1, N'Senior Frontend Developer (ReactJS)', N'Phát triển ứng dụng web với ReactJS, NextJS. Yêu cầu 3+ năm kinh nghiệm, thành thạo TypeScript, Redux.', 'full-time', 2, '2026-02-20', N'25 - 35 triệu', 'open'),
+(2, N'Backend Developer (Java Spring Boot)', N'Xây dựng API RESTful với Spring Boot, MySQL. Yêu cầu 2+ năm kinh nghiệm Java, hiểu biết về Microservices.', 'full-time', 3, '2026-03-30', N'20 - 30 triệu', 'open'),
+(3, N'DevOps Engineer', N'Quản lý hạ tầng AWS/Azure, CI/CD pipeline. Yêu cầu kinh nghiệm Docker, Kubernetes, Jenkins.', 'full-time', 1, '2026-02-15', N'Thỏa thuận', 'open'),
+(4, N'Mobile Developer (Flutter)', N'Phát triển ứng dụng di động đa nền tảng với Flutter. Yêu cầu 1+ năm kinh nghiệm Flutter/Dart.', 'full-time', 2, '2026-04-25', N'15 - 25 triệu', 'open'),
+(5, N'UI/UX Designer', N'Thiết kế giao diện ứng dụng web/mobile. Thành thạo Figma, Adobe XD, hiểu biết về Design System.', 'full-time', 1, '2025-12-10', N'12 - 20 triệu', 'open'),
+(6, N'Data Analyst', N'Phân tích dữ liệu kinh doanh, xây dựng dashboard. Yêu cầu SQL, Python, Power BI/Tableau.', 'full-time', 2, '2026-02-20', N'18 - 28 triệu', 'open'),
+(7, N'QA/Tester (Manual & Automation)', N'Kiểm thử phần mềm thủ công và tự động. Yêu cầu kinh nghiệm Selenium, API Testing.', 'part-time', 3, '2026-04-05', N'10 - 15 triệu', 'open'),
+(8, N'Business Analyst', N'Phân tích yêu cầu nghiệp vụ, viết tài liệu đặc tả. Yêu cầu kỹ năng giao tiếp tốt, hiểu quy trình phát triển phần mềm.', 'full-time', 1, '2026-03-28', N'22 - 32 triệu', 'open'),
+(9, N'AI Engineer (Machine Learning)', N'Phát triển mô hình Machine Learning/Deep Learning. Yêu cầu Python, TensorFlow/PyTorch, kinh nghiệm NLP/Computer Vision.', 'full-time', 1, '2026-02-10', N'30 - 50 triệu', 'open'),
+(10, N'Product Manager', N'Quản lý sản phẩm công nghệ từ ý tưởng đến triển khai. Yêu cầu 3+ năm kinh nghiệm, tư duy sản phẩm tốt.', 'full-time', 1, '2026-03-01', N'40 - 60 triệu', 'closed');
 GO
 
 -- 4. INSERT SKILL (10 bản ghi)

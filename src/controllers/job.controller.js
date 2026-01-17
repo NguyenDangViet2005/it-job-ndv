@@ -125,7 +125,8 @@ const getJobsByCompanyId = async (req, res) => {
     const result = await jobService.getJobsByCompanyId(
       companyId,
       pNumber,
-      pSize
+      pSize,
+      true // onlyActive
     );
     res.status(200).json(result);
   } catch (error) {
@@ -150,7 +151,12 @@ const getJobsByUserId = async (req, res) => {
     }
     const pNumber = parseInt(pageNumber) > 0 ? parseInt(pageNumber) : 1;
     const pSize = parseInt(pageSize) > 0 ? parseInt(pageSize) : 10;
-    const result = await jobService.getJobsByUserId(userId, pNumber, pSize);
+    const result = await jobService.getJobsByUserId(
+      userId, 
+      pNumber, 
+      pSize,
+      false // onlyActive = false for employer dashboard
+    );
     res.status(200).json(result);
   } catch (error) {
     if (error.message === "User not in any company") {

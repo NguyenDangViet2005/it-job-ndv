@@ -7,9 +7,16 @@ const search = async (keyword, page = 1, pageSize = 10) => {
   try {
     const offset = (page - 1) * pageSize;
 
+    const now = new Date();
+    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
+      2,
+      "0"
+    )}-${String(now.getDate()).padStart(2, "0")}`;
     const jobs = await Job.findAll({
       where: {
         title: { [Op.like]: `%${keyword}%` },
+        status: { [Op.ne]: "closed" },
+        deadline: { [Op.gt]: today },
       },
       include: [
         { model: Company, as: "Company", attributes: ["id", "name", "avatar"] },

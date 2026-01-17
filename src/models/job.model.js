@@ -34,6 +34,10 @@ const Job = sequelize.define(
       type: DataTypes.DATEONLY,
       allowNull: true,
     },
+    salary: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     status: {
       type: DataTypes.STRING,
       allowNull: true,

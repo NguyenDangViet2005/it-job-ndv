@@ -103,7 +103,7 @@ const getAllPosts = async (page = 1, pageSize = 10, currentUserId = null) => {
     distinct: true,
   });
 
-  const posts = await Promise.all(
+  const data = await Promise.all(
     rows.map(async (post) => {
       const p = await getFormattedPost(post, currentUserId);
       return new PostResponse(p);
@@ -111,7 +111,7 @@ const getAllPosts = async (page = 1, pageSize = 10, currentUserId = null) => {
   );
 
   return {
-    data: posts,
+    data,
     totalItems: count,
     page,
     pageSize,
@@ -175,7 +175,7 @@ const getPostsByUserId = async (
     distinct: true,
   });
 
-  const posts = await Promise.all(
+  const data = await Promise.all(
     rows.map(async (post) => {
       const p = await getFormattedPost(post, currentUserId);
       return new PostResponse(p);
@@ -183,7 +183,7 @@ const getPostsByUserId = async (
   );
 
   return {
-    posts,
+    data,
     totalItems: count,
     page,
     pageSize,
@@ -220,7 +220,7 @@ const getPostsByCompanyId = async (
     distinct: true,
   });
 
-  const posts = await Promise.all(
+  const data = await Promise.all(
     rows.map(async (post) => {
       const p = await getFormattedPost(post, currentUserId);
       return new PostResponse(p);
@@ -228,7 +228,7 @@ const getPostsByCompanyId = async (
   );
 
   return {
-    posts,
+    data,
     totalItems: count,
     page,
     pageSize,

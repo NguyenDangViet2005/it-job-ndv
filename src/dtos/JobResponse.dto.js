@@ -27,6 +27,7 @@ class JobResponse {
     this.status = job.status;
     this.quantity = job.quantity;
     this.deadline = job.deadline;
+    this.salary = job.salary;
     this.createdAt = job.createdAt;
     this.updatedAt = job.updatedAt;
     this.company = job.Company ? new JobCompanyResponse(job.Company) : null;
