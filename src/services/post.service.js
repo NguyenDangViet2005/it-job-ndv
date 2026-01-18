@@ -4,78 +4,102 @@ const { Op } = require("sequelize");
 const { sequelize } = require("../configs/sequelize.config");
 const { PostResponse } = require("../dtos/PostResponse.dto");
 
-const getFormattedPost = async (post, currentUserId) => {
-  // 1. Get total likes
-  const totalLikes = await Interaction.count({
-    where: { postId: post.id, isLiked: true },
-  });
+// Helper: Batched fetching of interaction stats to avoid N+1 queries
+const enrichPosts = async (posts, currentUserId) => {
+  if (!posts || posts.length === 0) return [];
+  
+  const postIds = posts.map(p => p.id);
+  const postsMap = {};
+  posts.forEach(p => postsMap[p.id] = p);
 
-  // 2. Get total comments
-  const totalComments = await Interaction.count({
-    where: { postId: post.id, content: { [Op.ne]: null } },
+  // 1. Bulk count likes
+  // Index usage: IX_Interaction_PostId_UserId_IsLiked (postId, userId, isLiked) includes postId, isLiked
+  const likesCounts = await Interaction.findAll({
+    attributes: ['postId', [sequelize.fn('COUNT', sequelize.col('id')), 'count']],
+    where: { postId: { [Op.in]: postIds }, isLiked: true },
+    group: ['postId'],
+    raw: true
   });
+  const likesMap = {};
+  likesCounts.forEach(c => likesMap[c.postId] = c.count);
 
-  // 3. Check if liked by current user
-  let isLikedByCurrentUser = false;
+  // 2. Bulk count comments
+  // Index usage: IX_Interaction_PostId (postId)
+  const commentsCounts = await Interaction.findAll({
+    attributes: ['postId', [sequelize.fn('COUNT', sequelize.col('id')), 'count']],
+    where: { postId: { [Op.in]: postIds }, content: { [Op.ne]: null } },
+    group: ['postId'],
+    raw: true
+  });
+  const commentsMap = {};
+  commentsCounts.forEach(c => commentsMap[c.postId] = c.count);
+
+  // 3. User like status
+  const userLikesMap = {};
   if (currentUserId) {
-    const like = await Interaction.findOne({
+    // Index usage: IX_Interaction_PostId_UserId_IsLiked (postId, userId, isLiked) - Perfect covering
+    const userLikes = await Interaction.findAll({
+      attributes: ['postId'],
       where: {
-        postId: post.id,
+        postId: { [Op.in]: postIds },
         userId: currentUserId,
-        isLiked: true,
+        isLiked: true
       },
+      raw: true
     });
-    isLikedByCurrentUser = !!like;
+    userLikes.forEach(ul => userLikesMap[ul.postId] = true);
   }
 
-  // 4. Get top 3 recent comments
-  const recentComments = await Interaction.findAll({
-    where: { postId: post.id, content: { [Op.ne]: null } },
-    include: [
-      {
-        model: User,
-        as: "User",
-        attributes: ["id", "fullName", "avatar"],
-      },
-      {
-        model: Attachment,
-        as: "Attachments",
-      },
-    ],
-    order: [["createdAt", "DESC"]],
-    limit: 3,
+  // 4. Recent comments (Top 3 per post) via parallel queries
+  // Index usage: IX_Interaction_PostId + CreatedAt for sort
+  const commentsPromises = posts.map(post => 
+    Interaction.findAll({
+      where: { postId: post.id, content: { [Op.ne]: null } },
+      include: [
+        { model: User, as: "User", attributes: ["id", "fullName", "avatar"] },
+        { model: Attachment, as: "Attachments" },
+      ],
+      order: [["createdAt", "DESC"]],
+      limit: 3,
+    })
+  );
+  
+  const commentsResults = await Promise.all(commentsPromises);
+  const recentCommentsMap = {};
+  posts.forEach((p, index) => {
+    recentCommentsMap[p.id] = commentsResults[index].map(c => c.toJSON());
   });
 
-  const formattedComments = recentComments.map((c) => c.toJSON());
-
-  return {
-    id: post.id,
-    content: post.content,
-    createdAt: post.createdAt,
-    updatedAt: post.updatedAt,
-    user: post.User
-      ? {
-          id: post.User.id,
-          fullName: post.User.fullName,
-          avatar: post.User.avatar,
-        }
-      : null,
-    company: post.Company
-      ? {
-          id: post.Company.id,
-          name: post.Company.name,
-          avatar: post.Company.avatar,
-          address: post.Company.address,
-        }
-      : null,
-    attachments: post.Attachments || [],
-    interaction: {
-      totalLikes,
-      totalComments,
-      isLikedByCurrentUser,
-      comments: formattedComments,
-    },
-  };
+  return posts.map(post => {
+    return {
+      id: post.id,
+      content: post.content,
+      createdAt: post.createdAt,
+      updatedAt: post.updatedAt,
+      user: post.User
+        ? {
+            id: post.User.id,
+            fullName: post.User.fullName,
+            avatar: post.User.avatar,
+          }
+        : null,
+      company: post.Company
+        ? {
+            id: post.Company.id,
+            name: post.Company.name,
+            avatar: post.Company.avatar,
+            address: post.Company.address,
+          }
+        : null,
+      attachments: post.Attachments || [],
+      interaction: {
+        totalLikes: likesMap[post.id] || 0,
+        totalComments: commentsMap[post.id] || 0,
+        isLikedByCurrentUser: !!userLikesMap[post.id],
+        comments: recentCommentsMap[post.id] || [],
+      },
+    };
+  });
 };
 
 const getAllPosts = async (page = 1, pageSize = 10, currentUserId = null) => {
@@ -97,18 +121,15 @@ const getAllPosts = async (page = 1, pageSize = 10, currentUserId = null) => {
         as: "Attachments",
       },
     ],
+    // Index usage: IX_Post_CreatedAt
     order: [["createdAt", "DESC"]],
     limit: pageSize,
     offset: offset,
     distinct: true,
   });
 
-  const data = await Promise.all(
-    rows.map(async (post) => {
-      const p = await getFormattedPost(post, currentUserId);
-      return new PostResponse(p);
-    })
-  );
+  const formattedPosts = await enrichPosts(rows, currentUserId);
+  const data = formattedPosts.map(p => new PostResponse(p));
 
   return {
     data,
@@ -141,7 +162,7 @@ const getPostById = async (id, currentUserId = null) => {
 
   if (!post) return null;
 
-  const formatted = await getFormattedPost(post, currentUserId);
+  const [formatted] = await enrichPosts([post], currentUserId);
   return new PostResponse(formatted);
 };
 
@@ -169,18 +190,15 @@ const getPostsByUserId = async (
         as: "Attachments",
       },
     ],
+    // Index usage: IX_Post_UserId_CreatedAt
     order: [["createdAt", "DESC"]],
     limit: pageSize,
     offset: offset,
     distinct: true,
   });
 
-  const data = await Promise.all(
-    rows.map(async (post) => {
-      const p = await getFormattedPost(post, currentUserId);
-      return new PostResponse(p);
-    })
-  );
+  const formattedPosts = await enrichPosts(rows, currentUserId);
+  const data = formattedPosts.map(p => new PostResponse(p));
 
   return {
     data,
@@ -214,18 +232,15 @@ const getPostsByCompanyId = async (
         as: "Attachments",
       },
     ],
+    // Index usage: IX_Post_CompanyId
     order: [["createdAt", "DESC"]],
     limit: pageSize,
     offset: offset,
     distinct: true,
   });
 
-  const data = await Promise.all(
-    rows.map(async (post) => {
-      const p = await getFormattedPost(post, currentUserId);
-      return new PostResponse(p);
-    })
-  );
+  const formattedPosts = await enrichPosts(rows, currentUserId);
+  const data = formattedPosts.map(p => new PostResponse(p));
 
   return {
     data,

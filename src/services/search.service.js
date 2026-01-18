@@ -15,7 +15,8 @@ const search = async (keyword, page = 1, pageSize = 10) => {
     const jobs = await Job.findAll({
       where: {
         title: { [Op.like]: `%${keyword}%` },
-        status: { [Op.ne]: "closed" },
+        // Optimized: status='open' hits index better than != 'closed'
+        status: "open",
         deadline: { [Op.gt]: today },
       },
       include: [

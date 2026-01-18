@@ -12,7 +12,8 @@ const getAll = async (pageNumber = 1, pageSize = 10) => {
     const offset = (pageNumber - 1) * pageSize;
     const { count, rows } = await Job.findAndCountAll({
       where: {
-        status: { [Op.ne]: "closed" },
+        // Optimized for Index: IX_Job_Status_Deadline (status, deadline DESC)
+        status: "open", 
         deadline: { [Op.gt]: today },
       },
       include: [
@@ -197,13 +198,15 @@ const getJobsToday = async () => {
     const yyyy = now.getFullYear();
     const mm = String(now.getMonth() + 1).padStart(2, "0");
     const dd = String(now.getDate()).padStart(2, "0");
-
     const todayDate = `${yyyy}-${mm}-${dd}`;
+    const tomorrow = new Date(now);
+    tomorrow.setDate(now.getDate() + 1);
+    const tomorrowDate = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth() + 1).padStart(2, "0")}-${String(tomorrow.getDate()).padStart(2, "0")}`;
 
     const jobs = await Job.findAll({
       where: {
         [Op.and]: [
-          literal(`CAST([Job].[createdAt] AS DATE) = '${todayDate}'`),
+          literal(`[Job].[createdAt] >= '${todayDate}' AND [Job].[createdAt] < '${tomorrowDate}'`),
           {
             status: { [Op.ne]: "closed" },
             deadline: { [Op.gt]: todayDate },
