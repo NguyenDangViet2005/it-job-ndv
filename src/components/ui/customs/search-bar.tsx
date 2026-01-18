@@ -19,7 +19,7 @@ export default function SearchBar() {
 
   return (
     <form onSubmit={handleSearch} className="w-full mx-auto px-4">
-      <div className="flex flex-col sm:flex-row sm:items-center bg-input shadow-lg rounded-lg overflow-hidden gap-3 sm:gap-0 p-3 sm:p-0">
+      <div className="flex flex-col sm:flex-row sm:items-center bg-card dark:bg-muted shadow-lg rounded-lg overflow-hidden gap-3 sm:gap-0 p-3 sm:p-0 border border-border/50">
         {/* Ô input */}
         <Input
           type="text"
@@ -33,7 +33,7 @@ export default function SearchBar() {
         <Button
           type="submit"
           disabled={!keyword.trim()}
-          className="h-10 sm:h-14 w-full sm:w-auto bg-red-600 hover:bg-red-800 text-white font-semibold rounded-lg sm:rounded-none px-6 sm:px-10 text-base sm:text-lg flex items-center justify-center gap-2 disabled:bg-white disabled:text-red-500"
+          className="h-10 sm:h-14 w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-lg sm:rounded-none px-6 sm:px-10 text-base sm:text-lg flex items-center justify-center gap-2 disabled:opacity-50"
         >
           <Search size={15} />
           <span>Tìm kiếm</span>

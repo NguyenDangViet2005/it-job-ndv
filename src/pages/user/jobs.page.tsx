@@ -6,11 +6,16 @@ import JobListSection from "@/sections/user/job/job-list.section";
 import { jobApi, skillApi } from "@/apis";
 import type { JobResponse } from "@/types/api.type";
 import { HeroSection } from "@/sections/user/common/hero.section";
+import CompanyListSection from "@/sections/user/job/company-list.section";
+import JobFilterToolbar from "@/sections/user/job/job-filter-toolbar.section";
+import Link from "next/link";
+import { ROUTES } from "@/configs";
 
 const JobsPage = () => {
   const [jobs, setJobs] = useState<JobResponse[]>([]);
   const [skills, setSkills] = useState<Array<{ id: number; name: string }>>([]);
   const [selectedSkill, setSelectedSkill] = useState<number | null>(null);
+  const [selectedCompany, setSelectedCompany] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedJobType, setSelectedJobType] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -25,7 +30,7 @@ const JobsPage = () => {
 
   useEffect(() => {
     fetchJobs(currentPage);
-  }, [currentPage, selectedSkill, searchTerm, selectedJobType]);
+  }, [currentPage, selectedSkill, selectedCompany, searchTerm, selectedJobType]);
 
   async function fetchSkills() {
     try {
@@ -41,13 +46,14 @@ const JobsPage = () => {
       setLoading(true);
 
       let response;
-      if (selectedSkill === null) {
+      if (selectedCompany !== null) {
+        response = await jobApi.getByCompany(selectedCompany, page, pageSize);
+      } else if (selectedSkill === null) {
         response = await jobApi.getAll(page, pageSize);
       } else {
         response = await jobApi.getBySkill(selectedSkill, page, pageSize);
       }
 
-      // Filter by search term if provided (client-side filtering)
       let filteredJobs = response.data || [];
       if (searchTerm) {
         const term = searchTerm.toLowerCase();
@@ -59,7 +65,6 @@ const JobsPage = () => {
         );
       }
 
-      // Filter by job type if provided (client-side filtering)
       if (selectedJobType) {
         filteredJobs = filteredJobs.filter(
           (job: JobResponse) =>
@@ -68,13 +73,12 @@ const JobsPage = () => {
       }
 
       setJobs(filteredJobs);
-      // Calculate totalPages with fallback
       const calculatedTotalPages =
         response.totalPages || Math.ceil((response.totalItems || 0) / pageSize);
       setTotalPages(calculatedTotalPages || 1);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Không thể tải công việc");
-      setJobs([]); // Set empty array on error
+      setJobs([]); 
       setTotalPages(1);
     } finally {
       setLoading(false);
@@ -88,6 +92,13 @@ const JobsPage = () => {
 
   const handleSearchChange = (term: string) => {
     setSearchTerm(term);
+    setSelectedCompany(null);
+    setCurrentPage(1);
+  };
+
+  const handleCompanyChange = (companyId: number | null) => {
+    setSelectedCompany(companyId);
+    setSelectedSkill(null);
     setCurrentPage(1);
   };
 
@@ -101,41 +112,59 @@ const JobsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Hero Section with VantaGlobe */}
+    <div className="min-h-screen bg-background">
       <HeroSection />
+      <div className="bg-card w-full border-t border-border mt-[-88px] relative z-10 shadow-[0_-20px_50px_-20px_rgba(0,0,0,0.1)]">
+        {/* Breadcrumb Section */}
+        <div className="bg-muted/30 border-b border-border py-2 px-8">
+          <div className="max-w-7xl mx-auto flex items-center gap-2 text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+            <Link href={ROUTES.HOME} className="hover:text-primary transition-colors">TRANG CHỦ</Link>
+            <span>/</span>
+            <span className="text-foreground">TÌM KIẾM VIỆC LÀM IT</span>
+          </div>
+        </div>
 
-      {/* Main Content with rounded top */}
-      <div className="bg-background w-full rounded-t-3xl border-t border-border/50 -mt-20 relative z-10 shadow-2xl">
         <div className="max-w-7xl mx-auto px-4 lg:px-8 py-12">
-          {/* Page Title */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-primary mb-2">
-              Tìm kiếm công việc IT
-            </h1>
-            <p className="text-muted-foreground">
-              Khám phá hàng nghìn cơ hội việc làm IT hấp dẫn từ các công ty hàng
-              đầu
-            </p>
+          {/* Header & Horizontal Filter */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-6">
+            <div className="space-y-2">
+                <h1 className="text-4xl font-bold text-foreground tracking-tight uppercase">
+                    Khám phá sự nghiệp <span className="text-primary">mơ ước</span>
+                </h1>
+                <p className="text-muted-foreground font-medium max-w-xl text-sm">
+                    Kết nối bạn với những công ty công nghệ hàng đầu và những vị trí IT hứa hẹn nhất hiện nay.
+                </p>
+            </div>
+            
+            <div className="flex gap-3">
+                <div className="bg-muted/50 dark:bg-muted/20 px-4 py-2 rounded-xl flex flex-col items-center">
+                    <span className="text-primary font-semibold text-xl">{jobs.length}+</span>
+                    <span className="text-[10px] text-muted-foreground uppercase">Việc mới</span>
+                </div>
+            </div>
           </div>
 
-          <div className="flex flex-col lg:flex-row gap-6">
-            {/* Sidebar Filter - Sticky on desktop */}
-            <aside className="lg:w-80 flex-shrink-0">
-              <div className="lg:sticky lg:top-24">
-                <JobFilterSidebar
-                  skills={skills}
-                  selectedSkill={selectedSkill}
-                  onSkillChange={handleSkillChange}
-                  searchTerm={searchTerm}
-                  onSearchChange={handleSearchChange}
-                  selectedJobType={selectedJobType}
-                  onJobTypeChange={handleJobTypeChange}
+          {/* Horizontal Toolbar */}
+          <JobFilterToolbar
+            skills={skills}
+            selectedSkill={selectedSkill}
+            onSkillChange={handleSkillChange}
+            searchTerm={searchTerm}
+            onSearchChange={handleSearchChange}
+            selectedJobType={selectedJobType}
+            onJobTypeChange={handleJobTypeChange}
+          />
+
+          <div className="flex flex-col lg:flex-row gap-8">
+            {/* Left Aside: Company List Filter */}
+            <aside className="lg:w-72 flex-shrink-0">
+                <CompanyListSection
+                  selectedCompanyId={selectedCompany}
+                  onCompanyChange={handleCompanyChange}
                 />
-              </div>
             </aside>
 
-            {/* Main Content Area */}
+            {/* Main Content Area: Job List */}
             <main className="flex-1 min-w-0">
               <JobListSection
                 jobs={jobs}

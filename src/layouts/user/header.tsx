@@ -69,10 +69,10 @@ const UserHeader = () => {
         transition-all duration-300
         ${
           scrolled
-            ? "dark:bg-white/20 shadow-lg bg-black/20"
+            ? "bg-white/80 dark:bg-black/60 shadow-lg backdrop-blur-md"
             : "bg-background/50"
         }
-        hover:bg-white dark:hover:bg-black/95 hover:shadow-xl
+        hover:bg-white dark:hover:bg-card hover:shadow-xl
       `}
     >
       <div className="flex h-14 items-center justify-between">

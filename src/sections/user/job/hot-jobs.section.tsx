@@ -7,7 +7,7 @@ const HotJob = ({ props }: JobResponse) => {
   const { user } = useAuth();
   return (
     <div className="h-full">
-      <Card className="transition-all duration-300 overflow-hidden bg-white dark:bg-gray-800 h-full group cursor-pointer border-0 rounded-none p-0">
+      <Card className="transition-all duration-300 overflow-hidden bg-white dark:bg-card h-full group cursor-pointer border border-border rounded-none p-0">
         <div className="relative h-full flex flex-col">
           <div className="inset-0">
             <Image
