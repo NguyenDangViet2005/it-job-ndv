@@ -56,6 +56,8 @@ const login = async (email, password) => {
   if (!isMatch) {
     throw new Error("Invalid email or password");
   }
+  const userWithoutPassword = user?.toJSON();
+  delete userWithoutPassword.password;
 
   const { accessToken, refreshToken } = generateTokens(user.id, user.role);
 
@@ -63,7 +65,7 @@ const login = async (email, password) => {
   user.refreshToken = refreshToken;
   await user.save();
 
-  return new LoginResponse(accessToken, refreshToken, user);
+  return new LoginResponse(accessToken, refreshToken, userWithoutPassword);
 };
 
 const logout = async (userId) => {
@@ -80,22 +82,22 @@ const refreshTokenService = async (refreshToken) => {
   try {
     const decoded = jwt.verify(refreshToken, env.jwt.refreshSecret);
     const user = await User.findByPk(decoded.id);
-
     if (!user || user.refreshToken !== refreshToken) {
       throw new Error("Invalid refresh token");
     }
-
+    const userWithoutPassword = user?.toJSON();
+    delete userWithoutPassword.password;
     // Generate NEW Access Token ONLY (Keep existing Refresh Token)
     const accessToken = jwt.sign(
       { id: user.id, role: user.role },
       env.jwt.accessSecret,
       {
         expiresIn: env.jwt.accessExpiresIn || "15m",
-      }
+      },
     );
 
     // Return current refresh token (do NOT rotate/update DB)
-    return { accessToken, refreshToken, user };
+    return new LoginResponse(accessToken, refreshToken, userWithoutPassword);
   } catch (error) {
     throw new Error("Invalid refresh token");
   }

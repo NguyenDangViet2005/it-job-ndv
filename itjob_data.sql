@@ -276,17 +276,12 @@ GO
 INSERT INTO Attachment (postId, interactionId, fileType, fileUrl)
 VALUES
 -- Post 1 có 2 ảnh
-(1, NULL, 'image', '/uploads/posts/1/post1-img1.jpg'),
-(1, NULL, 'image', '/uploads/posts/1/post1-img2.jpg'),
+(1, NULL, 'image', 'https://res.cloudinary.com/duc6z828y/image/upload/v1769009189/FPT-Software_-Tuyen-dung_vp73sh.jpg'),
+(1, NULL, 'image', 'https://res.cloudinary.com/duc6z828y/image/upload/v1769009187/InternBA_kwofht.jpg'),
 
 -- Post 2 có 1 ảnh
-(2, NULL, 'image', '/uploads/posts/2/post2-banner.png'),
+(2, NULL, 'image', 'https://res.cloudinary.com/duc6z828y/image/upload/v1769009184/momo-amazone-s3-api-251107150758-638981248788827255_rqn1um.jpg')
 
--- Comment (Interaction) id = 2 có 1 ảnh đính kèm
-(NULL, 2, 'image', '/uploads/comments/2/comment2-img1.jpg'),
-
--- Comment (Interaction) id = 8 có một video kèm thumbnail
-(NULL, 8, 'video', '/uploads/comments/8/comment8-video1.mp4');
 GO
 
 
@@ -308,16 +303,16 @@ GO
 -- 10. INSERT APPLICATION (10 bản ghi)
 INSERT INTO Application (jobId, userId, cvUrl, coverLetter, status)
 VALUES 
-(1, 1, 'https://drive.google.com/cv/an_nguyen_cv.pdf', N'Tôi có 4 năm kinh nghiệm với ReactJS và đã tham gia nhiều dự án lớn. Mong được đóng góp cho công ty.', 'reviewed'),
-(2, 2, 'https://drive.google.com/cv/binh_tran_cv.pdf', N'Tôi thành thạo Java Spring Boot và có kinh nghiệm xây dựng hệ thống microservices.', 'accepted'),
-(3, 5, 'https://drive.google.com/cv/em_hoang_cv.pdf', N'Có 2 năm kinh nghiệm DevOps, thành thạo Docker, Kubernetes và AWS.', 'pending'),
-(4, 8, 'https://drive.google.com/cv/hoa_bui_cv.pdf', N'Đã phát triển 5+ ứng dụng Flutter trên App Store và Google Play.', 'reviewed'),
-(5, 9, 'https://drive.google.com/cv/inh_truong_cv.pdf', N'Designer với 3 năm kinh nghiệm, portfolio tại: behance.net/inhtruong', 'accepted'),
-(6, 10, 'https://drive.google.com/cv/kim_ngo_cv.pdf', N'Có nền tảng SQL và Python mạnh, đã làm nhiều dự án phân tích dữ liệu.', 'pending'),
-(7, 4, 'https://drive.google.com/cv/dung_pham_cv.pdf', N'Kinh nghiệm testing 2 năm, thành thạo Selenium và API Testing.', 'rejected'),
-(8, 1, 'https://drive.google.com/cv/an_nguyen_ba.pdf', N'Có background kỹ thuật và kinh nghiệm phân tích nghiệp vụ trong lĩnh vực fintech.', 'pending'),
-(9, 2, 'https://drive.google.com/cv/binh_tran_ai.pdf', N'Thạc sĩ AI, có 2 năm nghiên cứu về NLP và Computer Vision.', 'reviewed'),
-(1, 4, 'https://drive.google.com/cv/dung_pham_fe.pdf', N'Fresher nhưng có nền tảng ReactJS vững, học hỏi nhanh.', 'pending');
+(1, 1, 'https://static.topcv.vn/cms/mau-cv-thuc-tap-sinh686f81fc37db5.jpg', N'Tôi có 4 năm kinh nghiệm với ReactJS và đã tham gia nhiều dự án lớn. Mong được đóng góp cho công ty.', 'reviewed'),
+(2, 2, 'https://static.topcv.vn/cms/mau-cv-tuyen-dung-nhan-su685224216fb5d.jpg', N'Tôi thành thạo Java Spring Boot và có kinh nghiệm xây dựng hệ thống microservices.', 'accepted'),
+(3, 5, 'https://cdn1.vieclam24h.vn/images/assets/img/072-blue-simple-professional.jpg', N'Có 2 năm kinh nghiệm DevOps, thành thạo Docker, Kubernetes và AWS.', 'pending'),
+(4, 8, 'https://asd.mediacdn.vn/adt/tuyendungvccorp/mau-cv-nhan-vien-tuyen-dung_53b6d4dc-2445-4465-b07e-6ebe0d08f8c4.png', N'Đã phát triển 5+ ứng dụng Flutter trên App Store và Google Play.', 'reviewed'),
+(5, 9, 'https://www.topcv.vn/cv/snapshot/template-cv/mau-cv-tieu-chuan-_BgoGAAMJAl4HAANQUgIDBFEMBQ5SAFJQV1ENDQd2e5.webp?t=1753327595', N'Designer với 3 năm kinh nghiệm, portfolio tại: behance.net/inhtruong', 'accepted'),
+(6, 10,'https://cv.timviec.com.vn/images/detail/thumb_v2/mau_77.jpg?v=2', N'Có nền tảng SQL và Python mạnh, đã làm nhiều dự án phân tích dữ liệu.', 'pending'),
+(7, 4, 'https://marketplace.canva.com/EAGEEoFO7iE/1/0/1131w/canva-m%C3%A0u-%C4%91en-v%C3%A0-tr%E1%BA%AFng-t%E1%BB%91i-gi%E1%BA%A3n-s%C6%A1-y%E1%BA%BFu-l%C3%BD-l%E1%BB%8Bch-PQxzeV9wixU.jpg', N'Kinh nghiệm testing 2 năm, thành thạo Selenium và API Testing.', 'rejected'),
+(8, 1, 'https://anthaiautoparts.com/wp-content/uploads/2024/07/mau-cv-xin-viec-hanh-chinh-nhan-su-moi-1.jpg', N'Có background kỹ thuật và kinh nghiệm phân tích nghiệp vụ trong lĩnh vực fintech.', 'pending'),
+(9, 2, 'https://www.meinvoice.vn/wp-content/uploads/2022/09/mau-cv-ke-toan-tong-hop-1-1.jpg', N'Thạc sĩ AI, có 2 năm nghiên cứu về NLP và Computer Vision.', 'reviewed'),
+(1, 4, 'https://images.cakeresume.com/images/04536154-96c9-4724-849b-6c77d98d0c49.png', N'Fresher nhưng có nền tảng ReactJS vững, học hỏi nhanh.', 'pending');
 GO
 
 -- 11. INSERT FOLLOW (10 bản ghi)

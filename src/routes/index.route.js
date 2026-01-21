@@ -25,7 +25,7 @@ Router.use("/locations", locationRoutes);
 Router.use("/blogcategory", blogCategoryRoutes);
 Router.use("/blog", blogRoutes);
 Router.use("/review", reviewRoutes);
-Router.use("/follows", followRoutes);
+Router.use("/follow", followRoutes);
 Router.use("/search", searchRoutes);
 Router.use("/user", userRoutes);
 

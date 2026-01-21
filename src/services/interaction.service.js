@@ -7,7 +7,12 @@ const { Op } = require("sequelize");
 const formatCommentResponse = (interaction) => {
   const comment = interaction.toJSON ? interaction.toJSON() : interaction;
   // Remove isLiked field from comment response
-  const { isLiked, postId, ...commentData } = comment;
+  const { isLiked, postId, User, ...commentData } = comment;
+
+  if (User) {
+    commentData.user = User;
+  }
+
   return commentData;
 };
 
@@ -106,7 +111,7 @@ const addComment = async (postId, userId, content, files = []) => {
         content,
         isLiked: false,
       },
-      { transaction }
+      { transaction },
     );
 
     if (files && files.length > 0) {
@@ -130,7 +135,7 @@ const addComment = async (postId, userId, content, files = []) => {
             fileUrl,
             fileType,
           },
-          { transaction }
+          { transaction },
         );
       }
     }
@@ -163,7 +168,7 @@ const updateComment = async (
   userId,
   content,
   files = [],
-  keepImageUrls = []
+  keepImageUrls = [],
 ) => {
   const transaction = await sequelize.transaction();
   try {
@@ -182,7 +187,7 @@ const updateComment = async (
 
     // Determine which attachments to delete (not in keepImageUrls)
     const attachmentsToDelete = existingAttachments.filter(
-      (att) => !keepImageUrls.includes(att.fileUrl)
+      (att) => !keepImageUrls.includes(att.fileUrl),
     );
 
     // Delete old attachments from Cloudinary and DB
@@ -214,7 +219,7 @@ const updateComment = async (
             fileUrl,
             fileType,
           },
-          { transaction }
+          { transaction },
         );
       }
     }

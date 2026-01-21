@@ -7,13 +7,13 @@ const getAll = async (pageNumber = 1, pageSize = 10) => {
     const now = new Date();
     const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
       2,
-      "0"
+      "0",
     )}-${String(now.getDate()).padStart(2, "0")}`;
     const offset = (pageNumber - 1) * pageSize;
     const { count, rows } = await Job.findAndCountAll({
       where: {
         // Optimized for Index: IX_Job_Status_Deadline (status, deadline DESC)
-        status: "open", 
+        status: "open",
         deadline: { [Op.gt]: today },
       },
       include: [
@@ -75,7 +75,8 @@ const create = async (userId, jobData) => {
     if (!companyMember) {
       throw new Error("User is not a member of any company");
     }
-    const { title, description, type, quantity, deadline, salary, skillIds } = jobData;
+    const { title, description, type, quantity, deadline, salary, skillIds } =
+      jobData;
 
     const newJob = await Job.create({
       title,
@@ -104,8 +105,16 @@ const update = async (id, jobData) => {
   try {
     const job = await Job.findByPk(id);
     if (!job) return null;
-    const { title, description, type, quantity, deadline, status, salary, skillIds } =
-      jobData;
+    const {
+      title,
+      description,
+      type,
+      quantity,
+      deadline,
+      status,
+      salary,
+      skillIds,
+    } = jobData;
     if (title) job.title = title;
     if (description) job.description = description;
     if (type) job.type = type;
@@ -147,14 +156,14 @@ const getJobsByCompanyId = async (
   companyId,
   pageNumber = 1,
   pageSize = 10,
-  onlyActive = false
+  onlyActive = false,
 ) => {
   try {
     const offset = (pageNumber - 1) * pageSize;
     const now = new Date();
     const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
       2,
-      "0"
+      "0",
     )}-${String(now.getDate()).padStart(2, "0")}`;
 
     let whereClause = { companyId };
@@ -198,15 +207,13 @@ const getJobsToday = async () => {
     const yyyy = now.getFullYear();
     const mm = String(now.getMonth() + 1).padStart(2, "0");
     const dd = String(now.getDate()).padStart(2, "0");
+
     const todayDate = `${yyyy}-${mm}-${dd}`;
-    const tomorrow = new Date(now);
-    tomorrow.setDate(now.getDate() + 1);
-    const tomorrowDate = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth() + 1).padStart(2, "0")}-${String(tomorrow.getDate()).padStart(2, "0")}`;
 
     const jobs = await Job.findAll({
       where: {
         [Op.and]: [
-          literal(`[Job].[createdAt] >= '${todayDate}' AND [Job].[createdAt] < '${tomorrowDate}'`),
+          literal(`CAST([Job].[createdAt] AS DATE) = '${todayDate}'`),
           {
             status: { [Op.ne]: "closed" },
             deadline: { [Op.gt]: todayDate },
@@ -234,7 +241,7 @@ const getJobsBySkill = async (skillId, pageNumber = 1, pageSize = 10) => {
     const now = new Date();
     const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
       2,
-      "0"
+      "0",
     )}-${String(now.getDate()).padStart(2, "0")}`;
     const { count, rows } = await Job.findAndCountAll({
       where: {
@@ -268,7 +275,7 @@ const getJobsByUserId = async (
   userId,
   pageNumber = 1,
   pageSize = 10,
-  onlyActive = false
+  onlyActive = false,
 ) => {
   try {
     const companyMember = await CompanyMember.findOne({
@@ -281,7 +288,7 @@ const getJobsByUserId = async (
       companyMember.companyId,
       pageNumber,
       pageSize,
-      onlyActive
+      onlyActive,
     );
   } catch (error) {
     throw error;
