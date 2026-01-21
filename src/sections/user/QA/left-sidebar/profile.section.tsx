@@ -8,9 +8,22 @@ import {
 import { Card, CardContent } from "@/components/ui/shadcn/card";
 import { Button } from "@/components/ui/shadcn/button";
 import { Separator } from "@/components/ui/shadcn/separator";
-import { Users, Bookmark, TrendingUp, Eye, Loader2 } from "lucide-react";
+import {
+  Users,
+  Bookmark,
+  TrendingUp,
+  Eye,
+  Loader2,
+  FileText,
+  Award,
+  ChevronRight,
+  Phone,
+  MapPin,
+  Briefcase,
+} from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
+import { ROUTES } from "@/configs";
 
 export default function ProfileSection() {
   const { user, loading } = useAuth();
@@ -38,7 +51,7 @@ export default function ProfileSection() {
   }
 
   return (
-    <Card className="overflow-hidden border-border/50">
+    <Card className="overflow-hidden border-border/50 p-0">
       {/* Cover Image */}
       <div
         className="h-14 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent bg-cover bg-center"
@@ -75,54 +88,63 @@ export default function ProfileSection() {
           <p className="text-xs text-muted-foreground">
             {user?.email || "Chưa cập nhật email"}
           </p>
+
+          <div className="mt-4 flex flex-col gap-2">
+            {user?.phone && (
+              <div
+                className="flex items-center gap-2 text-xs text-muted-foreground"
+                title="Số điện thoại"
+              >
+                <Phone className="h-3.5 w-3.5 text-muted-foreground/70" />
+                <span>{user.phone}</span>
+              </div>
+            )}
+
+            {user?.address && (
+              <div
+                className="flex items-center gap-2 text-xs text-muted-foreground"
+                title="Địa chỉ"
+              >
+                <MapPin className="h-3.5 w-3.5 text-muted-foreground/70" />
+                <span className="truncate">{user.address}</span>
+              </div>
+            )}
+
+            <div
+              className="flex items-center gap-2 text-xs text-muted-foreground"
+              title="Vai trò"
+            >
+              <Briefcase className="h-3.5 w-3.5 text-muted-foreground/70" />
+              <span className="capitalize">
+                {user?.role === "user" ? "Ứng viên tìm việc" : "Nhà tuyển dụng"}
+              </span>
+            </div>
+          </div>
         </div>
 
         <Separator />
 
-        {/* Stats - Compact */}
-        <div className="px-4 py-2 space-y-1">
-          <button className="cursor-target w-full flex items-center justify-between hover:bg-accent/50 px-2 py-1.5 rounded-md transition-colors text-xs group">
-            <span className="text-muted-foreground flex items-center gap-1.5">
-              <Users className="h-3.5 w-3.5" />
-              Connections
-            </span>
-            <span className="font-semibold text-primary group-hover:underline">
-              245
-            </span>
-          </button>
+        {/* Tools - Quick Actions */}
+        <div className="px-2 py-2 space-y-1">
+          <Link href={ROUTES.USER_RESUME} className="block">
+            <button className="cursor-target w-full flex items-center justify-between hover:bg-accent/50 px-2 py-2 rounded-md transition-colors text-xs group">
+              <span className="text-muted-foreground group-hover:text-foreground flex items-center gap-2 transition-colors">
+                <FileText className="h-4 w-4" />
+                Upload CV
+              </span>
+              <ChevronRight className="h-3 w-3 text-muted-foreground/50 group-hover:text-primary transition-colors" />
+            </button>
+          </Link>
 
-          <button className="cursor-target w-full flex items-center justify-between hover:bg-accent/50 px-2 py-1.5 rounded-md transition-colors text-xs group">
-            <span className="text-muted-foreground flex items-center gap-1.5">
-              <Eye className="h-3.5 w-3.5" />
-              Profile views
-            </span>
-            <span className="font-semibold text-primary group-hover:underline">
-              1.2K
-            </span>
-          </button>
-
-          <button className="cursor-target w-full flex items-center justify-between hover:bg-accent/50 px-2 py-1.5 rounded-md transition-colors text-xs group">
-            <span className="text-muted-foreground flex items-center gap-1.5">
-              <TrendingUp className="h-3.5 w-3.5" />
-              Post impressions
-            </span>
-            <span className="font-semibold text-primary group-hover:underline">
-              5.6K
-            </span>
-          </button>
-        </div>
-
-        <Separator />
-
-        {/* Quick Access */}
-        <div className="px-4 py-2">
-          <Button
-            variant="ghost"
-            className="cursor-target w-full justify-start text-xs h-8 hover:bg-accent/50"
-          >
-            <Bookmark className="h-3.5 w-3.5 mr-2" />
-            Saved items
-          </Button>
+          <Link href={ROUTES.USER_RESUME} className="block">
+            <button className="cursor-target w-full flex items-center justify-between hover:bg-accent/50 px-2 py-2 rounded-md transition-colors text-xs group">
+              <span className="text-muted-foreground group-hover:text-foreground flex items-center gap-2 transition-colors">
+                <Award className="h-4 w-4" />
+                Thêm Kỹ Năng
+              </span>
+              <ChevronRight className="h-3 w-3 text-muted-foreground/50 group-hover:text-primary transition-colors" />
+            </button>
+          </Link>
         </div>
       </CardContent>
     </Card>

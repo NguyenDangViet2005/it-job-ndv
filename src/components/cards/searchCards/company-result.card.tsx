@@ -8,7 +8,7 @@ export function CompanyCard({ company }: { company: SearchCompany }) {
   return (
     <Link href={`/companies/${company.id}`}>
       <Card className="rounded-lg transition-all p-5 border hover:border-primary/50 h-full">
-        <div className="flex gap-4 mb-3">
+        <div className="flex gap-4">
           {/* Company Logo */}
           <div className="flex-shrink-0">
             <div className="w-16 h-16 bg-background border rounded-lg p-2 flex items-center justify-center">
@@ -25,7 +25,7 @@ export function CompanyCard({ company }: { company: SearchCompany }) {
             <h3 className="text-lg font-bold text-foreground mb-1 hover:text-primary transition-colors line-clamp-1">
               {company.name}
             </h3>
-            
+
             <div className="flex items-center gap-2 text-muted-foreground text-sm">
               <MapPin className="w-4 h-4 flex-shrink-0" />
               <span className="truncate">{company.address}</span>
@@ -33,7 +33,7 @@ export function CompanyCard({ company }: { company: SearchCompany }) {
           </div>
         </div>
 
-        <p className="text-muted-foreground text-sm mb-3 line-clamp-2">
+        <p className="text-muted-foreground text-sm  line-clamp-2">
           {company.description}
         </p>
 
@@ -44,9 +44,9 @@ export function CompanyCard({ company }: { company: SearchCompany }) {
               {company.jobCount} việc làm
             </span>
           </div>
-          <Button 
-            variant="outline" 
-            size="sm" 
+          <Button
+            variant="outline"
+            size="sm"
             className="text-primary border-primary hover:bg-primary hover:text-primary-foreground h-8 text-xs"
           >
             Xem chi tiết

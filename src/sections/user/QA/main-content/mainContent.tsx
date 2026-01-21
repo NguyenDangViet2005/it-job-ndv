@@ -26,7 +26,7 @@ interface MainContentProps {
     postId: number,
     commentId: number,
     content: string,
-    attachments?: File[]
+    attachments?: File[],
   ) => void;
   onDeleteComment?: (postId: number, commentId: number) => void;
   onLoadMoreComments?: (postId: number) => Promise<void>;
@@ -108,7 +108,7 @@ function MainContent({
         { content: newPost, userId: user.id },
         selectedImages.length > 0 ? selectedImages : undefined,
         selectedVideo || undefined,
-        token
+        token,
       );
 
       setNewPost("");
@@ -137,7 +137,7 @@ function MainContent({
     postId: number,
     content: string,
     newImages: File[],
-    keepImageUrls: string[]
+    keepImageUrls: string[],
   ) => {
     if (!token) return;
 
@@ -162,7 +162,7 @@ function MainContent({
         updateData,
         newImages.length > 0 ? newImages : undefined,
         keepImageUrls,
-        token
+        token,
       );
 
       // Refresh to show updated post
@@ -196,14 +196,12 @@ function MainContent({
       <main className="md:col-span-2 space-y-6">
         {/* FORM ĐĂNG BÀI */}
         <Card className="hover:shadow-lg transition-all duration-300 animate-in fade-in slide-in-from-bottom-4">
-          <CardContent className="pt-6">
+          <CardContent className="">
             <div className="flex gap-3">
               <Avatar className="cursor-target hover:scale-110 transition-transform duration-300">
                 <AvatarImage
                   src={
-                    currentUserAvatar ||
-                    user?.avatar ||
-                    DEFAULT_AVATARS.USER
+                    currentUserAvatar || user?.avatar || DEFAULT_AVATARS.USER
                   }
                 />
                 <AvatarFallback>
@@ -295,7 +293,7 @@ function MainContent({
                 size="sm"
                 onClick={handlePostSubmit}
                 disabled={isCreatingPost || !newPost.trim()}
-                className="cursor-target hover:scale-105 transition-transform duration-300"
+                className="cursor-target hover:scale-105 transition-transform duration-300 disabled:bg-gray-400"
               >
                 {isCreatingPost ? (
                   <Loader2 className="h-4 w-4 animate-spin" />

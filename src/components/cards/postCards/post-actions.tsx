@@ -11,6 +11,7 @@ interface PostActionsProps {
   shares: number;
   onLike: () => void;
   onToggleComments: () => void;
+  onCommentButtonClick?: () => void;
 }
 
 export default function PostActions({
@@ -20,6 +21,7 @@ export default function PostActions({
   shares,
   onLike,
   onToggleComments,
+  onCommentButtonClick,
 }: PostActionsProps) {
   return (
     <>
@@ -77,7 +79,7 @@ export default function PostActions({
         <Button
           variant="ghost"
           className="cursor-target flex-1 hover:bg-green-50 dark:hover:bg-green-950 hover:scale-105 transition-all duration-300"
-          onClick={onToggleComments}
+          onClick={onCommentButtonClick || onToggleComments}
         >
           <MessageCircle className="h-4 w-4 mr-2" />
           Bình luận

@@ -26,7 +26,7 @@ function TextRotator() {
       Tìm kiếm{" "}
       <span
         ref={el}
-        className="bg-primary text-primary-foreground px-2 py-1 rounded cursor-target"
+        className="bg-red-600 text-primary-foreground px-2 py-1 rounded cursor-target"
       ></span>
     </div>
   );

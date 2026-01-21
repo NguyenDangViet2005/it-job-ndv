@@ -22,7 +22,7 @@ import Link from "next/link";
 import SearchBar from "@/components/ui/customs/search-bar";
 import { HeroSection } from "@/sections/user/common/hero.section";
 import { JobCard } from "@/components/cards/searchCards/job-result.card";
-import { CompanyCard } from "@/components/cards/company-result.card";
+import { CompanyCard } from "@/components/cards/searchCards/company-result.card";
 
 export default function SearchResultsPage() {
   const searchParams = useSearchParams();

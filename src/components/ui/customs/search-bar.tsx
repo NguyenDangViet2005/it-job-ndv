@@ -33,7 +33,7 @@ export default function SearchBar() {
         <Button
           type="submit"
           disabled={!keyword.trim()}
-          className="h-10 sm:h-14 w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-lg sm:rounded-none px-6 sm:px-10 text-base sm:text-lg flex items-center justify-center gap-2 disabled:opacity-50"
+          className="h-10 sm:h-14 w-full sm:w-auto bg-red-600 hover:bg-red-700 text-primary-foreground font-semibold rounded-lg sm:rounded-none px-6 sm:px-10 text-base sm:text-lg flex items-center justify-center gap-2 disabled:bg-gray-500"
         >
           <Search size={15} />
           <span>Tìm kiếm</span>

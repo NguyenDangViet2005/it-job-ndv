@@ -18,6 +18,8 @@ import { companyApi } from "@/apis";
 import type { Company } from "@/types/api.type";
 import { CompanyCard } from "@/components/cards/companyCards/company.card";
 import { HeroSection } from "@/sections/user/common/hero.section";
+import Link from "next/link";
+import { ROUTES } from "@/configs";
 
 interface CompanyFilters {
   search: string;
@@ -33,7 +35,7 @@ const CompaniesPage = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const pageSize = 6;
-  
+
   const [filters, setFilters] = useState<CompanyFilters>({
     search: "",
     location: "",
@@ -104,17 +106,33 @@ const CompaniesPage = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header Section */}
-      <HeroSection/>
-
+      <HeroSection />
+      <div className="bg-muted/30 border-b border-border py-2 px-8">
+        <div className="max-w-7xl mx-auto flex items-center gap-2 text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+          <Link
+            href={ROUTES.HOME}
+            className="hover:text-primary transition-colors"
+          >
+            TRANG CHỦ
+          </Link>
+          <span>/</span>
+          <span className="text-foreground">
+            DANH SÁCH CÔNG TY ĐANG TUYỂN DỤNG
+          </span>
+        </div>
+      </div>
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-8">
+        {/* Breadcrumb Section */}
+
         {/* Page Title */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Khám phá các công ty hàng đầu
           </h1>
           <p className="text-muted-foreground">
-            Tìm kiếm và kết nối với những công ty công nghệ tốt nhất tại Việt Nam
+            Tìm kiếm và kết nối với những công ty công nghệ tốt nhất tại Việt
+            Nam
           </p>
         </div>
 
@@ -193,7 +211,7 @@ const CompaniesPage = () => {
                         onClick={() =>
                           handleFilterChange(
                             "location",
-                            filters.location === loc ? "" : loc
+                            filters.location === loc ? "" : loc,
                           )
                         }
                       >
@@ -220,13 +238,13 @@ const CompaniesPage = () => {
                           onClick={() =>
                             handleFilterChange(
                               "size",
-                              filters.size === size ? "" : size
+                              filters.size === size ? "" : size,
                             )
                           }
                         >
                           {size}
                         </Badge>
-                      )
+                      ),
                     )}
                   </div>
                 </div>
@@ -248,13 +266,13 @@ const CompaniesPage = () => {
                           onClick={() =>
                             handleFilterChange(
                               "type",
-                              filters.type === type ? "" : type
+                              filters.type === type ? "" : type,
                             )
                           }
                         >
                           {type}
                         </Badge>
-                      )
+                      ),
                     )}
                   </div>
                 </div>
@@ -283,7 +301,7 @@ const CompaniesPage = () => {
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredCompanies.map((company) => (
-                <CompanyCard key={company.id} company={company}  />
+                <CompanyCard key={company.id} company={company} />
               ))}
             </div>
 
@@ -293,52 +311,62 @@ const CompaniesPage = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(prev - 1, 1))
+                  }
                   disabled={currentPage === 1}
                   className="cursor-target"
                 >
                   Trước
                 </Button>
-                
+
                 <div className="flex gap-1">
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
-                    const showPage = 
-                      page === 1 || 
-                      page === totalPages || 
-                      (page >= currentPage - 1 && page <= currentPage + 1);
-                    
-                    const showEllipsis = 
-                      (page === currentPage - 2 && currentPage > 3) ||
-                      (page === currentPage + 2 && currentPage < totalPages - 2);
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                    (page) => {
+                      const showPage =
+                        page === 1 ||
+                        page === totalPages ||
+                        (page >= currentPage - 1 && page <= currentPage + 1);
 
-                    if (showEllipsis) {
+                      const showEllipsis =
+                        (page === currentPage - 2 && currentPage > 3) ||
+                        (page === currentPage + 2 &&
+                          currentPage < totalPages - 2);
+
+                      if (showEllipsis) {
+                        return (
+                          <span
+                            key={page}
+                            className="px-3 py-2 text-muted-foreground"
+                          >
+                            ...
+                          </span>
+                        );
+                      }
+
+                      if (!showPage) return null;
+
                       return (
-                        <span key={page} className="px-3 py-2 text-muted-foreground">
-                          ...
-                        </span>
+                        <Button
+                          key={page}
+                          variant={currentPage === page ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setCurrentPage(page)}
+                          className="min-w-[40px] cursor-target"
+                        >
+                          {page}
+                        </Button>
                       );
-                    }
-
-                    if (!showPage) return null;
-
-                    return (
-                      <Button
-                        key={page}
-                        variant={currentPage === page ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => setCurrentPage(page)}
-                        className="min-w-[40px] cursor-target"
-                      >
-                        {page}
-                      </Button>
-                    );
-                  })}
+                    },
+                  )}
                 </div>
 
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                  }
                   disabled={currentPage === totalPages}
                   className="cursor-target"
                 >
@@ -374,6 +402,5 @@ const CompaniesPage = () => {
     </div>
   );
 };
-
 
 export default CompaniesPage;

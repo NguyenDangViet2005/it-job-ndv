@@ -85,7 +85,7 @@ export default function CompanyJobInfo({ job }: JobHeaderProps) {
                   alt={job.company}
                   width={100}
                   height={100}
-                  className="cursor-target rounded-xl shadow-md border-2 border-background"
+                  className="cursor-target"
                 />
               </div>
             </div>

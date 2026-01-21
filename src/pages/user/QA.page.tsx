@@ -5,12 +5,13 @@ import { useRouter } from "next/navigation";
 import MainContent from "@/sections/user/QA/main-content/mainContent";
 import RightSidebar from "@/sections/user/QA/right-sidebar/rightSidebar";
 import LeftSidebar from "@/sections/user/QA/left-sidebar/leftSidebar";
-import { companyPosts, followList } from "@/types/test.type";
 import { usePosts, useInfiniteScroll } from "@/hooks/usePost";
 import { interactionApi } from "@/apis/interaction.api";
+import { companyApi, blogApi, followApi } from "@/apis";
 import { useAuth } from "@/hooks/useAuth";
-import type { FullPostResponse } from "@/types/api.type";
+import type { FullPostResponse, BlogResponse, Company } from "@/types/api.type";
 import { ROUTES } from "@/configs";
+import { followList as testFollowList } from "@/types/test.type";
 
 export default function QAPage() {
   const { user, token, isAuthenticated, loading: authLoading } = useAuth();
@@ -20,12 +21,68 @@ export default function QAPage() {
   const [loadingCommentsForPost, setLoadingCommentsForPost] = useState<
     number | null
   >(null);
+  const [blogs, setBlogs] = useState<BlogResponse[]>([]);
+  const [suggestedCompanies, setSuggestedCompanies] = useState<Company[]>([]);
+  const [followedCompanyIds, setFollowedCompanyIds] = useState<number[]>([]);
 
   // All custom hooks must be called before any conditional returns
   const { posts, loading, hasMore, loadMore, setPosts } = usePosts(
     user?.id || undefined,
-    token
+    token,
   );
+
+  // Fetch side data
+  useEffect(() => {
+    const fetchSideData = async () => {
+      try {
+        // Fetch blogs
+        const blogRes = await blogApi.getAll(1, 5);
+        if (blogRes.data) {
+          // Flatten if paginated structure is different, but assuming .data is array
+          const blogData = Array.isArray(blogRes.data)
+            ? blogRes.data
+            : (blogRes.data as any).data || [];
+          setBlogs(blogData);
+        }
+
+        // Fetch suggested companies
+        const companyRes = await companyApi.getAll(1, 5);
+        if (companyRes.data) {
+          const companyData = Array.isArray(companyRes.data)
+            ? companyRes.data
+            : (companyRes.data as any).data || [];
+          setSuggestedCompanies(companyData);
+        }
+
+        // Fetch followed companies if user is logged in
+        if (user && token) {
+          const followRes = await followApi.getFollowsByUser(
+            user.id,
+            1,
+            100,
+            token,
+          ); // Get all follows to check
+          if (followRes.data) {
+            const follows = Array.isArray(followRes.data)
+              ? followRes.data
+              : (followRes.data as any).data || [];
+            setFollowedCompanyIds(follows.map((f: any) => f.companyId));
+          } else if (followRes.follows) {
+            // Handle alternative response structure if any
+            setFollowedCompanyIds(
+              followRes.follows.map((f: any) => f.companyId),
+            );
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching side data:", error);
+      }
+    };
+
+    if (!authLoading) {
+      fetchSideData();
+    }
+  }, [authLoading, user, token]);
 
   // Infinite scroll ref - must be called before conditional return
   const loadMoreRef = useInfiniteScroll(loadMore, hasMore, loading);
@@ -45,7 +102,7 @@ export default function QAPage() {
   }, [authLoading]);
 
   // Show loading while checking auth (conditional return after all hooks)
-  if (authLoading) {
+  if (authLoading || !isAuthenticated) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
@@ -75,8 +132,8 @@ export default function QAPage() {
                   totalLikes: result.totalLikes,
                 },
               }
-            : post
-        )
+            : post,
+        ),
       );
     } catch (error) {
       console.error("Failed to toggle like:", error);
@@ -89,8 +146,8 @@ export default function QAPage() {
       prev.map((post: FullPostResponse) =>
         post.id === postId
           ? { ...post, showComments: !(post as any).showComments }
-          : post
-      )
+          : post,
+      ),
     );
   };
 
@@ -98,7 +155,7 @@ export default function QAPage() {
   const handleAddComment = async (
     postId: number,
     content: string,
-    attachments?: File[]
+    attachments?: File[],
   ) => {
     if (!isAuthenticated) return;
     if (!user || !token) return;
@@ -109,7 +166,7 @@ export default function QAPage() {
         user.id,
         content,
         token,
-        attachments
+        attachments,
       );
 
       setPosts((prev: FullPostResponse[]) =>
@@ -124,8 +181,8 @@ export default function QAPage() {
                 },
                 showComments: true,
               }
-            : post
-        )
+            : post,
+        ),
       );
     } catch (error) {
       console.error("Failed to add comment:", error);
@@ -138,7 +195,7 @@ export default function QAPage() {
     commentId: number,
     content: string,
     attachments?: File[],
-    keepImageUrls?: string[]
+    keepImageUrls?: string[],
   ) => {
     if (!isAuthenticated || !user || !token) return;
 
@@ -150,7 +207,7 @@ export default function QAPage() {
         content,
         token,
         attachments,
-        keepImageUrls
+        keepImageUrls,
       );
 
       setPosts((prev: FullPostResponse[]) =>
@@ -161,12 +218,12 @@ export default function QAPage() {
                 interaction: {
                   ...post.interaction,
                   comments: post.interaction.comments.map((c) =>
-                    c.id === commentId ? updatedComment : c
+                    c.id === commentId ? updatedComment : c,
                   ),
                 },
               }
-            : post
-        )
+            : post,
+        ),
       );
     } catch (error) {
       console.error("Failed to edit comment:", error);
@@ -189,12 +246,12 @@ export default function QAPage() {
                   ...post.interaction,
                   totalComments: post.interaction.totalComments - 1,
                   comments: post.interaction.comments.filter(
-                    (c) => c.id !== commentId
+                    (c) => c.id !== commentId,
                   ),
                 },
               }
-            : post
-        )
+            : post,
+        ),
       );
     } catch (error) {
       console.error("Failed to delete comment:", error);
@@ -215,7 +272,7 @@ export default function QAPage() {
         postId,
         currentPage + 1,
         10,
-        token
+        token,
       );
 
       setPosts((prev: FullPostResponse[]) =>
@@ -228,8 +285,8 @@ export default function QAPage() {
                   comments: [...p.interaction.comments, ...response.data],
                 },
               }
-            : p
-        )
+            : p,
+        ),
       );
     } catch (error) {
       console.error("Failed to load more comments:", error);
@@ -240,16 +297,16 @@ export default function QAPage() {
 
   return (
     <div className="min-h-screen bg-background mt-20">
-      <div className="max-w-7xl mx-auto flex">
-        {/* LEFT SIDEBAR - Profile + Friends (Fixed, No Scroll) */}
+      <div className="max-w-[1400px] mx-auto flex justify-center lg:justify-between px-4 gap-4">
+        {/* LEFT SIDEBAR - Profile + Friends (Fixed) */}
         <aside className="hidden lg:block w-64 flex-shrink-0">
-          <div className="fixed top-20 w-64 h-[calc(100vh-7rem)] overflow-hidden">
-            <LeftSidebar followList={followList} />
+          <div className="fixed top-20 w-64 h-[calc(100vh-5rem)] overflow-hidden">
+            <LeftSidebar followList={testFollowList} />
           </div>
         </aside>
 
         {/* MAIN CONTENT - Scrollable */}
-        <main className="flex-1 min-w-0 px-6">
+        <main className="flex-1 min-w-0 max-w-2xl lg:max-w-none">
           <div className="max-w-2xl mx-auto">
             <MainContent
               posts={posts}
@@ -274,10 +331,19 @@ export default function QAPage() {
           </div>
         </main>
 
-        {/* RIGHT SIDEBAR - Company Posts + Followed Companies (Fixed, No Scroll) */}
-        <aside className="hidden md:block w-64 flex-shrink-0">
-          <div className="fixed top-20 right-[calc((100vw-1280px)/2)] w-64 h-[calc(100vh-7rem)] overflow-hidden">
-            <RightSidebar followList={followList} companyPosts={companyPosts} />
+        {/* RIGHT SIDEBAR - Company Posts + Followed Companies (Fixed) */}
+        <aside className="hidden md:block w-[340px] flex-shrink-0">
+          <div
+            className="fixed top-20 w-[340px] h-[calc(100vh-5rem)] overflow-hidden"
+            style={{
+              right: "max(1rem, calc((100vw - 1400px)/2 + 1rem))",
+            }}
+          >
+            <RightSidebar
+              followList={suggestedCompanies}
+              companyPosts={blogs}
+              followedCompanyIds={followedCompanyIds}
+            />
           </div>
         </aside>
       </div>

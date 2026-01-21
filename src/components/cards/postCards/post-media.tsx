@@ -1,14 +1,35 @@
 "use client";
 
 import { Play } from "lucide-react";
+import type { AttachmentResponse } from "@/types/api.type";
 
 interface PostMediaProps {
-  images: string[];
+  attachments?: AttachmentResponse[]; // From API
+  // Legacy support props (optional)
+  images?: string[];
   video?: string;
-  onOpenLightbox: (media: { url: string; type: "image" | "video" }[], startIndex: number) => void;
+  onOpenLightbox: (
+    media: { url: string; type: "image" | "video" }[],
+    startIndex: number,
+  ) => void;
 }
 
-export default function PostMedia({ images, video, onOpenLightbox }: PostMediaProps) {
+export default function PostMedia({
+  attachments,
+  images: legacyImages,
+  video: legacyVideo,
+  onOpenLightbox,
+}: PostMediaProps) {
+  // Extract images and video from attachments (API structure)
+  const apiImages =
+    attachments?.filter((a) => a.fileType === "image").map((a) => a.fileUrl) ||
+    [];
+  const apiVideo = attachments?.find((a) => a.fileType === "video")?.fileUrl;
+
+  // Merge with legacy props if provided (prioritize API)
+  const images = apiImages.length > 0 ? apiImages : legacyImages || [];
+  const video = apiVideo || legacyVideo;
+
   // Video
   if (video) {
     return (
@@ -33,12 +54,12 @@ export default function PostMedia({ images, video, onOpenLightbox }: PostMediaPr
         images.length === 1
           ? "grid grid-cols-1"
           : images.length === 2
-          ? "grid grid-cols-2"
-          : images.length === 3
-          ? "grid grid-cols-2"
-          : images.length === 4
-          ? "grid grid-cols-2"
-          : "grid grid-cols-3"
+            ? "grid grid-cols-2"
+            : images.length === 3
+              ? "grid grid-cols-2"
+              : images.length === 4
+                ? "grid grid-cols-2"
+                : "grid grid-cols-3"
       }`}
     >
       {images.slice(0, 5).map((img, imgIdx) => (
@@ -55,8 +76,8 @@ export default function PostMedia({ images, video, onOpenLightbox }: PostMediaPr
             images.length === 3 && imgIdx === 0
               ? "col-span-2"
               : images.length >= 5 && imgIdx === 4
-              ? "relative"
-              : ""
+                ? "relative"
+                : ""
           }`}
         >
           <img

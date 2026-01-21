@@ -1,14 +1,14 @@
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/shadcn/card";
 import Link from "next/link";
-import {  Briefcase, Building2, MapPin } from "lucide-react";
+import { Briefcase, Building2, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/shadcn/button";
 import { Badge } from "@/components/ui/shadcn/badge";
 import { Company } from "@/types";
 
-export const CompanyCard = ({ company}: { company: Company  }) => {
-  const location = company.city || company.address || 'Chưa cập nhật';
-  
+export const CompanyCard = ({ company }: { company: Company }) => {
+  const location = company.city || company.address || "Chưa cập nhật";
+
   return (
     <Link href={`/companies/${company.id}`} className="block group">
       <Card className="h-full hover:shadow-lg transition-all duration-300 cursor-target hover:border-primary/50 overflow-hidden">
@@ -24,8 +24,8 @@ export const CompanyCard = ({ company}: { company: Company  }) => {
             />
           )}
         </div>
-        
-        <CardContent className="p-6 pt-0">
+
+        <CardContent className="px-6 pt-0">
           {/* Logo & Name - Overlapping */}
           <div className="flex items-start gap-4 mb-4 -mt-10">
             <div className="relative w-20 h-20 flex-shrink-0 rounded-xl overflow-hidden bg-white border-4 border-background shadow-lg group-hover:shadow-xl group-hover:border-primary/20 transition-all duration-300">
@@ -43,7 +43,7 @@ export const CompanyCard = ({ company}: { company: Company  }) => {
               </h3>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Badge variant="outline" className="text-xs">
-                  {company.nationality || 'Việt Nam'}
+                  {company.nationality || "Việt Nam"}
                 </Badge>
               </div>
             </div>
@@ -51,7 +51,7 @@ export const CompanyCard = ({ company}: { company: Company  }) => {
 
           {/* Description */}
           <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
-            {company.description || 'Chưa có mô tả'}
+            {company.description || "Chưa có mô tả"}
           </p>
 
           {/* Info */}
@@ -81,7 +81,12 @@ export const CompanyCard = ({ company}: { company: Company  }) => {
             <div className="flex items-center gap-2 mb-4 text-sm">
               <span className="text-yellow-500">★</span>
               <span className="font-medium">
-                {(company.reviews.reduce((acc : any, r: any) => acc + r.rating, 0) / company.reviews.length).toFixed(1)}
+                {(
+                  company.reviews.reduce(
+                    (acc: any, r: any) => acc + r.rating,
+                    0,
+                  ) / company.reviews.length
+                ).toFixed(1)}
               </span>
               <span className="text-muted-foreground">
                 ({company.reviews.length} đánh giá)
