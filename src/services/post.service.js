@@ -1,4 +1,4 @@
-const { Post, User, Company, Attachment, Interaction } = require("../models");
+const { Post, User, Company, Attachment, Interaction, CompanyMember } = require("../models");
 const cloudinaryService = require("./cloudinary.service");
 const { Op } = require("sequelize");
 const { sequelize } = require("../configs/sequelize.config");
@@ -56,7 +56,25 @@ const enrichPosts = async (posts, currentUserId) => {
     Interaction.findAll({
       where: { postId: post.id, content: { [Op.ne]: null } },
       include: [
-        { model: User, as: "User", attributes: ["id", "fullName", "avatar"] },
+        { 
+          model: User, 
+          as: "User", 
+          attributes: ["id", "fullName", "avatar"],
+          include: [
+            {
+              model: CompanyMember,
+              attributes: ["companyId", "status"],
+              where: { status: "active" },
+              required: false,
+              include: [
+                {
+                  model: Company,
+                  attributes: ["id", "name", "avatar"],
+                },
+              ],
+            },
+          ],
+        },
         { model: Attachment, as: "Attachments" },
       ],
       order: [["createdAt", "DESC"]],

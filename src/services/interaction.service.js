@@ -1,4 +1,4 @@
-const { Interaction, User, Attachment } = require("../models");
+const { Interaction, User, Attachment, CompanyMember, Company } = require("../models");
 const { sequelize } = require("../configs/sequelize.config");
 const cloudinaryService = require("./cloudinary.service");
 const { Op } = require("sequelize");
@@ -36,6 +36,20 @@ const getCommentsByPostId = async (postId, page = 1, pageSize = 10) => {
           model: User,
           as: "User",
           attributes: ["id", "fullName", "avatar"],
+          include: [
+            {
+              model: CompanyMember,
+              attributes: ["companyId", "status"],
+              where: { status: "active" },
+              required: false,
+              include: [
+                {
+                  model: Company,
+                  attributes: ["id", "name", "avatar"],
+                },
+              ],
+            },
+          ],
         },
         {
           model: Attachment,
@@ -148,6 +162,20 @@ const addComment = async (postId, userId, content, files = []) => {
           model: User,
           as: "User",
           attributes: ["id", "fullName", "avatar"],
+          include: [
+            {
+              model: CompanyMember,
+              attributes: ["companyId", "status"],
+              where: { status: "active" },
+              required: false,
+              include: [
+                {
+                  model: Company,
+                  attributes: ["id", "name", "avatar"],
+                },
+              ],
+            },
+          ],
         },
         {
           model: Attachment,
@@ -233,6 +261,20 @@ const updateComment = async (
           model: User,
           as: "User",
           attributes: ["id", "fullName", "avatar"],
+          include: [
+            {
+              model: CompanyMember,
+              attributes: ["companyId", "status"],
+              where: { status: "active" },
+              required: false,
+              include: [
+                {
+                  model: Company,
+                  attributes: ["id", "name", "avatar"],
+                },
+              ],
+            },
+          ],
         },
         {
           model: Attachment,

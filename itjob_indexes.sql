@@ -90,3 +90,24 @@ IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_Attachment_Interaction
 BEGIN
     CREATE INDEX IX_Attachment_InteractionId ON Attachment(interactionId);
 END
+
+-- Connection table indexes
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_Connection_UserId_Status' AND object_id = OBJECT_ID('Connection'))
+BEGIN
+    CREATE INDEX IX_Connection_UserId_Status ON Connection(userId, status);
+END
+
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_Connection_ConnectedUserId_Status' AND object_id = OBJECT_ID('Connection'))
+BEGIN
+    CREATE INDEX IX_Connection_ConnectedUserId_Status ON Connection(connectedUserId, status);
+END
+
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_Connection_Status' AND object_id = OBJECT_ID('Connection'))
+BEGIN
+    CREATE INDEX IX_Connection_Status ON Connection(status);
+END
+
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_Connection_CreatedAt' AND object_id = OBJECT_ID('Connection'))
+BEGIN
+    CREATE INDEX IX_Connection_CreatedAt ON Connection(createdAt DESC);
+END

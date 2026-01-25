@@ -19,29 +19,6 @@ const toggleFollow = async (userId, companyId) => {
   }
 };
 
-const getFollowsByUser = async (userId, page = 1, pageSize = 10) => {
-  const offset = (page - 1) * pageSize;
-  const { count, rows } = await Follow.findAndCountAll({
-    where: { userId },
-    include: [
-      {
-        model: Company,
-        as: "Company",
-      },
-    ],
-    limit: pageSize,
-    offset: offset,
-  });
-
-  return {
-    follows: rows.map((f) => new FollowResponse(f)),
-    totalItems: count,
-    page,
-    pageSize,
-    totalPages: Math.ceil(count / pageSize),
-  };
-};
-
 const getFollowsByCompany = async (companyId, page = 1, pageSize = 10) => {
   const offset = (page - 1) * pageSize;
   const { count, rows } = await Follow.findAndCountAll({
@@ -68,6 +45,5 @@ const getFollowsByCompany = async (companyId, page = 1, pageSize = 10) => {
 
 module.exports = {
   toggleFollow,
-  getFollowsByUser,
   getFollowsByCompany,
 };

@@ -10,6 +10,7 @@ const blogCategoryRoutes = require("./blog-category.route");
 const blogRoutes = require("./blog.route");
 const reviewRoutes = require("./review.route");
 const followRoutes = require("./follow.route");
+const connectionRoutes = require("./connection.route");
 const searchRoutes = require("./search.route");
 const userRoutes = require("./user.route");
 
@@ -26,6 +27,7 @@ Router.use("/blogcategory", blogCategoryRoutes);
 Router.use("/blog", blogRoutes);
 Router.use("/review", reviewRoutes);
 Router.use("/follow", followRoutes);
+Router.use("/connection", connectionRoutes);
 Router.use("/search", searchRoutes);
 Router.use("/user", userRoutes);
 

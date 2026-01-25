@@ -45,10 +45,11 @@ INSERT INTO Wards (provinceId, name)
 SELECT id, N'Phường Vinh Tân' FROM Provinces WHERE name = N'Nghệ An';
 GO
 
--- 1. INSERT USER (10 bản ghi)
+-- 1. INSERT USER (10 employer + 15 user = 25 bản ghi)
 INSERT INTO [User]
 (fullName, email, password, phone, gender, dateOfBirth, avatar, coverImage, cvUrl, role)
 VALUES
+-- EMPLOYERS (10)
 (N'Nguyễn Minh Huy', 'hr.fpt@demo.com',    '$2a$12$XRcYOwPoThhwZlCGE1XPouOQCSQvHQQxTWQEtJd.WJ4wXPdGQoEk6', '0901000001', 'male',   '1999-04-12', 'https://i.pravatar.cc/150?img=11', 'https://picsum.photos/seed/u11/1200/400', 'https://drive.google.com/file/d/cv_nguyen_minh_huy.pdf', 'employer'),
 (N'Trần Thảo Vy',    'hr.vng@demo.com',    '$2a$12$XRcYOwPoThhwZlCGE1XPouOQCSQvHQQxTWQEtJd.WJ4wXPdGQoEk6', '0901000002', 'female', '2000-08-21', 'https://i.pravatar.cc/150?img=12', 'https://picsum.photos/seed/u12/1200/400', 'https://drive.google.com/file/d/cv_tran_thao_vy.pdf', 'employer'),
 (N'Lê Quốc Bảo',     'hr.tiki@demo.com',   '$2a$12$XRcYOwPoThhwZlCGE1XPouOQCSQvHQQxTWQEtJd.WJ4wXPdGQoEk6', '0901000003', 'male',   '1998-01-05', 'https://i.pravatar.cc/150?img=13', 'https://picsum.photos/seed/u13/1200/400', 'https://drive.google.com/file/d/cv_le_quoc_bao.pdf', 'employer'),
@@ -58,7 +59,24 @@ VALUES
 (N'Nguyễn Gia Hân',  'hr.shopee@demo.com', '$2a$12$XRcYOwPoThhwZlCGE1XPouOQCSQvHQQxTWQEtJd.WJ4wXPdGQoEk6', '0901000007', 'other',  '2001-09-09', 'https://i.pravatar.cc/150?img=17', 'https://picsum.photos/seed/u17/1200/400', 'https://drive.google.com/file/d/cv_nguyen_gia_han.pdf', 'employer'),
 (N'Tạ Văn Sơn',      'hr.tcb@demo.com',    '$2a$12$XRcYOwPoThhwZlCGE1XPouOQCSQvHQQxTWQEtJd.WJ4wXPdGQoEk6', '0901000008', 'male',   '1995-12-02', 'https://i.pravatar.cc/150?img=18', 'https://picsum.photos/seed/u18/1200/400', 'https://drive.google.com/file/d/cv_ta_van_son.pdf', 'employer'),
 (N'Bùi Mỹ Linh',     'hr.viettel@demo.com','$2a$12$XRcYOwPoThhwZlCGE1XPouOQCSQvHQQxTWQEtJd.WJ4wXPdGQoEk6', '0901000009', 'female', '1998-03-25', 'https://i.pravatar.cc/150?img=19', 'https://picsum.photos/seed/u19/1200/400', 'https://drive.google.com/file/d/cv_bui_my_linh.pdf', 'employer'),
-(N'Admin System',    'admin@demo.com',     '$2a$12$XRcYOwPoThhwZlCGE1XPouOQCSQvHQQxTWQEtJd.WJ4wXPdGQoEk6','0901000010','male',   '1990-01-01', 'https://i.pravatar.cc/150?img=20', 'https://picsum.photos/seed/u20/1200/400', 'https://drive.google.com/file/d/cv_admin_system.pdf', 'admin');
+(N'Admin System',    'admin@demo.com',     '$2a$12$XRcYOwPoThhwZlCGE1XPouOQCSQvHQQxTWQEtJd.WJ4wXPdGQoEk6','0901000010','male',   '1990-01-01', 'https://i.pravatar.cc/150?img=20', 'https://picsum.photos/seed/u20/1200/400', 'https://drive.google.com/file/d/cv_admin_system.pdf', 'admin'),
+
+-- REGULAR USERS (15)
+(N'Nguyễn Đăng Việt', 'viet.nguyen@demo.com', '$2a$12$XRcYOwPoThhwZlCGE1XPouOQCSQvHQQxTWQEtJd.WJ4wXPdGQoEk6', '0902000001', 'male',   '2001-05-15', 'https://i.pravatar.cc/150?img=21', 'https://picsum.photos/seed/u21/1200/400', 'https://drive.google.com/file/d/cv_viet.pdf', 'user'),
+(N'Lê Thị Mai Anh',  'maianh.le@demo.com',   '$2a$12$XRcYOwPoThhwZlCGE1XPouOQCSQvHQQxTWQEtJd.WJ4wXPdGQoEk6', '0902000002', 'female', '2000-03-22', 'https://i.pravatar.cc/150?img=22', 'https://picsum.photos/seed/u22/1200/400', 'https://drive.google.com/file/d/cv_maianh.pdf', 'user'),
+(N'Trần Văn Khoa',   'khoa.tran@demo.com',   '$2a$12$XRcYOwPoThhwZlCGE1XPouOQCSQvHQQxTWQEtJd.WJ4wXPdGQoEk6', '0902000003', 'male',   '1999-11-08', 'https://i.pravatar.cc/150?img=23', 'https://picsum.photos/seed/u23/1200/400', 'https://drive.google.com/file/d/cv_khoa.pdf', 'user'),
+(N'Phạm Thị Hương',  'huong.pham@demo.com',  '$2a$12$XRcYOwPoThhwZlCGE1XPouOQCSQvHQQxTWQEtJd.WJ4wXPdGQoEk6', '0902000004', 'female', '2001-07-19', 'https://i.pravatar.cc/150?img=24', 'https://picsum.photos/seed/u24/1200/400', 'https://drive.google.com/file/d/cv_huong.pdf', 'user'),
+(N'Hoàng Minh Tuấn', 'tuan.hoang@demo.com',  '$2a$12$XRcYOwPoThhwZlCGE1XPouOQCSQvHQQxTWQEtJd.WJ4wXPdGQoEk6', '0902000005', 'male',   '1998-09-30', 'https://i.pravatar.cc/150?img=25', 'https://picsum.photos/seed/u25/1200/400', 'https://drive.google.com/file/d/cv_tuan.pdf', 'user'),
+(N'Đỗ Thị Lan',      'lan.do@demo.com',      '$2a$12$XRcYOwPoThhwZlCGE1XPouOQCSQvHQQxTWQEtJd.WJ4wXPdGQoEk6', '0902000006', 'female', '2000-12-05', 'https://i.pravatar.cc/150?img=26', 'https://picsum.photos/seed/u26/1200/400', 'https://drive.google.com/file/d/cv_lan.pdf', 'user'),
+(N'Vũ Quang Hải',    'hai.vu@demo.com',      '$2a$12$XRcYOwPoThhwZlCGE1XPouOQCSQvHQQxTWQEtJd.WJ4wXPdGQoEk6', '0902000007', 'male',   '1999-04-17', 'https://i.pravatar.cc/150?img=27', 'https://picsum.photos/seed/u27/1200/400', 'https://drive.google.com/file/d/cv_hai.pdf', 'user'),
+(N'Ngô Thị Thanh',   'thanh.ngo@demo.com',   '$2a$12$XRcYOwPoThhwZlCGE1XPouOQCSQvHQQxTWQEtJd.WJ4wXPdGQoEk6', '0902000008', 'female', '2001-02-28', 'https://i.pravatar.cc/150?img=28', 'https://picsum.photos/seed/u28/1200/400', 'https://drive.google.com/file/d/cv_thanh.pdf', 'user'),
+(N'Bùi Văn Nam',     'nam.bui@demo.com',     '$2a$12$XRcYOwPoThhwZlCGE1XPouOQCSQvHQQxTWQEtJd.WJ4wXPdGQoEk6', '0902000009', 'male',   '2000-06-11', 'https://i.pravatar.cc/150?img=29', 'https://picsum.photos/seed/u29/1200/400', 'https://drive.google.com/file/d/cv_nam.pdf', 'user'),
+(N'Lý Thị Phương',   'phuong.ly@demo.com',   '$2a$12$XRcYOwPoThhwZlCGE1XPouOQCSQvHQQxTWQEtJd.WJ4wXPdGQoEk6', '0902000010', 'female', '1999-08-24', 'https://i.pravatar.cc/150?img=30', 'https://picsum.photos/seed/u30/1200/400', 'https://drive.google.com/file/d/cv_phuong.pdf', 'user'),
+(N'Đinh Văn Đức',    'duc.dinh@demo.com',    '$2a$12$XRcYOwPoThhwZlCGE1XPouOQCSQvHQQxTWQEtJd.WJ4wXPdGQoEk6', '0902000011', 'male',   '2001-01-13', 'https://i.pravatar.cc/150?img=31', 'https://picsum.photos/seed/u31/1200/400', 'https://drive.google.com/file/d/cv_duc.pdf', 'user'),
+(N'Cao Thị Ngọc',    'ngoc.cao@demo.com',    '$2a$12$XRcYOwPoThhwZlCGE1XPouOQCSQvHQQxTWQEtJd.WJ4wXPdGQoEk6', '0902000012', 'female', '2000-10-07', 'https://i.pravatar.cc/150?img=32', 'https://picsum.photos/seed/u32/1200/400', 'https://drive.google.com/file/d/cv_ngoc.pdf', 'user'),
+(N'Phan Văn Thắng',  'thang.phan@demo.com',  '$2a$12$XRcYOwPoThhwZlCGE1XPouOQCSQvHQQxTWQEtJd.WJ4wXPdGQoEk6', '0902000013', 'male',   '1999-05-20', 'https://i.pravatar.cc/150?img=33', 'https://picsum.photos/seed/u33/1200/400', 'https://drive.google.com/file/d/cv_thang.pdf', 'user'),
+(N'Dương Thị Hà',    'ha.duong@demo.com',    '$2a$12$XRcYOwPoThhwZlCGE1XPouOQCSQvHQQxTWQEtJd.WJ4wXPdGQoEk6', '0902000014', 'female', '2001-09-16', 'https://i.pravatar.cc/150?img=34', 'https://picsum.photos/seed/u34/1200/400', 'https://drive.google.com/file/d/cv_ha.pdf', 'user'),
+(N'Mai Văn Hùng',    'hung.mai@demo.com',    '$2a$12$XRcYOwPoThhwZlCGE1XPouOQCSQvHQQxTWQEtJd.WJ4wXPdGQoEk6', '0902000015', 'male',   '2000-04-03', 'https://i.pravatar.cc/150?img=35', 'https://picsum.photos/seed/u35/1200/400', 'https://drive.google.com/file/d/cv_hung.pdf', 'user');
 GO
 
 
@@ -241,35 +259,172 @@ VALUES
 (9, 9), -- Job 9: ML
 (10, 8); -- Job 8: Agile
 GO
--- 7. INSERT POST (10 bản ghi)
+-- 7. INSERT POST (30+ bản ghi - Q&A style posts)
 INSERT INTO Post (userId, companyId, content)
 VALUES 
+-- Company posts (từ HR)
 (3, 1, N'Chúng tôi đang tuyển dụng Senior Frontend Developer với mức lương hấp dẫn! #hiring #reactjs'),
 (6, 4, N'Workshop về Flutter Development sẽ được tổ chức vào tuần tới. Đăng ký ngay! #flutter #workshop'),
-(1, NULL, N'Vừa hoàn thành dự án e-commerce với ReactJS và NextJS. Rất hài lòng với kết quả! #project'),
 (2, 2, N'Chia sẻ kinh nghiệm về microservices architecture với Spring Boot #java #backend'),
-(4, NULL, N'Tìm kiếm cơ hội làm việc tại các công ty công nghệ tại TP.HCM #jobseeking'),
 (10, 8, N'TechComBank tuyển dụng Data Analyst. Hồ sơ đã mở! #recruitment #data'),
+(9, 6, N'Grab Vietnam đang mở rộng team Engineering. Apply ngay! #grab #jobs'),
+
+-- User posts (Q&A, sharing, discussion)
+(11, NULL, N'Mình mới học xong ReactJS cơ bản, giờ nên học Next.js hay Redux trước các bác? #reactjs #advice'),
+(12, NULL, N'Có ai đã từng làm việc remote cho công ty nước ngoài chưa? Chia sẻ kinh nghiệm với mình nhé! #remote #experience'),
+(13, NULL, N'Vừa pass phỏng vấn vòng 1 tại FPT Software! Cảm ơn mọi người đã support 🎉 #interview #success'),
+(14, NULL, N'Mình đang tìm hiểu về Docker và Kubernetes. Có tài liệu nào hay để học không các bạn? #docker #kubernetes #learning'),
+(15, NULL, N'Fresher nên chọn công ty outsourcing hay product để bắt đầu sự nghiệp? Mọi người góp ý giúp mình! #career #fresher'),
+(16, NULL, N'Chia sẻ portfolio website mình vừa làm xong. Mọi người feedback giúp mình nhé! https://myportfolio.dev #portfolio #feedback'),
+(17, NULL, N'Có ai biết cách optimize performance cho React app không? App mình đang bị lag khi render nhiều data #reactjs #performance'),
+(18, NULL, N'Mình đang học TypeScript, có nên áp dụng ngay vào dự án React không các bác? #typescript #reactjs'),
+(19, NULL, N'Vừa hoàn thành khóa học AWS Solutions Architect! Cảm giác tuyệt vời 🚀 #aws #certification'),
+(20, NULL, N'Có ai có kinh nghiệm với GraphQL không? So với REST API thì ưu nhược điểm thế nào? #graphql #api'),
+(21, NULL, N'Mình đang chuẩn bị phỏng vấn vị trí Backend Developer. Các bạn có tips gì không? #interview #backend'),
+(22, NULL, N'Vừa deploy dự án đầu tiên lên Vercel thành công! Cảm ơn cộng đồng đã giúp đỡ 💪 #deployment #vercel'),
+(23, NULL, N'Làm thế nào để cân bằng giữa học công nghệ mới và làm dự án thực tế? #learning #worklife'),
+(24, NULL, N'Có nên học nhiều ngôn ngữ lập trình hay chuyên sâu vào 1-2 ngôn ngữ? #programming #career'),
+(25, NULL, N'Mình đang tìm teammate để làm dự án side project về e-commerce. Ai quan tâm inbox mình nhé! #sideproject #team'),
+(1, NULL, N'Vừa hoàn thành dự án e-commerce với ReactJS và NextJS. Rất hài lòng với kết quả! #project'),
+(4, NULL, N'Tìm kiếm cơ hội làm việc tại các công ty công nghệ tại TP.HCM #jobseeking'),
 (5, NULL, N'Có ai có kinh nghiệm với Docker Swarm không? Cần tư vấn cho dự án #docker #devops'),
 (8, NULL, N'Portfolio UI/UX Design của mình đây, mọi người góp ý nhé! #design #uiux'),
-(9, 6, N'Grab Vietnam đang mở rộng team Engineering. Apply ngay! #grab #jobs'),
-(7, NULL, N'Thông báo: Hệ thống sẽ bảo trì vào 23h tối nay #announcement #admin');
+(7, NULL, N'Thông báo: Hệ thống sẽ bảo trì vào 23h tối nay #announcement #admin'),
+(11, NULL, N'Sáng nay mình đã fix được bug đau đầu 3 ngày! Cảm giác như được giải thoát 😅 #debugging #developer'),
+(12, NULL, N'Có ai đang làm việc với MongoDB không? Mình cần tư vấn về indexing và performance #mongodb #database'),
+(13, NULL, N'Vừa tham gia hackathon đầu tiên trong đời. Trải nghiệm thật tuyệt vời! #hackathon #coding'),
+(14, NULL, N'Mình đang học về Clean Code. Có cuốn sách nào các bạn recommend không? #cleancode #bestpractices'),
+(15, NULL, N'Làm thế nào để improve soft skills khi làm developer? #softskills #career'),
+(16, NULL, N'Có ai đã thử GitHub Copilot chưa? Nó có thực sự hữu ích không? #ai #github #copilot'),
+(17, NULL, N'Mình đang tìm hiểu về CI/CD. Jenkins hay GitLab CI tốt hơn cho beginner? #cicd #devops'),
+(18, NULL, N'Vừa nhận offer từ 2 công ty, đang phân vân không biết chọn cái nào. Các bạn có thể tư vấn không? #career #offer'),
+(19, NULL, N'Chia sẻ một số tips để pass technical interview: Practice algorithms, understand system design, be confident! #interview #tips'),
+(20, NULL, N'Có nên học Vue.js khi đã biết React không các bác? #vuejs #reactjs #frontend'),
+(21, NULL, N'Mình vừa tạo một Chrome Extension đầu tiên! Ai muốn test thử không? #chromeextension #javascript'),
+(22, NULL, N'Làm sao để negotiate lương hiệu quả khi nhận offer? Mình hơi ngại đàm phán 😅 #salary #negotiation'),
+(23, NULL, N'Có ai đang làm freelance developer không? Thu nhập có ổn định không? #freelance #developer'),
+(24, NULL, N'Vừa upgrade lên Senior Developer sau 3 năm! Cảm ơn mọi người đã support trên con đường này 🙏 #career #milestone'),
+(25, NULL, N'Mình đang tìm hiểu về Microservices. Khi nào thì nên áp dụng architecture này? #microservices #architecture');
 GO
 
 
--- 8. INSERT INTERACTION (10 bản ghi)
+-- 8. INSERT INTERACTION (50+ bản ghi - likes và comments tương tác)
 INSERT INTO Interaction (postId, userId, isLiked, content)
 VALUES 
-(1, 1, 1, NULL), -- An like post 1
-(1, 2, 0, N'Mức lương bao nhiêu vậy ạ?'), -- Bình comment post 1
-(2, 5, 1, NULL), -- Em like post 2
-(3, 4, 1, NULL), -- Dung like post 3
-(3, 2, 0, N'Dự án này làm bao lâu vậy bạn?'), -- Bình comment post 3
-(4, 8, 1, NULL), -- Hoa like post 4
-(5, 3, 0, N'Bạn có thể gửi CV qua email tuyển dụng của công ty FPT nhé!'), -- Cường reply post 5
-(7, 10, 0, N'Mình recommend sử dụng Kubernetes thay vì Docker Swarm'), -- Kim comment post 7
-(8, 9, 1, NULL), -- Inh like post 8
-(9, 1, 1, NULL); -- An like post 9
+-- Post 1 interactions (Company hiring post)
+(1, 11, 1, NULL), 
+(1, 2, 0, N'Mức lương bao nhiêu vậy ạ?'),
+(1, 12, 0, N'Yêu cầu bao nhiêu năm kinh nghiệm vậy anh?'),
+(1, 13, 1, NULL),
+
+-- Post 2 interactions (Flutter workshop)
+(2, 14, 1, NULL),
+(2, 15, 0, N'Workshop này có phí không ạ?'),
+(2, 16, 0, N'Địa điểm tổ chức ở đâu vậy?'),
+
+-- Post 3 interactions (Microservices)
+(3, 17, 1, NULL),
+(3, 18, 0, N'Anh có thể share source code example không ạ?'),
+
+-- Post 6 interactions (ReactJS learning path)
+(6, 12, 0, N'Mình nghĩ nên học Redux trước, sau đó mới Next.js. Redux giúp bạn hiểu state management tốt hơn!'),
+(6, 13, 0, N'Next.js đi bạn ơi, nó đang hot và có nhiều tính năng hay. Redux thì học sau cũng được.'),
+(6, 14, 1, NULL),
+(6, 15, 0, N'Tùy vào dự án bạn làm. Nếu cần SSR thì Next.js, còn state phức tạp thì Redux.'),
+
+-- Post 7 interactions (Remote work)
+(7, 11, 0, N'Mình đang làm remote cho công ty Singapore. Thu nhập ổn nhưng cần English tốt nhé!'),
+(7, 16, 1, NULL),
+(7, 17, 0, N'Bạn tìm việc remote trên platform nào vậy? Upwork hay Toptal?'),
+(7, 18, 0, N'Remote thì phải tự giác cao, không có ai nhắc nhở đâu bạn ơi 😅'),
+
+-- Post 8 interactions (Interview success)
+(8, 12, 1, NULL),
+(8, 14, 0, N'Chúc mừng bạn! Vòng 2 họ hỏi gì vậy?'),
+(8, 19, 1, NULL),
+(8, 20, 0, N'Xin chúc mừng! Bạn chuẩn bị như thế nào cho phỏng vấn vậy?'),
+
+-- Post 9 interactions (Docker & Kubernetes)
+(9, 11, 0, N'Bạn nên xem khóa học của Mumshad Mannambeth trên Udemy, rất chi tiết!'),
+(9, 21, 1, NULL),
+(9, 22, 0, N'Documentation chính thức của Docker và K8s là tốt nhất. Còn có thể xem TechWorld with Nana trên YouTube.'),
+
+-- Post 10 interactions (Career choice)
+(10, 13, 0, N'Outsourcing để học nhiều tech stack, product để hiểu business. Tùy bạn muốn gì!'),
+(10, 23, 0, N'Mình recommend product company. Bạn sẽ có ownership và hiểu rõ sản phẩm hơn.'),
+(10, 24, 1, NULL),
+(10, 25, 0, N'Fresher thì nên vào outsourcing trước, học được nhiều thứ nhanh hơn.'),
+
+-- Post 11 interactions (Portfolio feedback)
+(11, 12, 1, NULL),
+(11, 14, 0, N'Portfolio đẹp đấy! Nhưng mình thấy loading hơi lâu, bạn nên optimize images.'),
+(11, 16, 0, N'Design rất clean! Bạn làm bằng React à?'),
+
+-- Post 12 interactions (React performance)
+(12, 11, 0, N'Bạn thử dùng React.memo và useMemo để tránh re-render không cần thiết xem.'),
+(12, 17, 0, N'Virtualization với react-window hoặc react-virtualized sẽ giúp render list lớn nhanh hơn nhiều!'),
+(12, 19, 1, NULL),
+
+-- Post 13 interactions (TypeScript)
+(13, 20, 0, N'Nên áp dụng luôn! TypeScript giúp catch bugs sớm và code dễ maintain hơn.'),
+(13, 21, 1, NULL),
+(13, 22, 0, N'Ban đầu sẽ hơi khó nhưng sau quen rồi thì không thể thiếu TypeScript được 😄'),
+
+-- Post 14 interactions (AWS certification)
+(14, 11, 1, NULL),
+(14, 23, 0, N'Chúc mừng bạn! Bạn học trong bao lâu vậy?'),
+(14, 24, 1, NULL),
+
+-- Post 15 interactions (GraphQL)
+(15, 12, 0, N'GraphQL giúp fetch đúng data cần thiết, tránh over-fetching. Nhưng setup phức tạp hơn REST.'),
+(15, 25, 0, N'Mình thích GraphQL vì có type safety và documentation tự động. Nhưng caching hơi khó.'),
+(15, 13, 1, NULL),
+
+-- Post 16 interactions (Backend interview)
+(16, 14, 0, N'Ôn lại data structures, algorithms, và system design. Quan trọng nhất là tự tin!'),
+(16, 15, 1, NULL),
+(16, 16, 0, N'Chuẩn bị câu hỏi về database optimization, API design, và security nhé bạn.'),
+
+-- Post 17 interactions (Vercel deployment)
+(17, 17, 1, NULL),
+(17, 18, 0, N'Vercel deploy rất dễ và nhanh đúng không! Chúc mừng bạn 🎉'),
+
+-- Post 21 interactions (Debugging success)
+(21, 12, 0, N'Cảm giác đó không gì sánh được 😂 Chúc mừng bạn!'),
+(21, 19, 1, NULL),
+(21, 20, 0, N'Bug gì mà khó vậy bạn? Chia sẻ đi để mọi người học hỏi.'),
+
+-- Post 22 interactions (MongoDB)
+(22, 11, 0, N'Indexing rất quan trọng! Bạn nên index các field thường query. Dùng explain() để check performance.'),
+(22, 21, 1, NULL),
+(22, 23, 0, N'Compound index sẽ giúp query nhanh hơn nhiều. Nhưng đừng index quá nhiều field nhé!'),
+
+-- Post 25 interactions (Side project)
+(25, 13, 0, N'Mình có thể join được không? Mình biết React và Node.js.'),
+(25, 14, 1, NULL),
+(25, 22, 0, N'Dự án này dùng tech stack gì vậy bạn?'),
+
+-- Post 28 interactions (Chrome Extension)
+(28, 15, 0, N'Wow cool! Extension làm gì vậy bạn?'),
+(28, 16, 1, NULL),
+(28, 24, 0, N'Mình muốn test thử! Bạn share link đi.'),
+
+-- Post 30 interactions (Freelance)
+(30, 17, 0, N'Mình đang freelance được 1 năm. Thu nhập không ổn định lắm nhưng được tự do thời gian.'),
+(30, 18, 1, NULL),
+(30, 25, 0, N'Freelance thì phải có portfolio tốt và network rộng mới dễ tìm client.'),
+
+-- Additional random interactions
+(4, 19, 1, NULL),
+(5, 20, 1, NULL),
+(18, 21, 1, NULL),
+(19, 22, 1, NULL),
+(20, 23, 1, NULL),
+(23, 24, 1, NULL),
+(24, 25, 1, NULL),
+(26, 11, 1, NULL),
+(27, 12, 1, NULL),
+(29, 13, 1, NULL);
 GO
 
 -- 9. INSERT ATTACHMENT (một vài ví dụ)
@@ -328,6 +483,36 @@ VALUES
 (1, 8), -- An follow TechComBank
 (2, 9), -- Bình follow Viettel
 (4, 1); -- Dung follow FPT
+GO
+
+-- 11.1 INSERT CONNECTION (20 bản ghi - User connections)
+INSERT INTO Connection (userId, connectedUserId, status)
+VALUES 
+-- Accepted connections
+(11, 12, 'accepted'), -- Nguyễn Đăng Việt <-> Lê Thị Mai Anh
+(11, 13, 'accepted'), -- Nguyễn Đăng Việt <-> Trần Văn Khoa
+(12, 14, 'accepted'), -- Lê Thị Mai Anh <-> Phạm Thị Hương
+(13, 15, 'accepted'), -- Trần Văn Khoa <-> Hoàng Minh Tuấn
+(14, 16, 'accepted'), -- Phạm Thị Hương <-> Đỗ Thị Lan
+(15, 17, 'accepted'), -- Hoàng Minh Tuấn <-> Vũ Quang Hải
+(16, 18, 'accepted'), -- Đỗ Thị Lan <-> Ngô Thị Thanh
+(17, 19, 'accepted'), -- Vũ Quang Hải <-> Bùi Văn Nam
+(18, 20, 'accepted'), -- Ngô Thị Thanh <-> Lý Thị Phương
+(19, 21, 'accepted'), -- Bùi Văn Nam <-> Đinh Văn Đức
+(20, 22, 'accepted'), -- Lý Thị Phương <-> Cao Thị Ngọc
+(21, 23, 'accepted'), -- Đinh Văn Đức <-> Phan Văn Thắng
+(22, 24, 'accepted'), -- Cao Thị Ngọc <-> Dương Thị Hà
+(23, 25, 'accepted'), -- Phan Văn Thắng <-> Mai Văn Hùng
+
+-- Pending connections (waiting for acceptance)
+(11, 15, 'pending'),  -- Nguyễn Đăng Việt -> Hoàng Minh Tuấn
+(12, 16, 'pending'),  -- Lê Thị Mai Anh -> Đỗ Thị Lan
+(13, 17, 'pending'),  -- Trần Văn Khoa -> Vũ Quang Hải
+(14, 18, 'pending'),  -- Phạm Thị Hương -> Ngô Thị Thanh
+
+-- Rejected connections
+(15, 20, 'rejected'), -- Hoàng Minh Tuấn -> Lý Thị Phương (rejected)
+(16, 21, 'rejected'); -- Đỗ Thị Lan -> Đinh Văn Đức (rejected)
 GO
 
 -- 12. INSERT BLOGCATEGORY (4 bản ghi)

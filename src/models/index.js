@@ -10,6 +10,7 @@ const SkillJob = require("./skill-job.model");
 const SkillUser = require("./skill-user.model");
 const Review = require("./review.model");
 const Follow = require("./follow.model");
+const Connection = require("./connection.model");
 const Province = require("./province.model");
 const Ward = require("./ward.model");
 const Attachment = require("./attachment.model");
@@ -28,6 +29,8 @@ User.hasMany(Interaction, { foreignKey: "userId" });
 User.hasMany(Post, { foreignKey: "userId" });
 User.hasMany(Review, { foreignKey: "userId" });
 User.hasMany(SkillUser, { foreignKey: "userId" });
+User.hasMany(Connection, { foreignKey: "userId", as: "SentConnections" });
+User.hasMany(Connection, { foreignKey: "connectedUserId", as: "ReceivedConnections" });
 
 // Company relationships
 Company.belongsTo(User, { foreignKey: "createdByUserId" });
@@ -111,6 +114,10 @@ Interaction.hasMany(Attachment, { foreignKey: "interactionId" });
 CompanyMember.belongsTo(Company, { foreignKey: "companyId" });
 CompanyMember.belongsTo(User, { foreignKey: "userId" });
 
+// Connection relationships
+Connection.belongsTo(User, { foreignKey: "userId", as: "User" });
+Connection.belongsTo(User, { foreignKey: "connectedUserId", as: "ConnectedUser" });
+
 module.exports = {
   User,
   Company,
@@ -124,6 +131,7 @@ module.exports = {
   SkillUser,
   Review,
   Follow,
+  Connection,
   Province,
   Ward,
   Attachment,

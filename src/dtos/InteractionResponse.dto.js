@@ -5,6 +5,18 @@ class PostUserResponse {
     this.id = user.id;
     this.fullName = user.fullName;
     this.avatar = user.avatar;
+    // Include CompanyMembers if exists
+    if (user.CompanyMembers && user.CompanyMembers.length > 0) {
+      this.CompanyMembers = user.CompanyMembers.map(cm => ({
+        companyId: cm.companyId,
+        status: cm.status,
+        Company: cm.Company ? {
+          id: cm.Company.id,
+          name: cm.Company.name,
+          avatar: cm.Company.avatar,
+        } : null
+      }));
+    }
   }
 }
 

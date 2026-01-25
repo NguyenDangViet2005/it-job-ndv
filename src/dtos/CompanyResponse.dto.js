@@ -16,6 +16,16 @@ class CompanyResponse {
     this.provinceName =
       company.Ward && company.Ward.Province ? company.Ward.Province.name : null;
 
+    // Follows data
+    if (company.Follows) {
+      this.follows = company.Follows.map((follow) => ({
+        userId: follow.userId,
+        companyId: follow.companyId,
+        createdAt: follow.createdAt,
+        updatedAt: follow.updatedAt,
+      }));
+    }
+
     this.createdByUserId = company.createdByUserId;
     this.createdAt = company.createdAt;
     this.updatedAt = company.updatedAt;

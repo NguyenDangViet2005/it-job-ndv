@@ -33,19 +33,6 @@ const toggleFollow = async (req, res, next) => {
   }
 };
 
-const getFollowsByUser = async (req, res, next) => {
-  try {
-    const userId = parseInt(req.params.userId || getCurrentUserId(req));
-    const page = parseInt(req.query.pageNumber) || 1;
-    const pageSize = parseInt(req.query.pageSize) || 10;
-
-    const result = await followService.getFollowsByUser(userId, page, pageSize);
-    res.status(200).json(result);
-  } catch (error) {
-    next(error);
-  }
-};
-
 const getFollowsByCompany = async (req, res, next) => {
   try {
     const companyId = parseInt(req.params.companyId);
@@ -65,6 +52,5 @@ const getFollowsByCompany = async (req, res, next) => {
 
 module.exports = {
   toggleFollow,
-  getFollowsByUser,
   getFollowsByCompany,
 };

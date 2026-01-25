@@ -211,6 +211,20 @@ CREATE TABLE Follow (
 );
 GO
 
+-- Bảng Connection (User kết nối với User)
+CREATE TABLE Connection (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    userId INT NOT NULL,
+    connectedUserId INT NOT NULL,
+    status VARCHAR(20) CHECK (status IN ('pending', 'accepted', 'rejected')) DEFAULT 'pending',
+    createdAt DATETIME NOT NULL DEFAULT GETDATE(),
+    updatedAt DATETIME NOT NULL DEFAULT GETDATE(),
+    CONSTRAINT FK_Connection_User FOREIGN KEY (userId) REFERENCES [User](id) ON DELETE CASCADE,
+    CONSTRAINT FK_Connection_ConnectedUser FOREIGN KEY (connectedUserId) REFERENCES [User](id) ON DELETE NO ACTION,
+    CONSTRAINT UQ_Connection_Pair UNIQUE (userId, connectedUserId)
+);
+GO
+
 -- Bảng BlogCategory
 CREATE TABLE BlogCategory (
     id INT PRIMARY KEY IDENTITY(1,1),
