@@ -27,6 +27,8 @@ import {
 import type { NormalizedPost } from "@/types/post-card.types";
 import type { AttachmentResponse } from "@/types/api.type";
 import Link from "next/link";
+import { DEFAULT_AVATARS } from "@/configs";
+import { useAuth } from "@/hooks/useAuth";
 
 interface PostCommentsProps {
   post: any; // Accept raw post object (API response)
@@ -64,6 +66,8 @@ const PostComments = forwardRef<PostCommentsRef, PostCommentsProps>(
       onToggleComments,
       onLoadMoreComments,
     } = props;
+
+    const { isAuthenticated } = useAuth();
 
     // Extract comments based on API structure or fallback to legacy
     const comments = post.interaction?.comments || post.comments || [];
@@ -220,21 +224,30 @@ const PostComments = forwardRef<PostCommentsRef, PostCommentsProps>(
               const commentTime = comment.createdAt
                 ? new Date(comment.createdAt).toLocaleDateString("vi-VN")
                 : comment.timestamp || "Vừa xong";
+              
+              // Get user info from comment
+              const commentUser = comment.user || comment.User;
+              const commentUserId = commentUser?.id;
+              const commentUserAvatar = commentUser?.avatar;
+              const commentUserName = commentUser?.fullName || "Người dùng";
+              
+              // Check if user has company (from CompanyMembers relationship)
+              const userCompanyMember = commentUser?.CompanyMembers?.[0];
+              const hasCompany = !!userCompanyMember?.Company;
+              const companyName = userCompanyMember?.Company?.name;
+              const companyId = userCompanyMember?.Company?.id;
+              
               return (
                 <div
                   key={comment.id}
                   className="flex gap-3 animate-in fade-in slide-in-from-left-2"
                   style={{ animationDelay: `${idx * 50}ms` }}
                 >
-                  <Link
-                    href={
-                      comment.user?.id ? `/profile/${comment.user.id}` : "#"
-                    }
-                  >
+                  <Link href={commentUserId ? `/profile/${commentUserId}` : "#"}>
                     <Avatar className="h-7 w-7 cursor-target hover:scale-110 transition-transform duration-300">
-                      <AvatarImage src={comment.user?.avatar} />
+                      <AvatarImage src={commentUserAvatar} />
                       <AvatarFallback>
-                        {comment.user?.fullName.charAt(0)}
+                        {commentUserName.charAt(0)}
                       </AvatarFallback>
                     </Avatar>
                   </Link>
@@ -311,7 +324,7 @@ const PostComments = forwardRef<PostCommentsRef, PostCommentsProps>(
                         <div className="flex gap-2">
                           <Button
                             size="sm"
-                            onClick={() => handleEditComment(commentId)}
+                            onClick={() => handleEditComment(comment.id)}
                             disabled={isSubmitting}
                           >
                             {isSubmitting ? (
@@ -343,10 +356,23 @@ const PostComments = forwardRef<PostCommentsRef, PostCommentsProps>(
                     ) : (
                       <>
                         <div className="bg-muted rounded-2xl px-4 py-2 hover:bg-muted/80 transition-colors duration-300 relative group">
-                          <p className="font-semibold text-sm cursor-target hover:text-primary transition-colors duration-300">
-                            {comment.user?.fullName || "Người dùng"}
-                          </p>
-                          <p className="text-sm">{comment.content}</p>
+                          <Link href={commentUserId ? `/profile/${commentUserId}` : "#"}>
+                            <p className="font-semibold text-sm cursor-target hover:text-primary transition-colors duration-300">
+                              {commentUserName}
+                            </p>
+                          </Link>
+                          {hasCompany && companyId && (
+                            <p className="text-xs text-muted-foreground">
+                              Làm việc tại{" "}
+                              <Link 
+                                href={`/companies/${companyId}`}
+                                className="hover:text-primary hover:underline transition-colors"
+                              >
+                                {companyName}
+                              </Link>
+                            </p>
+                          )}
+                          <p className="text-sm mt-1">{comment.content}</p>
                           {/* Display comment attachments if any */}
                           {comment?.attachments?.length > 0 && (
                             <div className="flex gap-2 flex-wrap mt-2">
@@ -476,7 +502,7 @@ const PostComments = forwardRef<PostCommentsRef, PostCommentsProps>(
         {/* Add Comment */}
         <div className="flex gap-3 pt-2">
           <Avatar className="h-10 w-10 cursor-target hover:scale-110 transition-transform duration-300">
-            <AvatarImage src={currentUserAvatar} />
+            <AvatarImage src={currentUserAvatar || DEFAULT_AVATARS.USER} />
             <AvatarFallback>{currentUserName.charAt(0)}</AvatarFallback>
           </Avatar>
           <div className="flex-1 space-y-2">
@@ -484,7 +510,7 @@ const PostComments = forwardRef<PostCommentsRef, PostCommentsProps>(
               <input
                 ref={inputRef}
                 type="text"
-                placeholder="Viết bình luận..."
+                placeholder={isAuthenticated ? "Viết bình luận..." : "Đăng nhập để bình luận..."}
                 value={commentInput}
                 onChange={(e) => setCommentInput(e.target.value)}
                 onKeyPress={(e) => {
@@ -493,7 +519,7 @@ const PostComments = forwardRef<PostCommentsRef, PostCommentsProps>(
                     handleAddComment();
                   }
                 }}
-                disabled={isSubmitting}
+                disabled={isSubmitting || !isAuthenticated}
                 className="cursor-target flex-1 rounded-full border border-input bg-muted px-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring hover:border-primary/50 transition-all duration-300 disabled:opacity-50"
               />
               <input
@@ -508,7 +534,7 @@ const PostComments = forwardRef<PostCommentsRef, PostCommentsProps>(
                 size="icon"
                 variant="ghost"
                 onClick={() => attachmentInputRef.current?.click()}
-                disabled={isSubmitting}
+                disabled={isSubmitting || !isAuthenticated}
                 className="cursor-target rounded-full hover:bg-accent hover:scale-110 transition-all duration-300"
                 title="Đính kèm ảnh/video"
               >
@@ -518,7 +544,7 @@ const PostComments = forwardRef<PostCommentsRef, PostCommentsProps>(
                 size="icon"
                 variant="ghost"
                 onClick={handleAddComment}
-                disabled={isSubmitting || !commentInput.trim()}
+                disabled={isSubmitting || !commentInput.trim() || !isAuthenticated}
                 className="cursor-target rounded-full hover:bg-primary hover:text-primary-foreground hover:scale-110 transition-all duration-300"
               >
                 {isSubmitting ? (

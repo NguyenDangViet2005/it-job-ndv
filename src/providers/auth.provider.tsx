@@ -84,7 +84,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setCompany(null);
     setToken(null);
 
-    router.push(ROUTES.LOGIN);
+    router.push(ROUTES.HOME);
   };
 
   return (

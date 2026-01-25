@@ -3,6 +3,8 @@
 import { ThumbsUp, MessageCircle, Share2, Heart } from "lucide-react";
 import { Button } from "@/components/ui/shadcn/button";
 import { Separator } from "@/components/ui/shadcn/separator";
+import { useAuth } from "@/hooks/useAuth";
+
 
 interface PostActionsProps {
   likes: number;
@@ -23,6 +25,10 @@ export default function PostActions({
   onToggleComments,
   onCommentButtonClick,
 }: PostActionsProps) {
+  const { isAuthenticated } = useAuth();
+  
+
+
   return (
     <>
       {/* Post Stats */}
@@ -62,6 +68,7 @@ export default function PostActions({
       <div className="flex justify-around pt-2">
         <Button
           variant="ghost"
+          disabled={!isAuthenticated}
           className={`cursor-target flex-1 transition-all duration-300 hover:scale-105 ${
             liked
               ? "text-blue-600 hover:text-blue-700"
@@ -78,6 +85,7 @@ export default function PostActions({
         </Button>
         <Button
           variant="ghost"
+          disabled={!isAuthenticated}
           className="cursor-target flex-1 hover:bg-green-50 dark:hover:bg-green-950 hover:scale-105 transition-all duration-300"
           onClick={onCommentButtonClick || onToggleComments}
         >
@@ -86,6 +94,9 @@ export default function PostActions({
         </Button>
         <Button
           variant="ghost"
+          disabled={!isAuthenticated}
+          onClick={() => {
+          }}
           className="cursor-target flex-1 hover:bg-amber-50 dark:hover:bg-amber-950 hover:scale-105 transition-all duration-300"
         >
           <Share2 className="h-4 w-4 mr-2" />

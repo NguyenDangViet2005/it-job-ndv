@@ -60,7 +60,7 @@ export default function CompanyFollow({
           Công ty có thể quan tâm
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-3 pt-0 space-y-2">
+      <CardContent className="p-3 py-0 space-y-2">
         {suggestedCompanies.map((company: Company) => (
           <div
             key={company.id}
@@ -76,7 +76,6 @@ export default function CompanyFollow({
                   <Image
                     src={
                       company.avatar ||
-                      company.logo ||
                       "/images/placeholder_company.png"
                     }
                     alt={company.name}
@@ -90,7 +89,7 @@ export default function CompanyFollow({
                     {company.name}
                   </p>
                   <p className="text-[10px] text-muted-foreground">
-                    {company.followers || 0} followers
+                    {company.follows?.length || 0} followers
                   </p>
                 </div>
               </div>
@@ -115,7 +114,18 @@ export default function CompanyFollow({
           </div>
         ))}
 
-        <ListDialog title="Công ty có thể quan tâm">
+        <ListDialog
+          title="Công ty có thể quan tâm"
+          trigger={
+            <Button
+              variant="ghost"
+              className="w-full justify-center text-xs h-7 text-primary hover:bg-primary/10"
+            >
+              Xem thêm
+              <ArrowRight className="h-3 w-3 ml-1" />
+            </Button>
+          }
+        >
           <div className="space-y-3">
             {followList.map((company: Company) => (
               <div
@@ -128,7 +138,6 @@ export default function CompanyFollow({
                 <Image
                   src={
                     company.avatar ||
-                    company.logo ||
                     "/images/placeholder_company.png"
                   }
                   onError={(e) => {
@@ -145,7 +154,7 @@ export default function CompanyFollow({
                     {company.name}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {company.followers || 0} followers
+                    {company.follows?.length || 0} followers
                   </p>
                 </div>
                 <Button
@@ -175,13 +184,6 @@ export default function CompanyFollow({
           </div>
         </ListDialog>
       </CardContent>
-      <Button
-        variant="ghost"
-        className="w-full justify-center text-xs h-7 text-primary hover:bg-primary/10"
-      >
-        Xem thêm
-        <ArrowRight className="h-3 w-3 ml-1" />
-      </Button>
     </Card>
   );
 }

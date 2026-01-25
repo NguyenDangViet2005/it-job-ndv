@@ -6,9 +6,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import Typed from "typed.js";
+import { useAuth } from "@/hooks/useAuth";
 
 const WelcomePage = () => {
   const el = useRef(null);
+  const { user } = useAuth();
   const { theme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -163,19 +165,28 @@ const WelcomePage = () => {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 pt-2">
+             {user ? (
+              <div className="flex-1 flex items-center justify-center">
+                <span className="text-lg font-semibold text-gray-900 dark:text-white">
+                  Xin chào, {user.fullName}
+                </span>
+              </div>
+            ) : (
+              <Link href={ROUTES.LOGIN} className="flex-1">
+                <Button
+                  variant="outline"
+                  className="cursor-pointer w-full text-base font-semibold px-8 h-12 border-2 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-300 hover:scale-105"
+                >
+                  Đăng nhập
+                </Button>
+              </Link>
+            )}
             <Link href={ROUTES.HOME} className="flex-1">
               <Button className="cursor-pointer w-full text-base font-semibold px-8 h-12 bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/30 hover:shadow-blue-600/40 transition-all duration-300 hover:scale-105">
                 Khám phá việc làm
               </Button>
             </Link>
-            <Link href={ROUTES.LOGIN} className="flex-1">
-              <Button
-                variant="outline"
-                className="cursor-pointer w-full text-base font-semibold px-8 h-12 border-2 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-300 hover:scale-105"
-              >
-                Đăng nhập
-              </Button>
-            </Link>
+           
           </div>
         </div>
       </div>

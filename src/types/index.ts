@@ -1,17 +1,33 @@
-// Export all types from a single entry point
-export * from "./api.type";
-export * from "./follow.type";
-export * from "./form.type";
-export * from "./post.type";
-export * from "./test.type";
-export * from "./post-card.types";
-export * from "./application.type";
+// ============================================
+// Central Type Export - Import from @/types
+// ============================================
 
-// Re-export company types with explicit names to avoid conflicts
-export type {
-  CompanyJob,
-  CompanyLocation,
-  CompanyFilters,
-  Review as CompanyReview,
-} from "./company.type";
-export type { Company as CompanyDetail } from "./company.type";
+// ============ API Request & Response Types ============
+export * from "./api.type";
+
+// ============ Model Types ============
+export * from "./models/user.type";
+export * from "./models/company.type";
+export * from "./models/job.type";
+export * from "./models/blog.type";
+export * from "./models/post.type";
+export * from "./models/application.type";
+export * from "./models/review.type";
+export * from "./models/follow.type";
+export * from "./models/connection.type";
+export * from "./models/location.type";
+
+// ============ Component Props Types ============
+export * from "./component.type";
+
+// ============ Page Props Types ============
+export * from "./page.type";
+
+// ============ Form Types ============
+export * from "./form.type";
+
+// ============ Common/Shared Types ============
+export * from "./common.type";
+
+// ============ Legacy Post Card Types (for backward compatibility) ============
+export * from "./post-card.types";

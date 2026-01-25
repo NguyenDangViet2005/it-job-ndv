@@ -1,4 +1,13 @@
-// Follow List Types
+// Follow Model Types
+
+export interface Follow {
+  id: number;
+  userId: number;
+  companyId: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface FollowUser {
   id: number;
   fullName: string;
@@ -13,8 +22,4 @@ export interface FollowCompany {
   avatar?: string;
   industry?: string;
   followers?: number;
-}
-
-export interface FollowListProps {
-  followList: FollowUser[] | FollowCompany[];
 }

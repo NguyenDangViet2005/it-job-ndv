@@ -1,4 +1,17 @@
-// API Response Types
+// API Request & Response Types Only
+
+import type { User } from "./models/user.type";
+import type { Company } from "./models/company.type";
+import type { Job } from "./models/job.type";
+import type { Blog, BlogCategory } from "./models/blog.type";
+import type { Post, Comment, Attachment, Like } from "./models/post.type";
+import type { Review } from "./models/review.type";
+import type { Application } from "./models/application.type";
+import type { Province, Ward } from "./models/location.type";
+import type { Follow } from "./models/follow.type";
+import type { Skill } from "./models/job.type";
+
+// ============ Generic API Response Types ============
 export interface ResponseData<T> {
   page: number;
   pageSize: number;
@@ -13,7 +26,7 @@ export interface ApiResponse<T> {
   data: T;
 }
 
-// Auth Types
+// ============ Auth Requests ============
 export interface RegisterRequest {
   fullName: string;
   email: string;
@@ -23,7 +36,6 @@ export interface RegisterRequest {
   dateOfBirth?: string;
 }
 
-// Register HR Request (Nhà tuyển dụng)
 export interface RegisterHRRequest {
   // User Info
   fullName: string;
@@ -34,7 +46,6 @@ export interface RegisterHRRequest {
   dateOfBirth?: string;
   avatar?: string;
   coverImage?: string;
-
   // Company Info
   companyName: string;
   companyAvatar?: string;
@@ -57,29 +68,25 @@ export interface RefreshTokenRequest {
   refreshToken: string;
 }
 
-export interface UserResponse {
-  id: number;
-  fullName: string;
-  email: string;
-  phone: string;
-  gender?: string;
-  dateOfBirth?: string;
-  avatar?: string;
-  coverImage?: string;
-  address?: string;
-  cvUrl?: string;
-  role: string;
-}
-
+// ============ Auth Responses ============
 export interface LoginResponse {
   accessToken: string;
   refreshToken: string;
-  user: UserResponse;
+  user: User;
 }
 
-// Company Response
-export interface CompanyResponse {
-  id: number;
+export interface RegisterHRResponse {
+  accessToken: string;
+  refreshToken: string;
+  user: User;
+  company: Company;
+}
+
+// ============ User Responses ============
+export type UserResponse = User;
+
+// ============ Company Requests ============
+export interface CompanyRequest {
   name: string;
   avatar?: string;
   coverImage?: string;
@@ -87,36 +94,22 @@ export interface CompanyResponse {
   website?: string;
   description?: string;
   foundedYear?: number;
+}
+
+export interface CompanyUpdateRequest {
+  name: string;
+  nationality?: string;
+  website?: string;
+  description?: string;
+  foundedYear?: number;
   address?: string;
   wardId?: number;
-  wardName?: string;
-  provinceName?: string;
-  createdByUserId?: number;
-  createdAt: string;
-  updatedAt: string;
 }
 
-// Register HR Response
-export interface RegisterHRResponse {
-  accessToken: string;
-  refreshToken: string;
-  user: UserResponse;
-  company: CompanyResponse;
-}
+// ============ Company Responses ============
+export type CompanyResponse = Company;
 
-// Location Types
-export interface ProvinceResponse {
-  id: number;
-  name: string;
-}
-
-export interface WardResponse {
-  id: number;
-  provinceId: number;
-  name: string;
-}
-
-// Job Types
+// ============ Job Requests ============
 export interface JobRequest {
   companyId: number;
   title: string;
@@ -128,113 +121,10 @@ export interface JobRequest {
   status: string;
 }
 
-export interface JobResponse {
-  id: number;
-  title: string;
-  description?: string;
-  type: string;
-  status: string;
-  quantity: number;
-  deadline: string;
-  salary?: string;
-  createdAt: string;
-  company?: {
-    id: number;
-    name: string;
-    avatar?: string;
-    website?: string;
-    address?: string;
-    city?: string;
-  };
-  skills?: Array<{
-    id: number;
-    name: string;
-  }>;
-}
+// ============ Job Responses ============
+export type JobResponse = Job;
 
-// Company Types
-export interface CompanyRequest {
-  name: string;
-  avatar?: string;
-  coverImage?: string;
-  nationality?: string;
-  website?: string;
-  description?: string;
-  foundedYear?: number;
-}
-
-// Company Update Request for HR
-export interface CompanyUpdateRequest {
-  name: string;
-  nationality?: string;
-  website?: string;
-  description?: string;
-  foundedYear?: number;
-  address?: string;
-  wardId?: number;
-}
-
-export interface Company {
-  id: number;
-  name: string;
-  avatar?: string;
-  coverImage?: string;
-  nationality?: string;
-  website?: string;
-  description?: string;
-  foundedYear?: number;
-  address?: string;
-  city?: string;
-  country?: string;
-  phone?: string;
-  createdAt?: string;
-  updatedAt?: string;
-  follows?: Array<{
-    userId: number;
-    companyId: number;
-    createdAt: string;
-    updatedAt: string;
-  }>;
-  jobs?: Array<{
-    id: number;
-    companyId: number;
-    title: string;
-    description: string;
-    type: string;
-    quantity: number;
-    deadline: string;
-    status: string;
-    createdAt: string;
-    updatedAt: string;
-  }>;
-  posts?: any[];
-  reviews?: Array<{
-    id: number;
-    userId: number;
-    companyId: number;
-    rating: number;
-    comment: string;
-    createdAt: string;
-    updatedAt: string;
-  }>;
-}
-
-// Application Types
-export interface Application {
-  id: number;
-  userId: number;
-  jobId: number;
-  status: string;
-  appliedAt: string;
-}
-
-// Blog Types
-export interface BlogCategoryResponse {
-  id: number;
-  name: string;
-  slug: string;
-}
-
+// ============ Blog Requests ============
 export interface BlogRequest {
   userId: number;
   categoryId: number;
@@ -245,72 +135,25 @@ export interface BlogRequest {
   image?: string;
 }
 
-export interface BlogResponse {
-  id: number;
-  userId: number;
-  categoryId: number;
-  category?: string;
-  title: string;
-  excerpt: string;
-  content: string;
-  readTime: string;
-  image?: string;
-  author?: string;
-  views?: number;
-  createdAt: string;
-  updatedAt: string;
-}
+// ============ Blog Responses ============
+export type BlogResponse = Blog;
+export type BlogCategoryResponse = BlogCategory;
 
-// Follow Types
-export interface FollowRequest {
-  userId: number;
-  companyId: number;
-}
-
-export interface Follow {
-  id: number;
-  userId: number;
-  companyId: number;
-  followedAt: string;
-}
-
-// Post Types
+// ============ Post Requests ============
 export interface PostRequest {
   content: string;
   userId?: number;
   companyId?: number;
 }
 
-export interface PostUser {
-  id: number;
-  fullName: string;
-  avatar?: string;
-}
+// ============ Post Responses ============
+export type PostResponse = Post;
+export type FullPostResponse = Post;
+export type CommentResponse = Comment;
+export type AttachmentResponse = Attachment;
+export type LikeResponse = Like;
 
-export interface PostCompany {
-  id: number;
-  name: string;
-  avatar?: string;
-  address?: string;
-}
-
-export interface PostInteraction {
-  id: number;
-  totalLikes: number;
-  totalComments: number;
-}
-
-export interface PostResponse {
-  id: number;
-  content: string;
-  createdAt: string;
-  updatedAt: string;
-  user?: PostUser;
-  company?: PostCompany;
-  interaction: PostInteraction;
-}
-
-// Review Types
+// ============ Review Requests ============
 export interface CreateReviewRequest {
   rating: number;
   comment: string;
@@ -322,66 +165,37 @@ export interface UpdateReviewRequest {
   comment: string;
 }
 
-export interface ReviewResponse {
-  id: number;
+// ============ Review Responses ============
+export type ReviewResponse = Review;
+
+// ============ Application Requests ============
+export interface ApplicationRequest {
+  jobId: number;
   userId: number;
-  userName: string;
-  userAvatar?: string;
-  companyId: number;
-  companyName: string;
-  rating: number;
-  comment: string;
-  createdAt: string;
-  updatedAt: string;
+  cvUrl: string;
+  coverLetter: string;
 }
 
-// Skill Types
+// ============ Application Responses ============
+export type ApplicationResponse = Application;
+
+// ============ Location Responses ============
+export type ProvinceResponse = Province;
+export type WardResponse = Ward;
+
+// ============ Follow Requests ============
+export interface FollowRequest {
+  userId: number;
+  companyId: number;
+}
+
+// ============ Follow Responses ============
+export type FollowResponse = Follow;
+
+// ============ Skill Requests ============
 export interface SkillRequest {
   name: string;
 }
 
-export interface Skill {
-  id: number;
-  name: string;
-}
-
-// Attachment Types
-export interface AttachmentResponse {
-  id: number;
-  fileUrl: string;
-  fileType: string; // "image" or "video"
-}
-
-// Interaction/Comment Types
-export interface CommentResponse {
-  id: number;
-  user: PostUser;
-  content: string;
-  isLiked: boolean;
-  createdAt: string;
-  attachments: AttachmentResponse[];
-}
-
-export interface LikeResponse {
-  postId: number;
-  userId: number;
-  isLiked: boolean;
-  totalLikes: number;
-}
-
-// Extended Post Response with full interaction data
-export interface FullPostResponse {
-  id: number;
-  content: string;
-  createdAt: string;
-  updatedAt: string;
-  user?: PostUser;
-  company?: PostCompany;
-  attachments: AttachmentResponse[];
-  interaction: {
-    totalLikes: number;
-    totalComments: number;
-    isLikedByCurrentUser: boolean;
-    comments: CommentResponse[];
-  };
-}
+// ============ Skill Responses ============
+export type SkillResponse = Skill;

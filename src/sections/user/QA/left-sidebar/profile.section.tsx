@@ -23,10 +23,13 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
-import { ROUTES } from "@/configs";
+import { DEFAULT_AVATARS, ROUTES } from "@/configs";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function ProfileSection() {
   const { user, loading } = useAuth();
+  const router = useRouter();
 
   // Get initials from name
   const getInitials = (name?: string) => {
@@ -37,6 +40,14 @@ export default function ProfileSection() {
       .join("")
       .toUpperCase()
       .slice(0, 2);
+  };
+
+  const handleNavigation = (path: string) => {
+    if (!user) {
+      toast.error("Vui lòng đăng nhập để thực hiện thao tác này");
+      return;
+    }
+    router.push(path);
   };
 
   if (loading) {
@@ -65,26 +76,29 @@ export default function ProfileSection() {
       <CardContent className="p-0">
         {/* Avatar & Info */}
         <div className="px-4 -mt-7 pb-3">
-          <Link href={`/profile/${user?.id}`} className="cursor-target">
-            <Avatar className="h-14 w-14 ring-4 ring-background border border-border/50 cursor-target hover:ring-primary/50 transition-all">
+          <div
+            onClick={() => handleNavigation(`/profile/${user?.id}`)}
+            className="cursor-pointer inline-block"
+          >
+            <Avatar className="h-14 w-14 ring-4 ring-background border border-border/50 hover:ring-primary/50 transition-all">
               <AvatarImage
-                src={user?.avatar || "/default-avatar.png"}
+                src={user?.avatar || DEFAULT_AVATARS.USER}
                 alt={user?.fullName || "User"}
               />
               <AvatarFallback className="bg-primary text-primary-foreground text-sm font-semibold">
                 {getInitials(user?.fullName)}
               </AvatarFallback>
             </Avatar>
-          </Link>
+          </div>
 
-          <Link
-            href={`/profile/${user?.id}`}
-            className="cursor-target hover:underline"
+          <div
+            onClick={() => handleNavigation(`/profile/${user?.id}`)}
+            className="cursor-pointer hover:underline"
           >
             <h3 className="font-semibold text-sm mt-2">
               {user?.fullName || "Người dùng"}
             </h3>
-          </Link>
+          </div>
           <p className="text-xs text-muted-foreground">
             {user?.email || "Chưa cập nhật email"}
           </p>
@@ -126,25 +140,25 @@ export default function ProfileSection() {
 
         {/* Tools - Quick Actions */}
         <div className="px-2 py-2 space-y-1">
-          <Link href={ROUTES.USER_RESUME} className="block">
-            <button className="cursor-target w-full flex items-center justify-between hover:bg-accent/50 px-2 py-2 rounded-md transition-colors text-xs group">
+          <div onClick={() => handleNavigation(ROUTES.USER_RESUME)} className="block">
+            <button className="cursor-pointer w-full flex items-center justify-between hover:bg-accent/50 px-2 py-2 rounded-md transition-colors text-xs group">
               <span className="text-muted-foreground group-hover:text-foreground flex items-center gap-2 transition-colors">
                 <FileText className="h-4 w-4" />
                 Upload CV
               </span>
               <ChevronRight className="h-3 w-3 text-muted-foreground/50 group-hover:text-primary transition-colors" />
             </button>
-          </Link>
+          </div>
 
-          <Link href={ROUTES.USER_RESUME} className="block">
-            <button className="cursor-target w-full flex items-center justify-between hover:bg-accent/50 px-2 py-2 rounded-md transition-colors text-xs group">
+          <div onClick={() => handleNavigation(ROUTES.USER_RESUME)} className="block">
+            <button className="cursor-pointer w-full flex items-center justify-between hover:bg-accent/50 px-2 py-2 rounded-md transition-colors text-xs group">
               <span className="text-muted-foreground group-hover:text-foreground flex items-center gap-2 transition-colors">
                 <Award className="h-4 w-4" />
                 Thêm Kỹ Năng
               </span>
               <ChevronRight className="h-3 w-3 text-muted-foreground/50 group-hover:text-primary transition-colors" />
             </button>
-          </Link>
+          </div>
         </div>
       </CardContent>
     </Card>

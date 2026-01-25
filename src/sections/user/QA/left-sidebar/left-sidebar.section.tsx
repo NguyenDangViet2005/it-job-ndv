@@ -2,19 +2,18 @@
 
 import ProfileSection from "@/sections/user/QA/left-sidebar/profile.section";
 import FriendFollow from "@/sections/user/QA/right-sidebar/friend-follow.section";
-import { FollowListProps } from "@/types/follow.type";
 
-export default function LeftSidebar({ followList }: FollowListProps) {
+export default function LeftSidebar({ connections }: { connections: any[] }) {
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 h-full">
       {/* Profile Card - Fixed size */}
       <div className="flex-shrink-0">
         <ProfileSection />
       </div>
       
-      {/* Friends List - Takes remaining space */}
-      <div className="flex-1">
-        <FriendFollow friendList={followList} />
+      {/* Connections List - Takes remaining space */}
+      <div className="flex-1 min-h-0">
+        <FriendFollow connectionList={connections} />
       </div>
     </div>
   );

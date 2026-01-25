@@ -1,5 +1,4 @@
-import { apiPost, apiGetPaginated, apiGet } from "./api";
-import type { ApiResponse } from "@/types/api.type";
+import { apiPost, apiGetPaginated } from "./api";
 
 const ENDPOINT = "/follow";
 
@@ -13,21 +12,6 @@ export const followApi = {
     return apiPost<{ followed: boolean }>(
       `${ENDPOINT}`,
       { userId, companyId },
-      { token },
-    );
-  },
-
-  // Get follows by user
-  getFollowsByUser: (
-    userId: number,
-    pageNumber: number = 1,
-    pageSize: number = 10,
-    token?: string,
-  ) => {
-    return apiGetPaginated<any>( // Replace 'any' with FollowResponse if available
-      `${ENDPOINT}/user/${userId}`,
-      pageNumber,
-      pageSize,
       { token },
     );
   },
