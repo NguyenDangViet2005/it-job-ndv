@@ -52,14 +52,6 @@ import {
 } from "@/components/ui/shadcn/alert-dialog";
 import { useAuth } from "@/hooks/useAuth";
 
-// Helper to get token from localStorage
-const getAuthToken = () => {
-  if (typeof window !== "undefined") {
-    return localStorage.getItem("token") || undefined;
-  }
-  return undefined;
-};
-
 interface Category {
   id: number;
   name: string;
@@ -96,12 +88,11 @@ const BlogManagement = () => {
     try {
       setLoading(true);
       setError(null);
-      const authToken = token || getAuthToken();
       const response = await blogApi.getAll(
         currentPage,
         pageSize,
         undefined,
-        authToken,
+        token || undefined,
       );
 
       // Handle backend response format with $values
@@ -127,10 +118,9 @@ const BlogManagement = () => {
   };
 
   const loadCategories = async () => {
-    const authToken = token || getAuthToken();
-    if (!authToken) return;
+    if (!token) return;
     try {
-      const response = await blogApi.getCategories(authToken);
+      const response = await blogApi.getCategories(token);
       setCategories(response || []);
     } catch (error) {
       console.error("Failed to load categories:", error);
@@ -235,15 +225,14 @@ const BlogManagement = () => {
 
   const confirmDelete = async () => {
     if (!deleteId) return;
-    const authToken = token || getAuthToken();
-    if (!authToken) {
+    if (!token) {
       toast.error("Vui lòng đăng nhập");
       return;
     }
 
     try {
       setDeleting(true);
-      await blogApi.delete(deleteId, authToken);
+      await blogApi.delete(deleteId, token);
       setBlogs((prev) => prev.filter((blog) => blog.id !== deleteId));
       toast.success("Xóa blog thành công");
       setDeleteId(null);
@@ -260,8 +249,7 @@ const BlogManagement = () => {
       toast.error("Vui lòng đăng nhập");
       return;
     }
-    const authToken = token || getAuthToken();
-    if (!authToken) {
+    if (!token) {
       toast.error("Vui lòng đăng nhập");
       return;
     }
@@ -287,10 +275,10 @@ const BlogManagement = () => {
       };
 
       if (createMode) {
-        await blogApi.create(blogData, authToken);
+        await blogApi.create(blogData, token);
         toast.success("Tạo blog thành công");
       } else if (editBlog) {
-        await blogApi.update(editBlog.id, blogData, authToken);
+        await blogApi.update(editBlog.id, blogData, token);
         toast.success("Cập nhật blog thành công");
       }
 

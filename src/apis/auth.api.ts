@@ -17,7 +17,7 @@ export const authApi = {
     return await apiPost<ApiResponse<LoginResponse>>(
       `${ENDPOINT}/register`,
       data,
-      { credentials: "include" }
+      { credentials: "include" },
     );
   },
 
@@ -26,7 +26,7 @@ export const authApi = {
     return await apiPost<ApiResponse<RegisterHRResponse>>(
       `${ENDPOINT}/register-hr`,
       data,
-      { credentials: "include" }
+      { credentials: "include" },
     );
   },
 
@@ -35,7 +35,7 @@ export const authApi = {
     return await apiPost<ApiResponse<LoginResponse>>(
       `${ENDPOINT}/login`,
       data,
-      { credentials: "include" }
+      { credentials: "include" },
     );
   },
 
@@ -43,8 +43,8 @@ export const authApi = {
   refreshToken: async () => {
     return await apiPost<ApiResponse<LoginResponse>>(
       `${ENDPOINT}/refresh-token`,
-      undefined, // No body
-      { credentials: "include" } // Send cookies
+      undefined,
+      { credentials: "include" }, // Send cookies only
     );
   },
 

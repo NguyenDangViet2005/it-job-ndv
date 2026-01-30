@@ -4,7 +4,7 @@ import { Briefcase, MapPin } from "lucide-react";
 import { SearchCompany } from "@/apis/search.api";
 import { Card } from "@/components/ui/shadcn/card";
 
-export function CompanyCard({ company }: { company: SearchCompany }) {
+export default function CompanyCard({ company }: { company: SearchCompany }) {
   return (
     <Link href={`/companies/${company.id}`}>
       <Card className="rounded-lg transition-all p-5 border hover:border-primary/50 h-full">

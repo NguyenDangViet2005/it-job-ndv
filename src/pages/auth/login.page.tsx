@@ -67,7 +67,7 @@ export default function LoginPage() {
           {/* Header */}
           <div className="text-center space-y-3">
             <h1 className="text-3xl lg:text-4xl font-bold">
-              <span className="bg-gradient-to-r from-blue-600 via-blue-500 to-purple-600 bg-clip-text text-transparent">
+              <span className="bg-primary bg-clip-text text-transparent">
                 Chào mừng trở lại
               </span>
             </h1>

@@ -11,6 +11,9 @@ import type { Province, Ward } from "./models/location.type";
 import type { Follow } from "./models/follow.type";
 import type { Skill } from "./models/job.type";
 
+// Re-export commonly used types
+export type { Company, Skill, Application };
+
 // ============ Generic API Response Types ============
 export interface ResponseData<T> {
   page: number;

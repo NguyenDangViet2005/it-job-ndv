@@ -24,17 +24,35 @@ export interface LegacyPost {
   content: string;
   image?: string;
   images?: string[];
+  video?: string;
+  attachments?: AttachmentResponse[];
   likes: number;
   liked: boolean;
   comments: LegacyComment[];
+  totalComments?: number;
   showComments?: boolean;
   shares?: number;
+  interaction?: {
+    totalLikes: number;
+    totalComments: number;
+    isLikedByCurrentUser?: boolean;
+    comments?: any[];
+  };
 }
 
 // Union type for both formats
 export type PostType =
   | LegacyPost
-  | (FullPostResponse & { showComments?: boolean });
+  | (FullPostResponse & {
+      showComments?: boolean;
+      title?: string;
+      images?: string[];
+      video?: string;
+      likes?: number;
+      liked?: boolean;
+      totalComments?: number;
+      shares?: number;
+    });
 
 export interface PostCardProps {
   post: PostType;
@@ -49,7 +67,7 @@ export interface PostCardProps {
   onEditComment?: (
     commentId: number,
     content: string,
-    attachments?: File[]
+    attachments?: File[],
   ) => void;
   onDeleteComment?: (commentId: number) => void;
   onLoadMoreComments?: (postId: number) => Promise<void>;
@@ -109,7 +127,7 @@ export const getCommentsArray = (comments: any): CommentResponse[] => {
 };
 
 export const isApiPost = (
-  p: PostType
+  p: PostType,
 ): p is FullPostResponse & { showComments?: boolean } => {
   return "interaction" in p || "user" in p || "attachments" in p;
 };

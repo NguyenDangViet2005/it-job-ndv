@@ -3,24 +3,18 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/shadcn/button";
 import { Plus, Users, CheckCircle, Clock, Shield } from "lucide-react";
-import { 
-  AdminDataTable, 
-  AdminStatsGrid, 
-  AdminUserRow, 
+import {
+  AdminDataTable,
+  AdminStatsGrid,
+  AdminUserRow,
   getUserTableColumns,
-  type AdminUser 
+  type AdminUser,
 } from "@/components/tables";
 import { userApi } from "@/apis";
-
-// Helper to get token from localStorage
-const getAuthToken = () => {
-  if (typeof window !== "undefined") {
-    return localStorage.getItem("accessToken") || undefined;
-  }
-  return undefined;
-};
+import { useAuth } from "@/hooks/useAuth";
 
 const UsersManagement = () => {
+  const { token } = useAuth();
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -35,20 +29,31 @@ const UsersManagement = () => {
     try {
       setLoading(true);
       setError(null);
-      const token = getAuthToken();
-      const response = await userApi.getAll(currentPage, pageSize, token);
-      
+      const response = await userApi.getAll(
+        currentPage,
+        pageSize,
+        token || undefined,
+      );
+
       // Handle backend response format with $values
       let usersData = response.data;
-      if (usersData && typeof usersData === "object" && "$values" in usersData) {
+      if (
+        usersData &&
+        typeof usersData === "object" &&
+        "$values" in usersData
+      ) {
         usersData = (usersData as any).$values;
       }
-      
+
       setUsers(Array.isArray(usersData) ? usersData : []);
       setTotalPages(response.totalPages || 1);
       setTotalItems(response.totalItems || 0);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Không thể tải danh sách người dùng");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Không thể tải danh sách người dùng",
+      );
     } finally {
       setLoading(false);
     }
@@ -97,26 +102,31 @@ const UsersManagement = () => {
   ];
 
   // Handle actions
-  const handleEdit = (user: AdminUser) => {
-  };
+  const handleEdit = (user: AdminUser) => {};
 
   const handleDelete = async (user: AdminUser) => {
-    if (!confirm(`Bạn có chắc muốn xóa "${user.fullName}"?\n\nCẢNH BÁO: Hành động này sẽ xóa tất cả dữ liệu liên quan (bài đăng, ứng tuyển, blog, v.v.) và không thể hoàn tác.`)) {
+    if (
+      !confirm(
+        `Bạn có chắc muốn xóa "${user.fullName}"?\n\nCẢNH BÁO: Hành động này sẽ xóa tất cả dữ liệu liên quan (bài đăng, ứng tuyển, blog, v.v.) và không thể hoàn tác.`,
+      )
+    ) {
       return;
     }
-    
+
     try {
-      const token = getAuthToken();
       if (!token) {
         alert("Vui lòng đăng nhập với quyền Admin");
         return;
       }
-      
+
       await userApi.delete(user.id, token);
       alert("Xóa người dùng thành công");
       fetchUsers(); // Refresh list
     } catch (err) {
-      alert("Không thể xóa người dùng: " + (err instanceof Error ? err.message : "Lỗi không xác định"));
+      alert(
+        "Không thể xóa người dùng: " +
+          (err instanceof Error ? err.message : "Lỗi không xác định"),
+      );
     }
   };
 
@@ -150,9 +160,9 @@ const UsersManagement = () => {
         onFilterChange={setFilterRole}
         onRefresh={fetchUsers}
         renderRow={(user) => (
-          <AdminUserRow 
-            key={user.id} 
-            user={user} 
+          <AdminUserRow
+            key={user.id}
+            user={user}
             onEdit={handleEdit}
             onDelete={handleDelete}
           />
@@ -163,7 +173,9 @@ const UsersManagement = () => {
             Thêm mới
           </Button>
         }
-        emptyIcon={<Users className="h-12 w-12 mx-auto text-muted-foreground mb-4" />}
+        emptyIcon={
+          <Users className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+        }
         emptyTitle="Chưa có người dùng nào"
         emptyDescription="Mời người dùng mới để bắt đầu"
       />

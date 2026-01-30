@@ -44,9 +44,7 @@ const CompanyInfo = ({
   };
 
   const handleSaveJob = () => {
-    const accessToken = localStorage.getItem("accessToken");
-
-    if (!accessToken && !isAuthenticated) {
+    if (!isAuthenticated) {
       alert("Vui lòng đăng nhập để lưu công việc");
       router.push(ROUTES.LOGIN);
       return;
@@ -77,7 +75,9 @@ const CompanyInfo = ({
           </Badge>
           <Badge variant="secondary" className="text-xs">
             <Users className="h-3 w-3 mr-1" />
-            {company?.membersCount ? `${company.membersCount} nhân viên` : 'Chưa cập nhật'}
+            {company?.membersCount
+              ? `${company.membersCount} nhân viên`
+              : "Chưa cập nhật"}
           </Badge>
         </div>
       </div>
@@ -91,7 +91,7 @@ const CompanyInfo = ({
 
           <div className="flex items-center gap-2 text-sm">
             <Calendar className="h-4 w-4 text-muted-foreground" />
-            <span>Thành lập năm {company?.founded}</span>
+            <span>Thành lập năm {company?.foundedYear || "Chưa cập nhật"}</span>
           </div>
 
           <div className="flex items-center gap-2 text-sm">
@@ -164,7 +164,7 @@ const CompanyInfo = ({
           onOpenChange={setIsApplicationModalOpen}
           jobId={jobId}
           jobTitle={jobTitle || "Vị trí tuyển dụng"}
-          companyName={company?.name}
+          companyName={company?.name || ""}
         />
       )}
     </>

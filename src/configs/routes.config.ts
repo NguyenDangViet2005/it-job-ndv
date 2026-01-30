@@ -145,7 +145,7 @@ export const isProtectedRoute = (pathname: string): boolean => {
 // Helper function to check if route is for specific role
 export const isRouteForRole = (
   pathname: string,
-  role: "user" | "employer" | "admin"
+  role: "user" | "employer" | "admin",
 ): boolean => {
   switch (role) {
     case "admin":

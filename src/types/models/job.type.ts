@@ -10,6 +10,7 @@ export interface Job {
   quantity: number;
   deadline: string;
   salary?: string;
+  location?: string;
   createdAt: string;
   updatedAt: string;
   company?: {

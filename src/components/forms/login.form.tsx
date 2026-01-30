@@ -79,7 +79,7 @@ export default function FormLogin() {
   return (
     <Card className="w-full max-w-md p-4 bg-white/70 dark:bg-gray-900/70 backdrop-blur-lg border border-gray-200 dark:border-gray-700 shadow-xl rounded-2xl">
       <CardHeader className="pb-3">
-        <CardTitle className="text-xl font-bold text-center text-gray-900 dark:text-gray-100">
+        <CardTitle className="text-xl font-bold text-center text-primary dark:text-gray-100">
           Đăng nhập
         </CardTitle>
       </CardHeader>
@@ -130,7 +130,7 @@ export default function FormLogin() {
             <Button
               type="submit"
               disabled={isLoading}
-              className="cursor-target w-full h-9 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+              className="cursor-target w-full h-9 bg-primary text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? "Đang đăng nhập..." : "Đăng nhập"}
             </Button>
@@ -160,7 +160,7 @@ export default function FormLogin() {
               Chưa có tài khoản?{" "}
               <a
                 href="/register"
-                className="cursor-target text-blue-600 dark:text-blue-400 hover:underline"
+                className="cursor-target text-primary hover:underline"
               >
                 Đăng ký ngay
               </a>

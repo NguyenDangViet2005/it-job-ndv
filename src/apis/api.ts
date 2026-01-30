@@ -12,7 +12,7 @@ interface ApiConfig extends RequestInit {
 // GET request
 export async function apiGet<T>(
   endpoint: string,
-  config?: ApiConfig
+  config?: ApiConfig,
 ): Promise<T> {
   const url = buildURL(BE_ENDPOINT, endpoint, config?.params);
 
@@ -22,9 +22,8 @@ export async function apiGet<T>(
   };
 
   if (config?.token) {
-    (headers as Record<string, string>)[
-      "Authorization"
-    ] = `Bearer ${config.token}`;
+    (headers as Record<string, string>)["Authorization"] =
+      `Bearer ${config.token}`;
   }
 
   try {
@@ -40,7 +39,7 @@ export async function apiGet<T>(
     throw new Error(
       `Failed to fetch: ${
         error instanceof Error ? error.message : "Network error"
-      }`
+      }`,
     );
   }
 }
@@ -49,7 +48,7 @@ export async function apiGet<T>(
 export async function apiPost<T>(
   endpoint: string,
   data?: unknown,
-  config?: ApiConfig
+  config?: ApiConfig,
 ): Promise<T> {
   const url = buildURL(BE_ENDPOINT, endpoint, config?.params);
 
@@ -59,9 +58,8 @@ export async function apiPost<T>(
   };
 
   if (config?.token) {
-    (headers as Record<string, string>)[
-      "Authorization"
-    ] = `Bearer ${config.token}`;
+    (headers as Record<string, string>)["Authorization"] =
+      `Bearer ${config.token}`;
   }
 
   const response = await fetch(url, {
@@ -78,7 +76,7 @@ export async function apiPost<T>(
 export async function apiPut<T>(
   endpoint: string,
   data?: unknown,
-  config?: ApiConfig
+  config?: ApiConfig,
 ): Promise<T> {
   const url = buildURL(BE_ENDPOINT, endpoint, config?.params);
 
@@ -88,9 +86,8 @@ export async function apiPut<T>(
   };
 
   if (config?.token) {
-    (headers as Record<string, string>)[
-      "Authorization"
-    ] = `Bearer ${config.token}`;
+    (headers as Record<string, string>)["Authorization"] =
+      `Bearer ${config.token}`;
   }
 
   const response = await fetch(url, {
@@ -106,7 +103,7 @@ export async function apiPut<T>(
 // DELETE request
 export async function apiDelete<T>(
   endpoint: string,
-  config?: ApiConfig
+  config?: ApiConfig,
 ): Promise<T> {
   const url = buildURL(BE_ENDPOINT, endpoint, config?.params);
 
@@ -116,9 +113,8 @@ export async function apiDelete<T>(
   };
 
   if (config?.token) {
-    (headers as Record<string, string>)[
-      "Authorization"
-    ] = `Bearer ${config.token}`;
+    (headers as Record<string, string>)["Authorization"] =
+      `Bearer ${config.token}`;
   }
 
   const response = await fetch(url, {
@@ -134,7 +130,7 @@ export async function apiDelete<T>(
 export async function apiPatch<T>(
   endpoint: string,
   data?: unknown,
-  config?: ApiConfig
+  config?: ApiConfig,
 ): Promise<T> {
   const url = buildURL(BE_ENDPOINT, endpoint, config?.params);
 
@@ -144,9 +140,8 @@ export async function apiPatch<T>(
   };
 
   if (config?.token) {
-    (headers as Record<string, string>)[
-      "Authorization"
-    ] = `Bearer ${config.token}`;
+    (headers as Record<string, string>)["Authorization"] =
+      `Bearer ${config.token}`;
   }
 
   const response = await fetch(url, {
@@ -164,7 +159,7 @@ export async function apiUploadFile<T>(
   endpoint: string,
   file: File,
   fieldName: string = "file",
-  config?: ApiConfig
+  config?: ApiConfig,
 ): Promise<T> {
   const url = buildURL(BE_ENDPOINT, endpoint, config?.params);
 
@@ -190,7 +185,7 @@ export async function apiGetPaginated<T>(
   endpoint: string,
   pageNumber: number = 1,
   pageSize: number = 10,
-  config?: ApiConfig
+  config?: ApiConfig,
 ): Promise<ResponseData<T>> {
   return apiGet<ResponseData<T>>(endpoint, {
     ...config,
@@ -206,7 +201,7 @@ export async function apiGetPaginated<T>(
 export async function apiGetById<T>(
   endpoint: string,
   id: number,
-  config?: ApiConfig
+  config?: ApiConfig,
 ): Promise<T> {
   return apiGet<T>(`${endpoint}/${id}`, config);
 }

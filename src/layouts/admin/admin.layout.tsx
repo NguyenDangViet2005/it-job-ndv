@@ -35,14 +35,42 @@ import { useState, useEffect } from "react";
 import { ROUTES } from "@/configs";
 
 const NAVIGATION_ITEMS: NavigationItem[] = [
-  { href: "/admin", icon: LayoutDashboard, label: "Dashboard" },
-  { href: "/admin/jobs", icon: Briefcase, label: "Quản lý Jobs", badge: 15 },
-  { href: "/admin/users", icon: Users, label: "Người dùng", badge: 120 },
-  { href: "/admin/company", icon: Building2, label: "Công ty", badge: 6 },
-  { href: "/admin/analytics", icon: BarChart3, label: "Thống kê" },
-  { href: "/admin/blog", icon: FileText, label: "Blog", badge: 5 },
-  { href: "/admin/social", icon: Globe, label: "Social Media" },
-  { href: "/admin/settings", icon: Settings, label: "Cài đặt" },
+  {
+    id: "dashboard",
+    href: "/admin",
+    icon: LayoutDashboard,
+    label: "Dashboard",
+  },
+  {
+    id: "jobs",
+    href: "/admin/jobs",
+    icon: Briefcase,
+    label: "Quản lý Jobs",
+    badge: 15,
+  },
+  {
+    id: "users",
+    href: "/admin/users",
+    icon: Users,
+    label: "Người dùng",
+    badge: 120,
+  },
+  {
+    id: "company",
+    href: "/admin/company",
+    icon: Building2,
+    label: "Công ty",
+    badge: 6,
+  },
+  {
+    id: "analytics",
+    href: "/admin/analytics",
+    icon: BarChart3,
+    label: "Thống kê",
+  },
+  { id: "blog", href: "/admin/blog", icon: FileText, label: "Blog", badge: 5 },
+  { id: "social", href: "/admin/social", icon: Globe, label: "Social Media" },
+  { id: "settings", href: "/admin/settings", icon: Settings, label: "Cài đặt" },
 ];
 
 export function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -66,15 +94,16 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
       {NAVIGATION_ITEMS.map((item) => {
         const Icon = item.icon;
         const isActive = pathname === item.href;
+        if (!Icon) return null;
         return (
           <Link
-            key={item.href}
-            href={item.href}
+            key={item.id}
+            href={item.href || "#"}
             className={cn(
               "flex items-center cursor-target gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
               isActive
                 ? "bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 shadow-sm"
-                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800"
+                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800",
             )}
           >
             <Icon className="h-4 w-4 flex-shrink-0" />
@@ -85,7 +114,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
                 className={cn(
                   "text-xs",
                   isActive &&
-                    "bg-white/90 dark:bg-slate-800 text-slate-900 dark:text-slate-100 border-transparent"
+                    "bg-white/90 dark:bg-slate-800 text-slate-900 dark:text-slate-100 border-transparent",
                 )}
               >
                 {item.badge}

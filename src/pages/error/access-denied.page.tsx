@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 
 export default function AccessDeniedPage() {
   const router = useRouter();
-  const { user, getRedirectPath } = useAuth();
+  const { user } = useAuth();
   const [previousPath, setPreviousPath] = useState<string | null>(null);
 
   useEffect(() => {
@@ -28,6 +28,19 @@ export default function AccessDeniedPage() {
       }
     }
   }, []);
+
+  const getRedirectPath = (role: string) => {
+    switch (role) {
+      case "admin":
+        return ROUTES.ADMIN_DASHBOARD;
+      case "employer":
+        return ROUTES.HR;
+      case "user":
+        return ROUTES.HOME;
+      default:
+        return ROUTES.HOME;
+    }
+  };
 
   const handleGoBack = () => {
     if (previousPath) {
@@ -50,7 +63,7 @@ export default function AccessDeniedPage() {
   const getRoleDisplay = () => {
     if (!user?.role) return "Khách";
     if (user.role === "user") return "Ứng viên";
-    if (user.role === "hr" || user.role === "employer") return "Nhà tuyển dụng";
+    if (user.role === "employer") return "Nhà tuyển dụng";
     if (user.role === "admin") return "Quản trị viên";
     return user.role;
   };

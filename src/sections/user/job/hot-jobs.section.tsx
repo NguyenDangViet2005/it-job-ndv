@@ -1,9 +1,10 @@
 import Image from "next/image";
 import { Briefcase, TrendingUp, MoveRight } from "lucide-react";
 import { Card } from "@/components/ui/shadcn/card";
-import { useAuth } from "@/hooks/useAuth"; 
+import { useAuth } from "@/hooks/useAuth";
+import type { JobResponse } from "@/types/api.type";
 
-const HotJob = ({ props }: JobResponse) => {
+const HotJob = ({ props }: { props: JobResponse }) => {
   const { user } = useAuth();
   return (
     <div className="h-full">
@@ -11,8 +12,8 @@ const HotJob = ({ props }: JobResponse) => {
         <div className="relative h-full flex flex-col">
           <div className="inset-0">
             <Image
-              src={props.company.coverImage || props.logo || "/cover.png"}
-              alt={props.company.name || "Company"}
+              src={props.company?.avatar || "/cover.png"}
+              alt={props.company?.name || "Company"}
               fill
               className="object-cover"
             />
@@ -22,8 +23,8 @@ const HotJob = ({ props }: JobResponse) => {
             <div className="flex justify-center mb-3 flex-shrink-0">
               <div className="relative w-16 h-16 bg-white rounded-full p-1.5 flex items-center justify-center shadow-xl ring-2 ring-white/20">
                 <Image
-                  src={props.company.avatar || "/logo.png"}
-                  alt={props.company.name || "Company"}
+                  src={props.company?.avatar || "/logo.png"}
+                  alt={props.company?.name || "Company"}
                   width={56}
                   height={56}
                   className="object-cover rounded-full"
@@ -32,12 +33,12 @@ const HotJob = ({ props }: JobResponse) => {
             </div>
             <div className="flex-shrink-0 mb-2">
               <h3 className="font-bold text-sm text-white text-center line-clamp-1 drop-shadow-lg h-5">
-                {props.company.name}
+                {props.company?.name}
               </h3>
             </div>
             <div className="flex-shrink-0 mb-3">
               <p className="text-xs text-white/90 text-center line-clamp-2 drop-shadow h-8">
-                {props.company.description ||
+                {props.company?.name ||
                   "Công ty hàng đầu trong lĩnh vực công nghệ"}
               </p>
             </div>
@@ -50,14 +51,16 @@ const HotJob = ({ props }: JobResponse) => {
             <div className="space-y-2 flex-shrink-0">
               <div className="text-center h-5 flex items-center justify-center gap-1">
                 <p className="text-pink-400 font-semibold text-xs drop-shadow">
-                  {user ? "Xem chi tiết lương" : "Đăng nhập để xem chi tiết lương"}
+                  {user
+                    ? "Xem chi tiết lương"
+                    : "Đăng nhập để xem chi tiết lương"}
                 </p>
-                <MoveRight className="w-3.5 h-3.5 flex-shrink-0 text-pink-400"/>
+                <MoveRight className="w-3.5 h-3.5 flex-shrink-0 text-pink-400" />
               </div>
               <div className="flex items-center justify-center gap-1.5 text-white h-5">
                 <Briefcase className="w-3.5 h-3.5 flex-shrink-0" />
                 <p className="text-xs font-medium drop-shadow truncate">
-                  {props.address || "TP. Hồ Chí Minh"}
+                  {props.location || "Ễ. Hồ Chí Minh"}
                 </p>
               </div>
               <div className="flex justify-center h-7">

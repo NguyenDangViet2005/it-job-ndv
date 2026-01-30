@@ -51,7 +51,7 @@ const CompanyDetailPage = ({ company }: CompanyDetailPageProps) => {
   useEffect(() => {
     if (user && company.follows) {
       const isUserFollowing = company.follows.some(
-        (follow) => follow.userId === user.id,
+        (follow: any) => follow.userId === user.id,
       );
       setIsFollowing(isUserFollowing);
     }
@@ -86,21 +86,22 @@ const CompanyDetailPage = ({ company }: CompanyDetailPageProps) => {
 
   // Calculate stats
   const openJobsCount =
-    company.jobs?.filter((job) => job.status === "open").length || 0;
+    company.jobs?.filter((job: any) => job.status === "open").length || 0;
   const followersCount = company.follows?.length || 0;
   const reviewsCount = company.reviews?.length || 0;
   const averageRating =
     reviewsCount > 0
       ? (
-          company.reviews!.reduce((acc, r) => acc + r.rating, 0) / reviewsCount
+          company.reviews!.reduce((acc: number, r: any) => acc + r.rating, 0) /
+          reviewsCount
         ).toFixed(1)
       : "0";
 
   const filteredJobs =
     selectedJobType === "all"
-      ? company.jobs?.filter((job) => job.status === "open")
+      ? company.jobs?.filter((job: any) => job.status === "open")
       : company.jobs?.filter(
-          (job) => job.status === "open" && job.type === selectedJobType,
+          (job: any) => job.status === "open" && job.type === selectedJobType,
         );
 
   return (
@@ -298,7 +299,7 @@ const CompanyDetailPage = ({ company }: CompanyDetailPageProps) => {
                   {/* Job List */}
                   {filteredJobs && filteredJobs.length > 0 ? (
                     <div className="space-y-4">
-                      {filteredJobs.map((job) => (
+                      {filteredJobs.map((job: any) => (
                         <JobCard
                           key={job.id}
                           job={job}
@@ -419,7 +420,7 @@ const CompanyDetailPage = ({ company }: CompanyDetailPageProps) => {
                     <div className="space-y-6">
                       {company.reviews
                         .slice(0, visibleReviews)
-                        .map((review) => (
+                        .map((review: any) => (
                           <div key={review.id} className="flex gap-3">
                             <div className="relative w-8 h-8 flex-shrink-0 rounded-full overflow-hidden bg-muted">
                               <div className="w-full h-full flex items-center justify-center bg-primary/10 text-primary font-semibold">

@@ -21,7 +21,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const initAuth = async () => {
       try {
         setLoading(true);
-        // Try to refresh token using httpOnly cookie
+        // On init, no current token exists yet - backend will generate new one
         const response = await authApi.refreshToken();
 
         if (response.success && response.data) {
@@ -43,7 +43,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setToken(accessToken);
 
     // Fetch company info if user is HR/Employer
-    if (userData.role === "employer" || userData.role === "hr") {
+    if (userData.role === "employer") {
       try {
         const companyData = await companyApi.getMyCompany(accessToken);
         if (companyData) {

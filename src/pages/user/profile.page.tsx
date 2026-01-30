@@ -361,7 +361,7 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
                 interaction: {
                   ...post.interaction,
                   totalComments: post.interaction.totalComments + 1,
-                  comments: [newComment, ...post.interaction.comments],
+                  comments: [newComment, ...(post.interaction.comments || [])],
                 },
                 showComments: true,
               }
@@ -1094,7 +1094,6 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
                     }
                     onEditPost={handleEditPost}
                     onDeletePost={async (postId) => {
-                      const token = localStorage.getItem("accessToken");
                       if (!token) return;
                       try {
                         const { postApi } = await import("@/apis/post.api");

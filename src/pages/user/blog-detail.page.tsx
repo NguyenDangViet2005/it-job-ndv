@@ -1,5 +1,4 @@
-import BlogDetailSection from "@/sections/user/blog/blog-detail.section"; 
-import React from "react";
+import BlogDetailSection from "@/sections/user/blog/blog-detail.section";
 
 interface BlogDetailPageProps {
   id: string;

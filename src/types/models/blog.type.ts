@@ -9,6 +9,7 @@ export interface Blog {
   content: string;
   readTime?: string;
   image?: string;
+  avatar?: string;
   category?: string;
   author?: string;
   views?: number;

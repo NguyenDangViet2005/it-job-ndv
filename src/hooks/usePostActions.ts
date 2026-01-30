@@ -5,7 +5,7 @@ import { toast } from "sonner"; // hoặc notification library bạn đang dùng
 
 export function usePostActions() {
   const [loading, setLoading] = useState(false);
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const currentUserId = user?.id;
 
   const handleSavePost = async (postId: number) => {
@@ -36,7 +36,6 @@ export function usePostActions() {
 
   const handleEditPost = async (postId: number) => {
     try {
-
     } catch (error) {
       console.error("Error editing post:", error);
     }
@@ -45,7 +44,6 @@ export function usePostActions() {
   const handleDeletePost = async (postId: number) => {
     try {
       setLoading(true);
-      const token = localStorage.getItem("accessToken");
       if (!token) {
         toast?.error?.("Vui lòng đăng nhập");
         return;

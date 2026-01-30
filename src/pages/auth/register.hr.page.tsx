@@ -30,7 +30,7 @@ export default function RegisterHRPage() {
       <div className="w-full px-8 py-20 md:py-24">
         <div className="text-center space-y-3 mb-6">
           <h1 className="text-3xl lg:text-4xl font-bold">
-            <span className="bg-gradient-to-r from-blue-600 via-blue-500 to-purple-600 bg-clip-text text-transparent">
+            <span className="bg-primary bg-clip-text text-transparent">
               Đăng ký tài khoản HR
             </span>
           </h1>

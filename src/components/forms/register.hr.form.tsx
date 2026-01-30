@@ -133,9 +133,6 @@ export default function FormRegisterHR() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-center text-gray-900 dark:text-gray-100">
-        Đăng ký Nhà tuyển dụng
-      </h1>
       <div className="w-full mt-5 ">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -449,7 +446,7 @@ export default function FormRegisterHR() {
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-semibold disabled:opacity-50"
+              className="w-full bg-primary text-white font-semibold disabled:opacity-50"
             >
               {isLoading ? "Đang đăng ký..." : "Đăng ký tài khoản HR"}
             </Button>
@@ -468,10 +465,7 @@ export default function FormRegisterHR() {
             {/* Link to login */}
             <p className="text-center text-sm text-gray-600 dark:text-gray-400">
               Đã có tài khoản?{" "}
-              <a
-                href="/login"
-                className="text-blue-600 dark:text-blue-400 hover:underline"
-              >
+              <a href="/login" className="text-primary hover:underline">
                 Đăng nhập ngay
               </a>
             </p>

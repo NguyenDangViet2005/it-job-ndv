@@ -122,8 +122,10 @@ export default function PostCard({
             }
             totalComments={
               post.interaction?.totalComments ||
-              post.totalComments ||
-              post.comments?.length ||
+              ("totalComments" in post ? post.totalComments : 0) ||
+              ("comments" in post && Array.isArray(post.comments)
+                ? post.comments.length
+                : 0) ||
               0
             }
             shares={post.shares || 0}

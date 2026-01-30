@@ -78,7 +78,7 @@ export default function FormRegister() {
   return (
     <Card className="w-full max-w-md p-6 bg-white/70 dark:bg-gray-900/70 backdrop-blur-lg border border-gray-200 dark:border-gray-700 shadow-xl rounded-2xl">
       <CardHeader>
-        <CardTitle className="text-2xl font-bold text-center text-gray-900 dark:text-gray-100">
+        <CardTitle className="text-2xl font-bold text-center text-primary dark:text-gray-100">
           Đăng ký Ứng viên
         </CardTitle>
       </CardHeader>
@@ -167,7 +167,7 @@ export default function FormRegister() {
             <Button
               type="submit"
               disabled={isLoading}
-              className="cursor-target w-full h-9 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+              className="cursor-target w-full h-9 bg-primary text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? "Đang đăng ký..." : "Đăng ký"}
             </Button>
@@ -208,7 +208,7 @@ export default function FormRegister() {
               Đã có tài khoản?{" "}
               <a
                 href="/login"
-                className="cursor-target text-blue-600 dark:text-blue-400 hover:underline"
+                className="cursor-target text-primary hover:underline"
               >
                 Đăng nhập ngay
               </a>

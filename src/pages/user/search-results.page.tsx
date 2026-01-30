@@ -22,7 +22,7 @@ import Link from "next/link";
 import SearchBar from "@/components/ui/customs/search-bar";
 import { HeroSection } from "@/sections/user/common/hero.section";
 import { JobCard } from "@/components/cards/searchCards/job-result.card";
-import { CompanyCard } from "@/components/cards/searchCards/company-result.card";
+import { CompanyResultCard } from "@/components/cards";
 
 export default function SearchResultsPage() {
   const searchParams = useSearchParams();
@@ -163,7 +163,7 @@ export default function SearchResultsPage() {
               </h2>
               <div className="grid gap-4 md:grid-cols-2">
                 {searchData.companies.map((company) => (
-                  <CompanyCard key={company.id} company={company} />
+                  <CompanyResultCard key={company.id} company={company} />
                 ))}
               </div>
             </div>

@@ -45,14 +45,14 @@ export default function AppliedJobsPage() {
           user!.id,
           1,
           50,
-          token!
+          token!,
         );
         setApplications(response.data || []);
       } catch (err) {
         setError(
           err instanceof Error
             ? err.message
-            : "Không thể tải danh sách ứng tuyển"
+            : "Không thể tải danh sách ứng tuyển",
         );
       } finally {
         setLoading(false);
@@ -105,14 +105,14 @@ export default function AppliedJobsPage() {
         ) : (
           <div className="space-y-4">
             {applications.map((app) => (
-              <Card key={app.$id || `${app.jobId}-${app.userId}`}>
+              <Card key={app.id || `${app.jobId}-${app.userId}`}>
                 <CardContent className="pt-6">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex gap-4 flex-1">
                       <div className="h-16 w-16 rounded-xl border-2 border-border bg-white dark:bg-muted p-2 flex items-center justify-center flex-shrink-0 shadow-sm hover:shadow-md transition-shadow">
                         <Image
-                          src={app.companyLogo}
-                          alt={app.companyName}
+                          src={app.companyLogo || "/logo-company.jpg"}
+                          alt={app.companyName || "Company"}
                           width={64}
                           height={64}
                           className="h-full w-full object-contain"
@@ -131,7 +131,7 @@ export default function AppliedJobsPage() {
                             <span>
                               Ứng tuyển:{" "}
                               {new Date(app.createdAt).toLocaleDateString(
-                                "vi-VN"
+                                "vi-VN",
                               )}
                             </span>
                           </div>

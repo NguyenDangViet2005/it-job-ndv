@@ -85,12 +85,12 @@ function CandidatesManagement() {
         companyId,
         1,
         50,
-        token
+        token,
       );
 
       // Response structure: { page, pageSize, totalItems, totalPages, data: Application[] }
       if (response && response.data) {
-        setApplications(response.data);
+        setApplications(response.data as any);
         setTotalItems(response.totalItems || 0);
       }
     } catch (error) {
@@ -108,7 +108,7 @@ function CandidatesManagement() {
         row.userId,
         row.cvUrl,
         row.coverLetter,
-        token
+        token,
       );
       alert(`✅ Đã chấp nhận ứng viên ${row.userFullName}`);
       await fetchApplications(); // Refresh data
@@ -125,7 +125,7 @@ function CandidatesManagement() {
         row.userId,
         row.cvUrl,
         row.coverLetter,
-        token
+        token,
       );
       alert(`❌ Đã từ chối ứng viên ${row.userFullName}`);
       await fetchApplications(); // Refresh data
@@ -154,7 +154,7 @@ function CandidatesManagement() {
     const recipient = encodeURIComponent(row.userEmail);
     const subject = encodeURIComponent(`Về đơn ứng tuyển ${row.jobTitle}`);
     const body = encodeURIComponent(
-      `Xin chào ${row.userFullName},\n\nChúng tôi đã xem xét đơn ứng tuyển của bạn cho vị trí ${row.jobTitle}.\n\n`
+      `Xin chào ${row.userFullName},\n\nChúng tôi đã xem xét đơn ứng tuyển của bạn cho vị trí ${row.jobTitle}.\n\n`,
     );
 
     // Open Gmail compose in new tab

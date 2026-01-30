@@ -25,5 +25,5 @@ export * from "./postCards/post-media";
 export * from "./postCards/post-menu";
 
 // Search Cards
-export * from "./searchCards/company-result.card";
+export { default as CompanyResultCard } from "./searchCards/company-result.card";
 export * from "./searchCards/job-result.card";

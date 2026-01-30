@@ -7,7 +7,9 @@ interface UsePostInteractionsProps {
   user: any;
   token: string | null;
   setPosts: React.Dispatch<React.SetStateAction<FullPostResponse[]>>;
-  setLoadingCommentsForPost: React.Dispatch<React.SetStateAction<number | null>>;
+  setLoadingCommentsForPost: React.Dispatch<
+    React.SetStateAction<number | null>
+  >;
   posts: FullPostResponse[];
 }
 
@@ -86,7 +88,7 @@ export function usePostInteractions({
                 interaction: {
                   ...post.interaction,
                   totalComments: post.interaction.totalComments + 1,
-                  comments: [newComment, ...post.interaction.comments],
+                  comments: [newComment, ...(post.interaction.comments || [])],
                 },
                 showComments: true,
               }
@@ -129,7 +131,7 @@ export function usePostInteractions({
                 ...post,
                 interaction: {
                   ...post.interaction,
-                  comments: post.interaction.comments.map((c) =>
+                  comments: (post.interaction.comments || []).map((c) =>
                     c.id === commentId ? updatedComment : c,
                   ),
                 },
@@ -160,7 +162,7 @@ export function usePostInteractions({
                 interaction: {
                   ...post.interaction,
                   totalComments: post.interaction.totalComments - 1,
-                  comments: post.interaction.comments.filter(
+                  comments: (post.interaction.comments || []).filter(
                     (c) => c.id !== commentId,
                   ),
                 },
@@ -181,7 +183,9 @@ export function usePostInteractions({
       const post = posts.find((p: FullPostResponse) => p.id === postId);
       if (!post) return;
 
-      const currentPage = Math.ceil(post.interaction.comments.length / 10);
+      const currentPage = Math.ceil(
+        (post.interaction.comments || []).length / 10,
+      );
       const response = await interactionApi.getComments(
         postId,
         currentPage + 1,
@@ -196,7 +200,10 @@ export function usePostInteractions({
                 ...p,
                 interaction: {
                   ...p.interaction,
-                  comments: [...p.interaction.comments, ...response.data],
+                  comments: [
+                    ...(p.interaction.comments || []),
+                    ...(response.data || []),
+                  ],
                 },
               }
             : p,

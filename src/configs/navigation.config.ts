@@ -193,11 +193,6 @@ export const hrSidebarItems: SidebarItem[] = [
     href: ROUTES.HR_BLOG,
     icon: Newspaper,
   },
-  {
-    title: "Cài đặt",
-    href: ROUTES.HR_SETTINGS,
-    icon: Settings,
-  },
 ];
 
 // Admin Dashboard Sidebar
@@ -237,11 +232,6 @@ export const adminSidebarItems: SidebarItem[] = [
     href: ROUTES.ADMIN_REPORTS,
     icon: BarChart3,
   },
-  {
-    title: "Cài đặt",
-    href: ROUTES.ADMIN_SETTINGS,
-    icon: Settings,
-  },
 ];
 
 // ============================================
@@ -252,7 +242,7 @@ export const adminSidebarItems: SidebarItem[] = [
  * Get sidebar items based on user role
  */
 export const getSidebarItemsByRole = (
-  role: "user" | "employer" | "admin"
+  role: "user" | "employer" | "admin",
 ): SidebarItem[] => {
   switch (role) {
     case "admin":
@@ -270,7 +260,7 @@ export const getSidebarItemsByRole = (
  */
 export const filterSidebarItemsByRole = (
   items: SidebarItem[],
-  role: "user" | "employer" | "admin"
+  role: "user" | "employer" | "admin",
 ): SidebarItem[] => {
   return items.filter((item) => {
     if (!item.roles) return true; // No role restriction

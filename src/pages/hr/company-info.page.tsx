@@ -1,14 +1,25 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/shadcn/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/shadcn/card";
 import { Button } from "@/components/ui/shadcn/button";
 import { Input } from "@/components/ui/shadcn/input";
 import { Label } from "@/components/ui/shadcn/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/shadcn/tabs";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/shadcn/tabs";
 import { Badge } from "@/components/ui/shadcn/badge";
-import { 
-  Building2, 
+import { useAuth } from "@/hooks/useAuth";
+import {
+  Building2,
   MapPin,
   Users,
   Globe,
@@ -23,7 +34,7 @@ import {
   Star,
   TrendingUp,
   Loader2,
-  X
+  X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { companyApi } from "@/apis/company.api";
@@ -31,18 +42,19 @@ import type { Company, CompanyUpdateRequest } from "@/types/api.type";
 import { toast } from "sonner";
 
 const HRCompanyInfo = () => {
+  const { token } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
-  
+
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
 
   // Company data from API
   const [companyData, setCompanyData] = useState<Company | null>(null);
-  
+
   // Form data for editing
   const [formData, setFormData] = useState({
     name: "",
@@ -61,8 +73,7 @@ const HRCompanyInfo = () => {
   const fetchCompanyData = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem("accessToken") || undefined;
-      const company = await companyApi.getMyCompany(token);
+      const company = await companyApi.getMyCompany(token || undefined);
       setCompanyData(company);
       setFormData({
         name: company.name || "",
@@ -80,9 +91,11 @@ const HRCompanyInfo = () => {
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     const { id, value } = e.target;
-    setFormData(prev => ({ ...prev, [id]: value }));
+    setFormData((prev) => ({ ...prev, [id]: value }));
   };
 
   const handleSave = async () => {
@@ -90,18 +103,22 @@ const HRCompanyInfo = () => {
 
     try {
       setSaving(true);
-      const token = localStorage.getItem("accessToken") || undefined;
-      
+
       const updateData: CompanyUpdateRequest = {
         name: formData.name,
         nationality: formData.nationality || undefined,
         website: formData.website || undefined,
         description: formData.description || undefined,
-        foundedYear: formData.foundedYear ? parseInt(formData.foundedYear) : undefined,
+        foundedYear: formData.foundedYear
+          ? parseInt(formData.foundedYear)
+          : undefined,
         address: formData.address || undefined,
       };
 
-      const result = await companyApi.updateMyCompany(updateData, token);
+      const result = await companyApi.updateMyCompany(
+        updateData,
+        token || undefined,
+      );
       setCompanyData(result.data);
       setIsEditing(false);
       toast.success("Cập nhật thông tin công ty thành công!");
@@ -130,7 +147,13 @@ const HRCompanyInfo = () => {
     if (!file) return;
 
     // Validate file type
-    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    const allowedTypes = [
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "image/gif",
+      "image/webp",
+    ];
     if (!allowedTypes.includes(file.type)) {
       toast.error("Chỉ chấp nhận file ảnh (jpg, png, gif, webp)");
       return;
@@ -144,10 +167,11 @@ const HRCompanyInfo = () => {
 
     try {
       setUploadingAvatar(true);
-      const token = localStorage.getItem("accessToken") || undefined;
-      const result = await companyApi.uploadAvatar(file, token);
-      
-      setCompanyData(prev => prev ? { ...prev, avatar: result.avatarUrl } : prev);
+      const result = await companyApi.uploadAvatar(file, token || undefined);
+
+      setCompanyData((prev: Company | null) =>
+        prev ? { ...prev, avatar: result.avatarUrl } : prev,
+      );
       toast.success("Upload ảnh đại diện thành công!");
     } catch (error) {
       console.error("Error uploading avatar:", error);
@@ -166,7 +190,13 @@ const HRCompanyInfo = () => {
     if (!file) return;
 
     // Validate file type
-    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    const allowedTypes = [
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "image/gif",
+      "image/webp",
+    ];
     if (!allowedTypes.includes(file.type)) {
       toast.error("Chỉ chấp nhận file ảnh (jpg, png, gif, webp)");
       return;
@@ -180,10 +210,11 @@ const HRCompanyInfo = () => {
 
     try {
       setUploadingCover(true);
-      const token = localStorage.getItem("accessToken") || undefined;
-      const result = await companyApi.uploadCover(file, token);
-      
-      setCompanyData(prev => prev ? { ...prev, coverImage: result.coverImageUrl } : prev);
+      const result = await companyApi.uploadCover(file, token || undefined);
+
+      setCompanyData((prev: Company | null) =>
+        prev ? { ...prev, coverImage: result.coverImageUrl } : prev,
+      );
       toast.success("Upload ảnh bìa thành công!");
     } catch (error) {
       console.error("Error uploading cover:", error);
@@ -231,7 +262,9 @@ const HRCompanyInfo = () => {
         <div className="flex flex-col items-center gap-4">
           <Building2 className="h-16 w-16 text-muted-foreground" />
           <h2 className="text-2xl font-bold">Chưa có thông tin công ty</h2>
-          <p className="text-muted-foreground">Bạn chưa được liên kết với công ty nào</p>
+          <p className="text-muted-foreground">
+            Bạn chưa được liên kết với công ty nào
+          </p>
         </div>
       </div>
     );
@@ -267,7 +300,7 @@ const HRCompanyInfo = () => {
         </div>
         <div className="flex gap-2">
           {isEditing && (
-            <Button 
+            <Button
               onClick={handleCancelEdit}
               variant="outline"
               className="gap-2 cursor-target"
@@ -277,14 +310,14 @@ const HRCompanyInfo = () => {
               Hủy
             </Button>
           )}
-          <Button 
-            onClick={() => isEditing ? handleSave() : setIsEditing(true)}
+          <Button
+            onClick={() => (isEditing ? handleSave() : setIsEditing(true))}
             disabled={saving}
             className={cn(
               "gap-2 cursor-target",
-              isEditing 
+              isEditing
                 ? "bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
-                : "bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700"
+                : "bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700",
             )}
           >
             {saving ? (
@@ -311,18 +344,18 @@ const HRCompanyInfo = () => {
       <Card className="overflow-hidden cursor-target">
         <div className="relative h-64 bg-gradient-to-r from-blue-500 to-cyan-500">
           {companyData.coverImage ? (
-            <img 
-              src={companyData.coverImage} 
-              alt="Cover" 
+            <img
+              src={companyData.coverImage}
+              alt="Cover"
               className="w-full h-full object-cover"
             />
           ) : (
             <div className="w-full h-full bg-gradient-to-r from-blue-500 to-cyan-500" />
           )}
           {isEditing && (
-            <Button 
-              variant="secondary" 
-              size="sm" 
+            <Button
+              variant="secondary"
+              size="sm"
               className="absolute top-4 right-4 gap-2 cursor-target"
               onClick={handleCoverClick}
               disabled={uploadingCover}
@@ -346,8 +379,8 @@ const HRCompanyInfo = () => {
             <div className="relative">
               <div className="w-32 h-32 rounded-2xl bg-white p-2 shadow-xl ring-4 ring-background">
                 {companyData.avatar ? (
-                  <img 
-                    src={companyData.avatar} 
+                  <img
+                    src={companyData.avatar}
                     alt={companyData.name}
                     className="w-full h-full rounded-xl object-cover"
                   />
@@ -358,8 +391,8 @@ const HRCompanyInfo = () => {
                 )}
               </div>
               {isEditing && (
-                <Button 
-                  size="sm" 
+                <Button
+                  size="sm"
                   className="absolute -bottom-2 -right-2 h-8 w-8 p-0 rounded-full cursor-target"
                   onClick={handleAvatarClick}
                   disabled={uploadingAvatar}
@@ -377,7 +410,14 @@ const HRCompanyInfo = () => {
             <div className="flex items-start justify-between">
               <div>
                 <h2 className="text-3xl font-bold">{companyData.name}</h2>
-                <p className="text-muted-foreground mt-1">{companyData.description?.substring(0, 100) || "Chưa có mô tả"}{companyData.description && companyData.description.length > 100 ? "..." : ""}</p>
+                <p className="text-muted-foreground mt-1">
+                  {companyData.description?.substring(0, 100) ||
+                    "Chưa có mô tả"}
+                  {companyData.description &&
+                  companyData.description.length > 100
+                    ? "..."
+                    : ""}
+                </p>
               </div>
               <div className="flex items-center gap-2">
                 <Star className="h-5 w-5 fill-yellow-500 text-yellow-500" />
@@ -415,7 +455,9 @@ const HRCompanyInfo = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Tổng Công Việc</p>
-                <p className="text-3xl font-bold text-blue-600">{companyData.jobs?.length || 0}</p>
+                <p className="text-3xl font-bold text-blue-600">
+                  {companyData.jobs?.length || 0}
+                </p>
               </div>
               <Briefcase className="h-10 w-10 text-blue-600" />
             </div>
@@ -426,7 +468,9 @@ const HRCompanyInfo = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Bài Viết</p>
-                <p className="text-3xl font-bold text-green-600">{companyData.posts?.length || 0}</p>
+                <p className="text-3xl font-bold text-green-600">
+                  {companyData.posts?.length || 0}
+                </p>
               </div>
               <TrendingUp className="h-10 w-10 text-green-600" />
             </div>
@@ -437,7 +481,9 @@ const HRCompanyInfo = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Người Theo Dõi</p>
-                <p className="text-3xl font-bold text-purple-600">{companyData.follows?.length || 0}</p>
+                <p className="text-3xl font-bold text-purple-600">
+                  {companyData.follows?.length || 0}
+                </p>
               </div>
               <Users className="h-10 w-10 text-purple-600" />
             </div>
@@ -448,7 +494,9 @@ const HRCompanyInfo = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Đánh Giá</p>
-                <p className="text-3xl font-bold text-orange-600">{companyData.reviews?.length || 0}</p>
+                <p className="text-3xl font-bold text-orange-600">
+                  {companyData.reviews?.length || 0}
+                </p>
               </div>
               <Star className="h-10 w-10 text-orange-600" />
             </div>
@@ -459,8 +507,12 @@ const HRCompanyInfo = () => {
       {/* Detailed Information */}
       <Tabs defaultValue="basic" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="basic" className="cursor-target">Thông Tin Cơ Bản</TabsTrigger>
-          <TabsTrigger value="contact" className="cursor-target">Thông Tin Liên Hệ</TabsTrigger>
+          <TabsTrigger value="basic" className="cursor-target">
+            Thông Tin Cơ Bản
+          </TabsTrigger>
+          <TabsTrigger value="contact" className="cursor-target">
+            Thông Tin Liên Hệ
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="basic" className="space-y-4 mt-6">
@@ -471,9 +523,9 @@ const HRCompanyInfo = () => {
             <CardContent className="space-y-6">
               <div className="space-y-2">
                 <Label htmlFor="name">Tên Công Ty *</Label>
-                <Input 
-                  id="name" 
-                  value={formData.name} 
+                <Input
+                  id="name"
+                  value={formData.name}
                   onChange={handleInputChange}
                   disabled={!isEditing}
                   className="cursor-target"
@@ -483,9 +535,9 @@ const HRCompanyInfo = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="nationality">Quốc Tịch</Label>
-                  <Input 
-                    id="nationality" 
-                    value={formData.nationality} 
+                  <Input
+                    id="nationality"
+                    value={formData.nationality}
                     onChange={handleInputChange}
                     disabled={!isEditing}
                     className="cursor-target"
@@ -494,10 +546,10 @@ const HRCompanyInfo = () => {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="foundedYear">Năm Thành Lập</Label>
-                  <Input 
-                    id="foundedYear" 
+                  <Input
+                    id="foundedYear"
                     type="number"
-                    value={formData.foundedYear} 
+                    value={formData.foundedYear}
                     onChange={handleInputChange}
                     disabled={!isEditing}
                     className="cursor-target"
@@ -509,7 +561,7 @@ const HRCompanyInfo = () => {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="description">Mô Tả</Label>
-                <textarea 
+                <textarea
                   id="description"
                   value={formData.description}
                   onChange={handleInputChange}
@@ -533,10 +585,10 @@ const HRCompanyInfo = () => {
                 <Label htmlFor="website">Website</Label>
                 <div className="flex gap-2">
                   <Globe className="h-5 w-5 text-muted-foreground mt-2" />
-                  <Input 
-                    id="website" 
+                  <Input
+                    id="website"
                     type="url"
-                    value={formData.website} 
+                    value={formData.website}
                     onChange={handleInputChange}
                     disabled={!isEditing}
                     className="cursor-target"
@@ -548,9 +600,9 @@ const HRCompanyInfo = () => {
                 <Label htmlFor="address">Địa Chỉ</Label>
                 <div className="flex gap-2">
                   <MapPin className="h-5 w-5 text-muted-foreground mt-2" />
-                  <Input 
-                    id="address" 
-                    value={formData.address} 
+                  <Input
+                    id="address"
+                    value={formData.address}
                     onChange={handleInputChange}
                     disabled={!isEditing}
                     className="cursor-target"

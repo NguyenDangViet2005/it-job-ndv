@@ -20,6 +20,8 @@ import rehypeRaw from "rehype-raw";
 import { blogApi } from "@/apis";
 import type { BlogResponse } from "@/types/api.type";
 import { formatDate } from "@/utils/date.utils";
+import Image from "next/image";
+import { ROUTES } from "@/configs";
 
 interface BlogDetailSectionProps {
   id: string;
@@ -69,7 +71,7 @@ function BlogDetailSection({ id }: BlogDetailSectionProps) {
         <h2 className="text-2xl font-bold mb-4">
           {error || "Không tìm thấy bài viết"}
         </h2>
-        <Link href="/blog">
+        <Link href={ROUTES.BLOGS}>
           <Button variant="outline">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Quay lại danh sách
@@ -83,7 +85,7 @@ function BlogDetailSection({ id }: BlogDetailSectionProps) {
     return (
       <div className="text-center py-12">
         <h2 className="text-2xl font-bold mb-4">Không tìm thấy bài viết</h2>
-        <Link href="/blog">
+        <Link href={ROUTES.BLOGS}>
           <Button variant="outline">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Quay lại danh sách
@@ -96,10 +98,10 @@ function BlogDetailSection({ id }: BlogDetailSectionProps) {
   return (
     <article>
       {/* Back Button */}
-      <Link href="/blog">
+      <Link href={ROUTES.BLOGS}>
         <Button variant="ghost" className="mb-6">
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Quay lại
+          Quay lại danh sách
         </Button>
       </Link>
 
@@ -192,7 +194,7 @@ function BlogDetailSection({ id }: BlogDetailSectionProps) {
                   {...props}
                 />
               ),
-              code: ({ className, children, ...props }) => {
+              code: ({ className, children, ...props }: any) => {
                 return (
                   <code
                     className={
@@ -226,7 +228,7 @@ function BlogDetailSection({ id }: BlogDetailSectionProps) {
                   {...props}
                 />
               ),
-            } as Components
+            } as any
           }
         >
           {post.content}
@@ -239,7 +241,13 @@ function BlogDetailSection({ id }: BlogDetailSectionProps) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-            <User className="h-6 w-6" />
+            <Image
+              src={post.avatar || "/default-avatar.png"}
+              alt={post.author || "Author"}
+              width={40}
+              height={40}
+              className="rounded-full"
+            />
           </div>
           <div>
             <p className="font-semibold">{post.author}</p>
