@@ -111,3 +111,8 @@ IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_Connection_CreatedAt' 
 BEGIN
     CREATE INDEX IX_Connection_CreatedAt ON Connection(createdAt DESC);
 END
+
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_SessionLogin_RefreshToken' AND object_id = OBJECT_ID('SessionLogins'))
+BEGIN
+    CREATE INDEX IX_SessionLogin_RefreshToken ON SessionLogins(userId);
+END

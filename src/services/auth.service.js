@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
-const { User } = require("../models");
+const { User, SessionLogin } = require("../models");
 const env = require("../configs/env.config");
 const LoginResponse = require("../dtos/LoginResponse.dto");
 
@@ -61,7 +61,15 @@ const login = async (email, password) => {
 
   const { accessToken, refreshToken } = generateTokens(user.id, user.role);
 
-  // Update refresh token in DB
+  // Save session to SessionLogin table
+  await SessionLogin.destroy({ where: { userId: user.id } }); // Remove old sessions
+  await SessionLogin.create({
+    userId: user.id,
+    accessToken,
+    refreshToken,
+  });
+
+  // Also update refreshToken in User table for backward compatibility
   user.refreshToken = refreshToken;
   await user.save();
 
@@ -70,6 +78,10 @@ const login = async (email, password) => {
 
 const logout = async (userId) => {
   if (userId) {
+    // Delete session from SessionLogin
+    await SessionLogin.destroy({ where: { userId } });
+
+    // Also clear refreshToken in User table
     const user = await User.findByPk(userId);
     if (user) {
       user.refreshToken = null;
@@ -80,21 +92,63 @@ const logout = async (userId) => {
 
 const refreshTokenService = async (refreshToken) => {
   try {
+    // Verify refreshToken
     const decoded = jwt.verify(refreshToken, env.jwt.refreshSecret);
-    const user = await User.findByPk(decoded.id);
-    if (!user || user.refreshToken !== refreshToken) {
-      throw new Error("Invalid refresh token");
+
+    // Find session from database
+    const session = await SessionLogin.findOne({
+      where: { refreshToken },
+    });
+
+    if (!session) {
+      throw new Error("Invalid refresh token - session not found");
     }
+
+    // Get user info
+    const user = await User.findByPk(session.userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
     const userWithoutPassword = user?.toJSON();
     delete userWithoutPassword.password;
-    // Generate NEW Access Token ONLY (Keep existing Refresh Token)
-    const accessToken = jwt.sign(
-      { id: user.id, role: user.role },
-      env.jwt.accessSecret,
-      {
-        expiresIn: env.jwt.accessExpiresIn || "15m",
-      },
-    );
+
+    // Check if current accessToken is still valid and has > 1 minute remaining
+    let accessToken = session.accessToken;
+    let shouldGenerateNewToken = true;
+
+    try {
+      const accessDecoded = jwt.verify(
+        session.accessToken,
+        env.jwt.accessSecret,
+      );
+      const currentTime = Math.floor(Date.now() / 1000);
+      const timeRemaining = accessDecoded.exp - currentTime;
+
+      // Only generate new token if less than 60 seconds remaining
+      if (timeRemaining > 60) {
+        shouldGenerateNewToken = false;
+      }
+    } catch (error) {
+      // Token invalid or expired, generate new one
+      shouldGenerateNewToken = true;
+    }
+
+    // Generate NEW Access Token ONLY if needed
+    if (shouldGenerateNewToken) {
+      accessToken = jwt.sign(
+        { id: user.id, role: user.role },
+        env.jwt.accessSecret,
+        {
+          expiresIn: env.jwt.accessExpiresIn || "15m",
+        },
+      );
+
+      // Update accessToken in session
+      session.accessToken = accessToken;
+      session.updatedAt = new Date();
+      await session.save();
+    }
 
     // Return current refresh token (do NOT rotate/update DB)
     return new LoginResponse(accessToken, refreshToken, userWithoutPassword);

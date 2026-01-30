@@ -25,7 +25,7 @@ const login = async (req, res) => {
     const { email, password } = req.body;
     const { accessToken, refreshToken, user } = await authService.login(
       email,
-      password
+      password,
     );
 
     // Set Refresh Token in HttpOnly Cookie

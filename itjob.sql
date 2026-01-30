@@ -272,4 +272,17 @@ CREATE TABLE Attachment (
 );
 GO
 
+-- Bảng SessionLogins để lưu phiên đăng nhập
+CREATE TABLE SessionLogins (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    userId INT NOT NULL,
+    accessToken VARCHAR(MAX) NOT NULL,
+    refreshToken VARCHAR(MAX) NOT NULL,
+    createdAt DATETIME NOT NULL DEFAULT GETDATE(),
+    updatedAt DATETIME NOT NULL DEFAULT GETDATE(),
+    
+    CONSTRAINT FK_SessionLogin_User FOREIGN KEY (userId) REFERENCES [User](id) ON DELETE CASCADE
+);
+GO
+
 

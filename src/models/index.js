@@ -16,6 +16,7 @@ const Ward = require("./ward.model");
 const Attachment = require("./attachment.model");
 const Interaction = require("./interaction.model");
 const CompanyMember = require("./company-member.model");
+const SessionLogin = require("./session-login.model");
 
 // ========== RELATIONSHIPS ==========
 
@@ -30,7 +31,11 @@ User.hasMany(Post, { foreignKey: "userId" });
 User.hasMany(Review, { foreignKey: "userId" });
 User.hasMany(SkillUser, { foreignKey: "userId" });
 User.hasMany(Connection, { foreignKey: "userId", as: "SentConnections" });
-User.hasMany(Connection, { foreignKey: "connectedUserId", as: "ReceivedConnections" });
+User.hasMany(Connection, {
+  foreignKey: "connectedUserId",
+  as: "ReceivedConnections",
+});
+User.hasMany(SessionLogin, { foreignKey: "userId" });
 
 // Company relationships
 Company.belongsTo(User, { foreignKey: "createdByUserId" });
@@ -116,7 +121,10 @@ CompanyMember.belongsTo(User, { foreignKey: "userId" });
 
 // Connection relationships
 Connection.belongsTo(User, { foreignKey: "userId", as: "User" });
-Connection.belongsTo(User, { foreignKey: "connectedUserId", as: "ConnectedUser" });
+Connection.belongsTo(User, {
+  foreignKey: "connectedUserId",
+  as: "ConnectedUser",
+});
 
 module.exports = {
   User,
@@ -137,4 +145,5 @@ module.exports = {
   Attachment,
   Interaction,
   CompanyMember,
+  SessionLogin,
 };
