@@ -23,43 +23,21 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import ApplicationModal from "@/components/modals/application.modal";
+import { ROUTES } from "@/configs";
+import { Company } from "@/types";
 
-interface CompanyInfoProps {
+const CompanyInfo = ({
+  jobId,
+  jobTitle,
+  company,
+}: {
   jobId?: number;
   jobTitle?: string;
-  company?: {
-    name: string;
-    logo: string;
-    size: string;
-    founded: string;
-    industry: string;
-    website: string;
-    location: string;
-    email: string;
-    phone: string;
-    description: string;
-  };
-}
-
-const CompanyInfo = ({ jobId, jobTitle, company }: CompanyInfoProps) => {
+  company?: Company;
+}) => {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
   const [isApplicationModalOpen, setIsApplicationModalOpen] = useState(false);
-  const defaultCompany = {
-    name: "CÔNG TY TNHH L.C.S",
-    logo: "/logo-company.jpg",
-    size: "50-100 nhân viên",
-    founded: "2015",
-    industry: "Công nghệ thông tin",
-    website: "https://lcs.com.vn",
-    location: "Đà Nẵng, Việt Nam",
-    email: "hr@lcs.com.vn",
-    phone: "+84 236 123 4567",
-    description:
-      "Chúng tôi là công ty công nghệ hàng đầu chuyên phát triển các giải pháp di động và web cho doanh nghiệp. Với đội ngũ kỹ sư giàu kinh nghiệm và môi trường làm việc năng động, chúng tôi cam kết mang đến những sản phẩm chất lượng cao và cơ hội phát triển tốt nhất cho nhân viên.",
-  };
-
-  const comp = company || defaultCompany;
 
   const handleApply = () => {
     setIsApplicationModalOpen(true);
@@ -70,7 +48,7 @@ const CompanyInfo = ({ jobId, jobTitle, company }: CompanyInfoProps) => {
 
     if (!accessToken && !isAuthenticated) {
       alert("Vui lòng đăng nhập để lưu công việc");
-      router.push("/login");
+      router.push(ROUTES.LOGIN);
       return;
     }
 
@@ -84,23 +62,22 @@ const CompanyInfo = ({ jobId, jobTitle, company }: CompanyInfoProps) => {
         <div className="flex justify-center mb-4">
           <div className="relative">
             <Image
-              src={comp.logo}
-              alt={comp.name}
+              src={company?.avatar || "/logo-company.jpg"}
+              alt={company?.name || "Company Logo"}
               width={80}
               height={80}
-              className="rounded-lg shadow-md"
             />
           </div>
         </div>
-        <h3 className="text-xl font-semibold mb-2">{comp.name}</h3>
+        <h3 className="text-xl font-semibold mb-2">{company?.name}</h3>
         <div className="flex flex-wrap justify-center gap-2">
           <Badge variant="secondary" className="text-xs">
             <Building2 className="h-3 w-3 mr-1" />
-            {comp.industry}
+            Công nghệ
           </Badge>
           <Badge variant="secondary" className="text-xs">
             <Users className="h-3 w-3 mr-1" />
-            {comp.size}
+            {company?.membersCount ? `${company.membersCount} nhân viên` : 'Chưa cập nhật'}
           </Badge>
         </div>
       </div>
@@ -109,18 +86,18 @@ const CompanyInfo = ({ jobId, jobTitle, company }: CompanyInfoProps) => {
         <div className="space-y-3">
           <div className="flex items-center gap-2 text-sm">
             <MapPin className="h-4 w-4 text-muted-foreground" />
-            <span>{comp.location}</span>
+            <span>{company?.address}</span>
           </div>
 
           <div className="flex items-center gap-2 text-sm">
             <Calendar className="h-4 w-4 text-muted-foreground" />
-            <span>Thành lập năm {comp.founded}</span>
+            <span>Thành lập năm {company?.founded}</span>
           </div>
 
           <div className="flex items-center gap-2 text-sm">
             <Globe className="h-4 w-4 text-muted-foreground" />
             <a
-              href={comp.website}
+              href={company?.website}
               target="_blank"
               rel="noopener noreferrer"
               className="text-primary hover:underline"
@@ -136,7 +113,7 @@ const CompanyInfo = ({ jobId, jobTitle, company }: CompanyInfoProps) => {
         <div>
           <h4 className="font-medium mb-2">Về công ty</h4>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            {comp.description}
+            {company?.description}
           </p>
         </div>
 
@@ -148,19 +125,19 @@ const CompanyInfo = ({ jobId, jobTitle, company }: CompanyInfoProps) => {
             <div className="flex items-center gap-2 text-sm">
               <Mail className="h-4 w-4 text-muted-foreground" />
               <a
-                href={`mailto:${comp.email}`}
+                href={`mailto:${company?.companyEmail}`}
                 className="text-primary hover:underline"
               >
-                {comp.email}
+                {company?.companyEmail}
               </a>
             </div>
             <div className="flex items-center gap-2 text-sm">
               <Phone className="h-4 w-4 text-muted-foreground" />
               <a
-                href={`tel:${comp.phone}`}
+                href={`tel:${company?.hotline}`}
                 className="text-primary hover:underline"
               >
-                {comp.phone}
+                {company?.hotline}
               </a>
             </div>
           </div>
@@ -187,7 +164,7 @@ const CompanyInfo = ({ jobId, jobTitle, company }: CompanyInfoProps) => {
           onOpenChange={setIsApplicationModalOpen}
           jobId={jobId}
           jobTitle={jobTitle || "Vị trí tuyển dụng"}
-          companyName={comp.name}
+          companyName={company?.name}
         />
       )}
     </>

@@ -1,8 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useAuth } from "@/hooks/useAuth";
+import { followApi } from "@/apis";
+import { toast } from "sonner";
 import {
   Card,
   CardContent,
@@ -27,7 +30,6 @@ import {
   DollarSign,
   Clock,
   Heart,
-  Share2,
   Star,
   ChevronRight,
   MessageSquare,
@@ -39,12 +41,43 @@ interface CompanyDetailPageProps {
 }
 
 const CompanyDetailPage = ({ company }: CompanyDetailPageProps) => {
+  const { user, token } = useAuth();
   const [isFollowing, setIsFollowing] = useState(false);
   const [selectedJobType, setSelectedJobType] = useState<string>("all");
   const [visibleReviews, setVisibleReviews] = useState(3);
+  const [isFollowLoading, setIsFollowLoading] = useState(false);
 
-  const handleFollow = () => {
-    setIsFollowing(!isFollowing);
+  // Check if current user is following this company
+  useEffect(() => {
+    if (user && company.follows) {
+      const isUserFollowing = company.follows.some(
+        (follow) => follow.userId === user.id,
+      );
+      setIsFollowing(isUserFollowing);
+    }
+  }, [user, company.follows]);
+
+  const handleFollow = async () => {
+    if (!user || !token) {
+      toast.error("Vui lòng đăng nhập để theo dõi công ty");
+      return;
+    }
+
+    setIsFollowLoading(true);
+    try {
+      const response = await followApi.toggleFollow(user.id, company.id, token);
+      setIsFollowing(response.followed);
+      toast.success(
+        response.followed
+          ? "Đã theo dõi công ty thành công!"
+          : "Đã hủy theo dõi công ty",
+      );
+    } catch (error) {
+      console.error("Error toggling follow:", error);
+      toast.error("Có lỗi xảy ra, vui lòng thử lại");
+    } finally {
+      setIsFollowLoading(false);
+    }
   };
 
   const handleLoadMoreReviews = () => {
@@ -52,17 +85,23 @@ const CompanyDetailPage = ({ company }: CompanyDetailPageProps) => {
   };
 
   // Calculate stats
-  const openJobsCount = company.jobs?.filter(job => job.status === 'open').length || 0;
+  const openJobsCount =
+    company.jobs?.filter((job) => job.status === "open").length || 0;
   const followersCount = company.follows?.length || 0;
   const reviewsCount = company.reviews?.length || 0;
-  const averageRating = reviewsCount > 0 
-    ? (company.reviews!.reduce((acc, r) => acc + r.rating, 0) / reviewsCount).toFixed(1)
-    : '0';
+  const averageRating =
+    reviewsCount > 0
+      ? (
+          company.reviews!.reduce((acc, r) => acc + r.rating, 0) / reviewsCount
+        ).toFixed(1)
+      : "0";
 
   const filteredJobs =
     selectedJobType === "all"
-      ? company.jobs?.filter(job => job.status === 'open')
-      : company.jobs?.filter((job) => job.status === 'open' && job.type === selectedJobType);
+      ? company.jobs?.filter((job) => job.status === "open")
+      : company.jobs?.filter(
+          (job) => job.status === "open" && job.type === selectedJobType,
+        );
 
   return (
     <div className="min-h-screen bg-background">
@@ -106,14 +145,12 @@ const CompanyDetailPage = ({ company }: CompanyDetailPageProps) => {
                     </h1>
                     <div className="flex flex-wrap items-center gap-3">
                       <Badge variant="default" className="cursor-target">
-                        {company.nationality || 'Việt Nam'}
+                        {company.nationality || "Việt Nam"}
                       </Badge>
                       {reviewsCount > 0 && (
                         <div className="flex items-center gap-1 text-sm">
                           <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                          <span className="font-semibold">
-                            {averageRating}
-                          </span>
+                          <span className="font-semibold">{averageRating}</span>
                           <span className="text-muted-foreground">
                             ({reviewsCount} đánh giá)
                           </span>
@@ -132,6 +169,7 @@ const CompanyDetailPage = ({ company }: CompanyDetailPageProps) => {
                     <Button
                       variant={isFollowing ? "outline" : "default"}
                       onClick={handleFollow}
+                      disabled={isFollowLoading || !user}
                       className="cursor-target"
                     >
                       <Heart
@@ -139,10 +177,11 @@ const CompanyDetailPage = ({ company }: CompanyDetailPageProps) => {
                           isFollowing ? "fill-current" : ""
                         }`}
                       />
-                      {isFollowing ? "Đang theo dõi" : "Theo dõi"}
-                    </Button>
-                    <Button variant="outline" className="cursor-target">
-                      <Share2 className="h-4 w-4" />
+                      {isFollowLoading
+                        ? "Đang xử lý..."
+                        : isFollowing
+                          ? "Hủy theo dõi"
+                          : "Theo dõi"}
                     </Button>
                   </div>
                 </div>
@@ -151,11 +190,13 @@ const CompanyDetailPage = ({ company }: CompanyDetailPageProps) => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                   <div className="flex items-center gap-2 text-sm">
                     <MapPin className="h-4 w-4 text-muted-foreground" />
-                    <span>{company.city || company.address || 'Chưa cập nhật'}</span>
+                    <span>
+                      {company.city || company.address || "Chưa cập nhật"}
+                    </span>
                   </div>
                   <div className="flex items-center gap-2 text-sm">
                     <Building2 className="h-4 w-4 text-muted-foreground" />
-                    <span>{company.country || 'Việt Nam'}</span>
+                    <span>{company.country || "Việt Nam"}</span>
                   </div>
                   {company.foundedYear && (
                     <div className="flex items-center gap-2 text-sm">
@@ -205,7 +246,7 @@ const CompanyDetailPage = ({ company }: CompanyDetailPageProps) => {
                         <MapPin className="h-5 w-5 text-primary mt-0.5" />
                         <div>
                           <div className="font-medium">
-                            {company.city || 'Văn phòng chính'}
+                            {company.city || "Văn phòng chính"}
                           </div>
                           {company.address && (
                             <div className="text-sm text-muted-foreground mt-1">
@@ -235,10 +276,16 @@ const CompanyDetailPage = ({ company }: CompanyDetailPageProps) => {
                         <TabsTrigger value="all" className="cursor-target">
                           Tất cả
                         </TabsTrigger>
-                        <TabsTrigger value="full-time" className="cursor-target">
+                        <TabsTrigger
+                          value="full-time"
+                          className="cursor-target"
+                        >
                           Full-time
                         </TabsTrigger>
-                        <TabsTrigger value="part-time" className="cursor-target">
+                        <TabsTrigger
+                          value="part-time"
+                          className="cursor-target"
+                        >
                           Part-time
                         </TabsTrigger>
                         <TabsTrigger value="contract" className="cursor-target">
@@ -276,7 +323,9 @@ const CompanyDetailPage = ({ company }: CompanyDetailPageProps) => {
               <CardContent className="p-6 space-y-6">
                 {/* Contact Info */}
                 <div>
-                  <h3 className="text-lg font-semibold mb-4">Thông tin liên hệ</h3>
+                  <h3 className="text-lg font-semibold mb-4">
+                    Thông tin liên hệ
+                  </h3>
                   <div className="space-y-3">
                     {company.website && (
                       <a
@@ -289,13 +338,13 @@ const CompanyDetailPage = ({ company }: CompanyDetailPageProps) => {
                         <span className="line-clamp-1">{company.website}</span>
                       </a>
                     )}
-                    {company.phone && (
+                    {company.hotline && (
                       <a
-                        href={`tel:${company.phone}`}
+                        href={`tel:${company.hotline}`}
                         className="flex items-center gap-3 text-sm hover:text-primary transition-colors cursor-target group"
                       >
                         <Phone className="h-4 w-4 text-muted-foreground group-hover:text-primary" />
-                        <span>{company.phone}</span>
+                        <span>{company.hotline}</span>
                       </a>
                     )}
                     {company.address && (
@@ -321,10 +370,6 @@ const CompanyDetailPage = ({ company }: CompanyDetailPageProps) => {
                   >
                     <Briefcase className="h-4 w-4 mr-2" />
                     Xem tất cả việc làm
-                  </Button>
-                  <Button variant="outline" className="w-full cursor-target">
-                    <Share2 className="h-4 w-4 mr-2" />
-                    Chia sẻ công ty
                   </Button>
                 </div>
 
@@ -387,9 +432,9 @@ const CompanyDetailPage = ({ company }: CompanyDetailPageProps) => {
                                   User #{review.userId}
                                 </h4>
                                 <span className="text-xs text-muted-foreground">
-                                  {new Date(review.createdAt).toLocaleDateString(
-                                    "vi-VN"
-                                  )}
+                                  {new Date(
+                                    review.createdAt,
+                                  ).toLocaleDateString("vi-VN")}
                                 </span>
                               </div>
                               <div className="flex items-center gap-0.5 mb-1">
@@ -457,8 +502,17 @@ const JobCard = ({
   companyName: string;
   companyLogo: string;
 }) => {
-  const daysLeft = Math.ceil((new Date(job.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
-  
+  const [daysLeft, setDaysLeft] = useState<number>(0);
+
+  useEffect(() => {
+    // Calculate on client-side only to avoid hydration mismatch
+    const days = Math.ceil(
+      (new Date(job.deadline).getTime() - new Date().getTime()) /
+        (1000 * 60 * 60 * 24),
+    );
+    setDaysLeft(days);
+  }, [job.deadline]);
+
   return (
     <Link href={`/jobs/${job.id}`} className="block group cursor-target">
       <Card className=" hover:shadow-md hover:border-primary/50 transition-all duration-300">
@@ -492,8 +546,10 @@ const JobCard = ({
                 </div>
                 <div className="flex items-center gap-1">
                   <Clock className="h-3.5 w-3.5" />
-                  <span className={daysLeft < 7 ? 'text-red-500 font-medium' : ''}>
-                    {daysLeft > 0 ? `Còn ${daysLeft} ngày` : 'Hết hạn'}
+                  <span
+                    className={daysLeft < 7 ? "text-red-500 font-medium" : ""}
+                  >
+                    {daysLeft > 0 ? `Còn ${daysLeft} ngày` : "Hết hạn"}
                   </span>
                 </div>
               </div>
@@ -504,7 +560,7 @@ const JobCard = ({
 
               <div className="flex items-center justify-between">
                 <Badge variant="outline" className="text-xs">
-                  {job.status === 'open' ? 'Đang tuyển' : 'Đã đóng'}
+                  {job.status === "open" ? "Đang tuyển" : "Đã đóng"}
                 </Badge>
 
                 <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />

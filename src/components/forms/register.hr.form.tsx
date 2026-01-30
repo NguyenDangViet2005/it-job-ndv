@@ -53,6 +53,8 @@ export default function FormRegisterHR() {
       dateOfBirth: "",
       companyName: "",
       companyWebsite: "",
+      companyHotline: "",
+      companyEmail: "",
       companyDescription: "",
       companyFoundedYear: undefined,
       companyAddress: "",
@@ -247,6 +249,36 @@ export default function FormRegisterHR() {
                   )}
                 />
 
+                {/* Company Hotline */}
+                <FormField
+                  control={form.control}
+                  name="companyHotline"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Hotline</FormLabel>
+                      <FormControl>
+                        <Input placeholder="1900 xxxx" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Company Email */}
+                <FormField
+                  control={form.control}
+                  name="companyEmail"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email công ty</FormLabel>
+                      <FormControl>
+                        <Input placeholder="contact@company.com" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
                 {/* Company Nationality */}
                 <FormField
                   control={form.control}
@@ -278,7 +310,7 @@ export default function FormRegisterHR() {
                             field.onChange(
                               e.target.value
                                 ? parseInt(e.target.value)
-                                : undefined
+                                : undefined,
                             )
                           }
                         />
@@ -374,8 +406,8 @@ export default function FormRegisterHR() {
                                 loadingWards
                                   ? "Đang tải..."
                                   : wards.length === 0
-                                  ? "Vui lòng chọn tỉnh/thành phố"
-                                  : "Chọn quận/huyện"
+                                    ? "Vui lòng chọn tỉnh/thành phố"
+                                    : "Chọn quận/huyện"
                               }
                             />
                           </SelectTrigger>

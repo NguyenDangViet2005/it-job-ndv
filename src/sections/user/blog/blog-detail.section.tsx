@@ -4,7 +4,14 @@ import React, { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/shadcn/badge";
 import { Button } from "@/components/ui/shadcn/button";
 import { Separator } from "@/components/ui/shadcn/separator";
-import { Calendar, User, Clock, ArrowLeft, Share2, Bookmark } from "lucide-react";
+import {
+  Calendar,
+  User,
+  Clock,
+  ArrowLeft,
+  Share2,
+  Bookmark,
+} from "lucide-react";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -13,7 +20,6 @@ import rehypeRaw from "rehype-raw";
 import { blogApi } from "@/apis";
 import type { BlogResponse } from "@/types/api.type";
 import { formatDate } from "@/utils/date.utils";
-
 
 interface BlogDetailSectionProps {
   id: string;
@@ -48,7 +54,9 @@ function BlogDetailSection({ id }: BlogDetailSectionProps) {
     return (
       <div className="flex items-center justify-center h-96">
         <div className="text-center">
-          <div className="text-muted-foreground text-lg">Đang tải bài viết...</div>
+          <div className="text-muted-foreground text-lg">
+            Đang tải bài viết...
+          </div>
         </div>
       </div>
     );
@@ -99,7 +107,7 @@ function BlogDetailSection({ id }: BlogDetailSectionProps) {
       <div className="mb-8">
         <Badge className="mb-4">{post.category}</Badge>
         <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
-        
+
         <div className="flex flex-wrap items-center gap-4 text-muted-foreground mb-6">
           <div className="flex items-center gap-2">
             <User className="h-4 w-4" />
@@ -107,7 +115,7 @@ function BlogDetailSection({ id }: BlogDetailSectionProps) {
           </div>
           <div className="flex items-center gap-2">
             <Calendar className="h-4 w-4" />
-            <span>{formatDate(post.createdAt, 'long')}</span>
+            <span>{formatDate(post.createdAt, "long")}</span>
           </div>
           <div className="flex items-center gap-2">
             <Clock className="h-4 w-4" />
@@ -131,61 +139,95 @@ function BlogDetailSection({ id }: BlogDetailSectionProps) {
       <Separator className="mb-8" />
 
       {/* Featured Image */}
-      <div className="relative w-full h-[400px] mb-8 rounded-lg overflow-hidden">
-        <img
-          src={post.image}
-          alt={post.title}
-          className="object-cover w-full h-full"
-        />
-      </div>
+      {post.image && (
+        <div className="relative w-full h-[400px] mb-8 rounded-lg overflow-hidden">
+          <img
+            src={post.image}
+            alt={post.title}
+            className="object-cover w-full h-full"
+          />
+        </div>
+      )}
 
       {/* Content */}
       <div className="prose prose-lg dark:prose-invert max-w-none prose-headings:font-bold prose-h2:text-2xl prose-h2:mt-8 prose-h2:mb-4 prose-h3:text-xl prose-h3:mt-6 prose-h3:mb-3 prose-p:text-base prose-p:leading-7 prose-p:mb-4 prose-ul:my-4 prose-li:my-2 prose-strong:font-semibold prose-strong:text-foreground prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:before:content-none prose-code:after:content-none prose-pre:bg-muted prose-pre:border prose-pre:border-border prose-pre:rounded-lg prose-pre:p-4 prose-pre:overflow-x-auto prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-muted-foreground">
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
           rehypePlugins={[rehypeHighlight, rehypeRaw]}
-          components={{
-            h2: ({ ...props }) => (
-              <h2 className="text-2xl font-bold mt-8 mb-4 text-foreground" {...props} />
-            ),
-            h3: ({ ...props }) => (
-              <h3 className="text-xl font-bold mt-6 mb-3 text-foreground" {...props} />
-            ),
-            p: ({ ...props }) => (
-              <p className="text-base leading-7 mb-4 text-foreground/90" {...props} />
-            ),
-            ul: ({ ...props }) => (
-              <ul className="list-disc list-inside my-4 space-y-2" {...props} />
-            ),
-            ol: ({ ...props }) => (
-              <ol className="list-decimal list-inside my-4 space-y-2" {...props} />
-            ),
-            li: ({ ...props }) => (
-              <li className="text-base leading-7 text-foreground/90" {...props} />
-            ),
-            code: ({ className, children, ...props }) => {
-              return (
-                <code
-                  className={className || "bg-muted px-1.5 py-0.5 rounded text-sm font-mono text-primary"}
+          components={
+            {
+              h2: ({ ...props }) => (
+                <h2
+                  className="text-2xl font-bold mt-8 mb-4 text-foreground"
                   {...props}
-                >
-                  {children}
-                </code>
-              );
-            },
-            pre: ({ ...props }) => (
-              <pre className="bg-muted border border-border rounded-lg p-4 overflow-x-auto my-4" {...props} />
-            ),
-            blockquote: ({ ...props }) => (
-              <blockquote className="border-l-4 border-primary pl-4 italic text-muted-foreground my-4" {...props} />
-            ),
-            strong: ({ ...props }) => (
-              <strong className="font-semibold text-foreground" {...props} />
-            ),
-            a: ({ ...props }) => (
-              <a className="text-primary hover:underline font-medium" {...props} />
-            ),
-          } as Components}
+                />
+              ),
+              h3: ({ ...props }) => (
+                <h3
+                  className="text-xl font-bold mt-6 mb-3 text-foreground"
+                  {...props}
+                />
+              ),
+              p: ({ ...props }) => (
+                <p
+                  className="text-base leading-7 mb-4 text-foreground/90"
+                  {...props}
+                />
+              ),
+              ul: ({ ...props }) => (
+                <ul
+                  className="list-disc list-inside my-4 space-y-2"
+                  {...props}
+                />
+              ),
+              ol: ({ ...props }) => (
+                <ol
+                  className="list-decimal list-inside my-4 space-y-2"
+                  {...props}
+                />
+              ),
+              li: ({ ...props }) => (
+                <li
+                  className="text-base leading-7 text-foreground/90"
+                  {...props}
+                />
+              ),
+              code: ({ className, children, ...props }) => {
+                return (
+                  <code
+                    className={
+                      className ||
+                      "bg-muted px-1.5 py-0.5 rounded text-sm font-mono text-primary"
+                    }
+                    {...props}
+                  >
+                    {children}
+                  </code>
+                );
+              },
+              pre: ({ ...props }) => (
+                <pre
+                  className="bg-muted border border-border rounded-lg p-4 overflow-x-auto my-4"
+                  {...props}
+                />
+              ),
+              blockquote: ({ ...props }) => (
+                <blockquote
+                  className="border-l-4 border-primary pl-4 italic text-muted-foreground my-4"
+                  {...props}
+                />
+              ),
+              strong: ({ ...props }) => (
+                <strong className="font-semibold text-foreground" {...props} />
+              ),
+              a: ({ ...props }) => (
+                <a
+                  className="text-primary hover:underline font-medium"
+                  {...props}
+                />
+              ),
+            } as Components
+          }
         >
           {post.content}
         </ReactMarkdown>
@@ -193,7 +235,7 @@ function BlogDetailSection({ id }: BlogDetailSectionProps) {
 
       {/* Footer */}
       <Separator className="my-8" />
-      
+
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
@@ -204,7 +246,7 @@ function BlogDetailSection({ id }: BlogDetailSectionProps) {
             <p className="text-sm text-muted-foreground">Tác giả</p>
           </div>
         </div>
-        
+
         <div className="flex gap-2">
           <Button variant="outline" size="sm">
             <Share2 className="mr-2 h-4 w-4" />

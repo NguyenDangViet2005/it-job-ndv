@@ -2,6 +2,9 @@
 
 import BlogListSection from "@/sections/user/blog/blog-list.section";
 import React from "react";
+import Link from "next/link";
+import { ROUTES } from "@/configs";
+import { HeroSection } from "@/sections/user/common/hero.section";
 
 function BlogPage() {
   return (
@@ -49,11 +52,6 @@ function BlogPage() {
   );
 }
 
-
-// Helper Link component since it's used
-import Link from "next/link";
-import { ROUTES } from "@/configs";
-import { HeroSection } from "@/sections/user/common/hero.section";
 
 export default BlogPage;
 

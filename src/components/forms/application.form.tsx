@@ -252,7 +252,7 @@ export default function ApplicationForm({
           <Button
             type="submit"
             disabled={isLoading}
-            className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-semibold disabled:opacity-50"
+            className="flex-1 bg-primary text-white font-semibold disabled:opacity-50"
           >
             {isLoading ? "Đang gửi..." : "Gửi đơn ứng tuyển"}
           </Button>

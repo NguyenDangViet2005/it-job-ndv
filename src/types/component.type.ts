@@ -140,12 +140,6 @@ export interface MobileMenuProps {
   onLogout: () => void;
 }
 
-export interface ListDialogProps {
-  trigger: React.ReactNode;
-  title: string;
-  children: React.ReactNode;
-}
-
 // ============ Layout Components ============
 export interface QAPageLayoutProps {
   children: React.ReactNode;

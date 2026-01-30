@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/shadcn/button";
 import { Input } from "@/components/ui/shadcn/input";
 import { Textarea } from "@/components/ui/shadcn/textarea";
@@ -101,7 +101,7 @@ const BlogManagement = () => {
         currentPage,
         pageSize,
         undefined,
-        authToken
+        authToken,
       );
 
       // Handle backend response format with $values
@@ -119,7 +119,7 @@ const BlogManagement = () => {
       setTotalItems(response.totalItems || 0);
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Không thể tải danh sách bài viết"
+        err instanceof Error ? err.message : "Không thể tải danh sách bài viết",
       );
     } finally {
       setLoading(false);
@@ -180,41 +180,43 @@ const BlogManagement = () => {
     return matchesSearch && matchesFilter;
   });
 
-  // Stats
-  const stats = [
-    {
-      label: "Tổng bài viết",
-      value: totalItems,
-      icon: FileText,
-      color: "from-purple-500/20 to-purple-600/20",
-    },
-    {
-      label: "Tác giả",
-      value: new Set(blogs.map((b) => b.author)).size,
-      icon: User,
-      color: "from-blue-500/20 to-blue-600/20",
-    },
-    {
-      label: "Danh mục",
-      value: blogCategories.length,
-      icon: Tag,
-      color: "from-green-500/20 to-green-600/20",
-    },
-    {
-      label: "Mới tháng này",
-      value: blogs.filter((b) => {
-        if (!b.createdAt) return false;
-        const date = new Date(b.createdAt);
-        const now = new Date();
-        return (
-          date.getMonth() === now.getMonth() &&
-          date.getFullYear() === now.getFullYear()
-        );
-      }).length,
-      icon: Clock,
-      color: "from-orange-500/20 to-orange-600/20",
-    },
-  ];
+  // Stats - use useMemo to avoid hydration mismatch with date calculations
+  const stats = useMemo(() => {
+    const now = new Date();
+    return [
+      {
+        label: "Tổng bài viết",
+        value: totalItems,
+        icon: FileText,
+        color: "from-purple-500/20 to-purple-600/20",
+      },
+      {
+        label: "Tác giả",
+        value: new Set(blogs.map((b) => b.author)).size,
+        icon: User,
+        color: "from-blue-500/20 to-blue-600/20",
+      },
+      {
+        label: "Danh mục",
+        value: blogCategories.length,
+        icon: Tag,
+        color: "from-green-500/20 to-green-600/20",
+      },
+      {
+        label: "Mới tháng này",
+        value: blogs.filter((b) => {
+          if (!b.createdAt) return false;
+          const date = new Date(b.createdAt);
+          return (
+            date.getMonth() === now.getMonth() &&
+            date.getFullYear() === now.getFullYear()
+          );
+        }).length,
+        icon: Clock,
+        color: "from-orange-500/20 to-orange-600/20",
+      },
+    ];
+  }, [totalItems, blogs, blogCategories.length]);
 
   // Handle actions
   const handleCreate = () => {

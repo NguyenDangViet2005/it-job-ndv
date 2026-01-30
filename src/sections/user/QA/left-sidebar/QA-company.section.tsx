@@ -64,13 +64,15 @@ function BlogCompany({ companyPosts }: { companyPosts: any[] }) {
           </Link>
         ))}
       </CardContent>
-      <Button
-        variant="ghost"
-        className="w-full justify-center text-xs text-primary hover:bg-primary/10"
-      >
-        Xem thêm
-        <ArrowRight className="h-3 w-3 ml-1" />
-      </Button>
+      <Link href={ROUTES.BLOGS}>
+        <Button
+          variant="ghost"
+          className="w-full justify-center text-xs text-primary hover:bg-primary/10"
+        >
+          Xem thêm
+          <ArrowRight className="h-3 w-3 ml-1" />
+        </Button>
+      </Link>
     </Card>
   );
 }

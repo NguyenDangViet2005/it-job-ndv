@@ -20,6 +20,7 @@ import { CompanyCard } from "@/components/cards/companyCards/company.card";
 import { HeroSection } from "@/sections/user/common/hero.section";
 import Link from "next/link";
 import { ROUTES } from "@/configs";
+import { useDebounce } from "@/hooks/useDebounce";
 
 interface CompanyFilters {
   search: string;
@@ -44,6 +45,9 @@ const CompaniesPage = () => {
   });
   const [showFilters, setShowFilters] = useState(false);
 
+  // Debounce search với delay 1 giây
+  const debouncedSearch = useDebounce(filters.search, 1000);
+
   // Fetch companies from API
   useEffect(() => {
     async function fetchCompanies() {
@@ -65,9 +69,9 @@ const CompaniesPage = () => {
   // Filter companies based on criteria (client-side filtering)
   const filteredCompanies = useMemo(() => {
     return companies.filter((company) => {
-      const searchLower = filters.search?.toLowerCase() || "";
+      const searchLower = debouncedSearch?.toLowerCase() || "";
       const matchSearch =
-        !filters.search ||
+        !debouncedSearch ||
         company.name.toLowerCase().includes(searchLower) ||
         company.description?.toLowerCase().includes(searchLower);
 
@@ -81,7 +85,7 @@ const CompaniesPage = () => {
 
       return matchSearch && matchLocation;
     });
-  }, [companies, filters]);
+  }, [companies, debouncedSearch, filters.location]);
 
   const handleSearchChange = (value: string) => {
     setFilters((prev) => ({ ...prev, search: value }));

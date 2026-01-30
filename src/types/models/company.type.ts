@@ -10,6 +10,8 @@ export interface Company {
   description?: string;
   foundedYear?: number;
   address?: string;
+  hotline?: string;
+  companyEmail?: string;
   city?: string;
   country?: string;
   phone?: string;
@@ -20,6 +22,8 @@ export interface Company {
   createdAt?: string;
   updatedAt?: string;
   follows?: CompanyFollow[];
+  members?: any[];
+  membersCount?: number;
   jobs?: CompanyJob[];
   posts?: any[];
   reviews?: CompanyReview[];
@@ -60,6 +64,8 @@ export interface PostCompany {
   name: string;
   avatar?: string;
   address?: string;
+  hotline?: string;
+  companyEmail?: string;
 }
 
 export interface CompanyLogo {

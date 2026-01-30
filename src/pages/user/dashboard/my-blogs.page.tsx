@@ -17,31 +17,13 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { BlogFormModal, BlogDeleteModal } from "@/components/modals";
-
-interface Blog {
-  id: number;
-  userId?: number;
-  categoryId?: number;
-  category?: any;
-  title: string;
-  content: string;
-  excerpt?: string;
-  readTime?: string;
-  image?: string;
-  createdAt: string;
-  updatedAt?: string;
-}
-
-interface Category {
-  id: number;
-  name: string;
-}
+import { Blog, BlogCategory } from "@/types";
 
 export default function MyBlogsPage() {
   const { user, token } = useAuth();
   const router = useRouter();
   const [blogs, setBlogs] = useState<Blog[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<BlogCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -116,7 +98,7 @@ export default function MyBlogsPage() {
       readTime: string;
       image?: string | File;
     },
-    imageFile?: File
+    imageFile?: File,
   ) => {
     if (!user || !token) {
       toast.error("Vui lòng đăng nhập");
@@ -157,7 +139,6 @@ export default function MyBlogsPage() {
       if (imageFile) {
         data.append("image", imageFile);
       }
-
 
       if (createMode) {
         await blogApi.create(data, token);

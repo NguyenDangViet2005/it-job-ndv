@@ -53,7 +53,7 @@ export function UserDashboardLayout({
               "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
               isActive
                 ? "bg-primary text-primary-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                : "text-muted-foreground hover:text-foreground hover:bg-accent",
             )}
           >
             <Icon className="h-4 w-4 flex-shrink-0" />
@@ -74,7 +74,7 @@ export function UserDashboardLayout({
       <div className="p-3.5 rounded-lg border border-primary/20 overflow-hidden">
         <div className="flex items-center gap-3 w-full">
           <Avatar className="h-11 w-11 ring-2 ring-primary/30 flex-shrink-0">
-            <AvatarImage src={user?.avatar || ""} alt={user?.fullName} />
+            <AvatarImage src={user?.avatar || undefined} alt={user?.fullName} />
             <AvatarFallback className="bg-primary text-primary-foreground font-bold text-sm">
               {user?.fullName?.charAt(0)?.toUpperCase() || "U"}
             </AvatarFallback>
@@ -150,7 +150,7 @@ export function UserDashboardLayout({
 
           <div className="flex items-center gap-2">
             <Avatar className="h-8 w-8 ring-2 ring-primary/20">
-              <AvatarImage src={user?.avatar || ""} />
+              <AvatarImage src={user?.avatar || undefined} />
               <AvatarFallback className="bg-primary text-primary-foreground text-sm font-bold">
                 {user?.fullName?.charAt(0) || "U"}
               </AvatarFallback>

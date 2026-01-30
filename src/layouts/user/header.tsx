@@ -25,10 +25,12 @@ import { ROUTES } from "@/configs";
 
 const UserHeader = () => {
   const [scrolled, setScrolled] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { user, isAuthenticated, logout } = useAuth();
   const { theme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+
+  // Use isAuthenticated directly instead of localStorage to avoid hydration mismatch
+  const isLoggedIn = isAuthenticated;
 
   useEffect(() => {
     setMounted(true);
@@ -43,22 +45,16 @@ const UserHeader = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  useEffect(() => {
-    const accessToken = localStorage.getItem("accessToken");
-    setIsLoggedIn(!!accessToken || isAuthenticated);
-  }, [isAuthenticated]);
-
   const handleLogout = () => {
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    setIsLoggedIn(false);
     logout();
   };
 
-  const logoSrc =
-    mounted && (resolvedTheme === "dark" || theme === "dark")
+  // Prevent hydration mismatch by not rendering theme-dependent content until mounted
+  const logoSrc = mounted
+    ? resolvedTheme === "dark" || theme === "dark"
       ? "/logo/logo-dark-removebg.png"
-      : "/logo/logo-removebg.png";
+      : "/logo/logo-removebg.png"
+    : "/logo/logo-removebg.png"; // Default to light logo for SSR
 
   return (
     <header

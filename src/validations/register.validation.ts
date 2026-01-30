@@ -35,6 +35,12 @@ export const RegisterHRFormSchema = z.object({
     .url({ message: "URL website không hợp lệ" })
     .optional()
     .or(z.literal("")),
+  companyHotline: z.string().optional(),
+  companyEmail: z
+    .string()
+    .email({ message: "Email công ty không hợp lệ" })
+    .optional()
+    .or(z.literal("")),
   companyDescription: z.string().optional(),
   companyFoundedYear: z
     .number()

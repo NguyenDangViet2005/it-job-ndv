@@ -52,6 +52,8 @@ export interface RegisterHRRequest {
   companyCoverImage?: string;
   companyNationality?: string;
   companyWebsite?: string;
+  companyHotline?: string;
+  companyEmail?: string;
   companyDescription?: string;
   companyFoundedYear?: number;
   companyAddress?: string;

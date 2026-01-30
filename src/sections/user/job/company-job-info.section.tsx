@@ -165,15 +165,6 @@ export default function CompanyJobInfo({ job }: JobHeaderProps) {
                   <Bookmark className="h-4 w-4 mr-2" />
                   Lưu
                 </Button>
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="cursor-target flex-1 lg:flex-none"
-                  onClick={handleShare}
-                >
-                  <Share2 className="h-4 w-4 mr-2" />
-                  Chia sẻ
-                </Button>
               </div>
             </div>
           </div>

@@ -125,7 +125,7 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
   const loadMoreRef = useInfiniteScroll(
     loadMorePosts,
     hasMorePosts,
-    postsLoading
+    postsLoading,
   );
 
   // Load profile user data if viewing someone else's profile
@@ -203,10 +203,11 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
       const response = await userApi.updateAvatar(user.id, file, token);
       // Update user state instead of reloading
       if (response.data?.avatar) {
-        // Thêm timestamp để tránh browser cache
+        // Use cache busting but in client-side event handler (safe from hydration issues)
+        const timestamp = Date.now();
         const avatarUrl = response.data.avatar.includes("?")
-          ? `${response.data.avatar}&t=${Date.now()}`
-          : `${response.data.avatar}?t=${Date.now()}`;
+          ? `${response.data.avatar}&t=${timestamp}`
+          : `${response.data.avatar}?t=${timestamp}`;
         updateUser({ avatar: avatarUrl });
         toast.success("Cập nhật avatar thành công!");
       }
@@ -279,7 +280,7 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
         { content: newPost, userId: user.id },
         selectedImages.length > 0 ? selectedImages : undefined,
         selectedVideo || undefined,
-        token
+        token,
       );
 
       setPosts((prev: FullPostResponse[]) => [
@@ -318,8 +319,8 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
                   totalLikes: result.totalLikes,
                 },
               }
-            : post
-        )
+            : post,
+        ),
       );
     } catch (error) {
       console.error("Failed to toggle like:", error);
@@ -332,8 +333,8 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
       prev.map((post: FullPostResponse) =>
         post.id === postId
           ? { ...post, showComments: !(post as any).showComments }
-          : post
-      )
+          : post,
+      ),
     );
   };
 
@@ -349,7 +350,7 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
         postId,
         user.id,
         content,
-        token
+        token,
       );
 
       setPosts((prev: FullPostResponse[]) =>
@@ -364,8 +365,8 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
                 },
                 showComments: true,
               }
-            : post
-        )
+            : post,
+        ),
       );
     } catch (error) {
       console.error("Failed to add comment:", error);
@@ -386,7 +387,7 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
     postId: number,
     content: string,
     newImages: File[],
-    keepImageUrls: string[]
+    keepImageUrls: string[],
   ) => {
     if (!token) return;
 
@@ -411,14 +412,14 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
         updateData,
         newImages.length > 0 ? newImages : undefined,
         keepImageUrls,
-        token
+        token,
       );
 
       // Update local state
       setPosts((prev: FullPostResponse[]) =>
         prev.map((p: FullPostResponse) =>
-          p.id === postId ? { ...p, content } : p
-        )
+          p.id === postId ? { ...p, content } : p,
+        ),
       );
       toast.success("Cập nhật bài viết thành công!");
     } catch (error) {
@@ -431,7 +432,7 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
   // Open lightbox
   const openLightbox = (
     mediaList: AttachmentResponse[],
-    startIndex: number = 0
+    startIndex: number = 0,
   ) => {
     setLightboxMedia(mediaList);
     setCurrentMediaIndex(startIndex);
@@ -450,7 +451,7 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
 
   const prevMedia = () => {
     setCurrentMediaIndex(
-      (prev) => (prev - 1 + lightboxMedia.length) % lightboxMedia.length
+      (prev) => (prev - 1 + lightboxMedia.length) % lightboxMedia.length,
     );
   };
 
@@ -535,14 +536,16 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
               alt="Cover"
               className={cn(
                 "w-full h-full object-cover transition-transform duration-500 group-hover:scale-105",
-                isUploadingCover && "blur-sm opacity-50"
+                isUploadingCover && "blur-sm opacity-50",
               )}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             {isUploadingCover && (
               <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/20">
                 <Loader2 className="h-12 w-12 text-white animate-spin mb-2" />
-                <span className="text-white font-medium bg-black/40 px-3 py-1 rounded-full text-sm">Đang cập nhật ảnh bìa...</span>
+                <span className="text-white font-medium bg-black/40 px-3 py-1 rounded-full text-sm">
+                  Đang cập nhật ảnh bìa...
+                </span>
               </div>
             )}
           </div>
@@ -551,7 +554,9 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
             {isUploadingCover ? (
               <div className="flex flex-col items-center gap-2">
                 <Loader2 className="h-10 w-10 text-primary animate-spin" />
-                <span className="text-muted-foreground text-sm font-medium">Đang tải ảnh bìa...</span>
+                <span className="text-muted-foreground text-sm font-medium">
+                  Đang tải ảnh bìa...
+                </span>
               </div>
             ) : (
               <p className="text-muted-foreground text-lg">
@@ -588,10 +593,12 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
               <div className="flex flex-col md:flex-row gap-4 items-center md:items-end pt-6">
                 {/* Avatar */}
                 <div className="relative group">
-                  <Avatar className={cn(
-                    "h-48 w-48 shadow-lg transition-all duration-300 hover:shadow-2xl hover:scale-105",
-                    isUploadingAvatar && "blur-[2px] opacity-70"
-                  )}>
+                  <Avatar
+                    className={cn(
+                      "h-48 w-48 shadow-lg transition-all duration-300 hover:shadow-2xl hover:scale-105",
+                      isUploadingAvatar && "blur-[2px] opacity-70",
+                    )}
+                  >
                     <AvatarImage
                       src={displayUser.avatar}
                       alt={displayUser.fullName}
@@ -605,14 +612,20 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
                       <div
                         className={cn(
                           "absolute inset-0 rounded-full bg-black/40 transition-all duration-300 flex items-center justify-center cursor-pointer",
-                          isUploadingAvatar ? "opacity-100 cursor-wait" : "opacity-0 group-hover:opacity-100"
+                          isUploadingAvatar
+                            ? "opacity-100 cursor-wait"
+                            : "opacity-0 group-hover:opacity-100",
                         )}
-                        onClick={() => !isUploadingAvatar && avatarInputRef.current?.click()}
+                        onClick={() =>
+                          !isUploadingAvatar && avatarInputRef.current?.click()
+                        }
                       >
                         {isUploadingAvatar ? (
                           <div className="flex flex-col items-center gap-2">
                             <Loader2 className="h-10 w-10 text-white animate-spin" />
-                            <span className="text-white text-xs font-medium animate-pulse">Đang tải...</span>
+                            <span className="text-white text-xs font-medium animate-pulse">
+                              Đang tải...
+                            </span>
                           </div>
                         ) : (
                           <Camera className="h-8 w-8 text-white" />
@@ -726,7 +739,7 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
                     <span>
                       Sinh ngày{" "}
                       {new Date(displayUser.dateOfBirth).toLocaleDateString(
-                        "vi-VN"
+                        "vi-VN",
                       )}
                     </span>
                   </div>
@@ -750,8 +763,8 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
                       {displayUser.gender === "male"
                         ? "Nam"
                         : displayUser.gender === "female"
-                        ? "Nữ"
-                        : "Khác"}
+                          ? "Nữ"
+                          : "Khác"}
                     </span>
                   </div>
                 )}
@@ -914,7 +927,7 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
                             <ImageIcon className="h-6 w-6 text-white" />
                           </div>
                         </div>
-                      )
+                      ),
                     )}
                   </div>
                 )}

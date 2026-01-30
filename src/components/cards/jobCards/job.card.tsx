@@ -3,14 +3,7 @@ import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/shadcn/card";
 import { Badge } from "@/components/ui/shadcn/badge";
 import { Button } from "@/components/ui/shadcn/button";
-import {
-  MapPin,
-  Clock,
-  Users,
-  Calendar,
-  Bookmark,
-  Eye,
-} from "lucide-react";
+import { MapPin, Clock, Users, Calendar, Bookmark, Eye } from "lucide-react";
 import type { JobResponse } from "@/types/api.type";
 import { cn } from "@/lib/utils";
 
@@ -46,31 +39,35 @@ export default function JobCard({ job }: JobCardProps) {
                   </h2>
                 </Link>
                 <div className="hidden sm:block">
-                    <Badge 
-                        variant={job.status === "open" ? "default" : "secondary"}
-                        className={cn(
-                            "rounded-full px-3 text-[10px] tracking-wider",
-                            job.status === "open" ? "bg-green-700 hover:bg-green-800" : "bg-muted text-muted-foreground"
-                        )}
-                    >
-                        {job.status === "open" ? "Đang tuyển" : "Đã đóng"}
-                    </Badge>
+                  <Badge
+                    variant={job.status === "open" ? "default" : "secondary"}
+                    className={cn(
+                      "rounded-full px-3 text-[10px] tracking-wider",
+                      job.status === "open"
+                        ? "bg-green-700 hover:bg-green-800"
+                        : "bg-muted text-muted-foreground",
+                    )}
+                  >
+                    {job.status === "open" ? "Đang tuyển" : "Đã đóng"}
+                  </Badge>
                 </div>
               </div>
-              <p className="text-red-500 font-semibold text-sm tracking-wide">{job.company?.name}</p>
-              
+              <p className="text-primary font-semibold text-sm tracking-wide">
+                {job.company?.name}
+              </p>
+
               <div className="flex flex-wrap gap-x-4 gap-y-2 pt-2">
                 <div className="flex items-center text-muted-foreground text-xs font-medium">
-                    <MapPin className="h-3.5 w-3.5 mr-1.5 text-primary/50" />
-                    {job.company?.city || job.company?.address}
+                  <MapPin className="h-3.5 w-3.5 mr-1.5 text-primary/50" />
+                  {job.company?.city || job.company?.address}
                 </div>
                 <div className="flex items-center text-muted-foreground text-xs font-medium">
-                    <Clock className="h-3.5 w-3.5 mr-1.5 text-primary/50" />
-                    {job.type}
+                  <Clock className="h-3.5 w-3.5 mr-1.5 text-primary/50" />
+                  {job.type}
                 </div>
                 <div className="flex items-center text-muted-foreground text-xs font-medium">
-                    <Users className="h-3.5 w-3.5 mr-1.5 text-primary/50" />
-                    {job.quantity} slot
+                  <Users className="h-3.5 w-3.5 mr-1.5 text-primary/50" />
+                  {job.quantity} slot
                 </div>
               </div>
 
@@ -81,32 +78,35 @@ export default function JobCard({ job }: JobCardProps) {
             </div>
 
             <div className="flex items-center justify-between gap-4 mt-4 pt-4 border-t border-border">
-                <div className="flex flex-wrap gap-2">
-                    {job.skills?.slice(0, 3).map((skill: any) => (
-                        <span 
-                            key={skill.id} 
-                            className="bg-muted text-muted-foreground px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-tight"
-                        >
-                            {skill.name}
-                        </span>
-                    ))}
-                    {(job.skills?.length || 0) > 3 && (
-                        <span className="text-[10px] font-bold text-muted-foreground self-center">
-                            +{(job.skills?.length || 0) - 3}
-                        </span>
-                    )}
-                </div>
+              <div className="flex flex-wrap gap-2">
+                {job.skills?.slice(0, 3).map((skill: any) => (
+                  <span
+                    key={skill.id}
+                    className="bg-muted text-muted-foreground px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-tight"
+                  >
+                    {skill.name}
+                  </span>
+                ))}
+                {(job.skills?.length || 0) > 3 && (
+                  <span className="text-[10px] font-bold text-muted-foreground self-center">
+                    +{(job.skills?.length || 0) - 3}
+                  </span>
+                )}
+              </div>
 
-                <div className="flex items-center gap-3 shrink-0">
-                    <span className="text-[11px] text-muted-foreground">
-                        Hạn: {new Date(job.deadline).toLocaleDateString("vi-VN")}
-                    </span>
-                    <Link href={`/jobs/${job.id}`}>
-                        <Button size="sm" className="bg-foreground text-background hover:bg-primary hover:text-white px-4 h-9 transition-all rounded-none font-semibold">
-                            Ứng tuyển
-                        </Button>
-                    </Link>
-                </div>
+              <div className="flex items-center gap-3 shrink-0">
+                <span className="text-[11px] text-muted-foreground">
+                  Hạn: {new Date(job.deadline).toLocaleDateString("vi-VN")}
+                </span>
+                <Link href={`/jobs/${job.id}`}>
+                  <Button
+                    size="sm"
+                    className="bg-foreground text-background hover:bg-primary hover:text-white px-4 h-9 transition-all rounded-none font-semibold"
+                  >
+                    Ứng tuyển
+                  </Button>
+                </Link>
+              </div>
             </div>
           </div>
         </div>

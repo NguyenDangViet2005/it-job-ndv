@@ -28,7 +28,11 @@ export default function JobDetailPage({ jobId }: Props) {
 
         setJobData(response as any);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Không thể tải chi tiết công việc");
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Không thể tải chi tiết công việc",
+        );
       } finally {
         setLoading(false);
       }
@@ -66,7 +70,6 @@ export default function JobDetailPage({ jobId }: Props) {
     level: "Middle",
     postedDate: new Date(jobData.createdAt).toLocaleDateString("vi-VN"),
     applications: 0,
-    // Additional data for highlights
     skills: jobData.skills || [],
     quantity: jobData.quantity,
     deadline: jobData.deadline,
@@ -91,7 +94,11 @@ export default function JobDetailPage({ jobId }: Props) {
     technical: jobData.skills?.map((s: any) => s.name) || [],
     experience: [`${jobData.quantity} vị trí tuyển dụng`],
     education: ["Cử nhân Công nghệ thông tin hoặc tương đương"],
-    soft: ["Kỹ năng giải quyết vấn đề", "Làm việc nhóm tốt", "Giao tiếp hiệu quả"],
+    soft: [
+      "Kỹ năng giải quyết vấn đề",
+      "Làm việc nhóm tốt",
+      "Giao tiếp hiệu quả",
+    ],
   };
 
   const benefitsData = {
@@ -103,19 +110,6 @@ export default function JobDetailPage({ jobId }: Props) {
     welfare: ["Bảo hiểm y tế", "Bảo hiểm xã hội", "Du lịch hàng năm"],
     growth: ["Đào tạo nâng cao kỹ năng", "Tham gia hội thảo công nghệ"],
     environment: ["Văn phòng hiện đại", "Trang thiết bị đầy đủ"],
-  };
-
-  const companyInfoData = {
-    name: jobData.company?.name || "",
-    logo: jobData.company?.avatar || "/logo-company.jpg",
-    size: "50-100",
-    founded: "2015",
-    industry: "Công nghệ",
-    website: jobData.company?.website || "",
-    location: jobData.company?.city || "",
-    email: "hr@company.com",
-    phone: "",
-    description: "Chưa có mô tả công ty",
   };
 
   return (
@@ -131,7 +125,9 @@ export default function JobDetailPage({ jobId }: Props) {
             <Card className="rounded-none">
               <CardContent className="p-6 space-y-8">
                 <div>
-                  <h3 className="text-xl font-semibold mb-4">Mô tả công việc</h3>
+                  <h3 className="text-xl font-semibold mb-4">
+                    Mô tả công việc
+                  </h3>
                   <JobDescription description={descriptionData} />
                 </div>
 
@@ -139,7 +135,9 @@ export default function JobDetailPage({ jobId }: Props) {
 
                 {/* Requirements Section */}
                 <div>
-                  <h3 className="text-xl font-semibold mb-4">Yêu cầu công việc</h3>
+                  <h3 className="text-xl font-semibold mb-4">
+                    Yêu cầu công việc
+                  </h3>
                   <JobRequirements requirements={requirementsData} />
                 </div>
 
@@ -158,10 +156,10 @@ export default function JobDetailPage({ jobId }: Props) {
           <div className="lg:col-span-1">
             <Card className="rounded-none sticky top-8">
               <CardContent className="p-6">
-                <CompanyInfo 
+                <CompanyInfo
                   jobId={jobData.id}
                   jobTitle={jobData.title}
-                  company={companyInfoData} 
+                  company={jobData.company}
                 />
               </CardContent>
             </Card>

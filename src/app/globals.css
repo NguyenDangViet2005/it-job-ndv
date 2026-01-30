@@ -173,7 +173,7 @@
   --card-foreground: oklch(0.2 0.01 280);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.2 0.01 280);
-  --primary: oklch(0.55 0.25 285); /* Purple-600 matching logo */
+  --primary: oklch(68.352% 0.16099 252.591); 
   --primary-foreground: oklch(1 0 0);
   --secondary: oklch(0.95 0.015 285);
   --secondary-foreground: oklch(0.3 0.1 285);
@@ -208,7 +208,7 @@
   --card-foreground: oklch(0.95 0.005 280);
   --popover: oklch(0.18 0.02 285);
   --popover-foreground: oklch(0.95 0.005 280);
-  --primary: oklch(0.62 0.26 285); /* Purple-500 matching logo */
+  --primary: oklch(68.352% 0.16099 252.591); 
   --primary-foreground: oklch(0.98 0.002 280);
   --secondary: oklch(0.22 0.035 285);
   --secondary-foreground: oklch(0.88 0.01 285);

@@ -10,6 +10,7 @@ import CompanyListSection from "@/sections/user/job/company-list.section";
 import JobFilterToolbar from "@/sections/user/job/job-filter-toolbar.section";
 import Link from "next/link";
 import { ROUTES } from "@/configs";
+import { useDebounce } from "@/hooks/useDebounce";
 
 const JobsPage = () => {
   const [jobs, setJobs] = useState<JobResponse[]>([]);
@@ -24,13 +25,16 @@ const JobsPage = () => {
   const [totalPages, setTotalPages] = useState(1);
   const pageSize = 6;
 
+  // Debounce search term với delay 1 giây
+  const debouncedSearchTerm = useDebounce(searchTerm, 1000);
+
   useEffect(() => {
     fetchSkills();
   }, []);
 
   useEffect(() => {
     fetchJobs(currentPage);
-  }, [currentPage, selectedSkill, selectedCompany, searchTerm, selectedJobType]);
+  }, [currentPage, selectedSkill, selectedCompany, debouncedSearchTerm, selectedJobType]);
 
   async function fetchSkills() {
     try {
@@ -55,8 +59,8 @@ const JobsPage = () => {
       }
 
       let filteredJobs = response.data || [];
-      if (searchTerm) {
-        const term = searchTerm.toLowerCase();
+      if (debouncedSearchTerm) {
+        const term = debouncedSearchTerm.toLowerCase();
         filteredJobs = filteredJobs.filter(
           (job: JobResponse) =>
             job.title?.toLowerCase().includes(term) ||
