@@ -9,6 +9,8 @@ class CompanyResponse {
     this.description = company.description;
     this.foundedYear = company.foundedYear;
     this.address = company.address;
+    this.hotline = company.hotline;
+    this.companyEmail = company.companyEmail;
     this.wardId = company.wardId;
 
     // Relational data
@@ -24,6 +26,12 @@ class CompanyResponse {
         createdAt: follow.createdAt,
         updatedAt: follow.updatedAt,
       }));
+    }
+
+    // Company Members data
+    if (company.CompanyMembers) {
+      this.members = company.CompanyMembers;
+      this.membersCount = company.CompanyMembers.length;
     }
 
     this.createdByUserId = company.createdByUserId;

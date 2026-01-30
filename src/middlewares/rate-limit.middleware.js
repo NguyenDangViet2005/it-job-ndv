@@ -12,4 +12,21 @@ const limiter = rateLimit({
   },
 });
 
-module.exports = limiter;
+// Rate limiter riêng cho search endpoint - chặt chẽ hơn
+const searchLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 phút
+  max: 30, // Giới hạn 30 requests mỗi phút (trung bình 2 giây/request)
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    status: 429,
+    message:
+      "Quá nhiều yêu cầu tìm kiếm. Vui lòng thử lại sau 1 phút",
+  },
+  // Skip successful requests để không đếm vào limit
+  skipSuccessfulRequests: false,
+  // Skip failed requests
+  skipFailedRequests: true,
+});
+
+module.exports = { limiter, searchLimiter };

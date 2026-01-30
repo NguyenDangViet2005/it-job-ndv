@@ -42,6 +42,14 @@ const Company = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    hotline: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    companyEmail: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     wardId: {
       type: DataTypes.INTEGER,
       allowNull: true,
@@ -64,7 +72,7 @@ const Company = sequelize.define(
   {
     tableName: "Company",
     timestamps: false, // Để database tự động xử lý với DEFAULT GETDATE()
-  }
+  },
 );
 
 module.exports = Company;

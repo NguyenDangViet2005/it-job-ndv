@@ -6,6 +6,8 @@ class JobCompanyResponse {
     this.avatar = company.avatar;
     this.website = company.website;
     this.address = company.address;
+    this.hotline = company.hotline;
+    this.companyEmail = company.companyEmail;
     this.coverImage = company.coverImage;
     this.address = company.address || null;
   }

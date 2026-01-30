@@ -59,7 +59,8 @@ CREATE TABLE Company (
   website VARCHAR(255),
   description NTEXT,
   foundedYear INT,
-
+  hotline VARCHAR(20) NULL,
+  companyEmail VARCHAR(100) NULL,
   address NVARCHAR(255) NULL,  -- số nhà, đường, thôn...
   wardId INT NULL,                   -- chọn xã/phường là đủ
 

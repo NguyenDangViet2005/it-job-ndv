@@ -15,6 +15,8 @@ class PostCompanyResponse {
     this.name = company.name;
     this.avatar = company.avatar;
     this.address = company.address;
+    this.hotline = company.hotline;
+    this.companyEmail = company.companyEmail;
   }
 }
 
@@ -28,13 +30,13 @@ class PostResponse {
     this.user = post.user
       ? new PostUserResponse(post.user)
       : post.User
-      ? new PostUserResponse(post.User)
-      : null;
+        ? new PostUserResponse(post.User)
+        : null;
     this.company = post.company
       ? new PostCompanyResponse(post.company)
       : post.Company
-      ? new PostCompanyResponse(post.Company)
-      : null;
+        ? new PostCompanyResponse(post.Company)
+        : null;
 
     // Handle Interaction
     // If post.interaction is already an object (from specific service format) or if it's a model

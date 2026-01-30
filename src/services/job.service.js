@@ -1,5 +1,5 @@
 const { Job, Company, Skill, SkillJob, CompanyMember } = require("../models");
-const { Op, fn, col, literal } = require("sequelize");
+const { Op, literal } = require("sequelize");
 const { JobResponse } = require("../dtos/JobResponse.dto");
 
 const getAll = async (pageNumber = 1, pageSize = 10) => {
@@ -19,7 +19,7 @@ const getAll = async (pageNumber = 1, pageSize = 10) => {
       include: [
         {
           model: Company,
-          attributes: ["id", "name", "avatar", "website", "address"],
+          attributes: ["id", "name", "avatar", "website", "address", "hotline"],
         },
         {
           model: Skill,
@@ -49,7 +49,6 @@ const getById = async (id) => {
       include: [
         {
           model: Company,
-          attributes: ["id", "name", "avatar", "website", "address"],
         },
         {
           model: Skill,
@@ -177,7 +176,7 @@ const getJobsByCompanyId = async (
       include: [
         {
           model: Company,
-          attributes: ["id", "name", "avatar", "website", "address"],
+          attributes: ["id", "name", "avatar", "website", "address", "hotline"],
         },
         {
           model: Skill,
@@ -221,7 +220,9 @@ const getJobsToday = async () => {
         ],
       },
       include: [
-        { model: Company },
+        {
+          model: Company,
+        },
         {
           model: Skill,
           through: { attributes: [] },
@@ -249,7 +250,10 @@ const getJobsBySkill = async (skillId, pageNumber = 1, pageSize = 10) => {
         deadline: { [Op.gt]: today },
       },
       include: [
-        { model: Company },
+        {
+          model: Company,
+          attributes: ["id", "name", "avatar", "website", "address", "hotline"],
+        },
         {
           model: Skill,
           where: { id: skillId },

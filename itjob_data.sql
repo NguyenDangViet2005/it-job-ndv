@@ -83,7 +83,7 @@ GO
 -- 2. INSERT COMPANY (10 bản ghi)
 -- INSERT COMPANY (10 bản ghi) - đúng schema Company bạn gửi
 INSERT INTO Company
-(name, avatar, coverImage, nationality, website, description, foundedYear, address, wardId, createdByUserId)
+(name, avatar, coverImage, nationality, website, description, foundedYear, address, hotline, companyEmail, wardId, createdByUserId)
 VALUES
 (N'FPT Software',
  'https://res.cloudinary.com/duc6z828y/image/upload/v1767520136/FPT_Software_qswf1z.webp',
@@ -93,6 +93,8 @@ VALUES
  N'Công ty phần mềm hàng đầu Việt Nam, chuyên cung cấp dịch vụ công nghệ thông tin và giải pháp chuyển đổi số.',
  1999,
  N'Tòa nhà FPT, Quận 9',
+ '1900 6079',
+ 'contact@fpt.com.vn',
  1, 1),
 
 (N'VNG Corporation',
@@ -103,6 +105,8 @@ VALUES
  N'Tập đoàn công nghệ internet hàng đầu Việt Nam với các sản phẩm như Zalo, ZaloPay, 123Go.',
  2004,
  N'Z06 Đường số 13, Quận 9',
+ '1900 561 558',
+ 'hr@vng.com.vn',
  1, 2),
 
 (N'Tiki Corporation',
@@ -113,6 +117,8 @@ VALUES
  N'Sàn thương mại điện tử lớn nhất Việt Nam, cung cấp dịch vụ mua sắm trực tuyến đa dạng.',
  2010,
  N'52 Út Tịch, Quận Tân Bình',
+ '1900 6035',
+ 'careers@tiki.vn',
  1, 3),
 
 (N'Momo Technology',
@@ -123,6 +129,8 @@ VALUES
  N'Ví điện tử và nền tảng thanh toán di động hàng đầu tại Việt Nam.',
  2007,
  N'Lầu 6, Tòa nhà Phú Mỹ Hưng, Quận 7',
+ '1900 5454 96',
+ 'recruitment@momo.vn',
  1, 4),
 
 (N'Base.vn',
@@ -133,6 +141,8 @@ VALUES
  N'Công ty công nghệ chuyên phát triển ứng dụng mobile và web cho doanh nghiệp.',
  2012,
  N'194 Golden Building, Quận 3',
+ '028 7300 6200',
+ 'jobs@base.vn',
  1, 5),
 
 (N'GrabTech Vietnam',
@@ -143,6 +153,8 @@ VALUES
  N'Nền tảng siêu ứng dụng hàng đầu Đông Nam Á về gọi xe, giao hàng và thanh toán.',
  2012,
  N'Tòa nhà Viettel, Quận 10',
+ '1900 1703',
+ 'careers.vn@grab.com',
  1, 6),
 
 (N'Shopee Vietnam',
@@ -153,6 +165,8 @@ VALUES
  N'Sàn thương mại điện tử di động hàng đầu khu vực Đông Nam Á và Đài Loan.',
  2015,
  N'Tòa nhà Viettel, Quận 10',
+ '1900 1221',
+ 'careers.vn@shopee.com',
  1, 7),
 
 (N'TechComBank',
@@ -163,6 +177,8 @@ VALUES
  N'Ngân hàng thương mại cổ phần công nghệ và truyền thông Việt Nam.',
  1993,
  N'191 Bà Triệu, Quận Hai Bà Trưng',
+ '1800 588 822',
+ 'hr@techcombank.com.vn',
  2, 8),
 
 (N'Viettel Solutions',
@@ -173,6 +189,8 @@ VALUES
  N'Đơn vị cung cấp giải pháp và dịch vụ CNTT toàn diện của Tập đoàn Viettel.',
  2008,
  N'285 Cách Mạng Tháng 8, Quận 10',
+ '1800 8098',
+ 'recruit@viettelsolutions.vn',
  1, 9),
 
 (N'VinTech City',
@@ -183,6 +201,8 @@ VALUES
  N'Công ty công nghệ thuộc Tập đoán Vingroup, phát triển giải pháp công nghệ thông minh.',
  2018,
  N'Vinhomes Ocean Park, Gia Lâm',
+ '1900 23 23 89',
+ 'careers@vingroup.net',
  2, 10);
 GO
 
