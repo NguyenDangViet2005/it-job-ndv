@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { blogApi, companyApi } from "@/apis";
 import { connectionApi } from "@/apis/connection.api";
 import { useAuth } from "@/hooks/useAuth";
@@ -12,15 +12,21 @@ export function useQAPage() {
     token,
   );
 
-  const [loadingCommentsForPost, setLoadingCommentsForPost] = useState<number | null>(null);
+  const [loadingCommentsForPost, setLoadingCommentsForPost] = useState<
+    number | null
+  >(null);
   const [blogs, setBlogs] = useState<BlogResponse[]>([]);
   const [suggestedCompanies, setSuggestedCompanies] = useState<Company[]>([]);
   const [followedCompanyIds, setFollowedCompanyIds] = useState<number[]>([]);
   const [connections, setConnections] = useState<any[]>([]);
+  const hasFetchedSideData = useRef(false);
 
   // Fetch side data
   useEffect(() => {
     const fetchSideData = async () => {
+      if (hasFetchedSideData.current) return;
+      hasFetchedSideData.current = true;
+
       try {
         // Fetch blogs
         const blogRes = await blogApi.getAll(1, 5);
@@ -43,13 +49,13 @@ export function useQAPage() {
           const companyData = Array.isArray(companyRes.data)
             ? companyRes.data
             : (companyRes.data as any).data || [];
-          
+
           const followedIds = companyData
-            .filter((company: any) => 
-              company.follows?.some((follow: any) => follow.userid === user.id)
+            .filter((company: any) =>
+              company.follows?.some((follow: any) => follow.userid === user.id),
             )
             .map((company: any) => company.id);
-          
+
           setFollowedCompanyIds(followedIds);
         }
 
@@ -70,7 +76,7 @@ export function useQAPage() {
       }
     };
 
-    if (!authLoading) {
+    if (!authLoading && !hasFetchedSideData.current) {
       fetchSideData();
     }
   }, [authLoading, user, token]);

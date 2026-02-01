@@ -13,7 +13,7 @@ import type {
 export function usePosts(
   currentUserId?: number,
   token?: string | null,
-  initialPageSize: number = 10
+  initialPageSize: number = 10,
 ) {
   const [posts, setPosts] = useState<FullPostResponse[]>([]);
   const [loading, setLoading] = useState(false);
@@ -31,7 +31,7 @@ export function usePosts(
           pageNumber,
           initialPageSize,
           currentUserId,
-          token || undefined
+          token || undefined,
         );
 
         const newPosts = (response.data || []) as unknown as FullPostResponse[];
@@ -45,11 +45,12 @@ export function usePosts(
         setPage(pageNumber);
       } catch (err: any) {
         setError(err.message || "Failed to load posts");
+        setHasMore(false); // Stop infinite scroll on error
       } finally {
         setLoading(false);
       }
     },
-    [initialPageSize, token, currentUserId]
+    [initialPageSize, token, currentUserId],
   );
 
   const loadMore = useCallback(() => {
@@ -66,8 +67,7 @@ export function usePosts(
   // Initial load
   useEffect(() => {
     loadPosts(1, true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentUserId, token]);
+  }, [loadPosts]);
 
   return { posts, loading, hasMore, error, loadMore, refresh, setPosts };
 }
@@ -77,7 +77,7 @@ export function useUserPosts(
   targetUserId: number,
   currentUserId?: number,
   token?: string | null,
-  initialPageSize: number = 10
+  initialPageSize: number = 10,
 ) {
   const [posts, setPosts] = useState<FullPostResponse[]>([]);
   const [loading, setLoading] = useState(false);
@@ -98,7 +98,7 @@ export function useUserPosts(
           pageNumber,
           initialPageSize,
           currentUserId,
-          token || undefined
+          token || undefined,
         );
 
         const newPosts = (response.data || []) as unknown as FullPostResponse[];
@@ -112,11 +112,12 @@ export function useUserPosts(
         setPage(pageNumber);
       } catch (err: any) {
         setError(err.message || "Failed to load posts");
+        setHasMore(false); // Stop infinite scroll on error
       } finally {
         setLoading(false);
       }
     },
-    [targetUserId, initialPageSize, token, currentUserId]
+    [targetUserId, initialPageSize, token, currentUserId],
   );
 
   const loadMore = useCallback(() => {
@@ -134,8 +135,7 @@ export function useUserPosts(
     if (targetUserId) {
       loadPosts(1, true);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [targetUserId, currentUserId, token]);
+  }, [loadPosts, targetUserId]);
 
   return { posts, loading, hasMore, error, loadMore, refresh, setPosts };
 }
@@ -144,7 +144,7 @@ export function useUserPosts(
 export function useUserMedia(
   targetUserId: number,
   token?: string | null,
-  initialPageSize: number = 6
+  initialPageSize: number = 6,
 ) {
   const [media, setMedia] = useState<AttachmentResponse[]>([]);
   const [loading, setLoading] = useState(false);
@@ -163,7 +163,7 @@ export function useUserMedia(
           targetUserId,
           pageNumber,
           initialPageSize,
-          token || undefined
+          token || undefined,
         );
 
         const newMedia = response.data || [];
@@ -182,7 +182,7 @@ export function useUserMedia(
         setLoading(false);
       }
     },
-    [targetUserId, initialPageSize, token]
+    [targetUserId, initialPageSize, token],
   );
 
   const loadMore = useCallback(() => {
@@ -195,8 +195,7 @@ export function useUserMedia(
     if (targetUserId) {
       loadMedia(1, true);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [targetUserId, token]);
+  }, [loadMedia, targetUserId]);
 
   return { media, loading, hasMore, totalItems, loadMore };
 }
@@ -205,7 +204,7 @@ export function useUserMedia(
 export function useComments(
   postid: number,
   token?: string | null,
-  initialPageSize: number = 10
+  initialPageSize: number = 10,
 ) {
   const [comments, setComments] = useState<CommentResponse[]>([]);
   const [loading, setLoading] = useState(false);
@@ -223,7 +222,7 @@ export function useComments(
           postid,
           pageNumber,
           initialPageSize,
-          token || undefined
+          token || undefined,
         );
 
         const newComments = response.data || [];
@@ -241,7 +240,7 @@ export function useComments(
         setLoading(false);
       }
     },
-    [loading, postid, initialPageSize, token]
+    [loading, postid, initialPageSize, token],
   );
 
   const loadMore = useCallback(() => {
@@ -263,7 +262,7 @@ export function useInfiniteScroll(
   callback: () => void,
   hasMore: boolean,
   loading: boolean,
-  threshold: number = 100
+  threshold: number = 100,
 ) {
   const observerRef = useRef<IntersectionObserver | null>(null);
   const loadMoreRef = useCallback(
@@ -282,14 +281,14 @@ export function useInfiniteScroll(
         },
         {
           rootMargin: `${threshold}px`,
-        }
+        },
       );
 
       if (node) {
         observerRef.current.observe(node);
       }
     },
-    [loading, hasMore, callback, threshold]
+    [loading, hasMore, callback, threshold],
   );
 
   return loadMoreRef;

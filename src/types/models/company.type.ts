@@ -16,8 +16,8 @@ export interface Company {
   country?: string;
   phone?: string;
   wardid?: number;
-  wardName?: string;
-  provinceName?: string;
+  wardname?: string;
+  provincename?: string;
   createdbyuserid?: number;
   createdat?: string;
   updatedat?: string;
