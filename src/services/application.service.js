@@ -12,12 +12,12 @@ const getAll = async (pageNumber = 1, pageSize = 10) => {
         },
         {
           model: User,
-          attributes: ["id", "fullName", "email", "avatar"],
+          attributes: ["id", "fullname", "email", "avatar"],
         },
       ],
       offset,
       limit: pageSize,
-      order: [["createdAt", "DESC"]],
+      order: [["createdat", "DESC"]],
     });
     return {
       data: rows.map((app) => new ApplicationResponse(app)),
@@ -33,13 +33,13 @@ const getAll = async (pageNumber = 1, pageSize = 10) => {
 
 const create = async (applicationData) => {
   try {
-    const { jobId, userId, cvUrl, coverLetter } = applicationData;
+    const { jobid, userid, cvurl, coverletter } = applicationData;
 
     // Check if application already exists
     const existingApplication = await Application.findOne({
       where: {
-        jobId,
-        userId,
+        jobid,
+        userid,
       },
     });
     if (existingApplication) {
@@ -48,16 +48,16 @@ const create = async (applicationData) => {
 
     // Create application
     const newApplication = await Application.create({
-      jobId,
-      userId,
-      cvUrl: cvUrl || null,
-      coverLetter: coverLetter || null,
+      jobid,
+      userid,
+      cvurl: cvurl || null,
+      coverletter: coverletter || null,
       status: "pending",
     });
 
     // Load with relations
     const loadedApplication = await Application.findOne({
-      where: { jobId, userId },
+      where: { jobid, userid },
       include: [
         {
           model: Job,
@@ -65,7 +65,7 @@ const create = async (applicationData) => {
         },
         {
           model: User,
-          attributes: ["id", "fullName", "email"],
+          attributes: ["id", "fullname", "email"],
         },
       ],
     });
@@ -77,11 +77,11 @@ const create = async (applicationData) => {
   }
 };
 
-const getByUserId = async (userId, pageNumber = 1, pageSize = 10) => {
+const getByUserId = async (userid, pageNumber = 1, pageSize = 10) => {
   try {
     const offset = (pageNumber - 1) * pageSize;
     const { count, rows } = await Application.findAndCountAll({
-      where: { userId },
+      where: { userid },
       include: [
         {
           model: Job,
@@ -89,12 +89,12 @@ const getByUserId = async (userId, pageNumber = 1, pageSize = 10) => {
         },
         {
           model: User,
-          attributes: ["id", "fullName", "email"],
+          attributes: ["id", "fullname", "email"],
         },
       ],
       offset,
       limit: pageSize,
-      order: [["createdAt", "DESC"]],
+      order: [["createdat", "DESC"]],
     });
     return {
       data: rows.map((app) => new ApplicationResponse(app)),
@@ -108,25 +108,25 @@ const getByUserId = async (userId, pageNumber = 1, pageSize = 10) => {
   }
 };
 
-const getByCompanyId = async (companyId, pageNumber = 1, pageSize = 10) => {
+const getByCompanyId = async (companyid, pageNumber = 1, pageSize = 10) => {
   try {
     const offset = (pageNumber - 1) * pageSize;
     const { count, rows } = await Application.findAndCountAll({
       include: [
         {
           model: Job,
-          where: { companyId },
+          where: { companyid },
           required: true,
           include: [{ model: Company }],
         },
         {
           model: User,
-          attributes: ["id", "fullName", "email", "avatar"],
+          attributes: ["id", "fullname", "email", "avatar"],
         },
       ],
       offset,
       limit: pageSize,
-      order: [["createdAt", "DESC"]],
+      order: [["createdat", "DESC"]],
     });
     return {
       data: rows.map((app) => new ApplicationResponse(app)),
@@ -140,10 +140,10 @@ const getByCompanyId = async (companyId, pageNumber = 1, pageSize = 10) => {
   }
 };
 
-const update = async (jobId, userId, updateData) => {
+const update = async (jobId, userid, updateData) => {
   try {
     const application = await Application.findOne({
-      where: { jobId, userId },
+      where: { jobid, userid },
       include: [
         {
           model: Job,
@@ -158,9 +158,9 @@ const update = async (jobId, userId, updateData) => {
     if (!application) {
       return null;
     }
-    if (updateData.cvUrl) application.cvUrl = updateData.cvUrl;
-    if (updateData.coverLetter)
-      application.coverLetter = updateData.coverLetter;
+    if (updateData.cvurl) application.cvurl = updateData.cvurl;
+    if (updateData.coverletter)
+      application.coverletter = updateData.coverletter;
     if (updateData.status) application.status = updateData.status;
 
     await application.save();
@@ -170,10 +170,10 @@ const update = async (jobId, userId, updateData) => {
   }
 };
 
-const deleteApp = async (jobId, userId) => {
+const deleteApp = async (jobId, userid) => {
   try {
     const application = await Application.findOne({
-      where: { jobId, userId },
+      where: { jobid, userid },
     });
 
     if (!application) {

@@ -1,17 +1,17 @@
 const { Follow, User, Company } = require("../models");
 const FollowResponse = require("../dtos/FollowResponse.dto");
 
-const toggleFollow = async (userId, companyId) => {
+const toggleFollow = async (userid, companyid) => {
   try {
     const existing = await Follow.findOne({
-      where: { userId, companyId },
+      where: { userid, companyid },
     });
 
     if (existing) {
       await existing.destroy();
       return { followed: false };
     } else {
-      await Follow.create({ userId, companyId });
+      await Follow.create({ userid, companyid });
       return { followed: true };
     }
   } catch (error) {
@@ -19,15 +19,15 @@ const toggleFollow = async (userId, companyId) => {
   }
 };
 
-const getFollowsByCompany = async (companyId, page = 1, pageSize = 10) => {
+const getFollowsByCompany = async (companyid, page = 1, pageSize = 10) => {
   const offset = (page - 1) * pageSize;
   const { count, rows } = await Follow.findAndCountAll({
-    where: { companyId },
+    where: { companyid },
     include: [
       {
         model: User,
         as: "User",
-        attributes: ["id", "fullName", "avatar", "email"],
+        attributes: ["id", "fullname", "avatar", "email"],
       },
     ],
     limit: pageSize,

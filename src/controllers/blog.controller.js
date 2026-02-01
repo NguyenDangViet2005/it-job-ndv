@@ -10,11 +10,11 @@ const getAll = async (req, res, next) => {
   try {
     const page = parseInt(req.query.pageNumber) || 1;
     const pageSize = parseInt(req.query.pageSize) || 10;
-    const categoryId = req.query.categoryId
-      ? parseInt(req.query.categoryId)
+    const categoryid = req.query.categoryid
+      ? parseInt(req.query.categoryid)
       : null;
 
-    const result = await blogService.getAllBlogs(page, pageSize, categoryId);
+    const result = await blogService.getAllBlogs(page, pageSize, categoryid);
     res.status(200).json(result);
   } catch (error) {
     next(error);
@@ -36,11 +36,11 @@ const getById = async (req, res, next) => {
 
 const getByUserId = async (req, res, next) => {
   try {
-    const userId = parseInt(req.params.userId);
+    const userid = parseInt(req.params.userid);
     const page = parseInt(req.query.pageNumber) || 1;
     const pageSize = parseInt(req.query.pageSize) || 10;
 
-    const result = await blogService.getBlogsByUserId(userId, page, pageSize);
+    const result = await blogService.getBlogsByUserId(userid, page, pageSize);
     res.status(200).json(result);
   } catch (error) {
     next(error);
@@ -49,15 +49,15 @@ const getByUserId = async (req, res, next) => {
 
 const create = async (req, res, next) => {
   try {
-    const userId = getCurrentUserId(req);
-    if (!userId) {
-      if (!req.body.userId)
+    const userid = getCurrentUserId(req);
+    if (!userid) {
+      if (!req.body.userid)
         return res.status(401).json({ message: "Unauthorized" });
     }
 
     const data = {
       ...req.body,
-      userId: req.body.userId || userId,
+      userid: req.body.userid || userid,
     };
 
     const result = await blogService.createBlog(data, req.file);

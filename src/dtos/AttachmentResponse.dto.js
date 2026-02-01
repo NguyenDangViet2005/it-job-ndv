@@ -1,8 +1,8 @@
 class AttachmentResponse {
   constructor(attachment) {
     this.id = attachment.id;
-    this.fileUrl = attachment.fileUrl;
-    this.fileType = attachment.fileType; // "image" or "video"
+    this.fileurl = attachment.fileurl;
+    this.filetype = attachment.filetype; // "image" or "video"
   }
 }
 

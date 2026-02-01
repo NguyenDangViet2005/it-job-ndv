@@ -17,16 +17,16 @@ const getCurrentUserId = (req) => {
 
 const toggleFollow = async (req, res, next) => {
   try {
-    const userId = req.body.userId || getCurrentUserId(req);
-    const companyId = req.body.companyId;
+    const userid = req.body.userid || getCurrentUserId(req);
+    const companyid = req.body.companyid;
 
-    if (!userId || !companyId) {
+    if (!userid || !companyid) {
       return res
         .status(400)
         .json({ message: "UserId and CompanyId are required" });
     }
 
-    const result = await followService.toggleFollow(userId, companyId);
+    const result = await followService.toggleFollow(userid, companyid);
     res.status(200).json(result);
   } catch (error) {
     next(error);
@@ -35,14 +35,14 @@ const toggleFollow = async (req, res, next) => {
 
 const getFollowsByCompany = async (req, res, next) => {
   try {
-    const companyId = parseInt(req.params.companyId);
+    const companyid = parseInt(req.params.companyid);
     const page = parseInt(req.query.pageNumber) || 1;
     const pageSize = parseInt(req.query.pageSize) || 10;
 
     const result = await followService.getFollowsByCompany(
-      companyId,
+      companyid,
       page,
-      pageSize
+      pageSize,
     );
     res.status(200).json(result);
   } catch (error) {

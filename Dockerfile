@@ -13,7 +13,7 @@ RUN npm ci --omit=dev
 COPY . .
 # copy tất cả các file hiện tại trong dự án BE
 
-EXPOSE 8081
+EXPOSE 8081 
 # mở port 8081 cho container (hoặc port bạn dùng trong .env)
 
 ENV NODE_ENV=production

@@ -47,16 +47,16 @@ const getById = async (req, res, next) => {
 
 const getByUserId = async (req, res, next) => {
   try {
-    const userId = parseInt(req.params.userId);
+    const userid = parseInt(req.params.userid);
     const page = parseInt(req.query.pageNumber) || 1;
     const pageSize = parseInt(req.query.pageSize) || 10;
     const currentUserId = getCurrentUserId(req);
 
     const result = await postService.getPostsByUserId(
-      userId,
+      userid,
       page,
       pageSize,
-      currentUserId
+      currentUserId,
     );
     res.status(200).json(result);
   } catch (error) {
@@ -66,16 +66,16 @@ const getByUserId = async (req, res, next) => {
 
 const getByCompanyId = async (req, res, next) => {
   try {
-    const companyId = parseInt(req.params.companyId);
+    const companyid = parseInt(req.params.companyid);
     const page = parseInt(req.query.pageNumber) || 1;
     const pageSize = parseInt(req.query.pageSize) || 10;
     const currentUserId = getCurrentUserId(req);
 
     const result = await postService.getPostsByCompanyId(
-      companyId,
+      companyid,
       page,
       pageSize,
-      currentUserId
+      currentUserId,
     );
     res.status(200).json(result);
   } catch (error) {
@@ -85,16 +85,16 @@ const getByCompanyId = async (req, res, next) => {
 
 const create = async (req, res, next) => {
   try {
-    const userId = getCurrentUserId(req);
+    const userid = getCurrentUserId(req);
 
-    if (!userId && !req.body.userId) {
+    if (!userid && !req.body.userid) {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
     const postData = {
       content: req.body.content,
-      userId: req.body.userId ? parseInt(req.body.userId) : userId || 0,
-      companyId: req.body.companyId ? parseInt(req.body.companyId) : null,
+      userid: req.body.userid ? parseInt(req.body.userid) : userid || 0,
+      companyid: req.body.companyid ? parseInt(req.body.companyid) : null,
     };
 
     const result = await postService.createPost(postData, req.files);
@@ -107,16 +107,16 @@ const create = async (req, res, next) => {
 const update = async (req, res, next) => {
   try {
     const id = parseInt(req.params.id);
-    const userId = getCurrentUserId(req);
+    const userid = getCurrentUserId(req);
 
     const postData = {
       content: req.body.content,
-      userId: req.body.userId || userId,
-      companyId: req.body.companyId,
+      userid: req.body.userid || userid,
+      companyid: req.body.companyid,
     };
 
     let keepImageUrls = [];
-    
+
     if (req.body.keepImageUrls) {
       keepImageUrls = Array.isArray(req.body.keepImageUrls)
         ? req.body.keepImageUrls
@@ -127,7 +127,12 @@ const update = async (req, res, next) => {
         : [req.body["keepImageUrls[]"]];
     }
 
-    const result = await postService.updatePost(id, postData, req.files, keepImageUrls);
+    const result = await postService.updatePost(
+      id,
+      postData,
+      req.files,
+      keepImageUrls,
+    );
     res.status(200).json(result);
   } catch (error) {
     next(error);
@@ -157,7 +162,7 @@ const getComments = async (req, res, next) => {
     const result = await interactionService.getCommentsByPostId(
       id,
       page,
-      pageSize
+      pageSize,
     );
     res.status(200).json(result);
   } catch (error) {
@@ -168,13 +173,13 @@ const getComments = async (req, res, next) => {
 const toggleLike = async (req, res, next) => {
   try {
     const id = parseInt(req.params.id);
-    const userId = getCurrentUserId(req);
+    const userid = getCurrentUserId(req);
 
-    if (!userId) {
+    if (!userid) {
       return res.status(400).json({ message: "UserId is required" });
     }
 
-    const result = await interactionService.toggleLike(id, userId);
+    const result = await interactionService.toggleLike(id, userid);
     res.status(200).json(result);
   } catch (error) {
     next(error);
@@ -184,21 +189,21 @@ const toggleLike = async (req, res, next) => {
 const addComment = async (req, res, next) => {
   try {
     const id = parseInt(req.params.id);
-    const userId = req.body.userId || getCurrentUserId(req);
+    const userid = req.body.userid || getCurrentUserId(req);
     const content = req.body.content;
 
     if (!content) {
       return res.status(400).json({ message: "Comment content is required" });
     }
-    if (!userId) {
+    if (!userid) {
       return res.status(400).json({ message: "UserId is required" });
     }
 
     const result = await interactionService.addComment(
       id,
-      userId,
+      userid,
       content,
-      req.files
+      req.files,
     );
     res.status(200).json(result);
   } catch (error) {
@@ -209,7 +214,7 @@ const addComment = async (req, res, next) => {
 const updateComment = async (req, res, next) => {
   try {
     const commentId = parseInt(req.params.commentId);
-    const userId = req.body.userId || getCurrentUserId(req);
+    const userid = req.body.userid || getCurrentUserId(req);
     const content = req.body.content;
     // keepImageUrls is sent as array: keepImageUrls[]
     const keepImageUrls = req.body["keepImageUrls[]"]
@@ -218,16 +223,16 @@ const updateComment = async (req, res, next) => {
         : [req.body["keepImageUrls[]"]]
       : [];
 
-    if (!userId) {
+    if (!userid) {
       return res.status(400).json({ message: "UserId is required" });
     }
 
     const result = await interactionService.updateComment(
       commentId,
-      userId,
+      userid,
       content,
       req.files,
-      keepImageUrls
+      keepImageUrls,
     );
     res.status(200).json(result);
   } catch (error) {
@@ -238,13 +243,13 @@ const updateComment = async (req, res, next) => {
 const deleteComment = async (req, res, next) => {
   try {
     const commentId = parseInt(req.params.commentId);
-    const userId = parseInt(req.query.userId) || getCurrentUserId(req);
+    const userid = parseInt(req.query.userid) || getCurrentUserId(req);
 
-    if (!userId) {
+    if (!userid) {
       return res.status(400).json({ message: "UserId is required" });
     }
 
-    const result = await interactionService.deleteComment(commentId, userId);
+    const result = await interactionService.deleteComment(commentId, userid);
     if (!result) {
       return res.status(404).json({
         message: "Comment not found or you don't have permission to delete",

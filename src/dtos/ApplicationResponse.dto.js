@@ -1,12 +1,12 @@
 class ApplicationResponse {
   constructor(data) {
-    this.jobId = data.jobId;
-    this.userId = data.userId;
-    this.cvUrl = data.cvUrl;
-    this.coverLetter = data.coverLetter;
+    this.jobid = data.jobid;
+    this.userid = data.userid;
+    this.cvurl = data.cvurl;
+    this.coverletter = data.coverletter;
     this.status = data.status;
-    this.createdAt = data.createdAt;
-    this.updatedAt = data.updatedAt;
+    this.createdat = data.createdat;
+    this.updatedat = data.updatedat;
 
     // Additional info from Job
     this.jobTitle = data.Job?.title || null;
@@ -14,7 +14,7 @@ class ApplicationResponse {
     this.companyLogo = data.Job?.Company?.avatar || null;
 
     // Additional info from User
-    this.userFullName = data.User?.fullName || null;
+    this.userfullname = data.User?.fullname || null;
     this.userEmail = data.User?.email || null;
   }
 }

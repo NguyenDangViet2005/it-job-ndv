@@ -3,15 +3,15 @@ class CompanyResponse {
     this.id = company.id;
     this.name = company.name;
     this.avatar = company.avatar;
-    this.coverImage = company.coverImage;
+    this.coverimage = company.coverimage;
     this.nationality = company.nationality;
     this.website = company.website;
     this.description = company.description;
-    this.foundedYear = company.foundedYear;
+    this.foundedyear = company.foundedyear;
     this.address = company.address;
     this.hotline = company.hotline;
-    this.companyEmail = company.companyEmail;
-    this.wardId = company.wardId;
+    this.companyemail = company.companyemail;
+    this.wardid = company.wardid;
 
     // Relational data
     this.wardName = company.Ward ? company.Ward.name : null;
@@ -21,10 +21,10 @@ class CompanyResponse {
     // Follows data
     if (company.Follows) {
       this.follows = company.Follows.map((follow) => ({
-        userId: follow.userId,
-        companyId: follow.companyId,
-        createdAt: follow.createdAt,
-        updatedAt: follow.updatedAt,
+        userid: follow.userid,
+        companyid: follow.companyid,
+        createdat: follow.createdat,
+        updatedat: follow.updatedat,
       }));
     }
 
@@ -34,9 +34,9 @@ class CompanyResponse {
       this.membersCount = company.CompanyMembers.length;
     }
 
-    this.createdByUserId = company.createdByUserId;
-    this.createdAt = company.createdAt;
-    this.updatedAt = company.updatedAt;
+    this.createdbyuserid = company.createdbyuserid;
+    this.createdat = company.createdat;
+    this.updatedat = company.updatedat;
   }
 }
 

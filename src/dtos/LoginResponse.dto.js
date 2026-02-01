@@ -1,9 +1,9 @@
 const UserResponse = require("./UserResponse.dto");
 
 class LoginResponse {
-  constructor(accessToken, refreshToken, user) {
-    this.accessToken = accessToken;
-    this.refreshToken = refreshToken;
+  constructor(accesstoken, refreshtoken, user) {
+    this.accesstoken = accesstoken;
+    this.refreshtoken = refreshtoken;
     this.user = user ? new UserResponse(user) : null;
   }
 }

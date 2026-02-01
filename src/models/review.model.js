@@ -10,11 +10,11 @@ const Review = sequelize.define(
       primaryKey: true,
       autoIncrement: true,
     },
-    userId: {
+    userid: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    companyId: {
+    companyid: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
@@ -26,21 +26,21 @@ const Review = sequelize.define(
       type: DataTypes.TEXT,
       allowNull: true,
     },
-    createdAt: {
+    createdat: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: sequelize.literal("GETDATE()"),
+      defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
     },
-    updatedAt: {
+    updatedat: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: sequelize.literal("GETDATE()"),
+      defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
     },
   },
   {
     tableName: "Review",
     timestamps: false,
-  }
+  },
 );
 
 module.exports = Review;

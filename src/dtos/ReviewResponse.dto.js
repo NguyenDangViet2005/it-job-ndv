@@ -1,15 +1,15 @@
 class ReviewResponse {
   constructor(review) {
     this.id = review.id;
-    this.userId = review.userId;
-    this.userName = review.User ? review.User.fullName : null;
+    this.userid = review.userid;
+    this.userName = review.User ? review.User.fullname : null;
     this.userAvatar = review.User ? review.User.avatar : null;
-    this.companyId = review.companyId;
+    this.companyid = review.companyid;
     this.companyName = review.Company ? review.Company.name : null;
     this.rating = review.rating;
     this.comment = review.comment;
-    this.createdAt = review.createdAt;
-    this.updatedAt = review.updatedAt;
+    this.createdat = review.createdat;
+    this.updatedat = review.updatedat;
   }
 }
 

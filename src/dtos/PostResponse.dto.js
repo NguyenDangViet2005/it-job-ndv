@@ -4,7 +4,7 @@ const AttachmentResponse = require("./AttachmentResponse.dto");
 class PostUserResponse {
   constructor(user) {
     this.id = user.id;
-    this.fullName = user.fullName;
+    this.fullname = user.fullname;
     this.avatar = user.avatar;
   }
 }
@@ -16,7 +16,7 @@ class PostCompanyResponse {
     this.avatar = company.avatar;
     this.address = company.address;
     this.hotline = company.hotline;
-    this.companyEmail = company.companyEmail;
+    this.companyemail = company.companyemail;
   }
 }
 
@@ -24,8 +24,8 @@ class PostResponse {
   constructor(post) {
     this.id = post.id;
     this.content = post.content;
-    this.createdAt = post.createdAt;
-    this.updatedAt = post.updatedAt;
+    this.createdat = post.createdat;
+    this.updatedat = post.updatedat;
 
     this.user = post.user
       ? new PostUserResponse(post.user)

@@ -3,31 +3,31 @@ const { DataTypes } = require("sequelize");
 const { sequelize } = require("../configs/sequelize.config");
 
 const SkillUser = sequelize.define(
-  "SkillUser",
+  "Skill_User",
   {
-    skillId: {
+    skillid: {
       type: DataTypes.INTEGER,
       primaryKey: true,
     },
-    userId: {
+    userid: {
       type: DataTypes.INTEGER,
       primaryKey: true,
     },
-    createdAt: {
+    createdat: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: sequelize.literal("GETDATE()"),
+      defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
     },
-    updatedAt: {
+    updatedat: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: sequelize.literal("GETDATE()"),
+      defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
     },
   },
   {
     tableName: "Skill_User",
     timestamps: false,
-  }
+  },
 );
 
 module.exports = SkillUser;

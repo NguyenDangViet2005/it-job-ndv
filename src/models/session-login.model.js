@@ -2,45 +2,45 @@ const { DataTypes } = require("sequelize");
 const { sequelize } = require("../configs/sequelize.config");
 
 const SessionLogin = sequelize.define(
-  "SessionLogin",
+  "SessionLogins",
   {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
-    userId: {
+    userid: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: "Users",
+        model: "User",
         key: "id",
       },
       onDelete: "CASCADE",
     },
-    accessToken: {
+    accesstoken: {
       type: DataTypes.TEXT,
       allowNull: false,
     },
-    refreshToken: {
+    refreshtoken: {
       type: DataTypes.TEXT,
       allowNull: false,
       unique: true,
     },
-    createdAt: {
+    createdat: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: sequelize.literal("GETDATE()"),
+      defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
     },
-    updatedAt: {
+    updatedat: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: sequelize.literal("GETDATE()"),
+      defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
     },
   },
   {
     tableName: "SessionLogins",
-    timestamps: false, // Để database tự động xử lý với DEFAULT GETDATE()
+    timestamps: false,
   },
 );
 

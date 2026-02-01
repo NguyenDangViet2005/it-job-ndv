@@ -1,31 +1,32 @@
 // src/configs/database.config.js
-const sql = require("mssql");
+const { Pool } = require("pg");
 const env = require("./env.config");
 
-// Cấu hình kết nối SQL Server
+// Cấu hình kết nối PostgreSQL
 const config = {
-  server: env.db.host,
+  host: env.db.host,
   port: env.db.port,
   database: env.db.name,
   user: env.db.user,
   password: env.db.password,
-  options: {
-    encrypt: env.db.encrypt, // false cho local
-    trustServerCertificate: env.db.trustServerCertificate, // true cho local
-    enableArithAbort: true,
-  },
-  pool: {
-    max: 10,
-    min: 0,
-    idleTimeoutMillis: 30000,
-  },
+  ssl: env.db.ssl
+    ? {
+        rejectUnauthorized: false,
+      }
+    : false,
+  max: 10,
+  min: 0,
+  idleTimeoutMillis: 30000,
 };
 
 // Tạo connection pool
-const connectDatabase = new sql.ConnectionPool(config)
+const pool = new Pool(config);
+
+const connectDatabase = pool
   .connect()
-  .then((pool) => {
-    console.log("✅ Connected to SQL Server successfully!");
+  .then((client) => {
+    console.log("✅ Connected to PostgreSQL successfully!");
+    client.release();
     return pool;
   })
   .catch((err) => {
@@ -34,6 +35,6 @@ const connectDatabase = new sql.ConnectionPool(config)
   });
 
 module.exports = {
-  sql,
+  pool,
   connectDatabase,
 };

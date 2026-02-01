@@ -15,21 +15,21 @@ const BlogCategory = sequelize.define(
       allowNull: false,
       unique: true,
     },
-    createdAt: {
+    createdat: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: sequelize.literal("GETDATE()"),
+      defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
     },
-    updatedAt: {
+    updatedat: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: sequelize.literal("GETDATE()"),
+      defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
     },
   },
   {
     tableName: "BlogCategory",
-    timestamps: false, // Để database tự động xử lý với DEFAULT GETDATE()
-  }
+    timestamps: false, // Để database tự động xử lý với DEFAULT CURRENT_TIMESTAMP
+  },
 );
 
 module.exports = BlogCategory;

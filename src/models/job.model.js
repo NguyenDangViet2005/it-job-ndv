@@ -10,7 +10,7 @@ const Job = sequelize.define(
       primaryKey: true,
       autoIncrement: true,
     },
-    companyId: {
+    companyid: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
@@ -43,21 +43,21 @@ const Job = sequelize.define(
       allowNull: true,
       defaultValue: "active",
     },
-    createdAt: {
+    createdat: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: sequelize.literal("GETDATE()"),
+      defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
     },
-    updatedAt: {
+    updatedat: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: sequelize.literal("GETDATE()"),
+      defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
     },
   },
   {
     tableName: "Job",
     timestamps: false,
-  }
+  },
 );
 
 module.exports = Job;

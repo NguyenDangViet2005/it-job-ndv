@@ -16,8 +16,7 @@ module.exports = {
     name: process.env.DB_NAME,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
-    encrypt: process.env.DB_ENCRYPT === "true",
-    trustServerCertificate: process.env.DB_TRUST_SERVER_CERTIFICATE === "true",
+    ssl: process.env.DB_SSL === "true", // true for production (Render, etc.)
   },
 
   jwt: {

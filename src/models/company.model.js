@@ -18,7 +18,7 @@ const Company = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
-    coverImage: {
+    coverimage: {
       type: DataTypes.STRING,
       allowNull: true,
     },
@@ -34,7 +34,7 @@ const Company = sequelize.define(
       type: DataTypes.TEXT,
       allowNull: true,
     },
-    foundedYear: {
+    foundedyear: {
       type: DataTypes.INTEGER,
       allowNull: true,
     },
@@ -46,32 +46,32 @@ const Company = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
-    companyEmail: {
+    companyemail: {
       type: DataTypes.STRING,
       allowNull: true,
     },
-    wardId: {
+    wardid: {
       type: DataTypes.INTEGER,
       allowNull: true,
     },
-    createdByUserId: {
+    createdbyuserid: {
       type: DataTypes.INTEGER,
       allowNull: true,
     },
-    createdAt: {
+    createdat: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: sequelize.literal("GETDATE()"),
+      defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
     },
-    updatedAt: {
+    updatedat: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: sequelize.literal("GETDATE()"),
+      defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
     },
   },
   {
     tableName: "Company",
-    timestamps: false, // Để database tự động xử lý với DEFAULT GETDATE()
+    timestamps: false, // Để database tự động xử lý với DEFAULT CURRENT_TIMESTAMP
   },
 );
 

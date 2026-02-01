@@ -1,4 +1,11 @@
-const { Post, User, Company, Attachment, Interaction, CompanyMember } = require("../models");
+const {
+  Post,
+  User,
+  Company,
+  Attachment,
+  Interaction,
+  CompanyMember,
+} = require("../models");
 const cloudinaryService = require("./cloudinary.service");
 const { Op } = require("sequelize");
 const { sequelize } = require("../configs/sequelize.config");
@@ -7,63 +14,69 @@ const { PostResponse } = require("../dtos/PostResponse.dto");
 // Helper: Batched fetching of interaction stats to avoid N+1 queries
 const enrichPosts = async (posts, currentUserId) => {
   if (!posts || posts.length === 0) return [];
-  
-  const postIds = posts.map(p => p.id);
+
+  const postids = posts.map((p) => p.id);
   const postsMap = {};
-  posts.forEach(p => postsMap[p.id] = p);
+  posts.forEach((p) => (postsMap[p.id] = p));
 
   // 1. Bulk count likes
-  // Index usage: IX_Interaction_PostId_UserId_IsLiked (postId, userId, isLiked) includes postId, isLiked
+  // Index usage: IX_Interaction_PostId_UserId_IsLiked (postId, userid, isliked) includes postid, isliked
   const likesCounts = await Interaction.findAll({
-    attributes: ['postId', [sequelize.fn('COUNT', sequelize.col('id')), 'count']],
-    where: { postId: { [Op.in]: postIds }, isLiked: true },
-    group: ['postId'],
-    raw: true
+    attributes: [
+      "postId",
+      [sequelize.fn("COUNT", sequelize.col("id")), "count"],
+    ],
+    where: { postid: { [Op.in]: postids }, isliked: true },
+    group: ["postid"],
+    raw: true,
   });
   const likesMap = {};
-  likesCounts.forEach(c => likesMap[c.postId] = c.count);
+  likesCounts.forEach((c) => (likesMap[c.postid] = c.count));
 
   // 2. Bulk count comments
   // Index usage: IX_Interaction_PostId (postId)
   const commentsCounts = await Interaction.findAll({
-    attributes: ['postId', [sequelize.fn('COUNT', sequelize.col('id')), 'count']],
-    where: { postId: { [Op.in]: postIds }, content: { [Op.ne]: null } },
-    group: ['postId'],
-    raw: true
+    attributes: [
+      "postId",
+      [sequelize.fn("COUNT", sequelize.col("id")), "count"],
+    ],
+    where: { postid: { [Op.in]: postids }, content: { [Op.ne]: null } },
+    group: ["postid"],
+    raw: true,
   });
   const commentsMap = {};
-  commentsCounts.forEach(c => commentsMap[c.postId] = c.count);
+  commentsCounts.forEach((c) => (commentsMap[c.postid] = c.count));
 
   // 3. User like status
   const userLikesMap = {};
   if (currentUserId) {
-    // Index usage: IX_Interaction_PostId_UserId_IsLiked (postId, userId, isLiked) - Perfect covering
+    // Index usage: IX_Interaction_PostId_UserId_IsLiked (postId, userid, isliked) - Perfect covering
     const userLikes = await Interaction.findAll({
-      attributes: ['postId'],
+      attributes: ["postid"],
       where: {
-        postId: { [Op.in]: postIds },
-        userId: currentUserId,
-        isLiked: true
+        postid: { [Op.in]: postids },
+        userid: currentUserId,
+        isliked: true,
       },
-      raw: true
+      raw: true,
     });
-    userLikes.forEach(ul => userLikesMap[ul.postId] = true);
+    userLikes.forEach((ul) => (userLikesMap[ul.postid] = true));
   }
 
   // 4. Recent comments (Top 3 per post) via parallel queries
   // Index usage: IX_Interaction_PostId + CreatedAt for sort
-  const commentsPromises = posts.map(post => 
+  const commentsPromises = posts.map((post) =>
     Interaction.findAll({
-      where: { postId: post.id, content: { [Op.ne]: null } },
+      where: { postid: post.id, content: { [Op.ne]: null } },
       include: [
-        { 
-          model: User, 
-          as: "User", 
-          attributes: ["id", "fullName", "avatar"],
+        {
+          model: User,
+          as: "User",
+          attributes: ["id", "fullname", "avatar"],
           include: [
             {
               model: CompanyMember,
-              attributes: ["companyId", "status"],
+              attributes: ["companyid", "status"],
               where: { status: "active" },
               required: false,
               include: [
@@ -77,27 +90,27 @@ const enrichPosts = async (posts, currentUserId) => {
         },
         { model: Attachment, as: "Attachments" },
       ],
-      order: [["createdAt", "DESC"]],
+      order: [["createdat", "DESC"]],
       limit: 3,
-    })
+    }),
   );
-  
+
   const commentsResults = await Promise.all(commentsPromises);
   const recentCommentsMap = {};
   posts.forEach((p, index) => {
-    recentCommentsMap[p.id] = commentsResults[index].map(c => c.toJSON());
+    recentCommentsMap[p.id] = commentsResults[index].map((c) => c.toJSON());
   });
 
-  return posts.map(post => {
+  return posts.map((post) => {
     return {
       id: post.id,
       content: post.content,
-      createdAt: post.createdAt,
-      updatedAt: post.updatedAt,
+      createdat: post.createdat,
+      updatedat: post.updatedat,
       user: post.User
         ? {
             id: post.User.id,
-            fullName: post.User.fullName,
+            fullname: post.User.fullname,
             avatar: post.User.avatar,
           }
         : null,
@@ -113,7 +126,7 @@ const enrichPosts = async (posts, currentUserId) => {
       interaction: {
         totalLikes: likesMap[post.id] || 0,
         totalComments: commentsMap[post.id] || 0,
-        isLikedByCurrentUser: !!userLikesMap[post.id],
+        islikedByCurrentUser: !!userLikesMap[post.id],
         comments: recentCommentsMap[post.id] || [],
       },
     };
@@ -127,7 +140,7 @@ const getAllPosts = async (page = 1, pageSize = 10, currentUserId = null) => {
       {
         model: User,
         as: "User",
-        attributes: ["id", "fullName", "avatar"],
+        attributes: ["id", "fullname", "avatar"],
       },
       {
         model: Company,
@@ -140,14 +153,14 @@ const getAllPosts = async (page = 1, pageSize = 10, currentUserId = null) => {
       },
     ],
     // Index usage: IX_Post_CreatedAt
-    order: [["createdAt", "DESC"]],
+    order: [["createdat", "DESC"]],
     limit: pageSize,
     offset: offset,
     distinct: true,
   });
 
   const formattedPosts = await enrichPosts(rows, currentUserId);
-  const data = formattedPosts.map(p => new PostResponse(p));
+  const data = formattedPosts.map((p) => new PostResponse(p));
 
   return {
     data,
@@ -164,7 +177,7 @@ const getPostById = async (id, currentUserId = null) => {
       {
         model: User,
         as: "User",
-        attributes: ["id", "fullName", "avatar"],
+        attributes: ["id", "fullname", "avatar"],
       },
       {
         model: Company,
@@ -185,19 +198,19 @@ const getPostById = async (id, currentUserId = null) => {
 };
 
 const getPostsByUserId = async (
-  userId,
+  userid,
   page = 1,
   pageSize = 10,
-  currentUserId = null
+  currentUserId = null,
 ) => {
   const offset = (page - 1) * pageSize;
   const { count, rows } = await Post.findAndCountAll({
-    where: { userId },
+    where: { userid },
     include: [
       {
         model: User,
         as: "User",
-        attributes: ["id", "fullName", "avatar"],
+        attributes: ["id", "fullname", "avatar"],
       },
       {
         model: Company,
@@ -209,14 +222,14 @@ const getPostsByUserId = async (
       },
     ],
     // Index usage: IX_Post_UserId_CreatedAt
-    order: [["createdAt", "DESC"]],
+    order: [["createdat", "DESC"]],
     limit: pageSize,
     offset: offset,
     distinct: true,
   });
 
   const formattedPosts = await enrichPosts(rows, currentUserId);
-  const data = formattedPosts.map(p => new PostResponse(p));
+  const data = formattedPosts.map((p) => new PostResponse(p));
 
   return {
     data,
@@ -227,19 +240,19 @@ const getPostsByUserId = async (
 };
 
 const getPostsByCompanyId = async (
-  companyId,
+  companyid,
   page = 1,
   pageSize = 10,
-  currentUserId = null
+  currentUserId = null,
 ) => {
   const offset = (page - 1) * pageSize;
   const { count, rows } = await Post.findAndCountAll({
-    where: { companyId },
+    where: { companyid },
     include: [
       {
         model: User,
         as: "User",
-        attributes: ["id", "fullName", "avatar"],
+        attributes: ["id", "fullname", "avatar"],
       },
       {
         model: Company,
@@ -251,14 +264,14 @@ const getPostsByCompanyId = async (
       },
     ],
     // Index usage: IX_Post_CompanyId
-    order: [["createdAt", "DESC"]],
+    order: [["createdat", "DESC"]],
     limit: pageSize,
     offset: offset,
     distinct: true,
   });
 
   const formattedPosts = await enrichPosts(rows, currentUserId);
-  const data = formattedPosts.map(p => new PostResponse(p));
+  const data = formattedPosts.map((p) => new PostResponse(p));
 
   return {
     data,
@@ -274,40 +287,40 @@ const createPost = async (data, files) => {
     const post = await Post.create(
       {
         content: data.content,
-        userId: data.userId || 0,
-        companyId: data.companyId || null,
+        userid: data.userid || 0,
+        companyid: data.companyid || null,
       },
-      { transaction }
+      { transaction },
     );
 
     if (files && files.length > 0) {
       for (const file of files) {
-        let fileUrl;
-        let fileType;
+        let fileurl;
+        let filetype;
 
         if (file.mimetype.startsWith("video/")) {
-          fileType = "video";
+          filetype = "video";
         } else {
-          fileType = "image";
+          filetype = "image";
         }
 
         // Upload file buffer to cloudinary
         const result = await cloudinaryService.uploadFile(file);
-        fileUrl = result.secure_url;
+        fileurl = result.secure_url;
 
         await Attachment.create(
           {
-            postId: post.id,
-            fileUrl,
-            fileType,
+            postid: post.id,
+            fileurl,
+            filetype,
           },
-          { transaction }
+          { transaction },
         );
       }
     }
 
     await transaction.commit();
-    return await getPostById(post.id, data.userId);
+    return await getPostById(post.id, data.userid);
   } catch (error) {
     await transaction.rollback();
     throw error;
@@ -319,12 +332,12 @@ const updatePost = async (id, data, files, keepImageUrls = []) => {
   try {
     const post = await Post.findByPk(id);
     if (!post) throw new Error("Post not found");
-    if (post.userId > 0) {
-      if (parseInt(data.userId) !== post.userId) {
+    if (post.userid > 0) {
+      if (parseInt(data.userid) !== post.userid) {
         throw new Error("User mismatch");
       }
-    } else if (post.companyId) {
-      if (parseInt(data.companyId) !== post.companyId) {
+    } else if (post.companyid) {
+      if (parseInt(data.companyid) !== post.companyid) {
         throw new Error("Company mismatch");
       }
     }
@@ -335,16 +348,16 @@ const updatePost = async (id, data, files, keepImageUrls = []) => {
 
     // Handle attachments update
     const existingAttachments = await Attachment.findAll({
-      where: { postId: id },
+      where: { postid: id },
     });
 
     // Delete attachments that are NOT in keepImageUrls
     for (const att of existingAttachments) {
-      const shouldKeep = keepImageUrls.includes(att.fileUrl);
-      
+      const shouldKeep = keepImageUrls.includes(att.fileurl);
+
       if (!shouldKeep) {
-        if (att.fileUrl) {
-          await cloudinaryService.deleteFile(att.fileUrl);
+        if (att.fileurl) {
+          await cloudinaryService.deleteFile(att.fileurl);
         }
         await att.destroy({ transaction });
       }
@@ -353,26 +366,26 @@ const updatePost = async (id, data, files, keepImageUrls = []) => {
     // Add new files
     if (files && files.length > 0) {
       for (const file of files) {
-        let fileUrl;
-        let fileType;
+        let fileurl;
+        let filetype;
 
         if (file.mimetype.startsWith("video/")) {
-          fileType = "video";
+          filetype = "video";
         } else {
-          fileType = "image";
+          filetype = "image";
         }
 
         // Upload file buffer to cloudinary
         const result = await cloudinaryService.uploadFile(file);
-        fileUrl = result.secure_url;
+        fileurl = result.secure_url;
 
         await Attachment.create(
           {
-            postId: id,
-            fileUrl,
-            fileType,
+            postid: id,
+            fileurl,
+            filetype,
           },
-          { transaction }
+          { transaction },
         );
       }
     }
@@ -380,7 +393,7 @@ const updatePost = async (id, data, files, keepImageUrls = []) => {
     await post.save({ transaction });
     await transaction.commit();
 
-    return await getPostById(id, data.userId);
+    return await getPostById(id, data.userid);
   } catch (error) {
     await transaction.rollback();
     throw error;
@@ -398,14 +411,14 @@ const deletePost = async (id) => {
     // Delete all attachments from Cloudinary
     if (post.Attachments && post.Attachments.length > 0) {
       for (const att of post.Attachments) {
-        if (att.fileUrl) {
-          await cloudinaryService.deleteFile(att.fileUrl);
+        if (att.fileurl) {
+          await cloudinaryService.deleteFile(att.fileurl);
         }
       }
-      await Attachment.destroy({ where: { postId: id } });
+      await Attachment.destroy({ where: { postid: id } });
     }
 
-    await Interaction.destroy({ where: { postId: id } });
+    await Interaction.destroy({ where: { postid: id } });
     await post.destroy();
     return true;
   } catch (error) {

@@ -106,8 +106,8 @@ const getMyCompany = async (req, res) => {
       return res.status(403).json({ message: "Access denied. Employer only." });
     }
 
-    const userId = req.user.id;
-    const company = await companyService.getCompanyByUserId(userId);
+    const userid = req.user.id;
+    const company = await companyService.getCompanyByUserId(userid);
 
     if (!company) {
       return res
@@ -133,8 +133,8 @@ const uploadAvatar = async (req, res) => {
       return res.status(400).json({ message: "Vui lòng chọn file ảnh" });
     }
 
-    const userId = req.user.id;
-    const company = await companyService.getCompanyByUserId(userId);
+    const userid = req.user.id;
+    const company = await companyService.getCompanyByUserId(userid);
 
     if (!company) {
       return res
@@ -144,7 +144,7 @@ const uploadAvatar = async (req, res) => {
 
     const avatarUrl = await companyService.uploadCompanyAvatar(
       company.id,
-      req.file
+      req.file,
     );
     res
       .status(200)
@@ -166,8 +166,8 @@ const uploadCover = async (req, res) => {
       return res.status(400).json({ message: "Vui lòng chọn file ảnh" });
     }
 
-    const userId = req.user.id;
-    const company = await companyService.getCompanyByUserId(userId);
+    const userid = req.user.id;
+    const company = await companyService.getCompanyByUserId(userid);
 
     if (!company) {
       return res
@@ -177,7 +177,7 @@ const uploadCover = async (req, res) => {
 
     const coverUrl = await companyService.uploadCompanyCover(
       company.id,
-      req.file
+      req.file,
     );
     res
       .status(200)

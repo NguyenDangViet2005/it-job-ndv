@@ -10,19 +10,19 @@ const Attachment = sequelize.define(
       primaryKey: true,
       autoIncrement: true,
     },
-    postId: {
+    postid: {
       type: DataTypes.INTEGER,
       allowNull: true,
     },
-    interactionId: {
+    interactionid: {
       type: DataTypes.INTEGER,
       allowNull: true,
     },
-    fileType: {
+    filetype: {
       type: DataTypes.STRING,
       allowNull: true,
     },
-    fileUrl: {
+    fileurl: {
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -30,7 +30,7 @@ const Attachment = sequelize.define(
   {
     tableName: "Attachment",
     timestamps: false,
-  }
+  },
 );
 
 module.exports = Attachment;

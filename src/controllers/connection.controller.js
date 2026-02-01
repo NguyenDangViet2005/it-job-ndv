@@ -17,24 +17,22 @@ const getCurrentUserId = (req) => {
 
 const sendConnectionRequest = async (req, res, next) => {
   try {
-    const userId = req.body.userId || getCurrentUserId(req);
-    const connectedUserId = req.body.connectedUserId;
+    const userid = req.body.userid || getCurrentUserId(req);
+    const connecteduserid = req.body.connecteduserid;
 
-    if (!userId || !connectedUserId) {
+    if (!userid || !connectedUserId) {
       return res
         .status(400)
         .json({ message: "UserId and ConnectedUserId are required" });
     }
 
-    if (userId === connectedUserId) {
-      return res
-        .status(400)
-        .json({ message: "Cannot connect to yourself" });
+    if (userid === connecteduserid) {
+      return res.status(400).json({ message: "Cannot connect to yourself" });
     }
 
     const result = await connectionService.sendConnectionRequest(
-      userId,
-      connectedUserId
+      userid,
+      connecteduserid,
     );
     res.status(201).json(result);
   } catch (error) {
@@ -44,16 +42,16 @@ const sendConnectionRequest = async (req, res, next) => {
 
 const acceptConnectionRequest = async (req, res, next) => {
   try {
-    const userId = getCurrentUserId(req);
+    const userid = getCurrentUserId(req);
     const connectionId = parseInt(req.params.connectionId);
 
-    if (!userId) {
+    if (!userid) {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
     const result = await connectionService.acceptConnectionRequest(
       connectionId,
-      userId
+      userid,
     );
     res.status(200).json(result);
   } catch (error) {
@@ -63,16 +61,16 @@ const acceptConnectionRequest = async (req, res, next) => {
 
 const rejectConnectionRequest = async (req, res, next) => {
   try {
-    const userId = getCurrentUserId(req);
+    const userid = getCurrentUserId(req);
     const connectionId = parseInt(req.params.connectionId);
 
-    if (!userId) {
+    if (!userid) {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
     const result = await connectionService.rejectConnectionRequest(
       connectionId,
-      userId
+      userid,
     );
     res.status(200).json(result);
   } catch (error) {
@@ -82,14 +80,17 @@ const rejectConnectionRequest = async (req, res, next) => {
 
 const removeConnection = async (req, res, next) => {
   try {
-    const userId = getCurrentUserId(req);
+    const userid = getCurrentUserId(req);
     const connectionId = parseInt(req.params.connectionId);
 
-    if (!userId) {
+    if (!userid) {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    const result = await connectionService.removeConnection(connectionId, userId);
+    const result = await connectionService.removeConnection(
+      connectionId,
+      userid,
+    );
     res.status(200).json(result);
   } catch (error) {
     next(error);
@@ -98,14 +99,14 @@ const removeConnection = async (req, res, next) => {
 
 const getUserConnections = async (req, res, next) => {
   try {
-    const userId = parseInt(req.params.userId || getCurrentUserId(req));
+    const userid = parseInt(req.params.userid || getCurrentUserId(req));
     const page = parseInt(req.query.pageNumber) || 1;
     const pageSize = parseInt(req.query.pageSize) || 10;
 
     const result = await connectionService.getUserConnections(
-      userId,
+      userid,
       page,
-      pageSize
+      pageSize,
     );
     res.status(200).json(result);
   } catch (error) {
@@ -115,18 +116,18 @@ const getUserConnections = async (req, res, next) => {
 
 const getPendingRequests = async (req, res, next) => {
   try {
-    const userId = getCurrentUserId(req);
+    const userid = getCurrentUserId(req);
     const page = parseInt(req.query.pageNumber) || 1;
     const pageSize = parseInt(req.query.pageSize) || 10;
 
-    if (!userId) {
+    if (!userid) {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
     const result = await connectionService.getPendingRequests(
-      userId,
+      userid,
       page,
-      pageSize
+      pageSize,
     );
     res.status(200).json(result);
   } catch (error) {
@@ -136,18 +137,18 @@ const getPendingRequests = async (req, res, next) => {
 
 const getSentRequests = async (req, res, next) => {
   try {
-    const userId = getCurrentUserId(req);
+    const userid = getCurrentUserId(req);
     const page = parseInt(req.query.pageNumber) || 1;
     const pageSize = parseInt(req.query.pageSize) || 10;
 
-    if (!userId) {
+    if (!userid) {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
     const result = await connectionService.getSentRequests(
-      userId,
+      userid,
       page,
-      pageSize
+      pageSize,
     );
     res.status(200).json(result);
   } catch (error) {

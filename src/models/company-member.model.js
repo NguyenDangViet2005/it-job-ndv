@@ -3,13 +3,13 @@ const { DataTypes } = require("sequelize");
 const { sequelize } = require("../configs/sequelize.config");
 
 const CompanyMember = sequelize.define(
-  "CompanyMember",
+  "CompanyMembers",
   {
-    companyId: {
+    companyid: {
       type: DataTypes.INTEGER,
       primaryKey: true,
     },
-    userId: {
+    userid: {
       type: DataTypes.INTEGER,
       primaryKey: true,
     },
@@ -17,20 +17,20 @@ const CompanyMember = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    joinedAt: {
+    joinedat: {
       type: DataTypes.DATE,
       allowNull: true,
     },
-    createdAt: {
+    createdat: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: sequelize.literal("GETDATE()"),
+      defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
     },
   },
   {
     tableName: "CompanyMembers",
     timestamps: false,
-  }
+  },
 );
 
 module.exports = CompanyMember;

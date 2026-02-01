@@ -10,15 +10,15 @@ const Interaction = sequelize.define(
       primaryKey: true,
       autoIncrement: true,
     },
-    postId: {
+    postid: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    userId: {
+    userid: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    isLiked: {
+    isliked: {
       type: DataTypes.BOOLEAN,
       allowNull: true,
     },
@@ -26,21 +26,21 @@ const Interaction = sequelize.define(
       type: DataTypes.TEXT,
       allowNull: true,
     },
-    createdAt: {
+    createdat: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: sequelize.literal("GETDATE()"),
+      defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
     },
-    updatedAt: {
+    updatedat: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: sequelize.literal("GETDATE()"),
+      defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
     },
   },
   {
     tableName: "Interaction",
     timestamps: false,
-  }
+  },
 );
 
 module.exports = Interaction;

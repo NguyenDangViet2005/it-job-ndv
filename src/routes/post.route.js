@@ -7,9 +7,9 @@ router.get("/", postController.getAll);
 
 router.get("/:id", postController.getById);
 
-router.get("/user/:userId", postController.getByUserId);
+router.get("/user/:userid", postController.getByUserId);
 
-router.get("/company/:companyId", postController.getByCompanyId);
+router.get("/company/:companyid", postController.getByCompanyId);
 
 router.post(
   "/",
@@ -26,7 +26,7 @@ router.post(
     req.files = files;
     next();
   },
-  postController.create
+  postController.create,
 );
 
 router.put(
@@ -44,7 +44,7 @@ router.put(
     req.files = files;
     next();
   },
-  postController.update
+  postController.update,
 );
 
 router.delete("/:id", postController.deletePost);
@@ -56,13 +56,13 @@ router.post("/:id/like", postController.toggleLike);
 router.post(
   "/:id/comment",
   upload.array("attachments", 10),
-  postController.addComment
+  postController.addComment,
 );
 
 router.put(
   "/:id/comment/:commentId",
   upload.array("attachments", 10),
-  postController.updateComment
+  postController.updateComment,
 );
 
 router.delete("/:id/comment/:commentId", postController.deleteComment);

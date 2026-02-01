@@ -5,29 +5,29 @@ const { sequelize } = require("../configs/sequelize.config");
 const Follow = sequelize.define(
   "Follow",
   {
-    userId: {
+    userid: {
       type: DataTypes.INTEGER,
       primaryKey: true,
     },
-    companyId: {
+    companyid: {
       type: DataTypes.INTEGER,
       primaryKey: true,
     },
-    createdAt: {
+    createdat: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: sequelize.literal("GETDATE()"),
+      defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
     },
-    updatedAt: {
+    updatedat: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: sequelize.literal("GETDATE()"),
+      defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
     },
   },
   {
     tableName: "Follow",
     timestamps: false,
-  }
+  },
 );
 
 module.exports = Follow;

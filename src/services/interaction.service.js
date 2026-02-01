@@ -1,4 +1,10 @@
-const { Interaction, User, Attachment, CompanyMember, Company } = require("../models");
+const {
+  Interaction,
+  User,
+  Attachment,
+  CompanyMember,
+  Company,
+} = require("../models");
 const { sequelize } = require("../configs/sequelize.config");
 const cloudinaryService = require("./cloudinary.service");
 const { Op } = require("sequelize");
@@ -6,8 +12,8 @@ const { Op } = require("sequelize");
 // Helper function to format comment response
 const formatCommentResponse = (interaction) => {
   const comment = interaction.toJSON ? interaction.toJSON() : interaction;
-  // Remove isLiked field from comment response
-  const { isLiked, postId, User, ...commentData } = comment;
+  // Remove isliked field from comment response
+  const { isliked, postid, User, ...commentData } = comment;
 
   if (User) {
     commentData.user = User;
@@ -21,25 +27,25 @@ const getCommentsByPostId = async (postId, page = 1, pageSize = 10) => {
     const offset = (page - 1) * pageSize;
     const totalComments = await Interaction.count({
       where: {
-        postId,
+        postid,
         content: { [Op.ne]: null },
       },
     });
 
     const comments = await Interaction.findAll({
       where: {
-        postId,
+        postid,
         content: { [Op.ne]: null },
       },
       include: [
         {
           model: User,
           as: "User",
-          attributes: ["id", "fullName", "avatar"],
+          attributes: ["id", "fullname", "avatar"],
           include: [
             {
               model: CompanyMember,
-              attributes: ["companyId", "status"],
+              attributes: ["companyid", "status"],
               where: { status: "active" },
               required: false,
               include: [
@@ -56,7 +62,7 @@ const getCommentsByPostId = async (postId, page = 1, pageSize = 10) => {
           as: "Attachments",
         },
       ],
-      order: [["createdAt", "DESC"]],
+      order: [["createdat", "DESC"]],
       limit: pageSize,
       offset: offset,
     });
@@ -72,42 +78,42 @@ const getCommentsByPostId = async (postId, page = 1, pageSize = 10) => {
   }
 };
 
-const toggleLike = async (postId, userId) => {
+const toggleLike = async (postId, userid) => {
   try {
     const existingLike = await Interaction.findOne({
       where: {
-        postId,
-        userId,
-        isLiked: true,
+        postid,
+        userid,
+        isliked: true,
       },
     });
 
-    let isLiked = false;
+    let isliked = false;
 
     if (existingLike) {
       await existingLike.destroy();
-      isLiked = false;
+      isliked = false;
     } else {
       await Interaction.create({
-        postId,
-        userId,
-        isLiked: true,
+        postid,
+        userid,
+        isliked: true,
         content: null,
       });
-      isLiked = true;
+      isliked = true;
     }
 
     const totalLikes = await Interaction.count({
       where: {
-        postId,
-        isLiked: true,
+        postid,
+        isliked: true,
       },
     });
 
     return {
-      postId,
-      userId,
-      isLiked,
+      postid,
+      userid,
+      isliked,
       totalLikes,
     };
   } catch (error) {
@@ -115,39 +121,39 @@ const toggleLike = async (postId, userId) => {
   }
 };
 
-const addComment = async (postId, userId, content, files = []) => {
+const addComment = async (postId, userid, content, files = []) => {
   const transaction = await sequelize.transaction();
   try {
     const interaction = await Interaction.create(
       {
-        postId,
-        userId,
+        postid,
+        userid,
         content,
-        isLiked: false,
+        isliked: false,
       },
       { transaction },
     );
 
     if (files && files.length > 0) {
       for (const file of files) {
-        let fileUrl;
-        let fileType;
+        let fileurl;
+        let filetype;
 
         if (file.mimetype.startsWith("video/")) {
-          fileType = "video";
+          filetype = "video";
         } else {
-          fileType = "image";
+          filetype = "image";
         }
 
         // Upload file buffer to cloudinary
         const result = await cloudinaryService.uploadFile(file);
-        fileUrl = result.secure_url;
+        fileurl = result.secure_url;
 
         await Attachment.create(
           {
-            interactionId: interaction.id,
-            fileUrl,
-            fileType,
+            interactionid: interaction.id,
+            fileurl,
+            filetype,
           },
           { transaction },
         );
@@ -161,11 +167,11 @@ const addComment = async (postId, userId, content, files = []) => {
         {
           model: User,
           as: "User",
-          attributes: ["id", "fullName", "avatar"],
+          attributes: ["id", "fullname", "avatar"],
           include: [
             {
               model: CompanyMember,
-              attributes: ["companyId", "status"],
+              attributes: ["companyid", "status"],
               where: { status: "active" },
               required: false,
               include: [
@@ -193,7 +199,7 @@ const addComment = async (postId, userId, content, files = []) => {
 
 const updateComment = async (
   commentId,
-  userId,
+  userid,
   content,
   files = [],
   keepImageUrls = [],
@@ -202,7 +208,7 @@ const updateComment = async (
   try {
     const comment = await Interaction.findByPk(commentId);
     if (!comment) throw new Error("Comment not found");
-    if (comment.userId !== parseInt(userId)) throw new Error("Unauthorized");
+    if (comment.userid !== parseInt(userid)) throw new Error("Unauthorized");
 
     if (content !== undefined) {
       comment.content = content;
@@ -210,18 +216,18 @@ const updateComment = async (
 
     // Get existing attachments
     const existingAttachments = await Attachment.findAll({
-      where: { interactionId: commentId },
+      where: { interactionid: commentId },
     });
 
     // Determine which attachments to delete (not in keepImageUrls)
     const attachmentsToDelete = existingAttachments.filter(
-      (att) => !keepImageUrls.includes(att.fileUrl),
+      (att) => !keepImageUrls.includes(att.fileurl),
     );
 
     // Delete old attachments from Cloudinary and DB
     for (const att of attachmentsToDelete) {
-      if (att.fileUrl) {
-        await cloudinaryService.deleteFile(att.fileUrl);
+      if (att.fileurl) {
+        await cloudinaryService.deleteFile(att.fileurl);
       }
       await att.destroy({ transaction });
     }
@@ -229,23 +235,23 @@ const updateComment = async (
     // Upload new files
     if (files && files.length > 0) {
       for (const file of files) {
-        let fileUrl;
-        let fileType;
+        let fileurl;
+        let filetype;
 
         if (file.mimetype.startsWith("video/")) {
-          fileType = "video";
+          filetype = "video";
         } else {
-          fileType = "image";
+          filetype = "image";
         }
 
         const result = await cloudinaryService.uploadFile(file);
-        fileUrl = result.secure_url;
+        fileurl = result.secure_url;
 
         await Attachment.create(
           {
-            interactionId: commentId,
-            fileUrl,
-            fileType,
+            interactionid: commentId,
+            fileurl,
+            filetype,
           },
           { transaction },
         );
@@ -260,11 +266,11 @@ const updateComment = async (
         {
           model: User,
           as: "User",
-          attributes: ["id", "fullName", "avatar"],
+          attributes: ["id", "fullname", "avatar"],
           include: [
             {
               model: CompanyMember,
-              attributes: ["companyId", "status"],
+              attributes: ["companyid", "status"],
               where: { status: "active" },
               required: false,
               include: [
@@ -290,25 +296,25 @@ const updateComment = async (
   }
 };
 
-const deleteComment = async (commentId, userId) => {
+const deleteComment = async (commentId, userid) => {
   try {
     const comment = await Interaction.findByPk(commentId, {
       include: [{ model: Attachment, as: "Attachments" }],
     });
 
     if (!comment) return false;
-    if (comment.userId !== userId) {
+    if (comment.userid !== userid) {
       return false;
     }
 
     // Delete all attachments from Cloudinary
     if (comment.Attachments && comment.Attachments.length > 0) {
       for (const attachment of comment.Attachments) {
-        if (attachment.fileUrl) {
-          await cloudinaryService.deleteFile(attachment.fileUrl);
+        if (attachment.fileurl) {
+          await cloudinaryService.deleteFile(attachment.fileurl);
         }
       }
-      await Attachment.destroy({ where: { interactionId: commentId } });
+      await Attachment.destroy({ where: { interactionid: commentId } });
     }
 
     await comment.destroy();

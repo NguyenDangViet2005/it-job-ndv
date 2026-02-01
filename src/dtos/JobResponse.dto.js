@@ -7,8 +7,8 @@ class JobCompanyResponse {
     this.website = company.website;
     this.address = company.address;
     this.hotline = company.hotline;
-    this.companyEmail = company.companyEmail;
-    this.coverImage = company.coverImage;
+    this.companyemail = company.companyemail;
+    this.coverimage = company.coverimage;
     this.address = company.address || null;
   }
 }
@@ -30,8 +30,8 @@ class JobResponse {
     this.quantity = job.quantity;
     this.deadline = job.deadline;
     this.salary = job.salary;
-    this.createdAt = job.createdAt;
-    this.updatedAt = job.updatedAt;
+    this.createdat = job.createdat;
+    this.updatedat = job.updatedat;
     this.company = job.Company ? new JobCompanyResponse(job.Company) : null;
     this.skills = job.Skills
       ? job.Skills.map((skill) => new JobSkillResponse(skill))

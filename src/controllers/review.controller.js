@@ -32,14 +32,14 @@ const getById = async (req, res, next) => {
 
 const getByCompanyId = async (req, res, next) => {
   try {
-    const companyId = parseInt(req.params.companyId);
+    const companyid = parseInt(req.params.companyid);
     const page = parseInt(req.query.pageNumber) || 1;
     const pageSize = parseInt(req.query.pageSize) || 10;
 
     const result = await reviewService.getReviewsByCompanyId(
-      companyId,
+      companyid,
       page,
-      pageSize
+      pageSize,
     );
     res.status(200).json({ success: true, data: result });
   } catch (error) {
@@ -49,14 +49,14 @@ const getByCompanyId = async (req, res, next) => {
 
 const getByUserId = async (req, res, next) => {
   try {
-    const userId = parseInt(req.params.userId || getCurrentUserId(req));
+    const userid = parseInt(req.params.userid || getCurrentUserId(req));
     const page = parseInt(req.query.pageNumber) || 1;
     const pageSize = parseInt(req.query.pageSize) || 10;
 
     const result = await reviewService.getReviewsByUserId(
-      userId,
+      userid,
       page,
-      pageSize
+      pageSize,
     );
     res.status(200).json({ success: true, data: result });
   } catch (error) {
@@ -67,14 +67,14 @@ const getByUserId = async (req, res, next) => {
 const create = async (req, res, next) => {
   try {
     // Check auth
-    const userId = getCurrentUserId(req);
-    if (!userId) {
+    const userid = getCurrentUserId(req);
+    if (!userid) {
       return res
         .status(401)
         .json({ success: false, message: "Vui lòng đăng nhập" });
     }
 
-    const result = await reviewService.createReview(userId, req.body);
+    const result = await reviewService.createReview(userid, req.body);
     res
       .status(200)
       .json({ success: true, message: "Tạo review thành công", data: result });
@@ -85,8 +85,8 @@ const create = async (req, res, next) => {
 
 const createTest = async (req, res, next) => {
   try {
-    const userId = parseInt(req.query.userId) || 11;
-    const result = await reviewService.createReview(userId, req.body);
+    const userid = parseInt(req.query.userid) || 11;
+    const result = await reviewService.createReview(userid, req.body);
     res
       .status(200)
       .json({ success: true, message: "Tạo review thành công", data: result });
@@ -98,15 +98,15 @@ const createTest = async (req, res, next) => {
 const update = async (req, res, next) => {
   try {
     const id = parseInt(req.params.id);
-    const userId = getCurrentUserId(req);
-    if (!userId) {
+    const userid = getCurrentUserId(req);
+    if (!userid) {
       return res
         .status(401)
         .json({ success: false, message: "Vui lòng đăng nhập" });
     }
 
     try {
-      const result = await reviewService.updateReview(id, userId, req.body);
+      const result = await reviewService.updateReview(id, userid, req.body);
       if (!result) {
         return res
           .status(404)
@@ -134,8 +134,8 @@ const update = async (req, res, next) => {
 const deleteReview = async (req, res, next) => {
   try {
     const id = parseInt(req.params.id);
-    const userId = getCurrentUserId(req);
-    if (!userId) {
+    const userid = getCurrentUserId(req);
+    if (!userid) {
       return res
         .status(401)
         .json({ success: false, message: "Vui lòng đăng nhập" });
@@ -148,11 +148,11 @@ const deleteReview = async (req, res, next) => {
         .json({ success: false, message: "Review không tồn tại" });
     }
 
-    if (result.userId !== userId && req.user?.role !== "admin") {
+    if (result.userid !== userid && req.user?.role !== "admin") {
       return res.status(403).json({ success: false, message: "Unauthorized" });
     }
 
-    await reviewService.deleteReview(id, userId);
+    await reviewService.deleteReview(id, userid);
 
     res.status(204).send();
   } catch (error) {

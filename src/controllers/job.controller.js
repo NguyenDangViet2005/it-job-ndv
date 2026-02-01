@@ -99,7 +99,7 @@ const getJobsToday = async (req, res) => {
 
 const getJobsBySkill = async (req, res) => {
   try {
-    const { skillId, pageNumber, pageSize } = req.query;
+    const { skillid, pageNumber, pageSize } = req.query;
     if (!skillId) {
       return res.status(400).json({ message: "skillId is required" });
     }
@@ -116,17 +116,17 @@ const getJobsBySkill = async (req, res) => {
 
 const getJobsByCompanyId = async (req, res) => {
   try {
-    const { companyId, pageNumber, pageSize } = req.query;
-    if (!companyId) {
-      return res.status(400).json({ message: "companyId is required" });
+    const { companyid, pageNumber, pageSize } = req.query;
+    if (!companyid) {
+      return res.status(400).json({ message: "companyid is required" });
     }
     const pNumber = parseInt(pageNumber) > 0 ? parseInt(pageNumber) : 1;
     const pSize = parseInt(pageSize) > 0 ? parseInt(pageSize) : 10;
     const result = await jobService.getJobsByCompanyId(
-      companyId,
+      companyid,
       pNumber,
       pSize,
-      true // onlyActive
+      true, // onlyActive
     );
     res.status(200).json(result);
   } catch (error) {
@@ -142,20 +142,20 @@ const getJobsByUserId = async (req, res) => {
     if (req.user.role !== "employer") {
       return res.status(403).json({ message: "Access denied. Employer only." });
     }
-    const { userId } = req.params;
+    const { userid } = req.params;
     const { pageNumber, pageSize } = req.query;
 
     // Security check
-    if (req.user.id != userId) {
+    if (req.user.id != userid) {
       return res.status(403).json({ message: "Access denied." });
     }
     const pNumber = parseInt(pageNumber) > 0 ? parseInt(pageNumber) : 1;
     const pSize = parseInt(pageSize) > 0 ? parseInt(pageSize) : 10;
     const result = await jobService.getJobsByUserId(
-      userId, 
-      pNumber, 
+      userid,
+      pNumber,
       pSize,
-      false // onlyActive = false for employer dashboard
+      false, // onlyActive = false for employer dashboard
     );
     res.status(200).json(result);
   } catch (error) {

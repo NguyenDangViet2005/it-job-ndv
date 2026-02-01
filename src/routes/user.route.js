@@ -13,19 +13,19 @@ router.put(
   "/:id/avatar",
   verifyToken,
   upload.single("avatar"),
-  userController.updateAvatar
+  userController.updateAvatar,
 );
 router.put(
   "/:id/cover-image",
   verifyToken,
-  upload.single("coverImage"),
-  userController.updateCover
+  upload.single("coverimage"),
+  userController.updateCover,
 );
 router.put(
   "/:id/cv",
   verifyToken,
   upload.single("cv"),
-  userController.updateCV
+  userController.updateCV,
 );
 
 router.post("/:id/change-password", verifyToken, userController.changePassword);
@@ -38,7 +38,7 @@ router.post("/:id/skills", verifyToken, userController.addUserSkill);
 router.delete(
   "/:id/skills/:skillId",
   verifyToken,
-  userController.removeUserSkill
+  userController.removeUserSkill,
 );
 
 module.exports = router;

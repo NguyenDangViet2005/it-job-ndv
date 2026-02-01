@@ -12,7 +12,6 @@ const getAll = async (pageNumber = 1, pageSize = 10) => {
     const offset = (pageNumber - 1) * pageSize;
     const { count, rows } = await Job.findAndCountAll({
       where: {
-        // Optimized for Index: IX_Job_Status_Deadline (status, deadline DESC)
         status: "open",
         deadline: { [Op.gt]: today },
       },
@@ -28,7 +27,7 @@ const getAll = async (pageNumber = 1, pageSize = 10) => {
       ],
       offset,
       limit: pageSize,
-      order: [["createdAt", "DESC"]],
+      order: [["createdat", "DESC"]],
       distinct: true,
     });
     return {
@@ -62,11 +61,11 @@ const getById = async (id) => {
   }
 };
 
-const create = async (userId, jobData) => {
+const create = async (userid, jobData) => {
   try {
     const companyMember = await CompanyMember.findOne({
       where: {
-        userId: userId,
+        userid: userid,
         status: "active",
       },
     });
@@ -74,7 +73,7 @@ const create = async (userId, jobData) => {
     if (!companyMember) {
       throw new Error("User is not a member of any company");
     }
-    const { title, description, type, quantity, deadline, salary, skillIds } =
+    const { title, description, type, quantity, deadline, salary, skillids } =
       jobData;
 
     const newJob = await Job.create({
@@ -84,13 +83,13 @@ const create = async (userId, jobData) => {
       quantity,
       deadline,
       salary,
-      companyId: companyMember.companyId,
+      companyid: companyMember.companyid,
       status: "open",
     });
-    if (skillIds && skillIds.length > 0) {
-      const skillJobs = skillIds.map((skillId) => ({
-        jobId: newJob.id,
-        skillId: skillId,
+    if (skillids && skillids.length > 0) {
+      const skillJobs = skillids.map((skillid) => ({
+        jobid: newJob.id,
+        skillid: skillid,
       }));
       await SkillJob.bulkCreate(skillJobs);
     }
@@ -112,7 +111,7 @@ const update = async (id, jobData) => {
       deadline,
       status,
       salary,
-      skillIds,
+      skillids,
     } = jobData;
     if (title) job.title = title;
     if (description) job.description = description;
@@ -122,12 +121,12 @@ const update = async (id, jobData) => {
     if (status) job.status = status;
     if (salary) job.salary = salary;
     await job.save();
-    if (skillIds) {
-      await SkillJob.destroy({ where: { jobId: id } });
-      if (skillIds.length > 0) {
-        const skillJobs = skillIds.map((skillId) => ({
-          jobId: id,
-          skillId: skillId,
+    if (skillids) {
+      await SkillJob.destroy({ where: { jobid: id } });
+      if (skillids.length > 0) {
+        const skillJobs = skillids.map((skillid) => ({
+          jobid: id,
+          skillid: skillid,
         }));
         await SkillJob.bulkCreate(skillJobs);
       }
@@ -143,7 +142,7 @@ const deleteJob = async (id) => {
   try {
     const job = await Job.findByPk(id);
     if (!job) return false;
-    await SkillJob.destroy({ where: { jobId: id } });
+    await SkillJob.destroy({ where: { jobid: id } });
     await job.destroy();
     return true;
   } catch (error) {
@@ -152,7 +151,7 @@ const deleteJob = async (id) => {
 };
 
 const getJobsByCompanyId = async (
-  companyId,
+  companyid,
   pageNumber = 1,
   pageSize = 10,
   onlyActive = false,
@@ -165,7 +164,7 @@ const getJobsByCompanyId = async (
       "0",
     )}-${String(now.getDate()).padStart(2, "0")}`;
 
-    let whereClause = { companyId };
+    let whereClause = { companyid };
     if (onlyActive) {
       whereClause.status = { [Op.ne]: "closed" };
       whereClause.deadline = { [Op.gt]: today };
@@ -185,7 +184,7 @@ const getJobsByCompanyId = async (
       ],
       offset,
       limit: pageSize,
-      order: [["createdAt", "DESC"]],
+      order: [["createdat", "DESC"]],
       distinct: true,
     });
     return {
@@ -212,7 +211,7 @@ const getJobsToday = async () => {
     const jobs = await Job.findAll({
       where: {
         [Op.and]: [
-          literal(`CAST([Job].[createdAt] AS DATE) = '${todayDate}'`),
+          literal(`CAST("Job"."createdat" AS DATE) = '${todayDate}'`),
           {
             status: { [Op.ne]: "closed" },
             deadline: { [Op.gt]: todayDate },
@@ -236,7 +235,7 @@ const getJobsToday = async () => {
   }
 };
 
-const getJobsBySkill = async (skillId, pageNumber = 1, pageSize = 10) => {
+const getJobsBySkill = async (skillid, pageNumber = 1, pageSize = 10) => {
   try {
     const offset = (pageNumber - 1) * pageSize;
     const now = new Date();
@@ -256,7 +255,7 @@ const getJobsBySkill = async (skillId, pageNumber = 1, pageSize = 10) => {
         },
         {
           model: Skill,
-          where: { id: skillId },
+          where: { id: skillid },
         },
       ],
       offset,
@@ -276,20 +275,20 @@ const getJobsBySkill = async (skillId, pageNumber = 1, pageSize = 10) => {
 };
 
 const getJobsByUserId = async (
-  userId,
+  userid,
   pageNumber = 1,
   pageSize = 10,
   onlyActive = false,
 ) => {
   try {
     const companyMember = await CompanyMember.findOne({
-      where: { userId: userId, status: "active" },
+      where: { userid: userid, status: "active" },
     });
     if (!companyMember) {
       throw new Error("User not in any company");
     }
     return await getJobsByCompanyId(
-      companyMember.companyId,
+      companyMember.companyid,
       pageNumber,
       pageSize,
       onlyActive,

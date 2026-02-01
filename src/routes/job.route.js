@@ -15,6 +15,6 @@ router.put("/:id", verifyToken, jobController.update);
 
 router.delete("/:id", verifyToken, jobController.deleteJob);
 
-router.get("/by-user/:userId", verifyToken, jobController.getJobsByUserId);
+router.get("/by-user/:userid", verifyToken, jobController.getJobsByUserId);
 
 module.exports = router;

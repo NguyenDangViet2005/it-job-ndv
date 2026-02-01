@@ -8,7 +8,7 @@ class ProvinceResponse {
 class WardResponse {
   constructor(ward) {
     this.id = ward.id;
-    this.provinceId = ward.provinceId;
+    this.provinceid = ward.provinceid;
     this.name = ward.name;
   }
 }

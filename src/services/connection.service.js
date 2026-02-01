@@ -3,14 +3,14 @@ const { Op } = require("sequelize");
 const ConnectionResponse = require("../dtos/ConnectionResponse.dto");
 
 // Send connection request
-const sendConnectionRequest = async (userId, connectedUserId) => {
+const sendConnectionRequest = async (userid, connecteduserid) => {
   try {
     // Check if connection already exists
     const existing = await Connection.findOne({
       where: {
         [Op.or]: [
-          { userId, connectedUserId },
-          { userId: connectedUserId, connectedUserId: userId },
+          { userid, connecteduserid },
+          { userid: connecteduserid, connecteduserid: userid },
         ],
       },
     });
@@ -20,8 +20,8 @@ const sendConnectionRequest = async (userId, connectedUserId) => {
     }
 
     const connection = await Connection.create({
-      userId,
-      connectedUserId,
+      userid,
+      connecteduserid,
       status: "pending",
     });
 
@@ -32,7 +32,7 @@ const sendConnectionRequest = async (userId, connectedUserId) => {
 };
 
 // Accept connection request
-const acceptConnectionRequest = async (connectionId, userId) => {
+const acceptConnectionRequest = async (connectionId, userid) => {
   try {
     const connection = await Connection.findByPk(connectionId);
 
@@ -41,7 +41,7 @@ const acceptConnectionRequest = async (connectionId, userId) => {
     }
 
     // Only the receiver can accept
-    if (connection.connectedUserId !== userId) {
+    if (connection.connecteduserid !== userid) {
       throw new Error("Unauthorized to accept this connection");
     }
 
@@ -59,7 +59,7 @@ const acceptConnectionRequest = async (connectionId, userId) => {
 };
 
 // Reject connection request
-const rejectConnectionRequest = async (connectionId, userId) => {
+const rejectConnectionRequest = async (connectionId, userid) => {
   try {
     const connection = await Connection.findByPk(connectionId);
 
@@ -68,7 +68,7 @@ const rejectConnectionRequest = async (connectionId, userId) => {
     }
 
     // Only the receiver can reject
-    if (connection.connectedUserId !== userId) {
+    if (connection.connecteduserid !== userid) {
       throw new Error("Unauthorized to reject this connection");
     }
 
@@ -82,7 +82,7 @@ const rejectConnectionRequest = async (connectionId, userId) => {
 };
 
 // Remove connection
-const removeConnection = async (connectionId, userId) => {
+const removeConnection = async (connectionId, userid) => {
   try {
     const connection = await Connection.findByPk(connectionId);
 
@@ -91,7 +91,7 @@ const removeConnection = async (connectionId, userId) => {
     }
 
     // Either user can remove the connection
-    if (connection.userId !== userId && connection.connectedUserId !== userId) {
+    if (connection.userid !== userid && connection.connecteduserid !== userid) {
       throw new Error("Unauthorized to remove this connection");
     }
 
@@ -103,25 +103,25 @@ const removeConnection = async (connectionId, userId) => {
 };
 
 // Get user connections (accepted only)
-const getUserConnections = async (userId, page = 1, pageSize = 10) => {
+const getUserConnections = async (userid, page = 1, pageSize = 10) => {
   try {
     const offset = (page - 1) * pageSize;
 
     const { count, rows } = await Connection.findAndCountAll({
       where: {
-        [Op.or]: [{ userId }, { connectedUserId: userId }],
+        [Op.or]: [{ userid }, { connecteduserid: userid }],
         status: "accepted",
       },
       include: [
         {
           model: User,
           as: "User",
-          attributes: ["id", "fullName", "avatar", "email"],
+          attributes: ["id", "fullname", "avatar", "email"],
         },
         {
           model: User,
           as: "ConnectedUser",
-          attributes: ["id", "fullName", "avatar", "email"],
+          attributes: ["id", "fullname", "avatar", "email"],
         },
       ],
       limit: pageSize,
@@ -142,25 +142,25 @@ const getUserConnections = async (userId, page = 1, pageSize = 10) => {
 };
 
 // Get pending connection requests (received)
-const getPendingRequests = async (userId, page = 1, pageSize = 10) => {
+const getPendingRequests = async (userid, page = 1, pageSize = 10) => {
   try {
     const offset = (page - 1) * pageSize;
 
     const { count, rows } = await Connection.findAndCountAll({
       where: {
-        connectedUserId: userId,
+        connecteduserid: userid,
         status: "pending",
       },
       include: [
         {
           model: User,
           as: "User",
-          attributes: ["id", "fullName", "avatar", "email"],
+          attributes: ["id", "fullname", "avatar", "email"],
         },
       ],
       limit: pageSize,
       offset: offset,
-      order: [["createdAt", "DESC"]],
+      order: [["createdat", "DESC"]],
     });
 
     return {
@@ -176,25 +176,25 @@ const getPendingRequests = async (userId, page = 1, pageSize = 10) => {
 };
 
 // Get sent connection requests
-const getSentRequests = async (userId, page = 1, pageSize = 10) => {
+const getSentRequests = async (userid, page = 1, pageSize = 10) => {
   try {
     const offset = (page - 1) * pageSize;
 
     const { count, rows } = await Connection.findAndCountAll({
       where: {
-        userId,
+        userid,
         status: "pending",
       },
       include: [
         {
           model: User,
           as: "ConnectedUser",
-          attributes: ["id", "fullName", "avatar", "email"],
+          attributes: ["id", "fullname", "avatar", "email"],
         },
       ],
       limit: pageSize,
       offset: offset,
-      order: [["createdAt", "DESC"]],
+      order: [["createdat", "DESC"]],
     });
 
     return {

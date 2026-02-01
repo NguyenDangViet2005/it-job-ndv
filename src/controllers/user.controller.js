@@ -43,10 +43,10 @@ const getById = async (req, res, next) => {
 const updateProfile = async (req, res, next) => {
   try {
     const id = parseInt(req.params.id);
-    const userId = getCurrentUserId(req);
+    const userid = getCurrentUserId(req);
 
     // Check permission
-    if (userId !== id) {
+    if (userid !== id) {
       return res.status(403).json({ message: "Unauthorized" });
     }
 
@@ -142,7 +142,7 @@ const changePassword = async (req, res, next) => {
     const result = await userService.changePassword(
       id,
       currentPassword,
-      newPassword
+      newPassword,
     );
     if (!result) return res.status(404).json({ message: "User not found" });
     res
@@ -185,8 +185,8 @@ const getUserSkills = async (req, res, next) => {
 
 const addUserSkill = async (req, res, next) => {
   try {
-    const id = parseInt(req.params.id); // userId
-    const { skillId } = req.body;
+    const id = parseInt(req.params.id); // userid
+    const { skillid } = req.body;
 
     // Check permission: Only current user can add skills to themselves
     const currentUserId = getCurrentUserId(req);
@@ -198,7 +198,7 @@ const addUserSkill = async (req, res, next) => {
       return res.status(400).json({ message: "Skill ID is required" });
     }
 
-    const result = await userService.addUserSkill(id, skillId);
+    const result = await userService.addUserSkill(id, skillid);
     if (!result) {
       return res
         .status(404)
@@ -213,8 +213,8 @@ const addUserSkill = async (req, res, next) => {
 
 const removeUserSkill = async (req, res, next) => {
   try {
-    const id = parseInt(req.params.id); // userId
-    const skillId = parseInt(req.params.skillId);
+    const id = parseInt(req.params.id); // userid
+    const skillid = parseInt(req.params.skillid);
 
     // Check permission
     const currentUserId = getCurrentUserId(req);
@@ -222,7 +222,7 @@ const removeUserSkill = async (req, res, next) => {
       return res.status(403).json({ message: "Unauthorized" });
     }
 
-    const result = await userService.removeUserSkill(id, skillId);
+    const result = await userService.removeUserSkill(id, skillid);
     if (!result) {
       return res.status(404).json({ message: "Skill not found on user" });
     }

@@ -87,12 +87,12 @@ const updateCover = async (id, file) => {
     if (!user) return null;
 
     // Delete old cover image from Cloudinary if exists
-    if (user.coverImage) {
-      await cloudinaryService.deleteFile(user.coverImage);
+    if (user.coverimage) {
+      await cloudinaryService.deleteFile(user.coverimage);
     }
 
     const result = await cloudinaryService.uploadFile(file);
-    user.coverImage = result.secure_url;
+    user.coverimage = result.secure_url;
 
     await user.save();
 
@@ -109,13 +109,13 @@ const updateCV = async (id, file) => {
     if (!user) return null;
 
     // Delete old CV from Cloudinary if exists
-    if (user.cvUrl) {
-      await cloudinaryService.deleteFile(user.cvUrl);
+    if (user.cvurl) {
+      await cloudinaryService.deleteFile(user.cvurl);
     }
 
     // Upload CV from buffer
     const result = await cloudinaryService.uploadFile(file);
-    user.cvUrl = result.secure_url;
+    user.cvurl = result.secure_url;
 
     await user.save();
 
@@ -147,10 +147,10 @@ const changePassword = async (id, currentPassword, newPassword) => {
   }
 };
 
-const getUserApplications = async (userId, page = 1, pageSize = 10) => {
+const getUserApplications = async (userid, page = 1, pageSize = 10) => {
   const offset = (page - 1) * pageSize;
   const { count, rows } = await Application.findAndCountAll({
-    where: { userId },
+    where: { userid },
     include: [{ model: Job, include: [Company] }],
     limit: pageSize,
     offset,
@@ -163,10 +163,10 @@ const getUserApplications = async (userId, page = 1, pageSize = 10) => {
   };
 };
 
-const getUserPosts = async (userId, page = 1, pageSize = 10) => {
+const getUserPosts = async (userid, page = 1, pageSize = 10) => {
   const offset = (page - 1) * pageSize;
   const { count, rows } = await Post.findAndCountAll({
-    where: { userId },
+    where: { userid },
     limit: pageSize,
     offset,
   });
@@ -178,10 +178,10 @@ const getUserPosts = async (userId, page = 1, pageSize = 10) => {
   };
 };
 
-const getUserSkills = async (userId) => {
+const getUserSkills = async (userid) => {
   try {
     const skillUsers = await SkillUser.findAll({
-      where: { userId },
+      where: { userid },
       include: [{ model: Skill }],
     });
     // Return only the skill objects, maybe flattened
@@ -191,10 +191,10 @@ const getUserSkills = async (userId) => {
   }
 };
 
-const addUserSkill = async (userId, skillId) => {
+const addUserSkill = async (userid, skillid) => {
   try {
     // Check if user exists
-    const user = await User.findByPk(userId);
+    const user = await User.findByPk(userid);
     if (!user) throw new Error("User not found");
 
     // Check if skill exists
@@ -203,14 +203,14 @@ const addUserSkill = async (userId, skillId) => {
 
     // Check if user already has skill
     const existing = await SkillUser.findOne({
-      where: { userId, skillId },
+      where: { userid, skillid },
     });
 
     if (existing) return existing;
 
     const newSkillUser = await SkillUser.create({
-      userId,
-      skillId,
+      userid,
+      skillid,
     });
     return newSkillUser;
   } catch (error) {
@@ -219,10 +219,10 @@ const addUserSkill = async (userId, skillId) => {
   }
 };
 
-const removeUserSkill = async (userId, skillId) => {
+const removeUserSkill = async (userid, skillid) => {
   try {
     const deleted = await SkillUser.destroy({
-      where: { userId, skillId },
+      where: { userid, skillid },
     });
     return deleted > 0;
   } catch (error) {
@@ -231,7 +231,7 @@ const removeUserSkill = async (userId, skillId) => {
   }
 };
 
-const getUserMedia = async (userId, page = 1, pageSize = 6) => {
+const getUserMedia = async (userid, page = 1, pageSize = 6) => {
   const offset = (page - 1) * pageSize;
   const limit = parseInt(pageSize);
 
@@ -239,12 +239,12 @@ const getUserMedia = async (userId, page = 1, pageSize = 6) => {
     include: [
       {
         model: Post,
-        where: { userId: userId },
+        where: { userid: userid },
         attributes: [],
       },
     ],
     where: {
-      fileType: {
+      filetype: {
         [Op.in]: ["image", "video"],
       },
     },

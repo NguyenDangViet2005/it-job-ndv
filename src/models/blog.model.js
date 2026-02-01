@@ -10,11 +10,11 @@ const Blog = sequelize.define(
       primaryKey: true,
       autoIncrement: true,
     },
-    userId: {
+    userid: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    categoryId: {
+    categoryid: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
@@ -30,7 +30,7 @@ const Blog = sequelize.define(
       type: DataTypes.TEXT,
       allowNull: false,
     },
-    readTime: {
+    readtime: {
       type: DataTypes.STRING,
       allowNull: true,
     },
@@ -38,21 +38,21 @@ const Blog = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
-    createdAt: {
+    createdat: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: sequelize.literal("GETDATE()"),
+      defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
     },
-    updatedAt: {
+    updatedat: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: sequelize.literal("GETDATE()"),
+      defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
     },
   },
   {
     tableName: "Blog",
-    timestamps: false, // Để database tự động xử lý với DEFAULT GETDATE()
-  }
+    timestamps: false, // Để database tự động xử lý với DEFAULT CURRENT_TIMESTAMP
+  },
 );
 
 module.exports = Blog;

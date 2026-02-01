@@ -6,7 +6,7 @@ const { verifyToken } = require("../middlewares/auth.middleware");
 
 router.get("/", blogController.getAll);
 router.get("/:id", blogController.getById);
-router.get("/user/:userId", blogController.getByUserId);
+router.get("/user/:userid", blogController.getByUserId);
 
 router.post("/", verifyToken, upload.single("image"), blogController.create);
 router.put("/:id", verifyToken, upload.single("image"), blogController.update);

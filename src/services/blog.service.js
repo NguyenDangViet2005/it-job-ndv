@@ -2,11 +2,11 @@ const { Blog, User, BlogCategory } = require("../models");
 const cloudinaryService = require("./cloudinary.service");
 const BlogResponse = require("../dtos/BlogResponse.dto");
 
-const getAllBlogs = async (page = 1, pageSize = 10, categoryId = null) => {
+const getAllBlogs = async (page = 1, pageSize = 10, categoryid = null) => {
   const offset = (page - 1) * pageSize;
   const where = {};
-  if (categoryId) {
-    where.categoryId = categoryId;
+  if (categoryid) {
+    where.categoryid = categoryid;
   }
 
   try {
@@ -15,13 +15,13 @@ const getAllBlogs = async (page = 1, pageSize = 10, categoryId = null) => {
       include: [
         {
           model: User,
-          attributes: ["id", "fullName", "avatar"],
+          attributes: ["id", "fullname", "avatar"],
         },
         {
           model: BlogCategory,
         },
       ],
-      order: [["createdAt", "DESC"]],
+      order: [["createdat", "DESC"]],
       limit: pageSize,
       offset: offset,
     });
@@ -44,7 +44,7 @@ const getBlogById = async (id) => {
       include: [
         {
           model: User,
-          attributes: ["id", "fullName", "avatar"],
+          attributes: ["id", "fullname", "avatar"],
         },
         {
           model: BlogCategory,
@@ -57,21 +57,21 @@ const getBlogById = async (id) => {
   }
 };
 
-const getBlogsByUserId = async (userId, page = 1, pageSize = 10) => {
+const getBlogsByUserId = async (userid, page = 1, pageSize = 10) => {
   const offset = (page - 1) * pageSize;
   const limit = parseInt(pageSize);
   const { count, rows } = await Blog.findAndCountAll({
-    where: { userId },
+    where: { userid },
     include: [
       {
         model: User,
-        attributes: ["id", "fullName", "avatar"],
+        attributes: ["id", "fullname", "avatar"],
       },
       {
         model: BlogCategory,
       },
     ],
-    order: [["createdAt", "DESC"]],
+    order: [["createdat", "DESC"]],
     limit: limit,
     offset: offset,
   });
@@ -94,12 +94,12 @@ const createBlog = async (data, file) => {
     }
 
     const blog = await Blog.create({
-      userId: data.userId,
-      categoryId: data.categoryId,
+      userid: data.userid,
+      categoryid: data.categoryid,
       title: data.title,
       excerpt: data.excerpt,
       content: data.content,
-      readTime: data.readTime,
+      readtime: data.readtime,
       image: imageUrl,
     });
 
@@ -117,8 +117,8 @@ const updateBlog = async (id, data, file) => {
     if (data.title) blog.title = data.title;
     if (data.excerpt) blog.excerpt = data.excerpt;
     if (data.content) blog.content = data.content;
-    if (data.categoryId) blog.categoryId = data.categoryId;
-    if (data.readTime) blog.readTime = data.readTime;
+    if (data.categoryid) blog.categoryid = data.categoryid;
+    if (data.readtime) blog.readtime = data.readtime;
 
     if (file) {
       // Delete old image from Cloudinary if exists

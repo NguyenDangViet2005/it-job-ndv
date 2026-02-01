@@ -6,16 +6,22 @@ const connectionController = require("../controllers/connection.controller");
 router.post("/", connectionController.sendConnectionRequest);
 
 // Accept connection request
-router.put("/:connectionId/accept", connectionController.acceptConnectionRequest);
+router.put(
+  "/:connectionId/accept",
+  connectionController.acceptConnectionRequest,
+);
 
 // Reject connection request
-router.put("/:connectionId/reject", connectionController.rejectConnectionRequest);
+router.put(
+  "/:connectionId/reject",
+  connectionController.rejectConnectionRequest,
+);
 
 // Remove connection
 router.delete("/:connectionId", connectionController.removeConnection);
 
 // Get user connections (accepted)
-router.get("/user/:userId", connectionController.getUserConnections);
+router.get("/user/:userid", connectionController.getUserConnections);
 
 // Get pending requests (received)
 router.get("/pending", connectionController.getPendingRequests);

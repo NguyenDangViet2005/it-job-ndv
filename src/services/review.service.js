@@ -5,7 +5,7 @@ const getReviewById = async (id) => {
   try {
     const review = await Review.findByPk(id, {
       include: [
-        { model: User, as: "User", attributes: ["id", "fullName", "avatar"] },
+        { model: User, as: "User", attributes: ["id", "fullname", "avatar"] },
         { model: Company, as: "Company", attributes: ["id", "name", "avatar"] },
       ],
     });
@@ -15,14 +15,14 @@ const getReviewById = async (id) => {
   }
 };
 
-const getReviewsByCompanyId = async (companyId, page = 1, pageSize = 10) => {
+const getReviewsByCompanyId = async (companyid, page = 1, pageSize = 10) => {
   const offset = (page - 1) * pageSize;
   const { count, rows } = await Review.findAndCountAll({
-    where: { companyId },
+    where: { companyid },
     include: [
-      { model: User, as: "User", attributes: ["id", "fullName", "avatar"] },
+      { model: User, as: "User", attributes: ["id", "fullname", "avatar"] },
     ],
-    order: [["createdAt", "DESC"]],
+    order: [["createdat", "DESC"]],
     limit: pageSize,
     offset: offset,
   });
@@ -36,14 +36,14 @@ const getReviewsByCompanyId = async (companyId, page = 1, pageSize = 10) => {
   };
 };
 
-const getReviewsByUserId = async (userId, page = 1, pageSize = 10) => {
+const getReviewsByUserId = async (userid, page = 1, pageSize = 10) => {
   const offset = (page - 1) * pageSize;
   const { count, rows } = await Review.findAndCountAll({
-    where: { userId },
+    where: { userid },
     include: [
       { model: Company, as: "Company", attributes: ["id", "name", "avatar"] },
     ],
-    order: [["createdAt", "DESC"]],
+    order: [["createdat", "DESC"]],
     limit: pageSize,
     offset: offset,
   });
@@ -57,11 +57,11 @@ const getReviewsByUserId = async (userId, page = 1, pageSize = 10) => {
   };
 };
 
-const createReview = async (userId, data) => {
+const createReview = async (userid, data) => {
   try {
     const review = await Review.create({
-      userId,
-      companyId: data.companyId,
+      userid,
+      companyid: data.companyid,
       rating: data.rating,
       comment: data.comment,
     });
@@ -71,12 +71,12 @@ const createReview = async (userId, data) => {
   }
 };
 
-const updateReview = async (id, userId, data) => {
+const updateReview = async (id, userid, data) => {
   try {
     const review = await Review.findByPk(id);
     if (!review) return null;
 
-    if (review.userId !== userId) {
+    if (review.userid !== userid) {
       throw new Error("Unauthorized");
     }
 
@@ -90,12 +90,12 @@ const updateReview = async (id, userId, data) => {
   }
 };
 
-const deleteReview = async (id, userId) => {
+const deleteReview = async (id, userid) => {
   try {
     const review = await Review.findByPk(id);
     if (!review) return false;
-    if (review.userId !== userId) {
-      if (userId !== -1) {
+    if (review.userid !== userid) {
+      if (userid !== -1) {
         throw new Error("Unauthorized");
       }
     }

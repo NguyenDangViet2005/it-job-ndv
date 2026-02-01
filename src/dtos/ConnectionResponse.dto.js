@@ -1,17 +1,17 @@
 class ConnectionResponse {
   constructor(connection) {
     this.id = connection.id;
-    this.userId = connection.userId;
-    this.connectedUserId = connection.connectedUserId;
+    this.userid = connection.userid;
+    this.connecteduserid = connection.connecteduserid;
     this.status = connection.status;
-    this.createdAt = connection.createdAt;
-    this.updatedAt = connection.updatedAt;
+    this.createdat = connection.createdat;
+    this.updatedat = connection.updatedat;
 
     // Include user details if available
     if (connection.User) {
       this.user = {
         id: connection.User.id,
-        fullName: connection.User.fullName,
+        fullname: connection.User.fullname,
         avatar: connection.User.avatar,
         email: connection.User.email,
       };
@@ -20,7 +20,7 @@ class ConnectionResponse {
     if (connection.ConnectedUser) {
       this.connectedUser = {
         id: connection.ConnectedUser.id,
-        fullName: connection.ConnectedUser.fullName,
+        fullname: connection.ConnectedUser.fullname,
         avatar: connection.ConnectedUser.avatar,
         email: connection.ConnectedUser.email,
       };

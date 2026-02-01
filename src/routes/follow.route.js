@@ -3,6 +3,6 @@ const router = express.Router();
 const followController = require("../controllers/follow.controller");
 
 router.post("/", followController.toggleFollow);
-router.get("/company/:companyId", followController.getFollowsByCompany);
+router.get("/company/:companyid", followController.getFollowsByCompany);
 
 module.exports = router;

@@ -1,18 +1,18 @@
 class UserResponse {
   constructor(user) {
     this.id = user.id;
-    this.fullName = user.fullName;
+    this.fullname = user.fullname;
     this.email = user.email;
     this.phone = user.phone;
     this.gender = user.gender;
-    this.dateOfBirth = user.dateOfBirth;
+    this.dateofbirth = user.dateofbirth;
     this.avatar = user.avatar;
-    this.coverImage = user.coverImage;
+    this.coverimage = user.coverimage;
     this.address = user.address;
-    this.cvUrl = user.cvUrl;
+    this.cvurl = user.cvurl;
     this.role = user.role || "user";
-    this.createdAt = user.createdAt;
-    this.updatedAt = user.updatedAt;
+    this.createdat = user.createdat;
+    this.updatedat = user.updatedat;
   }
 }
 

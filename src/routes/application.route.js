@@ -7,16 +7,16 @@ router.get("/", verifyToken, applicationController.getAll);
 
 router.post("/", verifyToken, applicationController.create);
 
-router.get("/user/:userId", verifyToken, applicationController.getByUserId);
+router.get("/user/:userid", verifyToken, applicationController.getByUserId);
 
 router.get(
-  "/company/:companyId",
+  "/company/:companyid",
   verifyToken,
-  applicationController.getByCompanyId
+  applicationController.getByCompanyId,
 );
 
-router.put("/:jobId/:userId", verifyToken, applicationController.update);
+router.put("/:jobId/:userid", verifyToken, applicationController.update);
 
-router.delete("/:jobId/:userId", verifyToken, applicationController.deleteApp);
+router.delete("/:jobId/:userid", verifyToken, applicationController.deleteApp);
 
 module.exports = router;

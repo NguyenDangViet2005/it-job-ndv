@@ -10,7 +10,7 @@ const User = sequelize.define(
       primaryKey: true,
       autoIncrement: true,
     },
-    fullName: {
+    fullname: {
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -31,48 +31,49 @@ const User = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
-    dateOfBirth: {
+    dateofbirth: {
       type: DataTypes.DATEONLY,
       allowNull: true,
     },
     avatar: {
       type: DataTypes.STRING,
       allowNull: true,
-      defaultValue: "https://res.cloudinary.com/duc6z828y/image/upload/c_crop,w_650,h_650,ar_1:1/v1768581047/avatar_nbspgd.avif",
+      defaultValue:
+        "https://res.cloudinary.com/duc6z828y/image/upload/c_crop,w_650,h_650,ar_1:1/v1768581047/avatar_nbspgd.avif",
     },
-    coverImage: {
+    coverimage: {
       type: DataTypes.STRING,
       allowNull: true,
     },
-    cvUrl: {
+    cvurl: {
       type: DataTypes.STRING,
       allowNull: true,
-      field: "cvUrl",
+      field: "cvurl",
     },
     role: {
       type: DataTypes.STRING,
       allowNull: true,
       defaultValue: "user",
     },
-    refreshToken: {
+    refreshtoken: {
       type: DataTypes.STRING,
       allowNull: true,
     },
-    createdAt: {
+    createdat: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: sequelize.literal("GETDATE()"),
+      defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
     },
-    updatedAt: {
+    updatedat: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: sequelize.literal("GETDATE()"),
+      defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
     },
   },
   {
     tableName: "User",
     timestamps: false,
-  }
+  },
 );
 
 module.exports = User;

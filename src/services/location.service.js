@@ -18,7 +18,7 @@ const getAllProvinces = async () => {
 const getWardsByProvinceId = async (provinceId) => {
   try {
     const wards = await Ward.findAll({
-      where: { provinceId },
+      where: { provinceid },
       order: [["name", "ASC"]],
     });
     return wards.map((w) => new WardResponse(w));

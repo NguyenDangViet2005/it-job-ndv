@@ -5,11 +5,14 @@ const env = require("./env.config");
 const sequelize = new Sequelize(env.db.name, env.db.user, env.db.password, {
   host: env.db.host,
   port: env.db.port,
-  dialect: "mssql",
+  dialect: "postgres",
   dialectOptions: {
-    encrypt: env.db.encrypt,
-    trustServerCertificate: env.db.trustServerCertificate,
-    enableArithAbort: true,
+    ssl: env.db.ssl
+      ? {
+          require: true,
+          rejectUnauthorized: false,
+        }
+      : false,
   },
   pool: {
     max: 10,
@@ -19,8 +22,7 @@ const sequelize = new Sequelize(env.db.name, env.db.user, env.db.password, {
   },
   logging: false, // Tắt logging SQL
   define: {
-    timestamps: true,
-    underscored: false, // Dùng camelCase cho DB
+    timestamps: false, // Models tự quản lý timestamps
     freezeTableName: true, // Không tự động plural table names
   },
 });
@@ -29,7 +31,7 @@ const sequelize = new Sequelize(env.db.name, env.db.user, env.db.password, {
 const testConnection = async () => {
   try {
     await sequelize.authenticate();
-    console.log("✅ Sequelize connected to SQL Server successfully!");
+    console.log("✅ Sequelize connected to PostgreSQL successfully!");
   } catch (error) {
     console.error("❌ Sequelize connection failed:", error.message);
     process.exit(1);

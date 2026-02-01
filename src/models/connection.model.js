@@ -9,7 +9,7 @@ const Connection = sequelize.define(
       primaryKey: true,
       autoIncrement: true,
     },
-    userId: {
+    userid: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
@@ -17,7 +17,7 @@ const Connection = sequelize.define(
         key: "id",
       },
     },
-    connectedUserId: {
+    connecteduserid: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
@@ -30,12 +30,12 @@ const Connection = sequelize.define(
       allowNull: false,
       defaultValue: "pending",
     },
-    createdAt: {
+    createdat: {
       type: DataTypes.DATE,
       allowNull: false,
       defaultValue: DataTypes.NOW,
     },
-    updatedAt: {
+    updatedat: {
       type: DataTypes.DATE,
       allowNull: false,
       defaultValue: DataTypes.NOW,
@@ -47,12 +47,12 @@ const Connection = sequelize.define(
     indexes: [
       {
         unique: true,
-        fields: ["userId", "connectedUserId"],
+        fields: ["userid", "connectedUserId"],
         name: "unique_connection",
       },
       {
-        fields: ["userId"],
-        name: "idx_userId",
+        fields: ["userid"],
+        name: "idx_userid",
       },
       {
         fields: ["connectedUserId"],
@@ -63,7 +63,7 @@ const Connection = sequelize.define(
         name: "idx_status",
       },
       {
-        fields: ["userId", "status"],
+        fields: ["userid", "status"],
         name: "idx_user_status",
       },
       {
@@ -71,7 +71,7 @@ const Connection = sequelize.define(
         name: "idx_connected_user_status",
       },
     ],
-  }
+  },
 );
 
 module.exports = Connection;

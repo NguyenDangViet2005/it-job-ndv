@@ -5,19 +5,19 @@ const { sequelize } = require("../configs/sequelize.config");
 const Application = sequelize.define(
   "Application",
   {
-    jobId: {
+    jobid: {
       type: DataTypes.INTEGER,
       primaryKey: true,
     },
-    userId: {
+    userid: {
       type: DataTypes.INTEGER,
       primaryKey: true,
     },
-    cvUrl: {
+    cvurl: {
       type: DataTypes.STRING,
       allowNull: true,
     },
-    coverLetter: {
+    coverletter: {
       type: DataTypes.TEXT,
       allowNull: true,
     },
@@ -26,21 +26,21 @@ const Application = sequelize.define(
       allowNull: true,
       defaultValue: "pending",
     },
-    createdAt: {
+    createdat: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: sequelize.literal("GETDATE()"),
+      defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
     },
-    updatedAt: {
+    updatedat: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: sequelize.literal("GETDATE()"),
+      defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
     },
   },
   {
     tableName: "Application",
-    timestamps: false, // Để database tự động xử lý với DEFAULT GETDATE()
-  }
+    timestamps: false, // Để database tự động xử lý với DEFAULT CURRENT_TIMESTAMP
+  },
 );
 
 module.exports = Application;
