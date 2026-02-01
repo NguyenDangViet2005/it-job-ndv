@@ -2,7 +2,7 @@
 
 export interface Job {
   id: number;
-  companyId: number;
+  companyid: number;
   title: string;
   description?: string;
   type: string;
@@ -11,8 +11,8 @@ export interface Job {
   deadline: string;
   salary?: string;
   location?: string;
-  createdAt: string;
-  updatedAt: string;
+  createdat: string;
+  updatedat: string;
   company?: {
     id: number;
     name: string;

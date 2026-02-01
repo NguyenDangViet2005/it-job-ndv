@@ -19,7 +19,7 @@ interface SearchJob {
   status: string;
   quantity: number;
   deadline: string;
-  createdAt: string;
+  createdat: string;
   company: {
     id: number;
     name: string;

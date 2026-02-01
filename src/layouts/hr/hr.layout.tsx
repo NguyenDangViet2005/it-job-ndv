@@ -46,7 +46,7 @@ export function HRLayout({ children }: { children: React.ReactNode }) {
   const [jobCount, setJobCount] = useState(0);
   const [candidateCount, setCandidateCount] = useState(0);
   const [notificationCount] = useState(0);
-  const companyName = company?.name || user?.fullName || "Đội ngũ HR";
+  const companyName = company?.name || user?.fullname || "Đội ngũ HR";
   const companyAvatar = company?.avatar || user?.avatar || "";
   const pathname = usePathname();
   const { theme, resolvedTheme } = useTheme();
@@ -66,16 +66,16 @@ export function HRLayout({ children }: { children: React.ReactNode }) {
     const fetchData = async () => {
       if (!token || !company?.id) return;
       try {
-        const companyId = company.id;
+        const companyid = company.id;
 
-        const jobsResponse = await jobApi.getByCompany(companyId, 1, 1, token);
+        const jobsResponse = await jobApi.getByCompany(companyid, 1, 1, token);
         setJobCount(jobsResponse.totalItems || 0);
 
         const candidatesResponse = await applicationApi.getByCompany(
-          companyId,
+          companyid,
           1,
           1,
-          token
+          token,
         );
         setCandidateCount(candidatesResponse.totalItems || 0);
       } catch (error) {
@@ -113,7 +113,7 @@ export function HRLayout({ children }: { children: React.ReactNode }) {
               "flex items-center cursor-target gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
               isActive
                 ? "bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 shadow-sm"
-                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800"
+                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800",
             )}
           >
             <Icon className="h-4 w-4 flex-shrink-0" />
@@ -124,7 +124,7 @@ export function HRLayout({ children }: { children: React.ReactNode }) {
                 className={cn(
                   "text-xs",
                   isActive &&
-                    "bg-white/90 dark:bg-slate-800 text-slate-900 dark:text-slate-100 border-transparent"
+                    "bg-white/90 dark:bg-slate-800 text-slate-900 dark:text-slate-100 border-transparent",
                 )}
               >
                 {item.badge}

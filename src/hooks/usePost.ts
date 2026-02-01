@@ -203,7 +203,7 @@ export function useUserMedia(
 
 // Hook để load comments với pagination
 export function useComments(
-  postId: number,
+  postid: number,
   token?: string | null,
   initialPageSize: number = 10
 ) {
@@ -220,7 +220,7 @@ export function useComments(
 
       try {
         const response = await interactionApi.getComments(
-          postId,
+          postid,
           pageNumber,
           initialPageSize,
           token || undefined
@@ -241,7 +241,7 @@ export function useComments(
         setLoading(false);
       }
     },
-    [loading, postId, initialPageSize, token]
+    [loading, postid, initialPageSize, token]
   );
 
   const loadMore = useCallback(() => {

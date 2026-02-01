@@ -27,11 +27,11 @@ import { ROUTES } from "@/configs";
 import { Company } from "@/types";
 
 const CompanyInfo = ({
-  jobId,
+  jobid,
   jobTitle,
   company,
 }: {
-  jobId?: number;
+  jobid?: number;
   jobTitle?: string;
   company?: Company;
 }) => {
@@ -60,7 +60,7 @@ const CompanyInfo = ({
         <div className="flex justify-center mb-4">
           <div className="relative">
             <Image
-              src={company?.avatar || "/logo-company.jpg"}
+              src={company?.avatar}
               alt={company?.name || "Company Logo"}
               width={80}
               height={80}
@@ -91,7 +91,7 @@ const CompanyInfo = ({
 
           <div className="flex items-center gap-2 text-sm">
             <Calendar className="h-4 w-4 text-muted-foreground" />
-            <span>Thành lập năm {company?.foundedYear || "Chưa cập nhật"}</span>
+            <span>Thành lập năm {company?.foundedyear || "Chưa cập nhật"}</span>
           </div>
 
           <div className="flex items-center gap-2 text-sm">
@@ -125,10 +125,10 @@ const CompanyInfo = ({
             <div className="flex items-center gap-2 text-sm">
               <Mail className="h-4 w-4 text-muted-foreground" />
               <a
-                href={`mailto:${company?.companyEmail}`}
+                href={`mailto:${company?.companyemail}`}
                 className="text-primary hover:underline"
               >
-                {company?.companyEmail}
+                {company?.companyemail}
               </a>
             </div>
             <div className="flex items-center gap-2 text-sm">
@@ -147,7 +147,7 @@ const CompanyInfo = ({
           className="w-full"
           size="lg"
           onClick={handleApply}
-          disabled={!jobId}
+          disabled={!jobid}
         >
           Ứng tuyển ngay
         </Button>
@@ -158,11 +158,11 @@ const CompanyInfo = ({
       </div>
 
       {/* Application Modal */}
-      {jobId && (
+      {jobid && (
         <ApplicationModal
           open={isApplicationModalOpen}
           onOpenChange={setIsApplicationModalOpen}
-          jobId={jobId}
+          jobid={jobid}
           jobTitle={jobTitle || "Vị trí tuyển dụng"}
           companyName={company?.name || ""}
         />

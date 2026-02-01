@@ -24,16 +24,16 @@ export interface AdminCompany {
   id: number;
   name: string;
   avatar?: string;
-  coverImage?: string;
+  coverimage?: string;
   nationality?: string;
   website?: string;
   description?: string;
-  foundedYear?: number;
+  foundedyear?: number;
   address?: string;
-  wardId?: number;
-  createdByUserId?: number;
-  createdAt?: string;
-  updatedAt?: string;
+  wardid?: number;
+  createdbyuserid?: number;
+  createdat?: string;
+  updatedat?: string;
   jobs?: { $values?: any[] } | any[];
   follows?: { $values?: any[] } | any[];
 }
@@ -133,10 +133,10 @@ export function AdminCompanyRow({ company, onEdit, onDelete }: CompanyRowProps) 
 
       {/* Founded */}
       <td className="p-4 cursor-target">
-        {company.foundedYear ? (
+        {company.foundedyear ? (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Calendar className="h-4 w-4" />
-            <span>{company.foundedYear}</span>
+            <span>{company.foundedyear}</span>
           </div>
         ) : (
           <span className="text-muted-foreground">-</span>

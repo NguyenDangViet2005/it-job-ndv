@@ -22,9 +22,9 @@ export default function PostMedia({
 }: PostMediaProps) {
   // Extract images and video from attachments (API structure)
   const apiImages =
-    attachments?.filter((a) => a.fileType === "image").map((a) => a.fileUrl) ||
+    attachments?.filter((a) => a.filetype === "image").map((a) => a.fileurl) ||
     [];
-  const apiVideo = attachments?.find((a) => a.fileType === "video")?.fileUrl;
+  const apiVideo = attachments?.find((a) => a.filetype === "video")?.fileurl;
 
   // Merge with legacy props if provided (prioritize API)
   const images = apiImages.length > 0 ? apiImages : legacyImages || [];

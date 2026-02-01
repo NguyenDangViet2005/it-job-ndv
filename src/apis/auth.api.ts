@@ -40,7 +40,7 @@ export const authApi = {
   },
 
   // Refresh Token (Uses HttpOnly Cookie)
-  refreshToken: async () => {
+  refreshtoken: async () => {
     return await apiPost<ApiResponse<LoginResponse>>(
       `${ENDPOINT}/refresh-token`,
       undefined,

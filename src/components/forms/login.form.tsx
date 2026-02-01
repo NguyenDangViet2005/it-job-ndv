@@ -52,10 +52,10 @@ export default function FormLogin() {
       });
 
       if (response.success && response.data) {
-        const { user, accessToken } = response.data;
+        const { user, accesstoken } = response.data;
 
         // Set auth state
-        setAuth(user, accessToken);
+        setAuth(user, accesstoken);
 
         toast.success("Đăng nhập thành công!");
 

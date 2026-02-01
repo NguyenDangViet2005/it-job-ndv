@@ -76,12 +76,12 @@ export default function UserDashboardSidebar() {
         <Avatar className="h-12 w-12 ring-2 ring-blue-500/30">
           <AvatarImage src={user?.avatar || undefined} />
           <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-bold">
-            {user?.fullName?.charAt(0) || "U"}
+            {user?.fullname?.charAt(0) || "U"}
           </AvatarFallback>
         </Avatar>
         <div className="flex-1 min-w-0">
           <h3 className="font-semibold truncate">
-            {user?.fullName || "Người dùng"}
+            {user?.fullname || "Người dùng"}
           </h3>
           <p className="text-xs text-muted-foreground truncate">
             {user?.email || "user@example.com"}

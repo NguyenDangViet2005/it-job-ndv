@@ -2,20 +2,20 @@
 
 export interface Connection {
   id: number;
-  userId: number;
-  connectedUserId: number;
+  userid: number;
+  connecteduserid: number;
   status: "pending" | "accepted" | "rejected";
-  createdAt: string;
-  updatedAt: string;
+  createdat: string;
+  updatedat: string;
   user?: {
     id: number;
-    fullName: string;
+    fullname: string;
     avatar?: string;
     email: string;
   };
   connectedUser?: {
     id: number;
-    fullName: string;
+    fullname: string;
     avatar?: string;
     email: string;
   };

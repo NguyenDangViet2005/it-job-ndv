@@ -216,7 +216,7 @@ export default function CompanyJobInfo({ job }: JobHeaderProps) {
         <ApplicationModal
           open={isApplicationModalOpen}
           onOpenChange={setIsApplicationModalOpen}
-          jobId={job.id}
+          jobid={job.id}
           jobTitle={job.title}
           companyName={job.company}
         />

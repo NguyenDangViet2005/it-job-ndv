@@ -14,9 +14,9 @@ export const locationApi = {
   },
 
   // Lấy danh sách quận/huyện theo tỉnh/thành phố
-  getWards: (provinceId: number) => {
+  getWards: (provinceid: number) => {
     return apiGet<ApiResponse<WardResponse[]>>(`${ENDPOINT}/wards`, {
-      params: { provinceId },
+      params: { provinceid },
     });
   },
 };

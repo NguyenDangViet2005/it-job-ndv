@@ -2,15 +2,15 @@
 
 export interface Follow {
   id: number;
-  userId: number;
-  companyId: number;
-  createdAt: string;
-  updatedAt: string;
+  userid: number;
+  companyid: number;
+  createdat: string;
+  updatedat: string;
 }
 
 export interface FollowUser {
   id: number;
-  fullName: string;
+  fullname: string;
   avatar?: string;
   role?: string;
   company?: string;

@@ -5,7 +5,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/shadcn/button";
 import { Badge } from "@/components/ui/shadcn/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/shadcn/avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/ui/shadcn/avatar";
 import {
   Eye,
   Edit,
@@ -23,24 +27,20 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-// Default images
-const DEFAULT_AVATAR = "/ute.png";
-const DEFAULT_COVER = "/cover.png";
-
 // User interface matching backend response
 export interface AdminUser {
   id: number;
-  fullName: string;
+  fullname: string;
   email: string;
   phone?: string;
   gender?: string;
-  dateOfBirth?: string;
+  dateofbirth?: string;
   avatar?: string;
-  coverImage?: string;
+  coverimage?: string;
   role?: string;
   address?: string;
-  createdAt?: string;
-  updatedAt?: string;
+  createdat?: string;
+  updatedat?: string;
 }
 
 interface UserRowProps {
@@ -56,7 +56,7 @@ const getRoleStyle = (role?: string) => {
         bg: "bg-gradient-to-r from-red-500 to-rose-600",
         text: "text-white",
         icon: <Shield className="h-3 w-3" />,
-        label: "Admin"
+        label: "Admin",
       };
     case "employer":
     case "hr":
@@ -64,7 +64,7 @@ const getRoleStyle = (role?: string) => {
         bg: "bg-gradient-to-r from-blue-500 to-indigo-600",
         text: "text-white",
         icon: <Briefcase className="h-3 w-3" />,
-        label: "Nhà tuyển dụng"
+        label: "Nhà tuyển dụng",
       };
     case "user":
     case "candidate":
@@ -73,7 +73,7 @@ const getRoleStyle = (role?: string) => {
         bg: "bg-gradient-to-r from-green-500 to-emerald-600",
         text: "text-white",
         icon: <User className="h-3 w-3" />,
-        label: "Ứng viên"
+        label: "Ứng viên",
       };
   }
 };
@@ -81,9 +81,9 @@ const getRoleStyle = (role?: string) => {
 // Table row component for users - renders full tr with cover image preview
 export function AdminUserRow({ user, onEdit, onDelete }: UserRowProps) {
   const roleStyle = getRoleStyle(user.role);
-  const avatarSrc = user.avatar || DEFAULT_AVATAR;
-  const coverSrc = user.coverImage || DEFAULT_COVER;
-  
+  const avatarSrc = user.avatar;
+  const coverSrc = user.coverimage;
+
   return (
     <tr className="border-b hover:bg-muted/30 transition-colors group cursor-target">
       {/* User Info with Avatar and Cover Image */}
@@ -99,22 +99,22 @@ export function AdminUserRow({ user, onEdit, onDelete }: UserRowProps) {
                 className="w-full h-full object-cover"
               />
             </div>
-            
+
             {/* Avatar - Positioned on top of cover */}
             <Avatar className="h-10 w-10 ring-2 ring-background shadow-md absolute -bottom-1 -right-1">
-              <AvatarImage src={avatarSrc} alt={user.fullName} />
+              <AvatarImage src={avatarSrc} alt={user.fullname} />
               <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-bold text-sm">
-                {user.fullName?.charAt(0) || "U"}
+                {user.fullname?.charAt(0) || "U"}
               </AvatarFallback>
             </Avatar>
           </div>
-          
+
           <div className="flex-1 min-w-0 ml-2">
-            <Link 
+            <Link
               href={`/profile/${user.id}`}
               className="font-semibold hover:text-primary transition-colors line-clamp-1"
             >
-              {user.fullName}
+              {user.fullname}
             </Link>
             <p className="text-xs text-muted-foreground">ID: #{user.id}</p>
           </div>
@@ -131,7 +131,9 @@ export function AdminUserRow({ user, onEdit, onDelete }: UserRowProps) {
           {user.phone && (
             <div className="flex items-center gap-2">
               <Phone className="h-3.5 w-3.5 text-green-500" />
-              <span className="text-sm text-muted-foreground">{user.phone}</span>
+              <span className="text-sm text-muted-foreground">
+                {user.phone}
+              </span>
             </div>
           )}
         </div>
@@ -139,7 +141,9 @@ export function AdminUserRow({ user, onEdit, onDelete }: UserRowProps) {
 
       {/* Role Badge */}
       <td className="p-4 cursor-target">
-        <Badge className={cn("gap-1.5 font-medium", roleStyle.bg, roleStyle.text)}>
+        <Badge
+          className={cn("gap-1.5 font-medium", roleStyle.bg, roleStyle.text)}
+        >
           {roleStyle.icon}
           {roleStyle.label}
         </Badge>
@@ -161,9 +165,11 @@ export function AdminUserRow({ user, onEdit, onDelete }: UserRowProps) {
       {/* Gender */}
       <td className="p-4 cursor-target">
         <span className="text-sm">
-          {user.gender === "male" ? "Nam" : 
-           user.gender === "female" ? "Nữ" : 
-           user.gender || "—"}
+          {user.gender === "male"
+            ? "Nam"
+            : user.gender === "female"
+              ? "Nữ"
+              : user.gender || "—"}
         </span>
       </td>
 
@@ -172,12 +178,12 @@ export function AdminUserRow({ user, onEdit, onDelete }: UserRowProps) {
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Calendar className="h-4 w-4" />
           <span>
-            {user.dateOfBirth 
-              ? new Date(user.dateOfBirth).toLocaleDateString("vi-VN", {
+            {user.dateofbirth
+              ? new Date(user.dateofbirth).toLocaleDateString("vi-VN", {
                   day: "2-digit",
                   month: "2-digit",
-                  year: "numeric"
-                }) 
+                  year: "numeric",
+                })
               : "—"}
           </span>
         </div>
@@ -230,7 +236,7 @@ export function getUserTableColumns() {
     { key: "role", header: "Vai trò", width: "12%" },
     { key: "status", header: "Trạng thái", width: "10%" },
     { key: "gender", header: "Giới tính", width: "8%" },
-    { key: "dateOfBirth", header: "Ngày sinh", width: "14%" },
+    { key: "dateofbirth", header: "Ngày sinh", width: "14%" },
     { key: "actions", header: "Thao tác", width: "12%" },
   ];
 }

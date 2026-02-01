@@ -12,7 +12,9 @@ interface CompanyLogo {
 }
 
 function FeatureHr() {
-  const [logos, setLogos] = useState<Array<{ src: string; alt: string; href: string; title: string }>>([]);
+  const [logos, setLogos] = useState<
+    Array<{ src: string; alt: string; href: string; title: string }>
+  >([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -20,14 +22,14 @@ function FeatureHr() {
       try {
         setLoading(true);
         const response = await companyApi.getLogos(1, 20);
-        
+
         // Transform API data to LogoLoop format
         const transformedLogos = response.data.map((company: CompanyLogo) => ({
-          src: company.avatar || "/logo-company.jpg",
+          src: company.avatar,
           alt: company.name,
           href: `/companies/${company.id}`,
           title: company.name,
-        }));  
+        }));
         setLogos(transformedLogos);
       } catch (error) {
         // Fallback to empty array on error

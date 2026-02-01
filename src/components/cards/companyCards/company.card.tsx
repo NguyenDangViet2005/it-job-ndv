@@ -14,9 +14,9 @@ export const CompanyCard = ({ company }: { company: Company }) => {
       <Card className="h-full hover:shadow-lg transition-all duration-300 cursor-target hover:border-primary/50 overflow-hidden">
         {/* Cover Image */}
         <div className="relative w-full h-34 -mt-6">
-          {company.coverImage && (
+          {company.coverimage && (
             <Image
-              src={company.coverImage}
+              src={company.coverimage}
               alt={`${company.name} cover`}
               fill
               className="object-cover"
@@ -30,7 +30,7 @@ export const CompanyCard = ({ company }: { company: Company }) => {
           <div className="flex items-start gap-4 mb-4 -mt-10">
             <div className="relative w-20 h-20 flex-shrink-0 rounded-xl overflow-hidden bg-white border-4 border-background shadow-lg group-hover:shadow-xl group-hover:border-primary/20 transition-all duration-300">
               <Image
-                src={company.avatar || "/logo-company.jpg"}
+                src={company.avatar}
                 alt={company.name}
                 fill
                 className="object-contain p-2"
@@ -60,10 +60,10 @@ export const CompanyCard = ({ company }: { company: Company }) => {
               <MapPin className="h-4 w-4 flex-shrink-0" />
               <span className="line-clamp-1">{location}</span>
             </div>
-            {company.foundedYear && (
+            {company.foundedyear && (
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Building2 className="h-4 w-4 flex-shrink-0" />
-                <span>Thành lập {company.foundedYear}</span>
+                <span>Thành lập {company.foundedyear}</span>
               </div>
             )}
             <div className="flex items-center gap-2 text-sm text-primary font-medium">

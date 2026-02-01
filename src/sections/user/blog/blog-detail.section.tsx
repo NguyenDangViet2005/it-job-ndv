@@ -117,11 +117,11 @@ function BlogDetailSection({ id }: BlogDetailSectionProps) {
           </div>
           <div className="flex items-center gap-2">
             <Calendar className="h-4 w-4" />
-            <span>{formatDate(post.createdAt, "long")}</span>
+            <span>{formatDate(post.createdat, "long")}</span>
           </div>
           <div className="flex items-center gap-2">
             <Clock className="h-4 w-4" />
-            <span>{post.readTime}</span>
+            <span>{post.readtime}</span>
           </div>
         </div>
 

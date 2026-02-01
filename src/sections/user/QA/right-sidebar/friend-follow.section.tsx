@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/shadcn/button";
 
 function FriendFollow({ connectionList }: { connectionList: any[] }) {
   // Get current user ID from the first connection if available
-  const currentUserId = connectionList[0]?.userId || connectionList[0]?.connectedUserId;
+  const currentUserId =
+    connectionList[0]?.userid || connectionList[0]?.connecteduserid;
 
   return (
     <Card className="border-border/50 h-[95%] flex flex-col">
@@ -23,7 +24,7 @@ function FriendFollow({ connectionList }: { connectionList: any[] }) {
           </div>
         </div>
       </CardHeader>
-      
+
       <CardContent className="flex-1 overflow-y-auto p-3 pt-0">
         {connectionList.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground text-sm">
@@ -32,11 +33,12 @@ function FriendFollow({ connectionList }: { connectionList: any[] }) {
         ) : (
           <div className="space-y-1">
             {connectionList.map((connection: any) => {
-              const isCurrentUserInitiator = connection.user?.id === currentUserId;
-              const displayUser = isCurrentUserInitiator 
-                ? connection.connectedUser 
+              const isCurrentUserInitiator =
+                connection.user?.id === currentUserId;
+              const displayUser = isCurrentUserInitiator
+                ? connection.connectedUser
                 : connection.user;
-              
+
               return (
                 <div
                   key={connection.id}
@@ -44,20 +46,20 @@ function FriendFollow({ connectionList }: { connectionList: any[] }) {
                 >
                   <Image
                     src={displayUser?.avatar || "/logo/logo_black_1.png"}
-                    alt={displayUser?.fullName || "User"}
+                    alt={displayUser?.fullname || "User"}
                     width={32}
                     height={32}
                     className="rounded-full flex-shrink-0"
                   />
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-medium truncate">
-                      {displayUser?.fullName || "User"}
+                      {displayUser?.fullname || "User"}
                     </p>
                     <p className="text-[10px] text-muted-foreground truncate">
                       {displayUser?.email || ""}
                     </p>
                   </div>
-                  <MessageCircleMore size={18}/>
+                  <MessageCircleMore size={18} />
                 </div>
               );
             })}

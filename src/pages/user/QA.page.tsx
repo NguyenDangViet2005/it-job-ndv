@@ -72,7 +72,7 @@ export default function QAPage() {
         onLoadMoreComments={handleLoadMoreComments}
         loadingCommentsForPost={loadingCommentsForPost}
         currentUserAvatar={user?.avatar}
-        currentUserName={user?.fullName}
+        currentUserName={user?.fullname}
         currentUserId={user?.id}
       />
       <div ref={loadMoreRef} className="h-10" />

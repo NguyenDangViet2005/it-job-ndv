@@ -50,17 +50,17 @@ export default function FormRegisterHR() {
       phone: "",
       password: "",
       gender: "",
-      dateOfBirth: "",
+      dateofbirth: "",
       companyName: "",
       companyWebsite: "",
       companyHotline: "",
-      companyEmail: "",
+      companyemail: "",
       companyDescription: "",
       companyFoundedYear: undefined,
       companyAddress: "",
       companyNationality: "",
-      provinceId: 0,
-      wardId: 0,
+      provinceid: 0,
+      wardid: 0,
     },
   });
 
@@ -83,10 +83,10 @@ export default function FormRegisterHR() {
   }, []);
 
   // Load wards when province changes
-  const handleProvinceChange = async (provinceId: string) => {
-    const id = parseInt(provinceId);
-    form.setValue("provinceId", id);
-    form.setValue("wardId", 0); // Reset ward
+  const handleProvinceChange = async (provinceid: string) => {
+    const id = parseInt(provinceid);
+    form.setValue("provinceid", id);
+    form.setValue("wardid", 0); // Reset ward
     setWards([]);
 
     if (id > 0) {
@@ -114,9 +114,9 @@ export default function FormRegisterHR() {
       });
 
       if (response.success && response.data) {
-        const { user, accessToken, company } = response.data;
+        const { user, accesstoken, company } = response.data;
 
-        setAuth(user, accessToken);
+        setAuth(user, accesstoken);
         if (company) setCompany(company);
 
         toast.success("Đăng ký nhà tuyển dụng thành công!");
@@ -264,7 +264,7 @@ export default function FormRegisterHR() {
                 {/* Company Email */}
                 <FormField
                   control={form.control}
-                  name="companyEmail"
+                  name="companyemail"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Email công ty</FormLabel>
@@ -348,7 +348,7 @@ export default function FormRegisterHR() {
                 {/* Province */}
                 <FormField
                   control={form.control}
-                  name="provinceId"
+                  name="provinceid"
                   render={() => (
                     <FormItem>
                       <FormLabel>Tỉnh/Thành phố *</FormLabel>
@@ -386,7 +386,7 @@ export default function FormRegisterHR() {
                 {/* Ward */}
                 <FormField
                   control={form.control}
-                  name="wardId"
+                  name="wardid"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Quận/Huyện *</FormLabel>

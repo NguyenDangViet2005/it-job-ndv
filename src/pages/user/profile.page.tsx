@@ -55,10 +55,10 @@ interface Skill {
 }
 
 interface ProfilePageProps {
-  userId?: string;
+  userid?: string;
 }
 
-export default function ProfilePage({ userId }: ProfilePageProps) {
+export default function ProfilePage({ userid }: ProfilePageProps) {
   const { user, token, updateUser } = useAuth();
   const router = useRouter();
 
@@ -68,9 +68,9 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
   const [profileError, setProfileError] = useState<string | null>(null);
 
   // Check if current user is viewing their own profile
-  const isOwnProfile = user?.id === Number(userId) || (!userId && user);
+  const isOwnProfile = user?.id === Number(userid) || (!userid && user);
   const displayUser = isOwnProfile ? user : profileUser;
-  const targetUserId = userId ? Number(userId) : user?.id || 0;
+  const targetUserId = userid ? Number(userid) : user?.id || 0;
 
   // State for creating posts
   const [newPost, setNewPost] = useState("");
@@ -131,12 +131,12 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
   // Load profile user data if viewing someone else's profile
   useEffect(() => {
     const loadData = async () => {
-      if (!userId) {
+      if (!userid) {
         setProfileLoading(false);
         return;
       }
 
-      const targetId = Number(userId);
+      const targetId = Number(userid);
       const isOwn = user?.id === targetId;
 
       if (isOwn) {
@@ -166,7 +166,7 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
     };
 
     loadData();
-  }, [userId, user?.id, token, user?.cvUrl]); // Re-run when cvUrl changes
+  }, [userid, user?.id, token, user?.cvurl]); // Re-run when cvurl changes
 
   // Load user skills
   useEffect(() => {
@@ -227,12 +227,12 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
     try {
       const response = await userApi.updateCoverImage(user.id, file, token);
       // Update user state instead of reloading
-      if (response.data?.coverImage) {
+      if (response.data?.coverimage) {
         // Thêm timestamp để tránh browser cache
-        const coverImageUrl = response.data.coverImage.includes("?")
-          ? `${response.data.coverImage}&t=${Date.now()}`
-          : `${response.data.coverImage}?t=${Date.now()}`;
-        updateUser({ coverImage: coverImageUrl });
+        const coverimageUrl = response.data.coverimage.includes("?")
+          ? `${response.data.coverimage}&t=${Date.now()}`
+          : `${response.data.coverimage}?t=${Date.now()}`;
+        updateUser({ coverimage: coverimageUrl });
         toast.success("Cập nhật ảnh bìa thành công!");
       }
     } catch (error) {
@@ -277,7 +277,7 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
     setIsCreatingPost(true);
     try {
       const newPostResponse = await postApi.create(
-        { content: newPost, userId: user.id },
+        { content: newPost, userid: user.id },
         selectedImages.length > 0 ? selectedImages : undefined,
         selectedVideo || undefined,
         token,
@@ -299,23 +299,23 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
   };
 
   // Handle like post
-  const handleLikePost = async (postId: number) => {
+  const handleLikePost = async (postid: number) => {
     if (!user || !token) {
       router.push("/login");
       return;
     }
 
     try {
-      const result = await interactionApi.toggleLike(postId, user.id, token);
+      const result = await interactionApi.toggleLike(postid, user.id, token);
 
       setPosts((prev: FullPostResponse[]) =>
         prev.map((post: FullPostResponse) =>
-          post.id === postId
+          post.id === postid
             ? {
                 ...post,
                 interaction: {
                   ...post.interaction,
-                  isLikedByCurrentUser: result.isLiked,
+                  islikedByCurrentUser: result.isliked,
                   totalLikes: result.totalLikes,
                 },
               }
@@ -328,10 +328,10 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
   };
 
   // Handle toggle comments
-  const handleToggleComments = (postId: number) => {
+  const handleToggleComments = (postid: number) => {
     setPosts((prev: FullPostResponse[]) =>
       prev.map((post: FullPostResponse) =>
-        post.id === postId
+        post.id === postid
           ? { ...post, showComments: !(post as any).showComments }
           : post,
       ),
@@ -339,7 +339,7 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
   };
 
   // Handle add comment
-  const handleAddComment = async (postId: number, content: string) => {
+  const handleAddComment = async (postid: number, content: string) => {
     if (!user || !token) {
       router.push("/login");
       return;
@@ -347,7 +347,7 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
 
     try {
       const newComment = await interactionApi.addComment(
-        postId,
+        postid,
         user.id,
         content,
         token,
@@ -355,7 +355,7 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
 
       setPosts((prev: FullPostResponse[]) =>
         prev.map((post: FullPostResponse) =>
-          post.id === postId
+          post.id === postid
             ? {
                 ...post,
                 interaction: {
@@ -374,8 +374,8 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
   };
 
   // Handle edit post
-  const handleEditPost = (postId: number) => {
-    const post = posts.find((p: FullPostResponse) => p.id === postId);
+  const handleEditPost = (postid: number) => {
+    const post = posts.find((p: FullPostResponse) => p.id === postid);
     if (post) {
       setPostToEdit(post);
       setEditDialogOpen(true);
@@ -384,7 +384,7 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
 
   // Handle save edited post
   const handleSaveEditedPost = async (
-    postId: number,
+    postid: number,
     content: string,
     newImages: File[],
     keepImageUrls: string[],
@@ -392,23 +392,23 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
     if (!token) return;
 
     try {
-      // Find the post to get userId or companyId
-      const post = posts.find((p: FullPostResponse) => p.id === postId);
+      // Find the post to get userid or companyid
+      const post = posts.find((p: FullPostResponse) => p.id === postid);
       if (!post) {
         throw new Error("Post not found");
       }
 
-      // Prepare update data with userId or companyId
+      // Prepare update data with userid or companyid
       const updateData: any = { content };
       if (post.user?.id) {
-        updateData.userId = post.user.id;
+        updateData.userid = post.user.id;
       } else if (post.company?.id) {
-        updateData.companyId = post.company.id;
+        updateData.companyid = post.company.id;
       }
 
       // Always use updateWithImages to handle both new images and keepImageUrls
       await postApi.updateWithImages(
-        postId,
+        postid,
         updateData,
         newImages.length > 0 ? newImages : undefined,
         keepImageUrls,
@@ -418,7 +418,7 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
       // Update local state
       setPosts((prev: FullPostResponse[]) =>
         prev.map((p: FullPostResponse) =>
-          p.id === postId ? { ...p, content } : p,
+          p.id === postid ? { ...p, content } : p,
         ),
       );
       toast.success("Cập nhật bài viết thành công!");
@@ -529,10 +529,10 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
 
       {/* Cover Photo */}
       <div className="relative h-72 md:h-96 bg-white overflow-hidden group border-b-1">
-        {displayUser.coverImage ? (
+        {displayUser.coverimage ? (
           <div className="relative w-full h-full">
             <img
-              src={displayUser.coverImage}
+              src={displayUser.coverimage}
               alt="Cover"
               className={cn(
                 "w-full h-full object-cover transition-transform duration-500 group-hover:scale-105",
@@ -579,7 +579,7 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
               ) : (
                 <Camera className="h-4 w-4" />
               )}
-              {displayUser.coverImage ? "Chỉnh sửa ảnh bìa" : "Thêm ảnh bìa"}
+              {displayUser.coverimage ? "Chỉnh sửa ảnh bìa" : "Thêm ảnh bìa"}
             </Button>
           </div>
         )}
@@ -601,10 +601,10 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
                   >
                     <AvatarImage
                       src={displayUser.avatar}
-                      alt={displayUser.fullName}
+                      alt={displayUser.fullname}
                     />
                     <AvatarFallback className="text-5xl bg-primary text-primary-foreground">
-                      {displayUser.fullName?.charAt(0)}
+                      {displayUser.fullname?.charAt(0)}
                     </AvatarFallback>
                   </Avatar>
                   {isOwnProfile && (
@@ -647,7 +647,7 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
                 {/* Name & Title */}
                 <div className="text-center md:text-left mb-4">
                   <h1 className="text-3xl font-bold hover:text-primary transition-colors duration-300">
-                    {displayUser.fullName}
+                    {displayUser.fullname}
                   </h1>
                   <p className="text-muted-foreground">
                     {displayUser.role === "hr"
@@ -733,12 +733,12 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
                     <span>{displayUser.address}</span>
                   </div>
                 )}
-                {displayUser.dateOfBirth && (
+                {displayUser.dateofbirth && (
                   <div className="flex items-center gap-2 text-muted-foreground cursor-target hover:text-primary hover:translate-x-2 transition-all duration-300">
                     <Calendar className="h-4 w-4" />
                     <span>
                       Sinh ngày{" "}
-                      {new Date(displayUser.dateOfBirth).toLocaleDateString(
+                      {new Date(displayUser.dateofbirth).toLocaleDateString(
                         "vi-VN",
                       )}
                     </span>
@@ -800,13 +800,13 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
                 )}
               </CardHeader>
               <CardContent>
-                {(displayUser as any).cvUrl ? (
+                {(displayUser as any).cvurl ? (
                   <div className="space-y-3">
                     <div className="flex items-center gap-3 p-3 border rounded-lg bg-primary/5 hover:bg-primary/10 transition-colors">
                       <FileText className="h-8 w-8 text-primary flex-shrink-0" />
                       <div className="flex-1 min-w-0">
                         <p className="font-medium text-foreground">
-                          CV của {isOwnProfile ? "bạn" : displayUser.fullName}
+                          CV của {isOwnProfile ? "bạn" : displayUser.fullname}
                         </p>
                         <p className="text-sm text-muted-foreground">
                           Đã tải lên
@@ -817,7 +817,7 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
                       variant="outline"
                       className="w-full cursor-target hover:scale-105 transition-transform duration-300"
                       onClick={() =>
-                        window.open((displayUser as any).cvUrl, "_blank")
+                        window.open((displayUser as any).cvurl, "_blank")
                       }
                     >
                       <FileText className="h-4 w-4 mr-2" />
@@ -906,10 +906,10 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
                           className="cursor-target aspect-square rounded-lg overflow-hidden group relative"
                           onClick={() => openLightbox(media, index)}
                         >
-                          {item.fileType === "video" ? (
+                          {item.filetype === "video" ? (
                             <>
                               <video
-                                src={item.fileUrl}
+                                src={item.fileurl}
                                 className="w-full h-full object-cover"
                               />
                               <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
@@ -918,7 +918,7 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
                             </>
                           ) : (
                             <img
-                              src={item.fileUrl}
+                              src={item.fileurl}
                               alt={`Media ${index + 1}`}
                               className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110"
                             />
@@ -959,7 +959,7 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
                     <Avatar className="cursor-target hover:scale-110 transition-transform duration-300">
                       <AvatarImage src={user.avatar} />
                       <AvatarFallback>
-                        {user.fullName?.charAt(0)}
+                        {user.fullname?.charAt(0)}
                       </AvatarFallback>
                     </Avatar>
                     <textarea
@@ -1084,21 +1084,21 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
                     post={post}
                     index={index}
                     currentUserAvatar={user?.avatar}
-                    currentUserName={user?.fullName}
+                    currentUserName={user?.fullname}
                     onLikePost={handleLikePost}
                     onToggleComments={handleToggleComments}
                     onAddComment={handleAddComment}
-                    onSavePost={(postId) => console.log("Save post:", postId)}
-                    onReportPost={(postId) =>
-                      console.log("Report post:", postId)
+                    onSavePost={(postid) => console.log("Save post:", postid)}
+                    onReportPost={(postid) =>
+                      console.log("Report post:", postid)
                     }
                     onEditPost={handleEditPost}
-                    onDeletePost={async (postId) => {
+                    onDeletePost={async (postid) => {
                       if (!token) return;
                       try {
                         const { postApi } = await import("@/apis/post.api");
-                        await postApi.delete(postId, token);
-                        setPosts(posts.filter((p) => p.id !== postId));
+                        await postApi.delete(postid, token);
+                        setPosts(posts.filter((p) => p.id !== postid));
                         toast.success("Xóa bài viết thành công!");
                       } catch (error) {
                         console.error("Error deleting post:", error);
@@ -1139,16 +1139,16 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
               </Button>
             )}
             <div className="relative w-full h-full flex items-center justify-center p-12">
-              {lightboxMedia[currentMediaIndex]?.fileType === "video" ? (
+              {lightboxMedia[currentMediaIndex]?.filetype === "video" ? (
                 <video
-                  src={lightboxMedia[currentMediaIndex]?.fileUrl}
+                  src={lightboxMedia[currentMediaIndex]?.fileurl}
                   controls
                   autoPlay
                   className="max-w-full max-h-full"
                 />
               ) : (
                 <img
-                  src={lightboxMedia[currentMediaIndex]?.fileUrl}
+                  src={lightboxMedia[currentMediaIndex]?.fileurl}
                   alt={`Media ${currentMediaIndex + 1}`}
                   className="max-w-full max-h-full object-contain"
                 />
@@ -1181,17 +1181,17 @@ export default function ProfilePage({ userId }: ProfilePageProps) {
                         : "opacity-60 hover:opacity-100"
                     }`}
                   >
-                    {item.fileType === "video" ? (
+                    {item.filetype === "video" ? (
                       <>
                         <video
-                          src={item.fileUrl}
+                          src={item.fileurl}
                           className="w-full h-full object-cover"
                         />
                         <Play className="absolute inset-0 m-auto h-4 w-4 text-white" />
                       </>
                     ) : (
                       <img
-                        src={item.fileUrl}
+                        src={item.fileurl}
                         alt={`Thumbnail ${idx + 1}`}
                         className="w-full h-full object-cover"
                       />

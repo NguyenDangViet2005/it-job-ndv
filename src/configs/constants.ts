@@ -103,8 +103,8 @@ export const PAGINATION = {
 // Local storage keys
 export const STORAGE_KEYS = {
   USER_INFO: "userInfo",
-  ACCESS_TOKEN: "accessToken",
-  REFRESH_TOKEN: "refreshToken",
+  ACCESS_TOKEN: "accesstoken",
+  REFRESH_TOKEN: "refreshtoken",
   THEME: "theme",
   LANGUAGE: "language",
   RECENT_SEARCHES: "recentSearches",

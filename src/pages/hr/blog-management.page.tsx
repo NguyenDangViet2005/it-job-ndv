@@ -47,16 +47,16 @@ import {
 
 interface Blog {
   id: number;
-  userId?: number;
-  categoryId?: number;
+  userid?: number;
+  categoryid?: number;
   category?: any;
   title: string;
   content: string;
   excerpt?: string;
-  readTime?: string;
+  readtime?: string;
   image?: string;
-  createdAt: string;
-  updatedAt?: string;
+  createdat: string;
+  updatedat?: string;
 }
 
 interface Category {
@@ -80,8 +80,8 @@ export default function HRBlogManagementPage() {
     title: "",
     excerpt: "",
     content: "",
-    categoryId: 0,
-    readTime: "",
+    categoryid: 0,
+    readtime: "",
     image: "",
   });
 
@@ -98,8 +98,8 @@ export default function HRBlogManagementPage() {
         title: editBlog.title || "",
         excerpt: editBlog.excerpt || "",
         content: editBlog.content || "",
-        categoryId: Number(editBlog.categoryId || editBlog.category?.id || 0),
-        readTime: editBlog.readTime || "",
+        categoryid: Number(editBlog.categoryid || editBlog.category?.id || 0),
+        readtime: editBlog.readtime || "",
         image: editBlog.image || "",
       });
     } else if (createMode) {
@@ -107,8 +107,8 @@ export default function HRBlogManagementPage() {
         title: "",
         excerpt: "",
         content: "",
-        categoryId: 0,
-        readTime: "",
+        categoryid: 0,
+        readtime: "",
         image: "",
       });
     }
@@ -174,7 +174,7 @@ export default function HRBlogManagementPage() {
       toast.error("Vui lòng điền đầy đủ thông tin bắt buộc");
       return;
     }
-    if (!formData.categoryId || formData.categoryId === 0) {
+    if (!formData.categoryid || formData.categoryid === 0) {
       toast.error("Vui lòng chọn danh mục");
       return;
     }
@@ -182,12 +182,12 @@ export default function HRBlogManagementPage() {
     try {
       setSaving(true);
       const blogData = {
-        userId: user.id,
-        categoryId: formData.categoryId,
+        userid: user.id,
+        categoryid: formData.categoryid,
         title: formData.title,
         excerpt: formData.excerpt,
         content: formData.content,
-        readTime: formData.readTime || "5 phút",
+        readtime: formData.readtime || "5 phút",
         image: formData.image || "",
       };
 
@@ -288,7 +288,7 @@ export default function HRBlogManagementPage() {
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
                       <span className="flex items-center gap-1">
                         <Calendar className="h-4 w-4" />
-                        {new Date(blog.createdAt).toLocaleDateString("vi-VN")}
+                        {new Date(blog.createdat).toLocaleDateString("vi-VN")}
                       </span>
                     </div>
                   </div>
@@ -364,10 +364,10 @@ export default function HRBlogManagementPage() {
               <Label htmlFor="category">Danh mục *</Label>
               <Select
                 value={
-                  formData.categoryId > 0 ? String(formData.categoryId) : undefined
+                  formData.categoryid > 0 ? String(formData.categoryid) : undefined
                 }
                 onValueChange={(value) =>
-                  setFormData({ ...formData, categoryId: Number(value) })
+                  setFormData({ ...formData, categoryid: Number(value) })
                 }
               >
                 <SelectTrigger>
@@ -411,12 +411,12 @@ export default function HRBlogManagementPage() {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="readTime">Thời gian đọc</Label>
+                <Label htmlFor="readtime">Thời gian đọc</Label>
                 <Input
-                  id="readTime"
-                  value={formData.readTime}
+                  id="readtime"
+                  value={formData.readtime}
                   onChange={(e) =>
-                    setFormData({ ...formData, readTime: e.target.value })
+                    setFormData({ ...formData, readtime: e.target.value })
                   }
                   placeholder="VD: 5 phút"
                 />

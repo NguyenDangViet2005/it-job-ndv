@@ -74,14 +74,14 @@ export function UserDashboardLayout({
       <div className="p-3.5 rounded-lg border border-primary/20 overflow-hidden">
         <div className="flex items-center gap-3 w-full">
           <Avatar className="h-11 w-11 ring-2 ring-primary/30 flex-shrink-0">
-            <AvatarImage src={user?.avatar || undefined} alt={user?.fullName} />
+            <AvatarImage src={user?.avatar || undefined} alt={user?.fullname} />
             <AvatarFallback className="bg-primary text-primary-foreground font-bold text-sm">
-              {user?.fullName?.charAt(0)?.toUpperCase() || "U"}
+              {user?.fullname?.charAt(0)?.toUpperCase() || "U"}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0 overflow-hidden">
             <h3 className="font-semibold text-sm text-foreground leading-tight block w-full">
-              {user?.fullName || "Người dùng"}
+              {user?.fullname || "Người dùng"}
             </h3>
             <p className="text-xs text-muted-foreground mt-0.5 block w-full overflow-hidden text-ellipsis">
               {user?.email || "user@example.com"}
@@ -152,7 +152,7 @@ export function UserDashboardLayout({
             <Avatar className="h-8 w-8 ring-2 ring-primary/20">
               <AvatarImage src={user?.avatar || undefined} />
               <AvatarFallback className="bg-primary text-primary-foreground text-sm font-bold">
-                {user?.fullName?.charAt(0) || "U"}
+                {user?.fullname?.charAt(0) || "U"}
               </AvatarFallback>
             </Avatar>
           </div>

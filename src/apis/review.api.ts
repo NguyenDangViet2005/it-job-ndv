@@ -18,13 +18,13 @@ export const reviewApi = {
 
   // Lấy đánh giá theo công ty
   getByCompany: (
-    companyId: number,
+    companyid: number,
     pageNumber: number = 1,
     pageSize: number = 10,
     token?: string
   ) => {
     return apiGetPaginated<ReviewResponse>(
-      `${ENDPOINT}/company/${companyId}`,
+      `${ENDPOINT}/company/${companyid}`,
       pageNumber,
       pageSize,
       { token }
@@ -33,13 +33,13 @@ export const reviewApi = {
 
   // Lấy đánh giá theo user
   getByUser: (
-    userId: number,
+    userid: number,
     pageNumber: number = 1,
     pageSize: number = 10,
     token: string
   ) => {
     return apiGetPaginated<ReviewResponse>(
-      `${ENDPOINT}/user/${userId}`,
+      `${ENDPOINT}/user/${userid}`,
       pageNumber,
       pageSize,
       { token }

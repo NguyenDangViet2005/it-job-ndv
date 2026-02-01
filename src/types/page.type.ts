@@ -4,11 +4,11 @@ import type { Company } from "./models/company.type";
 
 // ============ User Pages ============
 export interface ProfilePageProps {
-  userId?: string;
+  userid?: string;
 }
 
 export interface JobDetailPageProps {
-  jobId: string;
+  jobid: string;
 }
 
 export interface BlogDetailPageProps {

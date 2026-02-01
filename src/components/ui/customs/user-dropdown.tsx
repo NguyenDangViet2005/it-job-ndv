@@ -56,9 +56,9 @@ export const UserDropdown = ({ user, onLogout }: UserDropdownProps) => {
           className="cursor-target relative h-9 w-9 p-0 rounded-full hover:ring-2 hover:ring-primary/20 transition-all"
         >
           <Avatar className="h-9 w-9">
-            <AvatarImage src={user?.avatar} alt={user?.fullName} />
+            <AvatarImage src={user?.avatar} alt={user?.fullname} />
             <AvatarFallback className="bg-primary text-primary-foreground">
-              {user?.fullName?.charAt(0).toUpperCase()}
+              {user?.fullname?.charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>
         </Button>
@@ -66,9 +66,7 @@ export const UserDropdown = ({ user, onLogout }: UserDropdownProps) => {
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">
-              {user?.fullName}
-            </p>
+            <p className="text-sm font-medium leading-none">{user?.fullname}</p>
             <p className="text-xs leading-none text-muted-foreground">
               {user?.email}
             </p>
@@ -143,10 +141,7 @@ export const UserDropdown = ({ user, onLogout }: UserDropdownProps) => {
             <DropdownMenuPortal>
               <DropdownMenuSubContent className="min-w-[180px]">
                 <DropdownMenuItem asChild>
-                  <Link
-                    href="/hr"
-                    className="cursor-target flex items-center"
-                  >
+                  <Link href="/hr" className="cursor-target flex items-center">
                     <LayoutDashboard className="mr-2 h-4 w-4" />
                     <span>Bảng Điều Khiển</span>
                   </Link>

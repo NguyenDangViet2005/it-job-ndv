@@ -16,11 +16,11 @@ export const blogApi = {
   getAll: (
     pageNumber: number = 1,
     pageSize: number = 10,
-    categoryId?: number,
+    categoryid?: number,
     token?: string
   ) => {
     return apiGetPaginated<BlogResponse>(ENDPOINT, pageNumber, pageSize, {
-      params: categoryId ? { categoryId } : undefined,
+      params: categoryid ? { categoryid } : undefined,
       token,
     });
   },
@@ -30,15 +30,15 @@ export const blogApi = {
     return apiGetById<BlogResponse>(ENDPOINT, id, { token });
   },
 
-  // Lấy blog theo userId
+  // Lấy blog theo userid
   getByUserId: (
-    userId: number,
+    userid: number,
     pageNumber: number = 1,
     pageSize: number = 10,
     token?: string
   ) => {
     return apiGetPaginated<BlogResponse>(
-      `${ENDPOINT}/user/${userId}`,
+      `${ENDPOINT}/user/${userid}`,
       pageNumber,
       pageSize,
       { token }

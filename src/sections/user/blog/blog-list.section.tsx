@@ -91,7 +91,7 @@ function BlogListSection() {
                   {featuredBlogs[0].title}
                 </h2>
                 <div className="text-xs text-gray-300 font-medium">
-                  {formatDate(featuredBlogs[0].createdAt, "long")}
+                  {formatDate(featuredBlogs[0].createdat, "long")}
                 </div>
               </div>
             </Link>
@@ -116,7 +116,7 @@ function BlogListSection() {
                     {blog.title}
                   </h3>
                   <div className="text-[10px] text-gray-400 mt-2 font-medium">
-                    {formatDate(blog.createdAt, "long")}
+                    {formatDate(blog.createdat, "long")}
                   </div>
                 </div>
               </Link>
@@ -235,7 +235,7 @@ function BlogListSection() {
                         {b.title}
                       </h4>
                       <p className="text-[9px] text-muted-foreground font-medium">
-                        {formatDate(b.createdAt)}
+                        {formatDate(b.createdat)}
                       </p>
                     </div>
                   </Link>

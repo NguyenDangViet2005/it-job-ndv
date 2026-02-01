@@ -26,7 +26,7 @@ export const jobApi = {
 
   // Lấy công việc theo công ty
   getByCompany: (
-    companyId: number,
+    companyid: number,
     pageNumber: number = 1,
     pageSize: number = 10,
     token?: string
@@ -37,7 +37,7 @@ export const jobApi = {
       pageNumber,
       pageSize,
       {
-        params: { companyId, role },
+        params: { companyid, role },
         token,
       }
     );
@@ -45,7 +45,7 @@ export const jobApi = {
 
   // Tạo công việc mới
   create: (
-    companyId: number,
+    companyid: number,
     data: {
       title: string;
       description: string;
@@ -56,7 +56,7 @@ export const jobApi = {
     },
     token: string
   ) => {
-    return apiPost<ApiResponse<JobResponse>>(`${ENDPOINT}/${companyId}`, data, {
+    return apiPost<ApiResponse<JobResponse>>(`${ENDPOINT}/${companyid}`, data, {
       token,
     });
   },
@@ -97,7 +97,7 @@ export const jobApi = {
 
   // Lấy công việc theo skill
   getBySkill: (
-    skillId: number,
+    skillid: number,
     pageNumber: number = 1,
     pageSize: number = 10,
     token?: string
@@ -107,7 +107,7 @@ export const jobApi = {
       pageNumber,
       pageSize,
       {
-        params: { skillId },
+        params: { skillid },
         token,
       }
     );
@@ -115,14 +115,14 @@ export const jobApi = {
 
   // Lấy công việc theo user (HR)
   getByUser: (
-    userId: number,
+    userid: number,
     pageNumber: number = 1,
     pageSize: number = 10,
     token?: string
   ) => {
     const role = getUserRole(token);
     return apiGetPaginated<JobResponse>(
-      `${ENDPOINT}/by-user/${userId}`,
+      `${ENDPOINT}/by-user/${userid}`,
       pageNumber,
       pageSize,
       { token, params: { role } }

@@ -31,19 +31,11 @@ interface MobileMenuProps {
   onLogout: () => void;
 }
 
-export const MobileMenu = ({
-  isLoggedIn,
-  user,
-  onLogout,
-}: MobileMenuProps) => {
+export const MobileMenu = ({ isLoggedIn, user, onLogout }: MobileMenuProps) => {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="lg:hidden cursor-target"
-        >
+        <Button variant="ghost" size="icon" className="lg:hidden cursor-target">
           <Menu className="h-5 w-5" />
           <span className="sr-only">Toggle menu</span>
         </Button>
@@ -54,11 +46,7 @@ export const MobileMenu = ({
       >
         {/* Search Bar */}
         <div className="flex w-full items-center gap-2 mb-6">
-          <Input
-            type="text"
-            className="h-10"
-            placeholder="Nhập từ khóa"
-          />
+          <Input type="text" className="h-10" placeholder="Nhập từ khóa" />
           <Button type="submit" size="sm" className="px-4">
             Tìm kiếm
           </Button>
@@ -88,15 +76,13 @@ export const MobileMenu = ({
         {isLoggedIn && user && (
           <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg mb-6">
             <Avatar className="h-12 w-12">
-              <AvatarImage src={user?.avatar} alt={user?.fullName} />
+              <AvatarImage src={user?.avatar} alt={user?.fullname} />
               <AvatarFallback className="bg-primary text-primary-foreground text-lg">
-                {user?.fullName?.charAt(0).toUpperCase()}
+                {user?.fullname?.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
-              <p className="font-semibold text-sm truncate">
-                {user?.fullName}
-              </p>
+              <p className="font-semibold text-sm truncate">{user?.fullname}</p>
               <p className="text-xs text-muted-foreground truncate">
                 {user?.email}
               </p>

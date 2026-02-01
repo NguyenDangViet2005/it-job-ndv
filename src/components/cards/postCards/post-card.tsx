@@ -32,7 +32,7 @@ export default function PostCard({
   loadingComments = false,
 }: PostCardProps) {
   const { user } = useAuth();
-  const userId = currentUserId || user?.id;
+  const userid = currentUserId || user?.id;
   const commentInputRef = useRef<PostCommentsRef>(null);
 
   // Lightbox state
@@ -88,7 +88,7 @@ export default function PostCard({
           {/* Post Header */}
           <PostHeader
             post={post}
-            postId={post.id}
+            postid={post.id}
             currentUserId={currentUserId || undefined}
             currentUserAvatar={currentUserAvatar}
             currentUserName={currentUserName}
@@ -118,7 +118,7 @@ export default function PostCard({
           <PostActions
             likes={post.interaction?.totalLikes || post.likes || 0}
             liked={
-              post.interaction?.isLikedByCurrentUser || post.liked || false
+              post.interaction?.islikedByCurrentUser || post.liked || false
             }
             totalComments={
               post.interaction?.totalComments ||
@@ -148,7 +148,7 @@ export default function PostCard({
             post={post}
             currentUserAvatar={currentUserAvatar}
             currentUserName={currentUserName}
-            currentUserId={userId}
+            currentUserId={userid}
             loadingComments={loadingComments}
             onAddComment={handleAddComment}
             onEditComment={onEditComment ? handleEditComment : undefined}

@@ -20,7 +20,7 @@ interface EditPostDialogProps {
   onOpenChange: (open: boolean) => void;
   post: FullPostResponse | null;
   onSave: (
-    postId: number,
+    postid: number,
     content: string,
     newImages: File[],
     keepImageUrls: string[]
@@ -45,8 +45,8 @@ export default function EditPostDialog({
       setContent(post.content || "");
       // Filter only image attachments
       const imageUrls = post.attachments
-        ?.filter((att) => att.fileType === "image")
-        .map((att) => att.fileUrl) || [];
+        ?.filter((att) => att.filetype === "image")
+        .map((att) => att.fileurl) || [];
       setCurrentImages(imageUrls);
       setNewImages([]);
     }
@@ -70,8 +70,8 @@ export default function EditPostDialog({
     if (post) {
       setContent(post.content || "");
       const imageUrls = post.attachments
-        ?.filter((att) => att.fileType === "image")
-        .map((att) => att.fileUrl) || [];
+        ?.filter((att) => att.filetype === "image")
+        .map((att) => att.fileurl) || [];
       setCurrentImages(imageUrls);
       setNewImages([]);
     }

@@ -29,18 +29,18 @@ import {
 } from "lucide-react";
 
 interface PostMenuProps {
-  postId: number;
+  postid: number;
   postUserId?: number;
   currentUserId?: number;
   isSaved?: boolean;
-  onSave?: (postId: number) => void;
-  onReport?: (postId: number) => void;
-  onEdit?: (postId: number) => void;
-  onDelete?: (postId: number) => void;
+  onSave?: (postid: number) => void;
+  onReport?: (postid: number) => void;
+  onEdit?: (postid: number) => void;
+  onDelete?: (postid: number) => void;
 }
 
 export default function PostMenu({
-  postId,
+  postid,
   postUserId,
   currentUserId,
   isSaved = false,
@@ -60,7 +60,7 @@ export default function PostMenu({
 
     setIsDeleting(true);
     try {
-      await onDelete(postId);
+      await onDelete(postid);
       setShowDeleteDialog(false);
     } catch (error) {
       console.error("Error deleting post:", error);
@@ -85,7 +85,7 @@ export default function PostMenu({
           {/* Save/Unsave Post */}
           {onSave && (
             <DropdownMenuItem
-              onClick={() => onSave(postId)}
+              onClick={() => onSave(postid)}
               className="cursor-pointer"
             >
               {isSaved ? (
@@ -105,7 +105,7 @@ export default function PostMenu({
           {/* Report Post */}
           {onReport && (
             <DropdownMenuItem
-              onClick={() => onReport(postId)}
+              onClick={() => onReport(postid)}
               className="cursor-pointer"
             >
               <Flag className="mr-2 h-4 w-4" />
@@ -121,7 +121,7 @@ export default function PostMenu({
               {/* Edit Post */}
               {onEdit && (
                 <DropdownMenuItem
-                  onClick={() => onEdit(postId)}
+                  onClick={() => onEdit(postid)}
                   className="cursor-pointer"
                 >
                   <Edit className="mr-2 h-4 w-4" />

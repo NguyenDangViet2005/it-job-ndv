@@ -5,23 +5,23 @@ const ENDPOINT = "/post";
 
 export const interactionApi = {
   // Toggle like cho bài post
-  toggleLike: (postId: number, userId: number, token: string) => {
+  toggleLike: (postid: number, userid: number, token: string) => {
     return apiPost<LikeResponse>(
-      `${ENDPOINT}/${postId}/like`,
-      { postId, userId },
+      `${ENDPOINT}/${postid}/like`,
+      { postid, userid },
       { token }
     );
   },
 
   // Lấy comments của bài post với pagination
   getComments: (
-    postId: number,
+    postid: number,
     pageNumber: number = 1,
     pageSize: number = 10,
     token?: string
   ) => {
     return apiGetPaginated<CommentResponse>(
-      `${ENDPOINT}/${postId}/comments`,
+      `${ENDPOINT}/${postid}/comments`,
       pageNumber,
       pageSize,
       { token }
@@ -30,15 +30,15 @@ export const interactionApi = {
 
   // Thêm comment vào bài post
   addComment: async (
-    postId: number,
-    userId: number,
+    postid: number,
+    userid: number,
     content: string,
     token: string,
     attachments?: File[]
   ) => {
     const formData = new FormData();
-    formData.append("postId", postId.toString());
-    formData.append("userId", userId.toString());
+    formData.append("postid", postid.toString());
+    formData.append("userid", userid.toString());
     formData.append("content", content);
 
     if (attachments && attachments.length > 0) {
@@ -48,7 +48,7 @@ export const interactionApi = {
     }
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BE_ENDPOINT}${ENDPOINT}/${postId}/comment`,
+      `${process.env.NEXT_PUBLIC_BE_ENDPOINT}${ENDPOINT}/${postid}/comment`,
       {
         method: "POST",
         headers: {
@@ -68,16 +68,16 @@ export const interactionApi = {
 
   // Cập nhật comment
   updateComment: async (
-    postId: number,
+    postid: number,
     commentId: number,
-    userId: number,
+    userid: number,
     content: string,
     token: string,
     attachments?: File[],
     keepImageUrls?: string[]
   ) => {
     const formData = new FormData();
-    formData.append("userId", userId.toString());
+    formData.append("userid", userid.toString());
     formData.append("content", content);
 
     // Add URLs of images to keep as separate fields
@@ -95,7 +95,7 @@ export const interactionApi = {
     }
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BE_ENDPOINT}${ENDPOINT}/${postId}/comment/${commentId}`,
+      `${process.env.NEXT_PUBLIC_BE_ENDPOINT}${ENDPOINT}/${postid}/comment/${commentId}`,
       {
         method: "PUT",
         headers: {
@@ -115,14 +115,14 @@ export const interactionApi = {
 
   // Xóa comment
   deleteComment: (
-    postId: number,
+    postid: number,
     commentId: number,
-    userId: number,
+    userid: number,
     token: string
   ) => {
-    return apiDelete<void>(`${ENDPOINT}/${postId}/comment/${commentId}`, {
+    return apiDelete<void>(`${ENDPOINT}/${postid}/comment/${commentId}`, {
       token,
-      params: { userId },
+      params: { userid },
     });
   },
 };

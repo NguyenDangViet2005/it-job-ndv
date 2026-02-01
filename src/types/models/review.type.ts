@@ -2,13 +2,13 @@
 
 export interface Review {
   id: number;
-  userId: number;
+  userid: number;
   userName?: string;
   userAvatar?: string;
-  companyId: number;
+  companyid: number;
   companyName?: string;
   rating: number;
   comment: string;
-  createdAt: string;
-  updatedAt: string;
+  createdat: string;
+  updatedat: string;
 }

@@ -28,7 +28,7 @@ export interface AdminJob {
   quantity?: number;
   deadline?: string;
   salary?: string;
-  createdAt?: string;
+  createdat?: string;
   company?: {
     id: number;
     name: string;
@@ -182,7 +182,7 @@ export function AdminJobRow({ job, onEdit, onDelete }: JobRowProps) {
       <td className="p-4 cursor-target">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Clock className="h-4 w-4" />
-          <span>{job.createdAt ? new Date(job.createdAt).toLocaleDateString("vi-VN") : "-"}</span>
+          <span>{job.createdat ? new Date(job.createdat).toLocaleDateString("vi-VN") : "-"}</span>
         </div>
       </td>
 

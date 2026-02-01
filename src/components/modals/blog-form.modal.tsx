@@ -24,16 +24,16 @@ import {
 
 interface Blog {
   id: number;
-  userId?: number;
-  categoryId?: number;
+  userid?: number;
+  categoryid?: number;
   category?: any;
   title: string;
   content: string;
   excerpt?: string;
-  readTime?: string;
+  readtime?: string;
   image?: string;
-  createdAt: string;
-  updatedAt?: string;
+  createdat: string;
+  updatedat?: string;
 }
 
 interface Category {
@@ -45,8 +45,8 @@ interface BlogFormData {
   title: string;
   excerpt: string;
   content: string;
-  categoryId: number;
-  readTime: string;
+  categoryid: number;
+  readtime: string;
   image?: string | File; // Có thể là URL string hoặc File object
 }
 
@@ -73,8 +73,8 @@ export function BlogFormModal({
     title: "",
     excerpt: "",
     content: "",
-    categoryId: 0,
-    readTime: "",
+    categoryid: 0,
+    readtime: "",
     image: "",
   });
   
@@ -88,8 +88,8 @@ export function BlogFormModal({
         title: blog.title || "",
         excerpt: blog.excerpt || "",
         content: blog.content || "",
-        categoryId: Number(blog.categoryId || blog.category?.id || 0),
-        readTime: blog.readTime || "",
+        categoryid: Number(blog.categoryid || blog.category?.id || 0),
+        readtime: blog.readtime || "",
         image: blog.image || "",
       });
       setImagePreview(blog.image || null);
@@ -99,8 +99,8 @@ export function BlogFormModal({
         title: "",
         excerpt: "",
         content: "",
-        categoryId: 0,
-        readTime: "",
+        categoryid: 0,
+        readtime: "",
         image: "",
       });
       setImagePreview(null);
@@ -164,10 +164,10 @@ export function BlogFormModal({
             <Label htmlFor="category">Danh mục *</Label>
             <Select
               value={
-                formData.categoryId > 0 ? String(formData.categoryId) : undefined
+                formData.categoryid > 0 ? String(formData.categoryid) : undefined
               }
               onValueChange={(value) =>
-                setFormData({ ...formData, categoryId: Number(value) })
+                setFormData({ ...formData, categoryid: Number(value) })
               }
             >
               <SelectTrigger>
@@ -210,12 +210,12 @@ export function BlogFormModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="readTime">Thời gian đọc</Label>
+            <Label htmlFor="readtime">Thời gian đọc</Label>
             <Input
-              id="readTime"
-              value={formData.readTime}
+              id="readtime"
+              value={formData.readtime}
               onChange={(e) =>
-                setFormData({ ...formData, readTime: e.target.value })
+                setFormData({ ...formData, readtime: e.target.value })
               }
               placeholder="VD: 5 phút đọc"
             />

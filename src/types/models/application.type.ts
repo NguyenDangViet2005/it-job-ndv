@@ -5,18 +5,18 @@ import type { User } from "./user.type";
 
 export interface Application {
   id?: string;
-  jobId: number;
-  userId: number;
-  cvUrl?: string;
-  coverLetter?: string;
+  jobid: number;
+  userid: number;
+  cvurl?: string;
+  coverletter?: string;
   status: "pending" | "reviewed" | "accepted" | "rejected";
-  createdAt: string;
-  updatedAt: string;
-  user?: Pick<User, "id" | "fullName" | "email" | "phone" | "avatar">;
+  createdat: string;
+  updatedat: string;
+  user?: Pick<User, "id" | "fullname" | "email" | "phone" | "avatar">;
   job?: Pick<Job, "id" | "title">;
   jobTitle?: string;
   companyName?: string;
   companyLogo?: string;
-  userFullName?: string;
+  userfullname?: string;
   userEmail?: string;
 }

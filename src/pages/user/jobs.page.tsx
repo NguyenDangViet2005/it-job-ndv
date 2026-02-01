@@ -89,8 +89,8 @@ const JobsPage = () => {
     }
   }
 
-  const handleSkillChange = (skillId: number | null) => {
-    setSelectedSkill(skillId);
+  const handleSkillChange = (skillid: number | null) => {
+    setSelectedSkill(skillid);
     setCurrentPage(1);
   };
 
@@ -100,8 +100,8 @@ const JobsPage = () => {
     setCurrentPage(1);
   };
 
-  const handleCompanyChange = (companyId: number | null) => {
-    setSelectedCompany(companyId);
+  const handleCompanyChange = (companyid: number | null) => {
+    setSelectedCompany(companyid);
     setSelectedSkill(null);
     setCurrentPage(1);
   };

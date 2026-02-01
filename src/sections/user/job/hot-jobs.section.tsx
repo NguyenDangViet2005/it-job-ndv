@@ -12,7 +12,7 @@ const HotJob = ({ props }: { props: JobResponse }) => {
         <div className="relative h-full flex flex-col">
           <div className="inset-0">
             <Image
-              src={props.company?.avatar || "/cover.png"}
+              src={props.company?.coverimage || "/cover.png"}
               alt={props.company?.name || "Company"}
               fill
               className="object-cover"
@@ -23,7 +23,7 @@ const HotJob = ({ props }: { props: JobResponse }) => {
             <div className="flex justify-center mb-3 flex-shrink-0">
               <div className="relative w-16 h-16 bg-white rounded-full p-1.5 flex items-center justify-center shadow-xl ring-2 ring-white/20">
                 <Image
-                  src={props.company?.avatar || "/logo.png"}
+                  src={props.company?.avatar}
                   alt={props.company?.name || "Company"}
                   width={56}
                   height={56}

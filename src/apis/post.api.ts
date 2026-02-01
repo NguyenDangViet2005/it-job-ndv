@@ -37,7 +37,7 @@ export const postApi = {
 
   // Lấy bài đăng theo user
   getByUser: (
-    userId: number,
+    userid: number,
     pageNumber: number = 1,
     pageSize: number = 10,
     currentUserId?: number,
@@ -45,7 +45,7 @@ export const postApi = {
   ) => {
     const params: Record<string, string | number> = { pageNumber, pageSize };
     if (currentUserId) params.currentUserId = currentUserId;
-    return apiGet<ResponseData<PostResponse>>(`${ENDPOINT}/user/${userId}`, {
+    return apiGet<ResponseData<PostResponse>>(`${ENDPOINT}/user/${userid}`, {
       params,
       token,
     });
@@ -53,7 +53,7 @@ export const postApi = {
 
   // Lấy bài đăng theo company
   getByCompany: (
-    companyId: number,
+    companyid: number,
     pageNumber: number = 1,
     pageSize: number = 10,
     currentUserId?: number,
@@ -62,22 +62,22 @@ export const postApi = {
     const params: Record<string, string | number> = { pageNumber, pageSize };
     if (currentUserId) params.currentUserId = currentUserId;
     return apiGet<ResponseData<PostResponse>>(
-      `${ENDPOINT}/company/${companyId}`,
+      `${ENDPOINT}/company/${companyid}`,
       { params, token }
     );
   },
 
   // Tạo bài đăng mới với attachments
   create: async (
-    data: { content: string; userId?: number; companyId?: number },
+    data: { content: string; userid?: number; companyid?: number },
     images?: File[],
     video?: File,
     token?: string
   ) => {
     const formData = new FormData();
     formData.append("content", data.content);
-    if (data.userId) formData.append("userId", data.userId.toString());
-    if (data.companyId) formData.append("companyId", data.companyId.toString());
+    if (data.userid) formData.append("userid", data.userid.toString());
+    if (data.companyid) formData.append("companyid", data.companyid.toString());
 
     if (images && images.length > 0) {
       images.forEach((image) => {
@@ -118,15 +118,15 @@ export const postApi = {
   // Cập nhật bài đăng với ảnh
   updateWithImages: async (
     id: number,
-    data: { content: string; userId?: number; companyId?: number },
+    data: { content: string; userid?: number; companyid?: number },
     images?: File[],
     keepImageUrls?: string[],
     token?: string
   ) => {
     const formData = new FormData();
     formData.append("content", data.content);
-    if (data.userId) formData.append("userId", data.userId.toString());
-    if (data.companyId) formData.append("companyId", data.companyId.toString());
+    if (data.userid) formData.append("userid", data.userid.toString());
+    if (data.companyid) formData.append("companyid", data.companyid.toString());
 
     // Add keepImageUrls array
     if (keepImageUrls && keepImageUrls.length > 0) {
@@ -167,13 +167,13 @@ export const postApi = {
 
   // Lấy comments của bài đăng
   getComments: (
-    postId: number,
+    postid: number,
     pageNumber: number = 1,
     pageSize: number = 10,
     token?: string
   ) => {
     return apiGetPaginated<any>(
-      `${ENDPOINT}/${postId}/comments`,
+      `${ENDPOINT}/${postid}/comments`,
       pageNumber,
       pageSize,
       { token }
@@ -181,10 +181,10 @@ export const postApi = {
   },
 
   // Toggle like bài đăng
-  toggleLike: (postId: number, userId: number, token?: string) => {
-    return apiPost<{ isLiked: boolean; totalLikes: number }>(
-      `${ENDPOINT}/${postId}/like`,
-      { userId },
+  toggleLike: (postid: number, userid: number, token?: string) => {
+    return apiPost<{ isliked: boolean; totalLikes: number }>(
+      `${ENDPOINT}/${postid}/like`,
+      { userid },
       { token }
     );
   },

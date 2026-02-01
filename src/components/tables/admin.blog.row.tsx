@@ -22,13 +22,13 @@ export interface AdminBlog {
   title: string;
   excerpt?: string;
   content?: string;
-  readTime?: string;
+  readtime?: string;
   image?: string;
   author?: string;
   category?: string;
   date?: string;
-  createdAt?: string;
-  updatedAt?: string;
+  createdat?: string;
+  updatedat?: string;
 }
 
 interface BlogRowProps {
@@ -95,10 +95,10 @@ export function AdminBlogRow({ blog, onEdit, onDelete }: BlogRowProps) {
 
       {/* Read Time */}
       <td className="p-4 cursor-target">
-        {blog.readTime ? (
+        {blog.readtime ? (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Clock className="h-4 w-4" />
-            <span>{blog.readTime}</span>
+            <span>{blog.readtime}</span>
           </div>
         ) : (
           <span className="text-muted-foreground">-</span>
@@ -109,7 +109,7 @@ export function AdminBlogRow({ blog, onEdit, onDelete }: BlogRowProps) {
       <td className="p-4 cursor-target">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Calendar className="h-4 w-4" />
-          <span>{blog.createdAt ? new Date(blog.createdAt).toLocaleDateString("vi-VN") : "-"}</span>
+          <span>{blog.createdat ? new Date(blog.createdat).toLocaleDateString("vi-VN") : "-"}</span>
         </div>
       </td>
 
@@ -158,7 +158,7 @@ export function getBlogTableColumns() {
     { key: "blog", header: "Bài viết", width: "35%" },
     { key: "author", header: "Tác giả", width: "15%" },
     { key: "category", header: "Danh mục", width: "12%" },
-    { key: "readTime", header: "Thời gian đọc", width: "12%" },
+    { key: "readtime", header: "Thời gian đọc", width: "12%" },
     { key: "created", header: "Ngày tạo", width: "14%" },
     { key: "actions", header: "Thao tác", width: "12%" },
   ];

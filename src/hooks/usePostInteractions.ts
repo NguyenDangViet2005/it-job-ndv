@@ -21,7 +21,7 @@ export function usePostInteractions({
   setLoadingCommentsForPost,
   posts,
 }: UsePostInteractionsProps) {
-  const handleLikePost = async (postId: number) => {
+  const handleLikePost = async (postid: number) => {
     if (!isAuthenticated) {
       toast.error("Vui lòng đăng nhập để thực hiện thao tác này");
       return;
@@ -29,16 +29,16 @@ export function usePostInteractions({
     if (!user || !token) return;
 
     try {
-      const result = await interactionApi.toggleLike(postId, user.id, token);
+      const result = await interactionApi.toggleLike(postid, user.id, token);
 
       setPosts((prev) =>
         prev.map((post) =>
-          post.id === postId
+          post.id === postid
             ? {
                 ...post,
                 interaction: {
                   ...post.interaction,
-                  isLikedByCurrentUser: result.isLiked,
+                  islikedByCurrentUser: result.isliked,
                   totalLikes: result.totalLikes,
                 },
               }
@@ -50,10 +50,10 @@ export function usePostInteractions({
     }
   };
 
-  const handleToggleComments = (postId: number) => {
+  const handleToggleComments = (postid: number) => {
     setPosts((prev: FullPostResponse[]) =>
       prev.map((post: FullPostResponse) =>
-        post.id === postId
+        post.id === postid
           ? { ...post, showComments: !(post as any).showComments }
           : post,
       ),
@@ -61,7 +61,7 @@ export function usePostInteractions({
   };
 
   const handleAddComment = async (
-    postId: number,
+    postid: number,
     content: string,
     attachments?: File[],
   ) => {
@@ -73,7 +73,7 @@ export function usePostInteractions({
 
     try {
       const newComment = await interactionApi.addComment(
-        postId,
+        postid,
         user.id,
         content,
         token,
@@ -82,7 +82,7 @@ export function usePostInteractions({
 
       setPosts((prev: FullPostResponse[]) =>
         prev.map((post: FullPostResponse) =>
-          post.id === postId
+          post.id === postid
             ? {
                 ...post,
                 interaction: {
@@ -101,7 +101,7 @@ export function usePostInteractions({
   };
 
   const handleEditComment = async (
-    postId: number,
+    postid: number,
     commentId: number,
     content: string,
     attachments?: File[],
@@ -115,7 +115,7 @@ export function usePostInteractions({
 
     try {
       const updatedComment = await interactionApi.updateComment(
-        postId,
+        postid,
         commentId,
         user.id,
         content,
@@ -126,7 +126,7 @@ export function usePostInteractions({
 
       setPosts((prev: FullPostResponse[]) =>
         prev.map((post: FullPostResponse) =>
-          post.id === postId
+          post.id === postid
             ? {
                 ...post,
                 interaction: {
@@ -144,7 +144,7 @@ export function usePostInteractions({
     }
   };
 
-  const handleDeleteComment = async (postId: number, commentId: number) => {
+  const handleDeleteComment = async (postid: number, commentId: number) => {
     if (!isAuthenticated) {
       toast.error("Vui lòng đăng nhập để thực hiện thao tác này");
       return;
@@ -152,11 +152,11 @@ export function usePostInteractions({
     if (!user || !token) return;
 
     try {
-      await interactionApi.deleteComment(postId, commentId, user.id, token);
+      await interactionApi.deleteComment(postid, commentId, user.id, token);
 
       setPosts((prev: FullPostResponse[]) =>
         prev.map((post: FullPostResponse) =>
-          post.id === postId
+          post.id === postid
             ? {
                 ...post,
                 interaction: {
@@ -175,19 +175,19 @@ export function usePostInteractions({
     }
   };
 
-  const handleLoadMoreComments = async (postId: number) => {
+  const handleLoadMoreComments = async (postid: number) => {
     if (!token) return;
 
-    setLoadingCommentsForPost(postId);
+    setLoadingCommentsForPost(postid);
     try {
-      const post = posts.find((p: FullPostResponse) => p.id === postId);
+      const post = posts.find((p: FullPostResponse) => p.id === postid);
       if (!post) return;
 
       const currentPage = Math.ceil(
         (post.interaction.comments || []).length / 10,
       );
       const response = await interactionApi.getComments(
-        postId,
+        postid,
         currentPage + 1,
         10,
         token,
@@ -195,7 +195,7 @@ export function usePostInteractions({
 
       setPosts((prev: FullPostResponse[]) =>
         prev.map((p: FullPostResponse) =>
-          p.id === postId
+          p.id === postid
             ? {
                 ...p,
                 interaction: {

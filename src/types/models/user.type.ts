@@ -2,33 +2,33 @@
 
 export interface User {
   id: number;
-  fullName: string;
+  fullname: string;
   email: string;
   phone?: string;
   gender?: string;
-  dateOfBirth?: string;
+  dateofbirth?: string;
   avatar?: string;
-  coverImage?: string;
+  coverimage?: string;
   address?: string;
-  cvUrl?: string;
+  cvurl?: string;
   role: "user" | "employer" | "admin";
-  createdAt?: string;
-  updatedAt?: string;
+  createdat?: string;
+  updatedat?: string;
 }
 
 export interface PostUser {
   id: number;
-  fullName: string;
+  fullname: string;
   avatar?: string;
 }
 
 export interface AdminUser {
   id: number;
-  fullName: string;
+  fullname: string;
   email: string;
   phone?: string;
   role: "user" | "employer" | "admin";
   avatar?: string;
-  createdAt: string;
-  updatedAt: string;
+  createdat: string;
+  updatedat: string;
 }

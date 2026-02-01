@@ -52,7 +52,7 @@ export default function SettingsPage() {
         user.id,
         currentPassword,
         newPassword,
-        token
+        token,
       );
 
       toast.success(response.message || "Đổi mật khẩu thành công");
@@ -81,7 +81,7 @@ export default function SettingsPage() {
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="name">Họ và tên</Label>
-              <Input id="name" defaultValue={user?.fullName} />
+              <Input id="name" defaultValue={user?.fullname} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>

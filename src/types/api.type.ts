@@ -31,24 +31,24 @@ export interface ApiResponse<T> {
 
 // ============ Auth Requests ============
 export interface RegisterRequest {
-  fullName: string;
+  fullname: string;
   email: string;
   password: string;
   phone: string;
   gender?: string;
-  dateOfBirth?: string;
+  dateofbirth?: string;
 }
 
 export interface RegisterHRRequest {
   // User Info
-  fullName: string;
+  fullname: string;
   email: string;
   password: string;
   phone: string;
   gender?: string;
-  dateOfBirth?: string;
+  dateofbirth?: string;
   avatar?: string;
-  coverImage?: string;
+  coverimage?: string;
   // Company Info
   companyName: string;
   companyAvatar?: string;
@@ -56,12 +56,12 @@ export interface RegisterHRRequest {
   companyNationality?: string;
   companyWebsite?: string;
   companyHotline?: string;
-  companyEmail?: string;
+  companyemail?: string;
   companyDescription?: string;
   companyFoundedYear?: number;
   companyAddress?: string;
-  provinceId: number;
-  wardId: number;
+  provinceid: number;
+  wardid: number;
 }
 
 export interface LoginRequest {
@@ -70,19 +70,19 @@ export interface LoginRequest {
 }
 
 export interface RefreshTokenRequest {
-  refreshToken: string;
+  refreshtoken: string;
 }
 
 // ============ Auth Responses ============
 export interface LoginResponse {
-  accessToken: string;
-  refreshToken: string;
+  accesstoken: string;
+  refreshtoken: string;
   user: User;
 }
 
 export interface RegisterHRResponse {
-  accessToken: string;
-  refreshToken: string;
+  accesstoken: string;
+  refreshtoken: string;
   user: User;
   company: Company;
 }
@@ -94,11 +94,11 @@ export type UserResponse = User;
 export interface CompanyRequest {
   name: string;
   avatar?: string;
-  coverImage?: string;
+  coverimage?: string;
   nationality?: string;
   website?: string;
   description?: string;
-  foundedYear?: number;
+  foundedyear?: number;
 }
 
 export interface CompanyUpdateRequest {
@@ -106,9 +106,9 @@ export interface CompanyUpdateRequest {
   nationality?: string;
   website?: string;
   description?: string;
-  foundedYear?: number;
+  foundedyear?: number;
   address?: string;
-  wardId?: number;
+  wardid?: number;
 }
 
 // ============ Company Responses ============
@@ -116,7 +116,7 @@ export type CompanyResponse = Company;
 
 // ============ Job Requests ============
 export interface JobRequest {
-  companyId: number;
+  companyid: number;
   title: string;
   description: string;
   type: string;
@@ -131,12 +131,12 @@ export type JobResponse = Job;
 
 // ============ Blog Requests ============
 export interface BlogRequest {
-  userId: number;
-  categoryId: number;
+  userid: number;
+  categoryid: number;
   title: string;
   excerpt: string;
   content: string;
-  readTime: string;
+  readtime: string;
   image?: string;
 }
 
@@ -147,8 +147,8 @@ export type BlogCategoryResponse = BlogCategory;
 // ============ Post Requests ============
 export interface PostRequest {
   content: string;
-  userId?: number;
-  companyId?: number;
+  userid?: number;
+  companyid?: number;
 }
 
 // ============ Post Responses ============
@@ -162,7 +162,7 @@ export type LikeResponse = Like;
 export interface CreateReviewRequest {
   rating: number;
   comment: string;
-  companyId: number;
+  companyid: number;
 }
 
 export interface UpdateReviewRequest {
@@ -175,10 +175,10 @@ export type ReviewResponse = Review;
 
 // ============ Application Requests ============
 export interface ApplicationRequest {
-  jobId: number;
-  userId: number;
-  cvUrl: string;
-  coverLetter: string;
+  jobid: number;
+  userid: number;
+  cvurl: string;
+  coverletter: string;
 }
 
 // ============ Application Responses ============
@@ -190,8 +190,8 @@ export type WardResponse = Ward;
 
 // ============ Follow Requests ============
 export interface FollowRequest {
-  userId: number;
-  companyId: number;
+  userid: number;
+  companyid: number;
 }
 
 // ============ Follow Responses ============

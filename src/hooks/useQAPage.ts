@@ -46,7 +46,7 @@ export function useQAPage() {
           
           const followedIds = companyData
             .filter((company: any) => 
-              company.follows?.some((follow: any) => follow.userId === user.id)
+              company.follows?.some((follow: any) => follow.userid === user.id)
             )
             .map((company: any) => company.id);
           

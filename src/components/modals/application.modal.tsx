@@ -12,7 +12,7 @@ import ApplicationForm from "@/components/forms/application.form";
 interface ApplicationModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  jobId: number;
+  jobid: number;
   jobTitle: string;
   companyName: string;
 }
@@ -20,7 +20,7 @@ interface ApplicationModalProps {
 export default function ApplicationModal({
   open,
   onOpenChange,
-  jobId,
+  jobid,
   jobTitle,
   companyName,
 }: ApplicationModalProps) {
@@ -42,7 +42,7 @@ export default function ApplicationModal({
         </DialogHeader>
         
         <ApplicationForm
-          jobId={jobId}
+          jobid={jobid}
           jobTitle={jobTitle}
           companyName={companyName}
           onClose={handleClose}

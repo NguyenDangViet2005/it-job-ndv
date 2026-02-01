@@ -51,7 +51,7 @@ const CompanyDetailPage = ({ company }: CompanyDetailPageProps) => {
   useEffect(() => {
     if (user && company.follows) {
       const isUserFollowing = company.follows.some(
-        (follow: any) => follow.userId === user.id,
+        (follow: any) => follow.userid === user.id,
       );
       setIsFollowing(isUserFollowing);
     }
@@ -110,9 +110,9 @@ const CompanyDetailPage = ({ company }: CompanyDetailPageProps) => {
       <div className="relative">
         {/* Cover Image */}
         <div className="relative w-full h-64 md:h-80 bg-gradient-to-br from-primary/20 via-primary/10 to-background">
-          {company.coverImage && (
+          {company.coverimage && (
             <Image
-              src={company.coverImage}
+              src={company.coverimage}
               alt={`${company.name} cover`}
               fill
               className="object-cover"
@@ -129,7 +129,7 @@ const CompanyDetailPage = ({ company }: CompanyDetailPageProps) => {
               {/* Logo */}
               <div className="relative w-32 h-32 flex-shrink-0 rounded-xl overflow-hidden bg-white border-4 border-background shadow-lg">
                 <Image
-                  src={company.avatar || "/logo-company.jpg"}
+                  src={company.avatar}
                   alt={company.name}
                   fill
                   className="object-contain p-3"
@@ -199,10 +199,10 @@ const CompanyDetailPage = ({ company }: CompanyDetailPageProps) => {
                     <Building2 className="h-4 w-4 text-muted-foreground" />
                     <span>{company.country || "Việt Nam"}</span>
                   </div>
-                  {company.foundedYear && (
+                  {company.foundedyear && (
                     <div className="flex items-center gap-2 text-sm">
                       <Calendar className="h-4 w-4 text-muted-foreground" />
-                      <span>Thành lập {company.foundedYear}</span>
+                      <span>Thành lập {company.foundedyear}</span>
                     </div>
                   )}
                   <div className="flex items-center gap-2 text-sm font-medium text-primary">
@@ -304,7 +304,7 @@ const CompanyDetailPage = ({ company }: CompanyDetailPageProps) => {
                           key={job.id}
                           job={job}
                           companyName={company.name}
-                          companyLogo={company.avatar || "/logo-company.jpg"}
+                          companyLogo={company.avatar}
                         />
                       ))}
                     </div>
@@ -424,17 +424,17 @@ const CompanyDetailPage = ({ company }: CompanyDetailPageProps) => {
                           <div key={review.id} className="flex gap-3">
                             <div className="relative w-8 h-8 flex-shrink-0 rounded-full overflow-hidden bg-muted">
                               <div className="w-full h-full flex items-center justify-center bg-primary/10 text-primary font-semibold">
-                                {review.userId.toString().charAt(0)}
+                                {review.userid.toString().charAt(0)}
                               </div>
                             </div>
                             <div className="flex-1">
                               <div className="flex items-center justify-between mb-1">
                                 <h4 className="font-semibold text-sm">
-                                  User #{review.userId}
+                                  User #{review.userid}
                                 </h4>
                                 <span className="text-xs text-muted-foreground">
                                   {new Date(
-                                    review.createdAt,
+                                    review.createdat,
                                   ).toLocaleDateString("vi-VN")}
                                 </span>
                               </div>
@@ -490,15 +490,15 @@ const JobCard = ({
 }: {
   job: {
     id: number;
-    companyId: number;
+    companyid: number;
     title: string;
     description: string;
     type: string;
     quantity: number;
     deadline: string;
     status: string;
-    createdAt: string;
-    updatedAt: string;
+    createdat: string;
+    updatedat: string;
   };
   companyName: string;
   companyLogo: string;

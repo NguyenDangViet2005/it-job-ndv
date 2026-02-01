@@ -66,7 +66,7 @@ const UsersManagement = () => {
   // Filter users client-side
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
-      user.fullName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.fullname?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       user.email?.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesFilter =
       filterRole === "all" || user.role?.toLowerCase() === filterRole;
@@ -107,7 +107,7 @@ const UsersManagement = () => {
   const handleDelete = async (user: AdminUser) => {
     if (
       !confirm(
-        `Bạn có chắc muốn xóa "${user.fullName}"?\n\nCẢNH BÁO: Hành động này sẽ xóa tất cả dữ liệu liên quan (bài đăng, ứng tuyển, blog, v.v.) và không thể hoàn tác.`,
+        `Bạn có chắc muốn xóa "${user.fullname}"?\n\nCẢNH BÁO: Hành động này sẽ xóa tất cả dữ liệu liên quan (bài đăng, ứng tuyển, blog, v.v.) và không thể hoàn tác.`,
       )
     ) {
       return;

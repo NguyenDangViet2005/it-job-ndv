@@ -79,8 +79,8 @@ const BlogManagement = () => {
     title: "",
     excerpt: "",
     content: "",
-    categoryId: 0,
-    readTime: "",
+    categoryid: 0,
+    readtime: "",
     image: "",
   });
 
@@ -138,8 +138,8 @@ const BlogManagement = () => {
         title: editBlog.title || "",
         excerpt: editBlog.excerpt || "",
         content: editBlog.content || "",
-        categoryId: (editBlog as any).categoryId || 0,
-        readTime: editBlog.readTime || "",
+        categoryid: (editBlog as any).categoryid || 0,
+        readtime: editBlog.readtime || "",
         image: editBlog.image || "",
       });
     } else if (createMode) {
@@ -147,8 +147,8 @@ const BlogManagement = () => {
         title: "",
         excerpt: "",
         content: "",
-        categoryId: 0,
-        readTime: "",
+        categoryid: 0,
+        readtime: "",
         image: "",
       });
     }
@@ -195,8 +195,8 @@ const BlogManagement = () => {
       {
         label: "Mới tháng này",
         value: blogs.filter((b) => {
-          if (!b.createdAt) return false;
-          const date = new Date(b.createdAt);
+          if (!b.createdat) return false;
+          const date = new Date(b.createdat);
           return (
             date.getMonth() === now.getMonth() &&
             date.getFullYear() === now.getFullYear()
@@ -257,7 +257,7 @@ const BlogManagement = () => {
       toast.error("Vui lòng điền đầy đủ thông tin bắt buộc");
       return;
     }
-    if (!formData.categoryId || formData.categoryId === 0) {
+    if (!formData.categoryid || formData.categoryid === 0) {
       toast.error("Vui lòng chọn danh mục");
       return;
     }
@@ -265,12 +265,12 @@ const BlogManagement = () => {
     try {
       setSaving(true);
       const blogData = {
-        userId: user.id,
-        categoryId: formData.categoryId,
+        userid: user.id,
+        categoryid: formData.categoryid,
         title: formData.title,
         excerpt: formData.excerpt,
         content: formData.content,
-        readTime: formData.readTime || "5 phút",
+        readtime: formData.readtime || "5 phút",
         image: formData.image || "",
       };
 
@@ -385,10 +385,10 @@ const BlogManagement = () => {
               <Label htmlFor="category">Danh mục *</Label>
               <Select
                 value={
-                  formData.categoryId > 0 ? formData.categoryId.toString() : ""
+                  formData.categoryid > 0 ? formData.categoryid.toString() : ""
                 }
                 onValueChange={(value) =>
-                  setFormData({ ...formData, categoryId: parseInt(value) })
+                  setFormData({ ...formData, categoryid: parseInt(value) })
                 }
               >
                 <SelectTrigger>
@@ -432,12 +432,12 @@ const BlogManagement = () => {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="readTime">Thời gian đọc</Label>
+                <Label htmlFor="readtime">Thời gian đọc</Label>
                 <Input
-                  id="readTime"
-                  value={formData.readTime}
+                  id="readtime"
+                  value={formData.readtime}
                   onChange={(e) =>
-                    setFormData({ ...formData, readTime: e.target.value })
+                    setFormData({ ...formData, readtime: e.target.value })
                   }
                   placeholder="VD: 5 phút"
                 />

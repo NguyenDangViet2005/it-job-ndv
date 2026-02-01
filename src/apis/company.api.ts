@@ -89,7 +89,7 @@ export const companyApi = {
 
   // Upload ảnh bìa công ty
   uploadCover: (file: File, token?: string) => {
-    return apiUploadFile<{ coverImageUrl: string; message: string }>(
+    return apiUploadFile<{ coverimageUrl: string; message: string }>(
       `${ENDPOINT}/upload-cover`,
       file,
       "file",

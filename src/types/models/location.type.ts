@@ -7,6 +7,6 @@ export interface Province {
 
 export interface Ward {
   id: number;
-  provinceId: number;
+  provinceid: number;
   name: string;
 }

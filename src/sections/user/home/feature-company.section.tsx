@@ -23,15 +23,17 @@ function FeaturedCompanies() {
       try {
         setLoading(true);
         const response = await companyApi.getAll(1, 10);
-        
+
         // Xử lý data có thể là array hoặc object với $values
-        const companiesData = Array.isArray(response.data) 
-          ? response.data 
+        const companiesData = Array.isArray(response.data)
+          ? response.data
           : response.data;
-          
+
         setCompanies(companiesData);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Không thể tải dữ liệu công ty");
+        setError(
+          err instanceof Error ? err.message : "Không thể tải dữ liệu công ty",
+        );
       } finally {
         setLoading(false);
       }
@@ -108,13 +110,13 @@ function FeaturedCompanies() {
                 {/* Cover Image */}
                 <div className="relative w-full h-[350px] overflow-hidden rounded-t-lg">
                   <Image
-                    src={company.coverImage || "/cover.png"}
+                    src={company.coverimage || "/cover.png"}
                     alt={company.name}
                     fill
                     className="object-cover cursor-target"
                     priority={false}
                     sizes="900px"
-                    unoptimized={company.coverImage?.includes("picsum.photos")}
+                    unoptimized={company.coverimage?.includes("picsum.photos")}
                   />
                 </div>
 
@@ -124,7 +126,7 @@ function FeaturedCompanies() {
                     {/* Company Avatar */}
                     <div className="relative w-12 h-12 rounded-full border overflow-hidden flex-shrink-0 bg-white">
                       <Image
-                        src={company.avatar || "/logo-company.jpg"}
+                        src={company.avatar}
                         alt={`${company.name} logo`}
                         fill
                         className="object-contain p-1"
@@ -160,10 +162,15 @@ function FeaturedCompanies() {
                       </span>
                     )}
                     {company.nationality && (
-                      <span className="text-muted-foreground flex gap-1"><MapPin size={15}/> <div>{company.nationality}</div></span>
+                      <span className="text-muted-foreground flex gap-1">
+                        <MapPin size={15} /> <div>{company.nationality}</div>
+                      </span>
                     )}
-                    {company.foundedYear && (
-                      <span className="text-muted-foreground flex gap-1"><Building2 size={15}/><div> {company.foundedYear}</div></span>
+                    {company.foundedyear && (
+                      <span className="text-muted-foreground flex gap-1">
+                        <Building2 size={15} />
+                        <div> {company.foundedyear}</div>
+                      </span>
                     )}
                   </div>
                 </div>

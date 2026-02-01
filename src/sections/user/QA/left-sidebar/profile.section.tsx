@@ -67,8 +67,8 @@ export default function ProfileSection() {
       <div
         className="h-14 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent bg-cover bg-center"
         style={{
-          backgroundImage: user?.coverImage
-            ? `url(${user.coverImage})`
+          backgroundImage: user?.coverimage
+            ? `url(${user.coverimage})`
             : undefined,
         }}
       />
@@ -83,10 +83,10 @@ export default function ProfileSection() {
             <Avatar className="h-14 w-14 ring-4 ring-background border border-border/50 hover:ring-primary/50 transition-all">
               <AvatarImage
                 src={user?.avatar || DEFAULT_AVATARS.USER}
-                alt={user?.fullName || "User"}
+                alt={user?.fullname || "User"}
               />
               <AvatarFallback className="bg-primary text-primary-foreground text-sm font-semibold">
-                {getInitials(user?.fullName)}
+                {getInitials(user?.fullname)}
               </AvatarFallback>
             </Avatar>
           </div>
@@ -96,7 +96,7 @@ export default function ProfileSection() {
             className="cursor-pointer hover:underline"
           >
             <h3 className="font-semibold text-sm mt-2">
-              {user?.fullName || "Người dùng"}
+              {user?.fullname || "Người dùng"}
             </h3>
           </div>
           <p className="text-xs text-muted-foreground">
@@ -140,7 +140,10 @@ export default function ProfileSection() {
 
         {/* Tools - Quick Actions */}
         <div className="px-2 py-2 space-y-1">
-          <div onClick={() => handleNavigation(ROUTES.USER_RESUME)} className="block">
+          <div
+            onClick={() => handleNavigation(ROUTES.USER_RESUME)}
+            className="block"
+          >
             <button className="cursor-pointer w-full flex items-center justify-between hover:bg-accent/50 px-2 py-2 rounded-md transition-colors text-xs group">
               <span className="text-muted-foreground group-hover:text-foreground flex items-center gap-2 transition-colors">
                 <FileText className="h-4 w-4" />
@@ -150,7 +153,10 @@ export default function ProfileSection() {
             </button>
           </div>
 
-          <div onClick={() => handleNavigation(ROUTES.USER_RESUME)} className="block">
+          <div
+            onClick={() => handleNavigation(ROUTES.USER_RESUME)}
+            className="block"
+          >
             <button className="cursor-pointer w-full flex items-center justify-between hover:bg-accent/50 px-2 py-2 rounded-md transition-colors text-xs group">
               <span className="text-muted-foreground group-hover:text-foreground flex items-center gap-2 transition-colors">
                 <Award className="h-4 w-4" />

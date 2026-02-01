@@ -19,8 +19,8 @@ export const ROUTES = {
   ACCESS_DENIED: "/access-denied",
 
   // User routes
-  PROFILE: (userId?: number | string) =>
-    userId ? `/profile/${userId}` : "/profile",
+  PROFILE: (userid?: number | string) =>
+    userid ? `/profile/${userid}` : "/profile",
   PROFILE_EDIT: "/profile/edit",
 
   // User Dashboard routes
@@ -34,12 +34,12 @@ export const ROUTES = {
 
   // Job routes
   JOBS: "/jobs",
-  JOB_DETAIL: (jobId: number | string) => `/jobs/${jobId}`,
+  JOB_DETAIL: (jobid: number | string) => `/jobs/${jobid}`,
   JOB_SEARCH: "/jobs/search",
 
   // Company routes
   COMPANIES: "/companies",
-  COMPANY_DETAIL: (companyId: number | string) => `/companies/${companyId}`,
+  COMPANY_DETAIL: (companyid: number | string) => `/companies/${companyid}`,
   COMPANY_SEARCH: "/companies/search",
 
   // Blog routes
@@ -54,13 +54,13 @@ export const ROUTES = {
 
   // Social routes
   SOCIAL: "/social",
-  POST_DETAIL: (postId: number | string) => `/social/posts/${postId}`,
+  POST_DETAIL: (postid: number | string) => `/social/posts/${postid}`,
 
   // HR/Employer routes
   HR: "/hr",
   HR_JOBS: "/hr/jobs",
   HR_JOB_CREATE: "/hr/jobs/create",
-  HR_JOB_EDIT: (jobId: number | string) => `/hr/jobs/${jobId}/edit`,
+  HR_JOB_EDIT: (jobid: number | string) => `/hr/jobs/${jobid}/edit`,
   HR_CANDIDATES: "/hr/candidates",
   HR_COMPANY: "/hr/company",
   HR_BLOG: "/hr/blog",

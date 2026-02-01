@@ -11,20 +11,20 @@ import { ROUTES } from "@/configs";
 
 interface PostHeaderProps {
   post: any; 
-  postId: number;
+  postid: number;
   currentUserId?: number;
   currentUserAvatar?: string;
   currentUserName: string;
   isSaved: boolean;
-  onSave?: (postId: number) => void;
-  onReport?: (postId: number) => void;
-  onEdit?: (postId: number) => void;
-  onDelete?: (postId: number) => void;
+  onSave?: (postid: number) => void;
+  onReport?: (postid: number) => void;
+  onEdit?: (postid: number) => void;
+  onDelete?: (postid: number) => void;
 }
 
 export default function PostHeader({
   post,
-  postId,
+  postid,
   currentUserId,
   currentUserAvatar,
   currentUserName,
@@ -37,22 +37,22 @@ export default function PostHeader({
   // Always show USER info (not company)
   const userName = post.user?.fullName || post.author || currentUserName;
   const userAvatar = post.user?.avatar || post.avatar || currentUserAvatar;
-  const userId = post.user?.id || post.userId;
+  const userid = post.user?.id || post.userid;
   
   // Check if this is a company post
   const hasCompany = !!post.company;
   const companyName = post.company?.name;
-  const companyId = post.company?.id;
+  const companyid = post.company?.id;
 
-  const displayTime = post.createdAt
-    ? new Date(post.createdAt).toLocaleDateString("vi-VN")
+  const displayTime = post.createdat
+    ? new Date(post.createdat).toLocaleDateString("vi-VN")
     : post.timestamp || "Vừa xong";
 
   return (
     <div className="flex items-center justify-between mb-4">
       <div className="flex items-center gap-3">
-        {userId ? (
-          <Link href={ROUTES.PROFILE(userId)}>
+        {userid ? (
+          <Link href={ROUTES.PROFILE(userid)}>
             <Avatar className="cursor-target hover:scale-110 transition-transform duration-300">
               <AvatarImage src={userAvatar} />
               <AvatarFallback>{userName.charAt(0)}</AvatarFallback>
@@ -65,8 +65,8 @@ export default function PostHeader({
           </Avatar>
         )}
         <div>
-          {userId ? (
-            <Link href={ROUTES.PROFILE(userId)}>
+          {userid ? (
+            <Link href={ROUTES.PROFILE(userid)}>
               <p className="font-semibold cursor-target hover:text-primary transition-colors duration-300">
                 {userName}
               </p>
@@ -77,11 +77,11 @@ export default function PostHeader({
             </p>
           )}
           <p className="text-xs text-muted-foreground">
-            {hasCompany && companyId ? (
+            {hasCompany && companyid ? (
               <>
                 Làm việc tại{" "}
                 <Link 
-                  href={ROUTES.COMPANY_DETAIL(companyId)}
+                  href={ROUTES.COMPANY_DETAIL(companyid)}
                   className="hover:text-primary hover:underline transition-colors"
                 >
                   {companyName}
@@ -96,8 +96,8 @@ export default function PostHeader({
         </div>
       </div>
       <PostMenu
-        postId={postId}
-        postUserId={post.user?.id || post.userId}
+        postid={postid}
+        postUserId={post.user?.id || post.userid}
         currentUserId={currentUserId}
         isSaved={isSaved}
         onSave={onSave}

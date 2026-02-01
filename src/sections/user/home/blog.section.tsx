@@ -92,10 +92,10 @@ function BlogSection() {
               <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
                 <span>{featured.author}</span>
                 <span>•</span>
-                <span>{featured.readTime}</span>
+                <span>{featured.readtime}</span>
                 <span>•</span>
                 <span>
-                  {new Date(featured.createdAt).toLocaleDateString("vi-VN")}
+                  {new Date(featured.createdat).toLocaleDateString("vi-VN")}
                 </span>
               </div>
               <span className="text-primary text-sm mt-1 inline-block hover:underline">
@@ -129,7 +129,7 @@ function BlogSection() {
                   {blog.excerpt}
                 </p>
                 <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
-                  <span>{blog.readTime}</span>
+                  <span>{blog.readtime}</span>
                 </div>
               </div>
             </a>

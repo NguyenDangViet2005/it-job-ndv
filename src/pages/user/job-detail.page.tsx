@@ -12,10 +12,10 @@ import { jobApi } from "@/apis";
 import type { JobResponse } from "@/types/api.type";
 
 type Props = {
-  jobId: string;
+  jobid: string;
 };
 
-export default function JobDetailPage({ jobId }: Props) {
+export default function JobDetailPage({ jobid }: Props) {
   const [jobData, setJobData] = useState<JobResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -24,7 +24,7 @@ export default function JobDetailPage({ jobId }: Props) {
     async function fetchJobDetail() {
       try {
         setLoading(true);
-        const response = await jobApi.getById(Number(jobId));
+        const response = await jobApi.getById(Number(jobid));
 
         setJobData(response as any);
       } catch (err) {
@@ -39,7 +39,7 @@ export default function JobDetailPage({ jobId }: Props) {
     }
 
     fetchJobDetail();
-  }, [jobId]);
+  }, [jobid]);
 
   if (loading) {
     return (
@@ -63,12 +63,12 @@ export default function JobDetailPage({ jobId }: Props) {
     id: jobData.id,
     title: jobData.title,
     company: jobData.company?.name || "",
-    logo: jobData.company?.avatar || "/logo-company.jpg",
+    logo: jobData.company?.avatar || "",
     location: jobData.company?.city || jobData.company?.address || "",
     salary: jobData.salary || "Thỏa thuận",
     type: jobData.type,
     level: "Middle",
-    postedDate: new Date(jobData.createdAt).toLocaleDateString("vi-VN"),
+    postedDate: new Date(jobData.createdat).toLocaleDateString("vi-VN"),
     applications: 0,
     skills: jobData.skills || [],
     quantity: jobData.quantity,
@@ -157,7 +157,7 @@ export default function JobDetailPage({ jobId }: Props) {
             <Card className="rounded-none sticky top-8">
               <CardContent className="p-6">
                 <CompanyInfo
-                  jobId={jobData.id}
+                  jobid={jobData.id}
                   jobTitle={jobData.title}
                   company={jobData.company}
                 />

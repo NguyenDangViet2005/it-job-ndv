@@ -35,7 +35,7 @@ export interface LegacyPost {
   interaction?: {
     totalLikes: number;
     totalComments: number;
-    isLikedByCurrentUser?: boolean;
+    islikedByCurrentUser?: boolean;
     comments?: any[];
   };
 }
@@ -61,26 +61,26 @@ export interface PostCardProps {
   currentUserName?: string;
   currentUserId?: number;
   isSaved?: boolean;
-  onLikePost: (postId: number) => void;
-  onToggleComments: (postId: number) => void;
-  onAddComment: (postId: number, content: string, attachments?: File[]) => void;
+  onLikePost: (postid: number) => void;
+  onToggleComments: (postid: number) => void;
+  onAddComment: (postid: number, content: string, attachments?: File[]) => void;
   onEditComment?: (
     commentId: number,
     content: string,
     attachments?: File[],
   ) => void;
   onDeleteComment?: (commentId: number) => void;
-  onLoadMoreComments?: (postId: number) => Promise<void>;
-  onSavePost?: (postId: number) => void;
-  onReportPost?: (postId: number) => void;
-  onEditPost?: (postId: number) => void;
-  onDeletePost?: (postId: number) => void;
+  onLoadMoreComments?: (postid: number) => Promise<void>;
+  onSavePost?: (postid: number) => void;
+  onReportPost?: (postid: number) => void;
+  onEditPost?: (postid: number) => void;
+  onDeletePost?: (postid: number) => void;
   loadingComments?: boolean;
 }
 
 export interface NormalizedPost {
   id: number;
-  userId?: number;
+  userid?: number;
   author: string;
   avatar?: string;
   role?: string;
@@ -94,7 +94,7 @@ export interface NormalizedPost {
   liked: boolean;
   comments: Array<{
     id: number;
-    userId?: number;
+    userid?: number;
     author: string;
     avatar: string;
     content: string;

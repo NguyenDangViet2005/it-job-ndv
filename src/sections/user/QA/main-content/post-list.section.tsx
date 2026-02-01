@@ -43,8 +43,8 @@ export default function PostList({
           currentUserId={currentUserId}
           onLikePost={onLikePost}
           onToggleComments={onToggleComments}
-          onAddComment={async (postId, content, attachments) =>
-            onAddComment(postId, content, attachments)
+          onAddComment={async (postid, content, attachments) =>
+            onAddComment(postid, content, attachments)
           }
           onEditComment={
             onEditComment
@@ -59,8 +59,8 @@ export default function PostList({
           }
           onLoadMoreComments={onLoadMoreComments}
           loadingComments={loadingCommentsForPost === post.id}
-          onSavePost={(postId) => console.log("Save post:", postId)}
-          onReportPost={(postId) => console.log("Report post:", postId)}
+          onSavePost={(postid) => console.log("Save post:", postid)}
+          onReportPost={(postid) => console.log("Report post:", postid)}
           onEditPost={onEditPost}
           onDeletePost={onDeletePost}
         />

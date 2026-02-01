@@ -27,7 +27,7 @@ interface JobData {
   quantity: number;
   deadline: string;
   salary?: string;
-  createdAt: string;
+  createdat: string;
   company: {
     id: number;
     name: string;
@@ -43,7 +43,7 @@ interface JobData {
 }
 
 interface JobEditForm {
-  companyId: number;
+  companyid: number;
   title: string;
   description: string;
   type: string;

@@ -13,8 +13,8 @@ export function useEditPost({ posts, token, onSuccess }: UseEditPostProps) {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [postToEdit, setPostToEdit] = useState<FullPostResponse | null>(null);
 
-  const handleEditPost = (postId: number) => {
-    const post = posts.find((p) => p.id === postId);
+  const handleEditPost = (postid: number) => {
+    const post = posts.find((p) => p.id === postid);
     if (post) {
       setPostToEdit(post);
       setEditDialogOpen(true);
@@ -22,7 +22,7 @@ export function useEditPost({ posts, token, onSuccess }: UseEditPostProps) {
   };
 
   const handleSaveEditedPost = async (
-    postId: number,
+    postid: number,
     content: string,
     newImages: File[],
     keepImageUrls: string[],
@@ -30,20 +30,20 @@ export function useEditPost({ posts, token, onSuccess }: UseEditPostProps) {
     if (!token) return;
 
     try {
-      const post = posts.find((p) => p.id === postId);
+      const post = posts.find((p) => p.id === postid);
       if (!post) {
         throw new Error("Post not found");
       }
 
       const updateData: any = { content };
       if (post.user?.id) {
-        updateData.userId = post.user.id;
+        updateData.userid = post.user.id;
       } else if (post.company?.id) {
-        updateData.companyId = post.company.id;
+        updateData.companyid = post.company.id;
       }
 
       await postApi.updateWithImages(
-        postId,
+        postid,
         updateData,
         newImages.length > 0 ? newImages : undefined,
         keepImageUrls,
@@ -62,11 +62,11 @@ export function useEditPost({ posts, token, onSuccess }: UseEditPostProps) {
     }
   };
 
-  const handleDeletePost = async (postId: number) => {
+  const handleDeletePost = async (postid: number) => {
     if (!token) return;
 
     try {
-      await postApi.delete(postId, token);
+      await postApi.delete(postid, token);
       
       if (onSuccess) {
         onSuccess();

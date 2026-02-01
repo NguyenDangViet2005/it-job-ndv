@@ -56,7 +56,7 @@ export const userApi = {
   // Cập nhật ảnh bìa
   updateCoverImage: async (id: number, file: File, token: string) => {
     const formData = new FormData();
-    formData.append("coverImage", file);
+    formData.append("coverimage", file);
 
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_BE_ENDPOINT}${ENDPOINT}/${id}/cover-image`,
@@ -142,17 +142,17 @@ export const userApi = {
   },
 
   // Thêm kỹ năng cho user
-  addSkill: (id: number, skillId: number, token: string) => {
+  addSkill: (id: number, skillid: number, token: string) => {
     return apiPost<{ message: string }>(
       `${ENDPOINT}/${id}/skills`,
-      { skillId },
+      { skillid },
       { token }
     );
   },
 
   // Xóa kỹ năng của user
-  removeSkill: (id: number, skillId: number, token: string) => {
-    return apiDelete<void>(`${ENDPOINT}/${id}/skills/${skillId}`, { token });
+  removeSkill: (id: number, skillid: number, token: string) => {
+    return apiDelete<void>(`${ENDPOINT}/${id}/skills/${skillid}`, { token });
   },
 
   // Xóa user (admin only - cascade delete)

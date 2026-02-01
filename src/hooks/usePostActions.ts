@@ -8,11 +8,11 @@ export function usePostActions() {
   const { user, token } = useAuth();
   const currentUserId = user?.id;
 
-  const handleSavePost = async (postId: number) => {
+  const handleSavePost = async (postid: number) => {
     try {
       setLoading(true);
       // TODO: Implement save post API
-      // await postApi.savePost(postId, currentUserId);
+      // await postApi.savePost(postid, currentUserId);
       toast?.success?.("Đã lưu bài viết");
     } catch (error) {
       toast?.error?.("Không thể lưu bài viết");
@@ -21,11 +21,11 @@ export function usePostActions() {
     }
   };
 
-  const handleReportPost = async (postId: number) => {
+  const handleReportPost = async (postid: number) => {
     try {
       setLoading(true);
       // TODO: Implement report post API
-      // await postApi.reportPost(postId, currentUserId);
+      // await postApi.reportPost(postid, currentUserId);
       toast?.success?.("Đã báo cáo bài viết");
     } catch (error) {
       toast?.error?.("Không thể báo cáo bài viết");
@@ -34,14 +34,14 @@ export function usePostActions() {
     }
   };
 
-  const handleEditPost = async (postId: number) => {
+  const handleEditPost = async (postid: number) => {
     try {
     } catch (error) {
       console.error("Error editing post:", error);
     }
   };
 
-  const handleDeletePost = async (postId: number) => {
+  const handleDeletePost = async (postid: number) => {
     try {
       setLoading(true);
       if (!token) {
@@ -49,7 +49,7 @@ export function usePostActions() {
         return;
       }
 
-      await postApi.delete(postId, token);
+      await postApi.delete(postid, token);
       toast?.success?.("Đã xóa bài viết");
 
       // Refresh posts list

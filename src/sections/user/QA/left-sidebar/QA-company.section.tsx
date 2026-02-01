@@ -15,12 +15,12 @@ import { ROUTES } from "@/configs";
 
 function BlogCompany({ companyPosts }: { companyPosts: any[] }) {
   // Lấy 2 bài mới nhất
-  // Assuming 'createdAt' exists on real data, else fallback to date or now
+  // Assuming 'createdat' exists on real data, else fallback to date or now
   const latestPosts = companyPosts
     .sort(
       (a, b) =>
-        new Date(b.createdAt || b.date).getTime() -
-        new Date(a.createdAt || a.date).getTime(),
+        new Date(b.createdat || b.date).getTime() -
+        new Date(a.createdat || a.date).getTime(),
     )
     .slice(0, 4);
 

@@ -20,16 +20,16 @@ import { applicationApi } from "@/apis/application.api";
 import { useAuth } from "@/hooks/useAuth";
 
 interface Application {
-  jobId: number;
-  userId: number;
-  cvUrl: string;
-  coverLetter: string;
+  jobid: number;
+  userid: number;
+  cvurl: string;
+  coverletter: string;
   status: string;
-  createdAt: string;
-  updatedAt: string;
+  createdat: string;
+  updatedat: string;
   jobTitle: string;
   companyName: string;
-  userFullName: string;
+  userfullname: string;
   userEmail: string;
 }
 
@@ -79,10 +79,10 @@ function CandidatesManagement() {
     if (!token || !company?.id) return;
     try {
       setLoading(true);
-      const companyId = company.id;
+      const companyid = company.id;
 
       const response = await applicationApi.getByCompany(
-        companyId,
+        companyid,
         1,
         50,
         token,
@@ -104,13 +104,13 @@ function CandidatesManagement() {
     if (!token) return;
     try {
       await applicationApi.accept(
-        row.jobId,
-        row.userId,
-        row.cvUrl,
-        row.coverLetter,
+        row.jobid,
+        row.userid,
+        row.cvurl,
+        row.coverletter,
         token,
       );
-      alert(`✅ Đã chấp nhận ứng viên ${row.userFullName}`);
+      alert(`✅ Đã chấp nhận ứng viên ${row.userfullname}`);
       await fetchApplications(); // Refresh data
     } catch (error) {
       alert("❌ Có lỗi xảy ra khi chấp nhận ứng viên");
@@ -121,13 +121,13 @@ function CandidatesManagement() {
     try {
       const token = "your-token-here"; // TODO: Get from auth context
       await applicationApi.reject(
-        row.jobId,
-        row.userId,
-        row.cvUrl,
-        row.coverLetter,
+        row.jobid,
+        row.userid,
+        row.cvurl,
+        row.coverletter,
         token,
       );
-      alert(`❌ Đã từ chối ứng viên ${row.userFullName}`);
+      alert(`❌ Đã từ chối ứng viên ${row.userfullname}`);
       await fetchApplications(); // Refresh data
     } catch (error) {
       alert("❌ Có lỗi xảy ra khi từ chối ứng viên");
@@ -136,12 +136,12 @@ function CandidatesManagement() {
 
   const handleDelete = async (row: Application) => {
     if (
-      confirm(`⚠️ Bạn có chắc muốn xóa đơn ứng tuyển của ${row.userFullName}?`)
+      confirm(`⚠️ Bạn có chắc muốn xóa đơn ứng tuyển của ${row.userfullname}?`)
     ) {
       try {
         const token = "your-token-here"; // TODO: Get from auth context
-        await applicationApi.delete(row.jobId, row.userId, token);
-        alert(`✅ Đã xóa đơn ứng tuyển của ${row.userFullName} thành công`);
+        await applicationApi.delete(row.jobid, row.userid, token);
+        alert(`✅ Đã xóa đơn ứng tuyển của ${row.userfullname} thành công`);
         await fetchApplications(); // Refresh data
       } catch (error) {
         alert("❌ Có lỗi xảy ra khi xóa đơn ứng tuyển");
@@ -154,7 +154,7 @@ function CandidatesManagement() {
     const recipient = encodeURIComponent(row.userEmail);
     const subject = encodeURIComponent(`Về đơn ứng tuyển ${row.jobTitle}`);
     const body = encodeURIComponent(
-      `Xin chào ${row.userFullName},\n\nChúng tôi đã xem xét đơn ứng tuyển của bạn cho vị trí ${row.jobTitle}.\n\n`,
+      `Xin chào ${row.userfullname},\n\nChúng tôi đã xem xét đơn ứng tuyển của bạn cho vị trí ${row.jobTitle}.\n\n`,
     );
 
     // Open Gmail compose in new tab
@@ -165,7 +165,7 @@ function CandidatesManagement() {
 
   const columns = [
     {
-      key: "userFullName" as keyof Application,
+      key: "userfullname" as keyof Application,
       header: "Ứng Viên",
       sortable: true,
       render: (value: string, row: Application) => (
@@ -201,7 +201,7 @@ function CandidatesManagement() {
       render: (value: string) => getStatusBadge(value),
     },
     {
-      key: "createdAt" as keyof Application,
+      key: "createdat" as keyof Application,
       header: "Ngày Nộp",
       sortable: true,
       render: (value: string) => (
@@ -215,7 +215,7 @@ function CandidatesManagement() {
       ),
     },
     {
-      key: "cvUrl" as keyof Application,
+      key: "cvurl" as keyof Application,
       header: "CV",
       sortable: false,
       render: (value: string) => (
@@ -250,7 +250,7 @@ function CandidatesManagement() {
                 <h3 className="font-semibold mb-2">Thông Tin Ứng Viên</h3>
                 <div className="space-y-2 text-sm">
                   <p>
-                    <strong>Họ tên:</strong> {row.userFullName}
+                    <strong>Họ tên:</strong> {row.userfullname}
                   </p>
                   <p>
                     <strong>Email:</strong> {row.userEmail}
@@ -263,13 +263,13 @@ function CandidatesManagement() {
               <div>
                 <h3 className="font-semibold mb-2">Thư Giới Thiệu</h3>
                 <p className="text-sm text-muted-foreground whitespace-pre-wrap">
-                  {row.coverLetter}
+                  {row.coverletter}
                 </p>
               </div>
               <div>
                 <h3 className="font-semibold mb-2">CV</h3>
                 <a
-                  href={row.cvUrl}
+                  href={row.cvurl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800"
@@ -318,7 +318,7 @@ function CandidatesManagement() {
       <DataTable
         data={applications}
         columns={columns}
-        searchKey="userFullName"
+        searchKey="userfullname"
         filterKey="status"
         filterOptions={filterOptions}
         onRowAction={(action, row) => {

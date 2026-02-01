@@ -8,5 +8,5 @@ type Props = {
 
 export default async function Page({ params }: Props) {
   const { id } = await params;
-  return <JobDetailPage jobId={id} />;
+  return <JobDetailPage jobid={id} />;
 }

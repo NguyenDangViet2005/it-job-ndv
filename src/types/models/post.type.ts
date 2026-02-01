@@ -6,10 +6,10 @@ import type { PostCompany } from "./company.type";
 export interface Post {
   id: number;
   content: string;
-  userId?: number;
-  companyId?: number;
-  createdAt: string;
-  updatedAt: string;
+  userid?: number;
+  companyid?: number;
+  createdat: string;
+  updatedat: string;
   user?: PostUser;
   company?: PostCompany;
   attachments: Attachment[];
@@ -19,7 +19,7 @@ export interface Post {
 export interface PostInteraction {
   totalLikes: number;
   totalComments: number;
-  isLikedByCurrentUser?: boolean;
+  islikedByCurrentUser?: boolean;
   comments?: Comment[];
 }
 
@@ -27,20 +27,20 @@ export interface Comment {
   id: number;
   user: PostUser;
   content: string;
-  isLiked: boolean;
-  createdAt: string;
+  isliked: boolean;
+  createdat: string;
   attachments: Attachment[];
 }
 
 export interface Attachment {
   id: number;
-  fileUrl: string;
-  fileType: "image" | "video" | "audio" | "file";
+  fileurl: string;
+  filetype: "image" | "video" | "audio" | "file";
 }
 
 export interface Like {
-  postId: number;
-  userId: number;
-  isLiked: boolean;
+  postid: number;
+  userid: number;
+  isliked: boolean;
   totalLikes: number;
 }

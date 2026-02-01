@@ -20,7 +20,7 @@ interface JobData {
   status: string;
   quantity: number;
   deadline: string;
-  createdAt: string;
+  createdat: string;
   company: {
     id: number;
     name: string;
@@ -51,7 +51,7 @@ const JobsManagement = () => {
 
   // Edit form
   const [editForm, setEditForm] = useState({
-    companyId: 0,
+    companyid: 0,
     title: "",
     description: "",
     type: "",
@@ -223,9 +223,9 @@ const JobsManagement = () => {
     { key: "delete", label: "Gỡ Bỏ", className: "text-destructive" },
   ];
 
-  const handleViewJob = async (jobId: number) => {
+  const handleViewJob = async (jobid: number) => {
     try {
-      const response = await jobApi.getById(jobId);
+      const response = await jobApi.getById(jobid);
       setSelectedJob(response as any);
       setModalMode("view");
       setModalOpen(true);
@@ -241,7 +241,7 @@ const JobsManagement = () => {
 
       setSelectedJob(jobDetail);
       setEditForm({
-        companyId: jobDetail.company.id,
+        companyid: jobDetail.company.id,
         title: jobDetail.title,
         description: jobDetail.description,
         type: jobDetail.type,
@@ -353,7 +353,7 @@ const JobsManagement = () => {
         open={createModalOpen}
         onOpenChange={setCreateModalOpen}
         onSubmit={handleCreateJob}
-        companyId={user?.id || 0}
+        companyid={user?.id || 0}
       />
 
       {/* Job Detail Modal */}

@@ -94,8 +94,8 @@ export default function MyBlogsPage() {
       title: string;
       excerpt: string;
       content: string;
-      categoryId: number;
-      readTime: string;
+      categoryid: number;
+      readtime: string;
       image?: string | File;
     },
     imageFile?: File,
@@ -108,7 +108,7 @@ export default function MyBlogsPage() {
       toast.error("Vui lòng điền đầy đủ thông tin bắt buộc");
       return;
     }
-    if (!formData.categoryId || formData.categoryId === 0) {
+    if (!formData.categoryid || formData.categoryid === 0) {
       toast.error("Vui lòng chọn danh mục");
       return;
     }
@@ -121,19 +121,19 @@ export default function MyBlogsPage() {
 
       if (createMode) {
         // Create mode: gửi đầy đủ fields
-        data.append("userId", user.id.toString());
-        data.append("categoryId", formData.categoryId.toString());
+        data.append("userid", user.id.toString());
+        data.append("categoryid", formData.categoryid.toString());
         data.append("title", formData.title);
         data.append("excerpt", formData.excerpt);
         data.append("content", formData.content);
-        data.append("readTime", formData.readTime || "5 phút đọc");
+        data.append("readtime", formData.readtime || "5 phút đọc");
       } else {
         // Update mode: chỉ gửi các fields có trong BlogUpdateRequest
-        data.append("categoryId", formData.categoryId.toString());
+        data.append("categoryid", formData.categoryid.toString());
         data.append("title", formData.title);
         data.append("excerpt", formData.excerpt);
         data.append("content", formData.content);
-        data.append("readTime", formData.readTime || "5 phút đọc");
+        data.append("readtime", formData.readtime || "5 phút đọc");
       }
 
       if (imageFile) {
@@ -236,7 +236,7 @@ export default function MyBlogsPage() {
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
                       <span className="flex items-center gap-1">
                         <Calendar className="h-4 w-4" />
-                        {new Date(blog.createdAt).toLocaleDateString("vi-VN")}
+                        {new Date(blog.createdat).toLocaleDateString("vi-VN")}
                       </span>
                     </div>
                   </div>

@@ -34,7 +34,7 @@ import { FileText, Upload, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 interface ApplicationFormProps {
-  jobId: number;
+  jobid: number;
   jobTitle: string;
   companyName: string;
   onClose?: () => void;
@@ -42,7 +42,7 @@ interface ApplicationFormProps {
 }
 
 export default function ApplicationForm({
-  jobId,
+  jobid,
   jobTitle,
   companyName,
   onClose,
@@ -57,7 +57,7 @@ export default function ApplicationForm({
   const form = useForm<ApplicationFormData>({
     resolver: zodResolver(applicationFormSchema),
     defaultValues: {
-      coverLetter: "",
+      coverletter: "",
     },
   });
 
@@ -99,9 +99,9 @@ export default function ApplicationForm({
     }
 
     // Sử dụng CV URL đã upload
-    const cvUrl = (user as any).cvUrl || "";
+    const cvurl = (user as any).cvurl || "";
 
-    if (!cvUrl) {
+    if (!cvurl) {
       toast.error("Vui lòng tải CV lên trước khi ứng tuyển");
       return;
     }
@@ -111,10 +111,10 @@ export default function ApplicationForm({
     try {
       const response = await applicationApi.create(
         {
-          jobId,
-          userId: user.id,
-          cvUrl: cvUrl,
-          coverLetter: values.coverLetter,
+          jobid,
+          userid: user.id,
+          cvurl: cvurl,
+          coverletter: values.coverletter,
         },
         token
       );
@@ -148,7 +148,7 @@ export default function ApplicationForm({
           <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
             CV của bạn *
           </label>
-          {!(user as any)?.cvUrl ? (
+          {!(user as any)?.cvurl ? (
             <div className="border-2 border-dashed rounded-lg p-6 text-center">
               <FileText className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
               <p className="text-sm text-muted-foreground mb-3">
@@ -190,7 +190,7 @@ export default function ApplicationForm({
                   type="button"
                   variant="outline"
                   size="sm"
-                  onClick={() => window.open((user as any).cvUrl, "_blank")}
+                  onClick={() => window.open((user as any).cvurl, "_blank")}
                   className="hover:bg-primary/10 hover:text-primary"
                 >
                   Xem CV
@@ -228,7 +228,7 @@ export default function ApplicationForm({
         {/* Cover Letter */}
         <FormField
           control={form.control}
-          name="coverLetter"
+          name="coverletter"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Thư xin việc *</FormLabel>

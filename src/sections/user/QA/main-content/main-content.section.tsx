@@ -24,7 +24,7 @@ function MainContent({
   const { user, token, isAuthenticated } = useAuth();
 
   const createPostHook = useCreatePost({
-    userId: user?.id,
+    userid: user?.id,
     token,
     isAuthenticated,
   });
@@ -34,12 +34,12 @@ function MainContent({
     token,
   });
 
-  const handleDeletePostWithAuth = (postId: number) => {
+  const handleDeletePostWithAuth = (postid: number) => {
     if (!isAuthenticated) {
       toast.error("Vui lòng đăng nhập để thực hiện thao tác này");
       return;
     }
-    editPostHook.handleDeletePost(postId);
+    editPostHook.handleDeletePost(postid);
   };
 
   return (
@@ -53,7 +53,7 @@ function MainContent({
           isCreatingPost={createPostHook.isCreatingPost}
           isAuthenticated={isAuthenticated}
           currentUserAvatar={currentUserAvatar || user?.avatar}
-          currentUserName={currentUserName || user?.fullName}
+          currentUserName={currentUserName || user?.fullname}
           imageInputRef={createPostHook.imageInputRef}
           videoInputRef={createPostHook.videoInputRef}
           onImageSelect={createPostHook.handleImageSelect}
@@ -67,7 +67,7 @@ function MainContent({
           posts={posts}
           loading={loading}
           currentUserAvatar={currentUserAvatar || user?.avatar}
-          currentUserName={currentUserName || user?.fullName}
+          currentUserName={currentUserName || user?.fullname}
           currentUserId={currentUserId || user?.id}
           onLikePost={onLikePost}
           onToggleComments={onToggleComments}

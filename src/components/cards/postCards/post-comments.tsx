@@ -113,7 +113,7 @@ const PostComments = forwardRef<PostCommentsRef, PostCommentsProps>(
             editingContent,
             editingAttachments.length > 0 ? editingAttachments : undefined,
             keepExistingAttachments.length > 0
-              ? keepExistingAttachments.map((a) => a.fileUrl)
+              ? keepExistingAttachments.map((a) => a.fileurl)
               : undefined,
           );
           setEditingCommentId(null);
@@ -189,7 +189,7 @@ const PostComments = forwardRef<PostCommentsRef, PostCommentsProps>(
       attachmentToRemove: AttachmentResponse,
     ) => {
       setKeepExistingAttachments((prev) =>
-        prev.filter((att) => att.fileUrl !== attachmentToRemove.fileUrl),
+        prev.filter((att) => att.fileurl !== attachmentToRemove.fileurl),
       );
     };
 
@@ -221,8 +221,8 @@ const PostComments = forwardRef<PostCommentsRef, PostCommentsProps>(
         <div className="space-y-3 max-h-96 overflow-y-auto">
           {(showComments ? comments : getTopComments(3)).map(
             (comment: any, idx: number) => {
-              const commentTime = comment.createdAt
-                ? new Date(comment.createdAt).toLocaleDateString("vi-VN")
+              const commentTime = comment.createdat
+                ? new Date(comment.createdat).toLocaleDateString("vi-VN")
                 : comment.timestamp || "Vừa xong";
               
               // Get user info from comment
@@ -235,7 +235,7 @@ const PostComments = forwardRef<PostCommentsRef, PostCommentsProps>(
               const userCompanyMember = commentUser?.CompanyMembers?.[0];
               const hasCompany = !!userCompanyMember?.Company;
               const companyName = userCompanyMember?.Company?.name;
-              const companyId = userCompanyMember?.Company?.id;
+              const companyid = userCompanyMember?.Company?.id;
               
               return (
                 <div
@@ -271,7 +271,7 @@ const PostComments = forwardRef<PostCommentsRef, PostCommentsProps>(
                               {keepExistingAttachments.map((att, idx) => (
                                 <div key={idx} className="relative group">
                                   <img
-                                    src={att.fileUrl}
+                                    src={att.fileurl}
                                     alt={`Attachment ${idx + 1}`}
                                     className="w-16 h-16 object-cover rounded-lg"
                                   />
@@ -361,11 +361,11 @@ const PostComments = forwardRef<PostCommentsRef, PostCommentsProps>(
                               {commentUserName}
                             </p>
                           </Link>
-                          {hasCompany && companyId && (
+                          {hasCompany && companyid && (
                             <p className="text-xs text-muted-foreground">
                               Làm việc tại{" "}
                               <Link 
-                                href={`/companies/${companyId}`}
+                                href={`/companies/${companyid}`}
                                 className="hover:text-primary hover:underline transition-colors"
                               >
                                 {companyName}
@@ -380,12 +380,12 @@ const PostComments = forwardRef<PostCommentsRef, PostCommentsProps>(
                                 (att: AttachmentResponse, idx: number) => (
                                   <img
                                     key={idx}
-                                    src={att.fileUrl}
+                                    src={att.fileurl}
                                     alt={`Comment attachment ${idx + 1}`}
                                     className="w-20 h-20 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity"
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      window.open(att.fileUrl, "_blank");
+                                      window.open(att.fileurl, "_blank");
                                     }}
                                   />
                                 ),

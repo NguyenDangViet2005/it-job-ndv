@@ -1,6 +1,6 @@
 // Form Types
 export interface RegisterFormData {
-  fullName: string;
+  fullname: string;
   email: string;
   phone: string;
   password: string;

@@ -25,7 +25,7 @@ interface CreateJobFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: (data: CreateJobData) => Promise<void>;
-  companyId: number;
+  companyid: number;
 }
 
 export interface CreateJobData {
@@ -41,7 +41,7 @@ export function CreateJobForm({
   open,
   onOpenChange,
   onSubmit,
-  companyId,
+  companyid,
 }: CreateJobFormProps) {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<CreateJobData>({

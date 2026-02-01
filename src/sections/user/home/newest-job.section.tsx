@@ -12,8 +12,6 @@ import Link from "next/link";
 import { formatDate } from "@/utils";
 import { useAuth } from "@/hooks/useAuth";
 
-
-
 export default function NewestJob() {
   const [jobs, setJobs] = useState<JobResponse[]>([]);
   const [loading, setLoading] = useState(true);
@@ -40,14 +38,13 @@ export default function NewestJob() {
     }
   }
 
-
   if (loading) {
     return (
       <div>
-        <SectionTitle 
-          title="Công Việc Mới Nhất" 
+        <SectionTitle
+          title="Công Việc Mới Nhất"
           subtitle="Cơ hội việc làm vừa được đăng tuyển"
-          showViewAll 
+          showViewAll
           viewAllLink="/jobs"
         />
         <div className="flex items-center justify-center h-64">
@@ -60,10 +57,10 @@ export default function NewestJob() {
   if (error) {
     return (
       <div>
-        <SectionTitle 
-          title="Công Việc Mới Nhất" 
+        <SectionTitle
+          title="Công Việc Mới Nhất"
           subtitle="Cơ hội việc làm vừa được đăng tuyển"
-          showViewAll 
+          showViewAll
           viewAllLink="/jobs"
         />
         <div className="flex items-center justify-center h-64">
@@ -76,10 +73,10 @@ export default function NewestJob() {
   if (jobs.length === 0) {
     return (
       <div>
-        <SectionTitle 
-          title="Công Việc Mới Nhất" 
+        <SectionTitle
+          title="Công Việc Mới Nhất"
           subtitle="Cơ hội việc làm vừa được đăng tuyển"
-          showViewAll 
+          showViewAll
           viewAllLink="/jobs"
         />
         <div className="flex items-center justify-center h-64">
@@ -91,10 +88,10 @@ export default function NewestJob() {
 
   return (
     <div>
-      <SectionTitle 
-        title="Công Việc Mới Nhất" 
+      <SectionTitle
+        title="Công Việc Mới Nhất"
         subtitle="Cơ hội việc làm vừa được đăng tuyển"
-        showViewAll 
+        showViewAll
         viewAllLink="/jobs"
       />
 
@@ -110,7 +107,7 @@ export default function NewestJob() {
               <div className="flex gap-3 items-start">
                 <div className="flex-shrink-0">
                   <img
-                    src={job.company?.avatar || "/logo-company.jpg"}
+                    src={job.company?.avatar}
                     alt={job.company?.name || "Company"}
                     className="w-14 h-14 object-contain rounded-lg border p-1"
                   />
@@ -136,15 +133,20 @@ export default function NewestJob() {
               <div className="flex flex-wrap gap-2 text-xs">
                 {(job.company?.city || job.company?.address) && (
                   <span className="px-2 py-1 bg-blue-50 text-blue-700 rounded-md border border-blue-200">
-                     {job.company?.city || job.company?.address}
+                    {job.company?.city || job.company?.address}
                   </span>
                 )}
                 {job.type && (
                   <span className="px-2 py-1 bg-green-50 text-green-700 rounded-md border border-green-200">
-                     {job.type === 'full-time' ? 'Toàn thời gian' : 
-                        job.type === 'part-time' ? 'Bán thời gian' : 
-                        job.type === 'contract' ? 'Hợp đồng' : 
-                        job.type === 'internship' ? 'Thực tập' : job.type}
+                    {job.type === "full-time"
+                      ? "Toàn thời gian"
+                      : job.type === "part-time"
+                        ? "Bán thời gian"
+                        : job.type === "contract"
+                          ? "Hợp đồng"
+                          : job.type === "internship"
+                            ? "Thực tập"
+                            : job.type}
                   </span>
                 )}
               </div>
@@ -154,12 +156,16 @@ export default function NewestJob() {
                 <div className="flex items-center gap-3">
                   {job.quantity && (
                     <span className="flex items-center gap-1">
-                      <span className="font-semibold text-foreground">{job.quantity}</span> vị trí
+                      <span className="font-semibold text-foreground">
+                        {job.quantity}
+                      </span>{" "}
+                      vị trí
                     </span>
                   )}
                   {job.deadline && (
                     <span className="flex items-center gap-1">
-                       Hạn: <span className="font-medium text-foreground">
+                      Hạn:{" "}
+                      <span className="font-medium text-foreground">
                         {formatDate(job.deadline)}
                       </span>
                     </span>
@@ -167,9 +173,12 @@ export default function NewestJob() {
                 </div>
                 {job.salary && (
                   <div className="flex items-center gap-1 text-primary font-medium">
-                    <span>{user ? "Xem chi tiết lương" : "Đăng nhập để xem chi tiết lương"} 
+                    <span>
+                      {user
+                        ? "Xem chi tiết lương"
+                        : "Đăng nhập để xem chi tiết lương"}
                     </span>
-                    <MoveRight className="w-4 h-4"/>
+                    <MoveRight className="w-4 h-4" />
                   </div>
                 )}
               </div>
@@ -196,18 +205,24 @@ export default function NewestJob() {
               {/* Status Badge */}
               {job.status && (
                 <div className="flex items-center justify-between pt-2 border-t">
-                  <span className={`text-xs px-2.5 py-1 rounded-md font-medium ${
-                    job.status === 'open' ? 'bg-green-100 text-green-700' :
-                    job.status === 'closed' ? 'bg-red-100 text-red-700' :
-                    'bg-yellow-100 text-yellow-700'
-                  }`}>
-                    {job.status === 'open' ? 'Đang tuyển' :
-                     job.status === 'closed' ? 'Đã đóng' :
-                     '🟡 ' + job.status}
+                  <span
+                    className={`text-xs px-2.5 py-1 rounded-md font-medium ${
+                      job.status === "open"
+                        ? "bg-green-100 text-green-700"
+                        : job.status === "closed"
+                          ? "bg-red-100 text-red-700"
+                          : "bg-yellow-100 text-yellow-700"
+                    }`}
+                  >
+                    {job.status === "open"
+                      ? "Đang tuyển"
+                      : job.status === "closed"
+                        ? "Đã đóng"
+                        : "🟡 " + job.status}
                   </span>
-                  {job.createdAt && (
+                  {job.createdat && (
                     <span className="text-xs text-muted-foreground">
-                      {formatDate(job.createdAt)}
+                      {formatDate(job.createdat)}
                     </span>
                   )}
                 </div>
@@ -219,8 +234,8 @@ export default function NewestJob() {
 
       {/* Pagination Controls */}
       <div className="flex items-center justify-center gap-4 mt-6">
-        <button 
-          onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+        <button
+          onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
           disabled={currentPage === 1}
           className="bg-card shadow p-2 rounded-full hover:scale-105 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition"
           aria-label="Previous page"
@@ -234,8 +249,10 @@ export default function NewestJob() {
           </span>
         </div>
 
-        <button 
-          onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+        <button
+          onClick={() =>
+            setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+          }
           disabled={currentPage === totalPages}
           className="bg-card shadow p-2 rounded-full hover:scale-105 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition"
           aria-label="Next page"

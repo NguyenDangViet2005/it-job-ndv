@@ -2,19 +2,19 @@
 
 export interface Blog {
   id: number;
-  userId: number;
-  categoryId: number;
+  userid: number;
+  categoryid: number;
   title: string;
   excerpt?: string;
   content: string;
-  readTime?: string;
+  readtime?: string;
   image?: string;
   avatar?: string;
   category?: string;
   author?: string;
   views?: number;
-  createdAt: string;
-  updatedAt: string;
+  createdat: string;
+  updatedat: string;
 }
 
 export interface BlogCategory {

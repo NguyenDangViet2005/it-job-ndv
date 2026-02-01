@@ -41,17 +41,17 @@ export default function FormRegister() {
       phone: "",
       password: "",
       gender: "",
-      dateOfBirth: "",
+      dateofbirth: "",
     },
   });
 
   const onSubmit = async (values: RegisterFormData) => {
     setIsLoading(true);
 
-    // Filter out empty string values for dateOfBirth
+    // Filter out empty string values for dateofbirth
     const payload = {
       ...values,
-      dateOfBirth: values.dateOfBirth === "" ? undefined : values.dateOfBirth,
+      dateofbirth: values.dateofbirth === "" ? undefined : values.dateofbirth,
       gender: values.gender === "" ? undefined : values.gender,
     };
 

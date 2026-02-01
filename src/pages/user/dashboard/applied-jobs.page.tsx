@@ -105,13 +105,13 @@ export default function AppliedJobsPage() {
         ) : (
           <div className="space-y-4">
             {applications.map((app) => (
-              <Card key={app.id || `${app.jobId}-${app.userId}`}>
+              <Card key={app.id || `${app.jobid}-${app.userid}`}>
                 <CardContent className="pt-6">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex gap-4 flex-1">
                       <div className="h-16 w-16 rounded-xl border-2 border-border bg-white dark:bg-muted p-2 flex items-center justify-center flex-shrink-0 shadow-sm hover:shadow-md transition-shadow">
                         <Image
-                          src={app.companyLogo || "/logo-company.jpg"}
+                          src={app.companyLogo}
                           alt={app.companyName || "Company"}
                           width={64}
                           height={64}
@@ -130,7 +130,7 @@ export default function AppliedJobsPage() {
                             <Clock className="h-4 w-4 flex-shrink-0" />
                             <span>
                               Ứng tuyển:{" "}
-                              {new Date(app.createdAt).toLocaleDateString(
+                              {new Date(app.createdat).toLocaleDateString(
                                 "vi-VN",
                               )}
                             </span>
@@ -138,7 +138,7 @@ export default function AppliedJobsPage() {
                           <div className="flex items-center gap-1">
                             <FileText className="h-4 w-4 flex-shrink-0" />
                             <a
-                              href={app.cvUrl}
+                              href={app.cvurl}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="text-blue-600 hover:underline flex items-center gap-1"
@@ -164,7 +164,7 @@ export default function AppliedJobsPage() {
                   <div className="mt-4 p-3 bg-muted/50 rounded-lg">
                     <p className="text-sm font-semibold mb-1">Thư xin việc:</p>
                     <p className="text-sm text-muted-foreground whitespace-pre-wrap line-clamp-3">
-                      {app.coverLetter}
+                      {app.coverletter}
                     </p>
                   </div>
 
@@ -172,7 +172,7 @@ export default function AppliedJobsPage() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => router.push(`/jobs/${app.jobId}`)}
+                      onClick={() => router.push(`/jobs/${app.jobid}`)}
                     >
                       Xem công việc
                     </Button>

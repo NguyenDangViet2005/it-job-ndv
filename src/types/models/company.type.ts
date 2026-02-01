@@ -4,23 +4,23 @@ export interface Company {
   id: number;
   name: string;
   avatar?: string;
-  coverImage?: string;
+  coverimage?: string;
   nationality?: string;
   website?: string;
   description?: string;
-  foundedYear?: number;
+  foundedyear?: number;
   address?: string;
   hotline?: string;
-  companyEmail?: string;
+  companyemail?: string;
   city?: string;
   country?: string;
   phone?: string;
-  wardId?: number;
+  wardid?: number;
   wardName?: string;
   provinceName?: string;
-  createdByUserId?: number;
-  createdAt?: string;
-  updatedAt?: string;
+  createdbyuserid?: number;
+  createdat?: string;
+  updatedat?: string;
   follows?: CompanyFollow[];
   members?: any[];
   membersCount?: number;
@@ -30,33 +30,33 @@ export interface Company {
 }
 
 export interface CompanyFollow {
-  userId: number;
-  companyId: number;
-  createdAt: string;
-  updatedAt: string;
+  userid: number;
+  companyid: number;
+  createdat: string;
+  updatedat: string;
 }
 
 export interface CompanyJob {
   id: number;
-  companyId: number;
+  companyid: number;
   title: string;
   description: string;
   type: string;
   quantity: number;
   deadline: string;
   status: string;
-  createdAt: string;
-  updatedAt: string;
+  createdat: string;
+  updatedat: string;
 }
 
 export interface CompanyReview {
   id: number;
-  userId: number;
-  companyId: number;
+  userid: number;
+  companyid: number;
   rating: number;
   comment: string;
-  createdAt: string;
-  updatedAt: string;
+  createdat: string;
+  updatedat: string;
 }
 
 export interface PostCompany {
@@ -65,7 +65,7 @@ export interface PostCompany {
   avatar?: string;
   address?: string;
   hotline?: string;
-  companyEmail?: string;
+  companyemail?: string;
 }
 
 export interface CompanyLogo {

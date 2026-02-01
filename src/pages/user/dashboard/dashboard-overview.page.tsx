@@ -80,7 +80,7 @@ export default function DashboardOverviewPage() {
       {/* Welcome Header */}
       <div>
         <h1 className="text-3xl font-bold">
-          Chào mừng trở lại, {user?.fullName}!
+          Chào mừng trở lại, {user?.fullname}!
         </h1>
         <p className="text-muted-foreground mt-2">
           Đây là tổng quan về hoạt động tìm việc của bạn

@@ -165,7 +165,7 @@ const WelcomePage = () => {
               {user ? (
                 <div className="flex-1 flex items-center justify-center">
                   <span className="text-lg font-semibold text-gray-900 dark:text-white">
-                    Xin chào, {user.fullName}
+                    Xin chào, {user.fullname}
                   </span>
                 </div>
               ) : (

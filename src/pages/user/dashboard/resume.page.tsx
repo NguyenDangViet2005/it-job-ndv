@@ -95,12 +95,12 @@ export default function ResumePage() {
   };
 
   // Handle add skill
-  const handleAddSkill = async (skillId: number) => {
+  const handleAddSkill = async (skillid: number) => {
     if (!user?.id || !token) return;
 
     try {
       setAddingSkill(true);
-      await userApi.addSkill(user.id, skillId, token);
+      await userApi.addSkill(user.id, skillid, token);
       await loadUserSkills();
       setDialogOpen(false);
       setSearchQuery("");
@@ -113,11 +113,11 @@ export default function ResumePage() {
   };
 
   // Handle remove skill
-  const handleRemoveSkill = async (skillId: number) => {
+  const handleRemoveSkill = async (skillid: number) => {
     if (!user?.id || !token) return;
 
     try {
-      await userApi.removeSkill(user.id, skillId, token);
+      await userApi.removeSkill(user.id, skillid, token);
       await loadUserSkills();
       toast.success("Xóa kỹ năng thành công!");
     } catch (error) {
@@ -154,7 +154,7 @@ export default function ResumePage() {
         skill.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
         !Array.isArray(userSkills)
           ? true
-          : !userSkills.some((us) => us.id === skill.id)
+          : !userSkills.some((us) => us.id === skill.id),
       )
     : [];
 
@@ -189,7 +189,7 @@ export default function ResumePage() {
                 <label className="text-sm font-medium text-foreground">
                   Họ và tên
                 </label>
-                <p className="text-muted-foreground">{user.fullName}</p>
+                <p className="text-muted-foreground">{user.fullname}</p>
               </div>
               <div>
                 <label className="text-sm font-medium text-foreground">
@@ -306,7 +306,7 @@ export default function ResumePage() {
             <CardTitle className="text-foreground">CV đã tải lên</CardTitle>
           </CardHeader>
           <CardContent>
-            {(user as any).cvUrl ? (
+            {(user as any).cvurl ? (
               <div className="space-y-4">
                 <div className="flex items-center justify-between p-4 border rounded-lg bg-primary/5">
                   <div className="flex items-center gap-3">
@@ -322,7 +322,7 @@ export default function ResumePage() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => window.open((user as any).cvUrl, "_blank")}
+                      onClick={() => window.open((user as any).cvurl, "_blank")}
                       className="hover:bg-primary/10 hover:text-primary"
                     >
                       Xem CV

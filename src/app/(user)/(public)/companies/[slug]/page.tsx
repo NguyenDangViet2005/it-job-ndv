@@ -10,14 +10,14 @@ interface PageProps {
 
 export default async function Page({ params }: PageProps) {
   const { slug } = await params;
-  const companyId = parseInt(slug);
+  const companyid = parseInt(slug);
   
-  if (isNaN(companyId)) {
+  if (isNaN(companyid)) {
     notFound();
   }
 
   try {
-    const company = await companyApi.getById(companyId);
+    const company = await companyApi.getById(companyid);
     
     if (!company) {
       notFound();

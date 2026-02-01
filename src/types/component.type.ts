@@ -6,17 +6,17 @@ import type { UserResponse } from "./api.type";
 export interface MainContentProps {
   posts: FullPostResponse[];
   loading: boolean;
-  onLikePost: (postId: number) => void;
-  onToggleComments: (postId: number) => void;
-  onAddComment: (postId: number, content: string, attachments?: File[]) => void;
+  onLikePost: (postid: number) => void;
+  onToggleComments: (postid: number) => void;
+  onAddComment: (postid: number, content: string, attachments?: File[]) => void;
   onEditComment?: (
-    postId: number,
+    postid: number,
     commentId: number,
     content: string,
     attachments?: File[],
   ) => void;
-  onDeleteComment?: (postId: number, commentId: number) => void;
-  onLoadMoreComments?: (postId: number) => Promise<void>;
+  onDeleteComment?: (postid: number, commentId: number) => void;
+  onLoadMoreComments?: (postid: number) => Promise<void>;
   loadingCommentsForPost?: number | null;
   currentUserAvatar?: string;
   currentUserName?: string;
@@ -29,39 +29,39 @@ export interface PostListProps {
   currentUserAvatar?: string;
   currentUserName?: string;
   currentUserId?: number;
-  onLikePost: (postId: number) => void;
-  onToggleComments: (postId: number) => void;
-  onAddComment: (postId: number, content: string, attachments?: File[]) => void;
+  onLikePost: (postid: number) => void;
+  onToggleComments: (postid: number) => void;
+  onAddComment: (postid: number, content: string, attachments?: File[]) => void;
   onEditComment?: (
-    postId: number,
+    postid: number,
     commentId: number,
     content: string,
     attachments?: File[],
   ) => void;
-  onDeleteComment?: (postId: number, commentId: number) => void;
-  onLoadMoreComments?: (postId: number) => Promise<void>;
+  onDeleteComment?: (postid: number, commentId: number) => void;
+  onLoadMoreComments?: (postid: number) => Promise<void>;
   loadingCommentsForPost?: number | null;
-  onEditPost: (postId: number) => void;
-  onDeletePost: (postId: number) => void;
+  onEditPost: (postid: number) => void;
+  onDeletePost: (postid: number) => void;
 }
 
 // ============ Job Components ============
 export interface JobListSectionProps {
   jobs: JobResponse[];
   loading: boolean;
-  onJobClick: (jobId: number) => void;
+  onJobClick: (jobid: number) => void;
 }
 
 export interface JobFilterToolbarProps {
   skills: Array<{ id: number; name: string }>;
   selectedSkill: number | null;
-  onSkillChange: (skillId: number | null) => void;
+  onSkillChange: (skillid: number | null) => void;
 }
 
 export interface JobFilterSidebarProps {
   skills: Array<{ id: number; name: string }>;
   selectedSkill: number | null;
-  onSkillChange: (skillId: number | null) => void;
+  onSkillChange: (skillid: number | null) => void;
   onClose: () => void;
 }
 
@@ -93,7 +93,7 @@ export interface JobBenefitsProps {
 
 export interface CompanyListSectionProps {
   selectedCompanyId: number | null;
-  onCompanyChange: (companyId: number | null) => void;
+  onCompanyChange: (companyid: number | null) => void;
 }
 
 export interface JobHeaderProps {
@@ -108,7 +108,7 @@ export interface JobHeaderProps {
 }
 
 export interface CompanyInfoProps {
-  jobId?: number;
+  jobid?: number;
   jobTitle?: string;
   company?: Company;
 }

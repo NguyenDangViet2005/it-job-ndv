@@ -22,11 +22,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         setLoading(true);
         // On init, no current token exists yet - backend will generate new one
-        const response = await authApi.refreshToken();
+        const response = await authApi.refreshtoken();
 
         if (response.success && response.data) {
-          const { accessToken, user: userData } = response.data;
-          handleSetAuth(userData, accessToken);
+          const { accesstoken, user: userData } = response.data;
+          handleSetAuth(userData, accesstoken);
         }
       } catch (error) {
       } finally {
@@ -38,14 +38,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   // Internal helper to set state and fetch extra data if needed
-  const handleSetAuth = async (userData: UserResponse, accessToken: string) => {
+  const handleSetAuth = async (userData: UserResponse, accesstoken: string) => {
     setUser(userData);
-    setToken(accessToken);
+    setToken(accesstoken);
 
     // Fetch company info if user is HR/Employer
     if (userData.role === "employer") {
       try {
-        const companyData = await companyApi.getMyCompany(accessToken);
+        const companyData = await companyApi.getMyCompany(accesstoken);
         if (companyData) {
           setCompany(companyData as CompanyResponse);
         }
@@ -59,8 +59,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // PUBLIC ACTIONS (State Updates Only)
   // ============================================
 
-  const setAuth = (userData: UserResponse, accessToken: string) => {
-    handleSetAuth(userData, accessToken);
+  const setAuth = (userData: UserResponse, accesstoken: string) => {
+    handleSetAuth(userData, accesstoken);
   };
 
   const handleSetCompany = (companyData: CompanyResponse) => {

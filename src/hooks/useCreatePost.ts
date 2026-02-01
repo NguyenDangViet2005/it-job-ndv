@@ -3,14 +3,14 @@ import { toast } from "sonner";
 import { postApi } from "@/apis/post.api";
 
 interface UseCreatePostProps {
-  userId?: number;
+  userid?: number;
   token: string | null;
   isAuthenticated: boolean;
   onSuccess?: () => void;
 }
 
 export function useCreatePost({
-  userId,
+  userid,
   token,
   isAuthenticated,
   onSuccess,
@@ -55,12 +55,12 @@ export function useCreatePost({
       return;
     }
 
-    if (!userId || !token) return;
+    if (!userid || !token) return;
 
     setIsCreatingPost(true);
     try {
       await postApi.create(
-        { content: newPost, userId },
+        { content: newPost, userid },
         selectedImages.length > 0 ? selectedImages : undefined,
         selectedVideo || undefined,
         token,

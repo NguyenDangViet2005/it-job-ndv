@@ -61,7 +61,7 @@ const HRCompanyInfo = () => {
     nationality: "",
     website: "",
     description: "",
-    foundedYear: "",
+    foundedyear: "",
     address: "",
   });
 
@@ -80,7 +80,7 @@ const HRCompanyInfo = () => {
         nationality: company.nationality || "",
         website: company.website || "",
         description: company.description || "",
-        foundedYear: company.foundedYear?.toString() || "",
+        foundedyear: company.foundedyear?.toString() || "",
         address: company.address || "",
       });
     } catch (error) {
@@ -109,8 +109,8 @@ const HRCompanyInfo = () => {
         nationality: formData.nationality || undefined,
         website: formData.website || undefined,
         description: formData.description || undefined,
-        foundedYear: formData.foundedYear
-          ? parseInt(formData.foundedYear)
+        foundedyear: formData.foundedyear
+          ? parseInt(formData.foundedyear)
           : undefined,
         address: formData.address || undefined,
       };
@@ -213,7 +213,7 @@ const HRCompanyInfo = () => {
       const result = await companyApi.uploadCover(file, token || undefined);
 
       setCompanyData((prev: Company | null) =>
-        prev ? { ...prev, coverImage: result.coverImageUrl } : prev,
+        prev ? { ...prev, coverimage: result.coverimageUrl } : prev,
       );
       toast.success("Upload ảnh bìa thành công!");
     } catch (error) {
@@ -236,7 +236,7 @@ const HRCompanyInfo = () => {
         nationality: companyData.nationality || "",
         website: companyData.website || "",
         description: companyData.description || "",
-        foundedYear: companyData.foundedYear?.toString() || "",
+        foundedyear: companyData.foundedyear?.toString() || "",
         address: companyData.address || "",
       });
     }
@@ -343,9 +343,9 @@ const HRCompanyInfo = () => {
       {/* Cover Image & Logo */}
       <Card className="overflow-hidden cursor-target">
         <div className="relative h-64 bg-gradient-to-r from-blue-500 to-cyan-500">
-          {companyData.coverImage ? (
+          {companyData.coverimage ? (
             <img
-              src={companyData.coverImage}
+              src={companyData.coverimage}
               alt="Cover"
               className="w-full h-full object-cover"
             />
@@ -431,10 +431,10 @@ const HRCompanyInfo = () => {
                   {companyData.nationality}
                 </Badge>
               )}
-              {companyData.foundedYear && (
+              {companyData.foundedyear && (
                 <Badge variant="outline" className="gap-1">
                   <Calendar className="h-3 w-3" />
-                  Founded {companyData.foundedYear}
+                  Founded {companyData.foundedyear}
                 </Badge>
               )}
               {companyData.address && (
@@ -545,11 +545,11 @@ const HRCompanyInfo = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="foundedYear">Năm Thành Lập</Label>
+                  <Label htmlFor="foundedyear">Năm Thành Lập</Label>
                   <Input
-                    id="foundedYear"
+                    id="foundedyear"
                     type="number"
-                    value={formData.foundedYear}
+                    value={formData.foundedyear}
                     onChange={handleInputChange}
                     disabled={!isEditing}
                     className="cursor-target"

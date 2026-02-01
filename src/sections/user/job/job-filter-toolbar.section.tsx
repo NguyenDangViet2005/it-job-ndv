@@ -17,7 +17,7 @@ import { cn } from "@/lib/utils";
 interface JobFilterToolbarProps {
   skills: Array<{ id: number; name: string }>;
   selectedSkill: number | null;
-  onSkillChange: (skillId: number | null) => void;
+  onSkillChange: (skillid: number | null) => void;
   searchTerm: string;
   onSearchChange: (term: string) => void;
   jobTypes?: string[];

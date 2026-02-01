@@ -4,10 +4,10 @@ const ENDPOINT = "/connection";
 
 export const connectionApi = {
   // Send connection request
-  sendRequest: (userId: number, connectedUserId: number, token: string) => {
+  sendRequest: (userid: number, connecteduserid: number, token: string) => {
     return apiPost<any>(
       `${ENDPOINT}`,
-      { userId, connectedUserId },
+      { userid, connecteduserid },
       { token },
     );
   },
@@ -29,13 +29,13 @@ export const connectionApi = {
 
   // Get user connections (accepted)
   getUserConnections: (
-    userId: number,
+    userid: number,
     pageNumber: number = 1,
     pageSize: number = 10,
     token?: string,
   ) => {
     return apiGetPaginated<any>(
-      `${ENDPOINT}/user/${userId}`,
+      `${ENDPOINT}/user/${userid}`,
       pageNumber,
       pageSize,
       { token },

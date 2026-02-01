@@ -2,7 +2,7 @@ import { z } from "zod";
 
 // Schema cho đăng ký ứng viên (user)
 export const RegisterFormSchema = z.object({
-  fullName: z.string().min(2, { message: "Họ tên ít nhất 2 ký tự" }),
+  fullname: z.string().min(2, { message: "Họ tên ít nhất 2 ký tự" }),
   email: z.string().email({ message: "Email không hợp lệ" }),
   phone: z
     .string()
@@ -10,7 +10,7 @@ export const RegisterFormSchema = z.object({
     .max(15, { message: "Số điện thoại quá dài" }),
   password: z.string().min(6, { message: "Mật khẩu ít nhất 6 ký tự" }),
   gender: z.string().optional(),
-  dateOfBirth: z.string().optional(),
+  dateofbirth: z.string().optional(),
 });
 
 export type RegisterFormData = z.infer<typeof RegisterFormSchema>;
@@ -18,7 +18,7 @@ export type RegisterFormData = z.infer<typeof RegisterFormSchema>;
 // Schema cho đăng ký nhà tuyển dụng (HR)
 export const RegisterHRFormSchema = z.object({
   // User Info
-  fullName: z.string().min(2, { message: "Họ tên ít nhất 2 ký tự" }),
+  fullname: z.string().min(2, { message: "Họ tên ít nhất 2 ký tự" }),
   email: z.string().email({ message: "Email không hợp lệ" }),
   phone: z
     .string()
@@ -26,7 +26,7 @@ export const RegisterHRFormSchema = z.object({
     .max(15, { message: "Số điện thoại quá dài" }),
   password: z.string().min(6, { message: "Mật khẩu ít nhất 6 ký tự" }),
   gender: z.string().optional(),
-  dateOfBirth: z.string().optional(),
+  dateofbirth: z.string().optional(),
 
   // Company Info
   companyName: z.string().min(2, { message: "Tên công ty ít nhất 2 ký tự" }),
@@ -36,7 +36,7 @@ export const RegisterHRFormSchema = z.object({
     .optional()
     .or(z.literal("")),
   companyHotline: z.string().optional(),
-  companyEmail: z
+  companyemail: z
     .string()
     .email({ message: "Email công ty không hợp lệ" })
     .optional()
@@ -51,8 +51,8 @@ export const RegisterHRFormSchema = z.object({
   companyNationality: z.string().optional(),
 
   // Location
-  provinceId: z.number().min(1, { message: "Vui lòng chọn tỉnh/thành phố" }),
-  wardId: z.number().min(1, { message: "Vui lòng chọn quận/huyện" }),
+  provinceid: z.number().min(1, { message: "Vui lòng chọn tỉnh/thành phố" }),
+  wardid: z.number().min(1, { message: "Vui lòng chọn quận/huyện" }),
 });
 
 export type RegisterHRFormData = z.infer<typeof RegisterHRFormSchema>;
