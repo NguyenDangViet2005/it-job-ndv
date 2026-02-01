@@ -23,7 +23,7 @@ const enrichPosts = async (posts, currentUserId) => {
   // Index usage: IX_Interaction_PostId_UserId_IsLiked (postId, userid, isliked) includes postid, isliked
   const likesCounts = await Interaction.findAll({
     attributes: [
-      "postId",
+      "postid",
       [sequelize.fn("COUNT", sequelize.col("id")), "count"],
     ],
     where: { postid: { [Op.in]: postids }, isliked: true },
@@ -37,7 +37,7 @@ const enrichPosts = async (posts, currentUserId) => {
   // Index usage: IX_Interaction_PostId (postId)
   const commentsCounts = await Interaction.findAll({
     attributes: [
-      "postId",
+      "postid",
       [sequelize.fn("COUNT", sequelize.col("id")), "count"],
     ],
     where: { postid: { [Op.in]: postids }, content: { [Op.ne]: null } },

@@ -36,7 +36,7 @@ router.get("/:id/media", userController.getUserMedia);
 router.get("/:id/skills", userController.getUserSkills);
 router.post("/:id/skills", verifyToken, userController.addUserSkill);
 router.delete(
-  "/:id/skills/:skillId",
+  "/:id/skills/:skillid",
   verifyToken,
   userController.removeUserSkill,
 );

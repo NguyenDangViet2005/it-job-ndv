@@ -194,7 +194,7 @@ const addUserSkill = async (req, res, next) => {
       return res.status(403).json({ message: "Unauthorized" });
     }
 
-    if (!skillId) {
+    if (!skillid) {
       return res.status(400).json({ message: "Skill ID is required" });
     }
 

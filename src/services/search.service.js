@@ -1,4 +1,4 @@
-const { Job, Company, Skill } = require("../models");
+const { Job, Company, Skill, Ward, Province } = require("../models");
 const { Op } = require("sequelize");
 const { JobResponse } = require("../dtos/JobResponse.dto");
 const CompanyResponse = require("../dtos/CompanyResponse.dto");
@@ -10,33 +10,49 @@ const search = async (keyword, page = 1, pageSize = 10) => {
     const now = new Date();
     const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
       2,
-      "0"
+      "0",
     )}-${String(now.getDate()).padStart(2, "0")}`;
+
     const jobs = await Job.findAll({
       where: {
-        title: { [Op.like]: `%${keyword}%` },
-        // Optimized: status='open' hits index better than != 'closed'
+        title: { [Op.iLike]: `%${keyword}%` },
         status: "open",
-        deadline: { [Op.gt]: today },
+        deadline: { [Op.gte]: today },
       },
       include: [
         { model: Company, as: "Company", attributes: ["id", "name", "avatar"] },
       ],
-      limit: 5, // Limit top results per category for summary search
+      offset,
+      limit: pageSize,
+      order: [["createdat", "DESC"]],
     });
 
     const companies = await Company.findAll({
       where: {
-        name: { [Op.like]: `%${keyword}%` },
+        name: { [Op.iLike]: `%${keyword}%` },
       },
-      limit: 5,
+      include: [
+        {
+          model: Ward,
+          include: [
+            {
+              model: Province,
+            },
+          ],
+        },
+      ],
+      offset,
+      limit: pageSize,
+      order: [["name", "ASC"]],
     });
 
     const skills = await Skill.findAll({
       where: {
-        name: { [Op.like]: `%${keyword}%` },
+        name: { [Op.iLike]: `%${keyword}%` },
       },
-      limit: 5,
+      offset,
+      limit: pageSize,
+      order: [["name", "ASC"]],
     });
 
     return {

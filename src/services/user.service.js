@@ -198,7 +198,7 @@ const addUserSkill = async (userid, skillid) => {
     if (!user) throw new Error("User not found");
 
     // Check if skill exists
-    const skill = await Skill.findByPk(skillId);
+    const skill = await Skill.findByPk(skillid);
     if (!skill) throw new Error("Skill not found");
 
     // Check if user already has skill

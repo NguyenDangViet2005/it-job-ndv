@@ -14,8 +14,8 @@ class CompanyResponse {
     this.wardid = company.wardid;
 
     // Relational data
-    this.wardName = company.Ward ? company.Ward.name : null;
-    this.provinceName =
+    this.wardname = company.Ward ? company.Ward.name : null;
+    this.provincename =
       company.Ward && company.Ward.Province ? company.Ward.Province.name : null;
 
     // Follows data

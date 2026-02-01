@@ -100,12 +100,12 @@ const getJobsToday = async (req, res) => {
 const getJobsBySkill = async (req, res) => {
   try {
     const { skillid, pageNumber, pageSize } = req.query;
-    if (!skillId) {
-      return res.status(400).json({ message: "skillId is required" });
+    if (!skillid) {
+      return res.status(400).json({ message: "skillid is required" });
     }
     const pNumber = parseInt(pageNumber) > 0 ? parseInt(pageNumber) : 1;
     const pSize = parseInt(pageSize) > 0 ? parseInt(pageSize) : 10;
-    const result = await jobService.getJobsBySkill(skillId, pNumber, pSize);
+    const result = await jobService.getJobsBySkill(skillid, pNumber, pSize);
     res.status(200).json(result);
   } catch (error) {
     res

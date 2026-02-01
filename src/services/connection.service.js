@@ -126,7 +126,7 @@ const getUserConnections = async (userid, page = 1, pageSize = 10) => {
       ],
       limit: pageSize,
       offset: offset,
-      order: [["updatedAt", "DESC"]],
+      order: [["updatedat", "DESC"]],
     });
 
     return {
