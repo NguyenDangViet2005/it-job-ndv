@@ -60,7 +60,7 @@ const CompanyInfo = ({
         <div className="flex justify-center mb-4">
           <div className="relative">
             <Image
-              src={company?.avatar}
+              src={company?.avatar || "/logo/default-company.png"}
               alt={company?.name || "Company Logo"}
               width={80}
               height={80}

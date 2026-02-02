@@ -8,7 +8,7 @@ import { Toaster } from "@/components/ui/shadcn/sonner";
 import { NavigationTracker } from "@/routes/navigation-tracker";
 
 export const metadata: Metadata = getMetadata(
-  "IT Job | Nền tảng công việc IT hàng đầu Việt Nam"
+  "IT Job | Nền tảng công việc IT hàng đầu Việt Nam",
 );
 
 export default function RootLayout({

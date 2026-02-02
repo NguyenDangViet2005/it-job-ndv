@@ -111,7 +111,7 @@ export default function AppliedJobsPage() {
                     <div className="flex gap-4 flex-1">
                       <div className="h-16 w-16 rounded-xl border-2 border-border bg-white dark:bg-muted p-2 flex items-center justify-center flex-shrink-0 shadow-sm hover:shadow-md transition-shadow">
                         <Image
-                          src={app.companyLogo}
+                          src={app.companyLogo || "/logo/default-company.png"}
                           alt={app.companyName || "Company"}
                           width={64}
                           height={64}

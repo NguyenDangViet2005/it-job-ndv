@@ -126,7 +126,7 @@ function FeaturedCompanies() {
                     {/* Company Avatar */}
                     <div className="relative w-12 h-12 rounded-full border overflow-hidden flex-shrink-0 bg-white">
                       <Image
-                        src={company.avatar}
+                        src={company.avatar || "/logo/default-company.png"}
                         alt={`${company.name} logo`}
                         fill
                         className="object-contain p-1"

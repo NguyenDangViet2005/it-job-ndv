@@ -36,7 +36,7 @@ export default function FormRegister() {
   const form = useForm<RegisterFormData>({
     resolver: zodResolver(RegisterFormSchema),
     defaultValues: {
-      fullName: "",
+      fullname: "",
       email: "",
       phone: "",
       password: "",
@@ -89,7 +89,7 @@ export default function FormRegister() {
             {/* Full Name */}
             <FormField
               control={form.control}
-              name="fullName"
+              name="fullname"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-sm">Họ và tên</FormLabel>

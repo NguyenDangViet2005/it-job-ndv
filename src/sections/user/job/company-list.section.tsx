@@ -82,7 +82,7 @@ export default function CompanyListSection({
           >
             <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-white dark:bg-muted border border-border p-1 flex items-center justify-center group-hover:scale-105 transition-transform duration-300 shadow-sm">
               <Image
-                src={company.avatar}
+                src={company.avatar || "/logo/default-company.png"}
                 alt={company.name}
                 fill
                 className="object-contain p-1"

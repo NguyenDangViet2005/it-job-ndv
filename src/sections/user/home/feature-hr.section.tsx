@@ -25,7 +25,7 @@ function FeatureHr() {
 
         // Transform API data to LogoLoop format
         const transformedLogos = response.data.map((company: CompanyLogo) => ({
-          src: company.avatar,
+          src: company.avatar || "/logo/default-company.png",
           alt: company.name,
           href: `/companies/${company.id}`,
           title: company.name,

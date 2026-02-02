@@ -45,7 +45,7 @@ export default function FormRegisterHR() {
   const form = useForm<RegisterHRFormData>({
     resolver: zodResolver(RegisterHRFormSchema),
     defaultValues: {
-      fullName: "",
+      fullname: "",
       email: "",
       phone: "",
       password: "",
@@ -146,7 +146,7 @@ export default function FormRegisterHR() {
                 {/* Full Name */}
                 <FormField
                   control={form.control}
-                  name="fullName"
+                  name="fullname"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Họ và tên *</FormLabel>

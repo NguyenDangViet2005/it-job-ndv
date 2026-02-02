@@ -3,17 +3,19 @@ import { Briefcase, TrendingUp, MoveRight } from "lucide-react";
 import { Card } from "@/components/ui/shadcn/card";
 import { useAuth } from "@/hooks/useAuth";
 import type { JobResponse } from "@/types/api.type";
+import type { Company } from "@/types";
 
 const HotJob = ({ props }: { props: JobResponse }) => {
   const { user } = useAuth();
+  const company = props.company as Company | undefined;
   return (
     <div className="h-full">
       <Card className="transition-all duration-300 overflow-hidden bg-white dark:bg-card h-full group cursor-pointer border border-border rounded-none p-0">
         <div className="relative h-full flex flex-col">
           <div className="inset-0">
             <Image
-              src={props.company?.coverimage || "/cover.png"}
-              alt={props.company?.name || "Company"}
+              src={company?.coverimage || "/cover.png"}
+              alt={company?.name || "Company"}
               fill
               className="object-cover"
             />
@@ -23,8 +25,8 @@ const HotJob = ({ props }: { props: JobResponse }) => {
             <div className="flex justify-center mb-3 flex-shrink-0">
               <div className="relative w-16 h-16 bg-white rounded-full p-1.5 flex items-center justify-center shadow-xl ring-2 ring-white/20">
                 <Image
-                  src={props.company?.avatar}
-                  alt={props.company?.name || "Company"}
+                  src={company?.avatar || "/logo/default-company.png"}
+                  alt={company?.name || "Company"}
                   width={56}
                   height={56}
                   className="object-cover rounded-full"
@@ -33,13 +35,12 @@ const HotJob = ({ props }: { props: JobResponse }) => {
             </div>
             <div className="flex-shrink-0 mb-2">
               <h3 className="font-bold text-sm text-white text-center line-clamp-1 drop-shadow-lg h-5">
-                {props.company?.name}
+                {company?.name}
               </h3>
             </div>
             <div className="flex-shrink-0 mb-3">
               <p className="text-xs text-white/90 text-center line-clamp-2 drop-shadow h-8">
-                {props.company?.name ||
-                  "Công ty hàng đầu trong lĩnh vực công nghệ"}
+                {company?.name || "Công ty hàng đầu trong lĩnh vực công nghệ"}
               </p>
             </div>
             <div className="flex-shrink-0 mb-3">

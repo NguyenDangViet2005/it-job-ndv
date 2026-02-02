@@ -20,7 +20,7 @@ export default function JobCard({ job }: JobCardProps) {
           <div className="md:w-32 md:h-32 w-full h-40 bg-muted/30 p-4 flex items-center justify-center border border-border group-hover:border-primary/20 transition-colors shrink-0">
             <div className="relative w-full h-full">
               <Image
-                src={job.company?.avatar}
+                src={job.company?.avatar || "/logo/default-company.png"}
                 alt={job.company?.name || "Company"}
                 fill
                 className="object-contain"

@@ -1,10 +1,14 @@
 import type { NextConfig } from "next";
 
-if (process.env.NODE_ENV === 'development') {
-  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+if (process.env.NODE_ENV === "development") {
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 }
 
 const nextConfig: NextConfig = {
+  // Use App Router only, ignore Pages directory
+  pageExtensions: ["tsx", "ts", "jsx", "js"]
+    .map((ext) => `app.${ext}`)
+    .concat(["tsx", "ts", "jsx", "js"]),
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -41,11 +45,11 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
-        source: '/hybridaction/:path*',
+        source: "/hybridaction/:path*",
         headers: [
           {
-            key: 'X-Robots-Tag',
-            value: 'noindex',
+            key: "X-Robots-Tag",
+            value: "noindex",
           },
         ],
       },
