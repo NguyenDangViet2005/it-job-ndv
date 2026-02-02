@@ -18,7 +18,6 @@ app.use(morgan("dev"));
 
 //CORS
 app.use(cors(corsOptions));
-
 // Routes
 app.use("/api", apiRouter.Router);
 

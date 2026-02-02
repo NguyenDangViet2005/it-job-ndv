@@ -32,7 +32,7 @@ const login = async (req, res) => {
     res.cookie("refreshtoken", refreshtoken, {
       httpOnly: true,
       secure: env.app.env === "production",
-      sameSite: "lax", // Lax is better for navigation from external sites/redirects
+      sameSite: "lax",
       path: "/",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
@@ -52,7 +52,7 @@ const login = async (req, res) => {
 
 const refreshtoken = async (req, res) => {
   try {
-    const refreshtoken = req.cookies?.refreshtoken; // Get from Cookie
+    const refreshtoken = req.cookies?.refreshtoken;
 
     if (!refreshtoken) {
       return res.status(401).json({ message: "No refresh token provided" });
