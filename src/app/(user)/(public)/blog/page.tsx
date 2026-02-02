@@ -1,4 +1,4 @@
-import BlogPage from "@/pages/user/blog.page";
+import BlogPage from "@/_pages/user/blog.page";
 
 import { getMetadata } from "@/utils/metadata.utils";
 

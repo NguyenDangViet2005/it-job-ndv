@@ -1,4 +1,4 @@
-import AdminPage from "@/pages/admin/admin.page";
+import AdminPage from "@/_pages/admin/admin.page";
 
 function page() {
   return (

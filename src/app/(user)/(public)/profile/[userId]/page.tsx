@@ -1,4 +1,4 @@
-import ProfilePage from "@/pages/user/profile.page";
+import ProfilePage from "@/_pages/user/profile.page";
 
 export default async function Page({ params }: { params: Promise<{ userid: string }> }) {
   const { userid } = await params;

@@ -1,4 +1,4 @@
-import BlogDetailPage from "@/pages/user/blog-detail.page";
+import BlogDetailPage from "@/_pages/user/blog-detail.page";
 
 async function page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

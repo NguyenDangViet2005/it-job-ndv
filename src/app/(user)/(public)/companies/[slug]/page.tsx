@@ -1,4 +1,4 @@
-import CompanyDetailPage from "@/pages/company/company-detail.page";
+import CompanyDetailPage from "@/_pages/company/company-detail.page";
 import { companyApi } from "@/apis";
 import { notFound } from "next/navigation";
 

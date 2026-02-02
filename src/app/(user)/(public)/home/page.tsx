@@ -1,4 +1,4 @@
-import HomePage from "@/pages/user/home.page";
+import HomePage from "@/_pages/user/home.page";
 
 function page() {
   return (

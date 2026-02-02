@@ -3,14 +3,12 @@
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/shadcn/button";
 import { Home, ArrowLeft } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
 import Image from "next/image";
 import { ROUTES } from "@/configs";
 import { useEffect, useState } from "react";
 
 export default function AccessDeniedPage() {
   const router = useRouter();
-  const { user } = useAuth();
   const [previousPath, setPreviousPath] = useState<string | null>(null);
 
   useEffect(() => {
@@ -29,19 +27,6 @@ export default function AccessDeniedPage() {
     }
   }, []);
 
-  const getRedirectPath = (role: string) => {
-    switch (role) {
-      case "admin":
-        return ROUTES.ADMIN_DASHBOARD;
-      case "employer":
-        return ROUTES.HR;
-      case "user":
-        return ROUTES.HOME;
-      default:
-        return ROUTES.HOME;
-    }
-  };
-
   const handleGoBack = () => {
     if (previousPath) {
       router.replace(previousPath);
@@ -51,21 +36,8 @@ export default function AccessDeniedPage() {
   };
 
   const handleGoHome = () => {
-    // Redirect về trang phù hợp với role của user
-    if (user?.role) {
-      const redirectPath = getRedirectPath(user.role);
-      router.replace(redirectPath);
-    } else {
-      router.replace(ROUTES.HOME);
-    }
-  };
-
-  const getRoleDisplay = () => {
-    if (!user?.role) return "Khách";
-    if (user.role === "user") return "Ứng viên";
-    if (user.role === "employer") return "Nhà tuyển dụng";
-    if (user.role === "admin") return "Quản trị viên";
-    return user.role;
+    // Redirect về trang chủ
+    router.replace(ROUTES.HOME);
   };
 
   return (
@@ -93,18 +65,6 @@ export default function AccessDeniedPage() {
             người dùng được ủy quyền.
           </p>
         </div>
-
-        {/* User Role Badge */}
-        {user && (
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-muted border border-border rounded-md">
-            <span className="text-sm text-muted-foreground">
-              Vai trò hiện tại:
-            </span>
-            <span className="font-semibold text-foreground">
-              {getRoleDisplay()}
-            </span>
-          </div>
-        )}
 
         {/* Buttons */}
         <div className="flex flex-col sm:flex-row gap-3 justify-center">

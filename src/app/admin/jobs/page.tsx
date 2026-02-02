@@ -1,4 +1,4 @@
-import JobsManagement from "@/pages/admin/jobs-management.page";
+import JobsManagement from "@/_pages/admin/jobs-management.page";
 
 export default function JobsPage() {
   return <JobsManagement />;

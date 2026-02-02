@@ -1,4 +1,4 @@
-import QAPage from "@/pages/user/QA.page";
+import QAPage from "@/_pages/user/QA.page";
 import { getMetadata } from "@/utils";
 export const metadata = getMetadata("IT Job | Hỏi đáp IT");
 

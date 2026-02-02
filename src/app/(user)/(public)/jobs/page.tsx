@@ -1,4 +1,4 @@
-import JobsPage from "@/pages/user/jobs.page";
+import JobsPage from "@/_pages/user/jobs.page";
 import { getMetadata } from "@/utils";
 
 export const metadata = getMetadata("IT Job | Tìm kiếm công việc IT");

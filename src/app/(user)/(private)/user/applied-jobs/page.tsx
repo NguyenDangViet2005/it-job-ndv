@@ -1,4 +1,4 @@
-import AppliedJobsPage from "@/pages/user/dashboard/applied-jobs.page";
+import AppliedJobsPage from "@/_pages/user/dashboard/applied-jobs.page";
 
 export default function Page() {
   return <AppliedJobsPage />;

@@ -1,4 +1,4 @@
-import SettingsPage from "@/pages/user/dashboard/settings.page";
+import SettingsPage from "@/_pages/user/dashboard/settings.page";
 
 export default function Page() {
   return <SettingsPage />;

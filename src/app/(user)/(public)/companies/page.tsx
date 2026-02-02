@@ -1,4 +1,4 @@
-import CompaniesPage from "@/pages/company/companies.page";
+import CompaniesPage from "@/_pages/company/companies.page";
 import { getMetadata } from "@/utils";
 
 export const metadata = getMetadata("IT Job | Các công ty IT hàng đầu");

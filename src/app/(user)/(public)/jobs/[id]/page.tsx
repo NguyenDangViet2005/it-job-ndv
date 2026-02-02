@@ -1,4 +1,4 @@
-import JobDetailPage from "@/pages/user/job-detail.page";
+import JobDetailPage from "@/_pages/user/job-detail.page";
 
 type Props = {
   params: Promise<{

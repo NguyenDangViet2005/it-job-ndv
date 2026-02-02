@@ -1,4 +1,4 @@
-import WelcomePage from "@/pages/welcome/welcome.page";
+import WelcomePage from "@/_pages/welcome/welcome.page";
 
 function page() {
   return (

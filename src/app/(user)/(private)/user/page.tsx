@@ -1,4 +1,4 @@
-import DashboardOverviewPage from "@/pages/user/dashboard/dashboard-overview.page";
+import DashboardOverviewPage from "@/_pages/user/dashboard/dashboard-overview.page";
 
 export default function Page() {
   return <DashboardOverviewPage />;
