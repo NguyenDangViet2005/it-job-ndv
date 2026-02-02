@@ -16,6 +16,15 @@ const userRoutes = require("./user.route");
 
 const Router = express.Router();
 
+// Health check endpoint for Render
+Router.get("/health", (req, res) => {
+  res.status(200).json({ 
+    status: "OK", 
+    message: "Server is running",
+    timestamp: new Date().toISOString() 
+  });
+});
+
 Router.use("/auth", authRoutes);
 Router.use("/company", companyRoutes);
 Router.use("/job", jobRoutes);
