@@ -3,7 +3,7 @@ import type {
   ApplicationRequest,
   ApplicationResponse,
 } from "@/types/application.type";
-import { getUserRole } from "@/utils/auth";
+import { getUserRole } from "@/utils"; 
 
 const ENDPOINT = "/application";
 
@@ -56,7 +56,7 @@ export const applicationApi = {
     pageSize: number = 10,
     token: string
   ) => {
-    const role = getUserRole(token);
+    const role = getUserRole(token) || "";
     return apiGetPaginated<ApplicationResponse>(
       `${ENDPOINT}/company/${companyid}`,
       pageNumber,

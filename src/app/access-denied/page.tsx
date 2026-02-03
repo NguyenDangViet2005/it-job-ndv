@@ -1,4 +1,4 @@
-import AccessDeniedPage from "@/_pages/error/access-denied.page";
+import AccessDeniedPage from "@/components/_pages/error/access-denied.page";
 import { getMetadata } from "@/utils";
 
 export const metadata = getMetadata("IT Job | Truy cập bị từ chối");

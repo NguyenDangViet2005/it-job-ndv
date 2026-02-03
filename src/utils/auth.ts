@@ -1,88 +1,101 @@
+/**
+ * Auth utility functions
+ */
+
 import { jwtDecode } from "jwt-decode";
-import { UserResponse } from "@/types/api.type";
+import { ROUTES, ROUTE_GROUPS } from "@/constants";
 
-export interface UserInfo {
-  id: number;
-  name: string;
-  email: string;
-  role: "user" | "employer" | "admin";
-  avatar?: string;
-  // Thêm các field khác nếu cần
+interface JWTPayload {
+  role?: string;
+  userId?: number;
+  email?: string;
+  exp?: number;
 }
 
-interface JwtPayload {
-  nameid: string; // ID
-  email: string;
-  unique_name: string; // Name
-  role: string;
-  nbf: number;
-  exp: number;
-  iat: number;
-}
+// ==================== JWT Token Functions ====================
 
 /**
- * Lấy thông tin user từ token
+ * Check if token is expired
+ * @param token - JWT token string
+ * @returns true if expired, false otherwise
  */
-export const getUserInfo = (token?: string | null): UserInfo | null => {
-  if (!token) return null;
+export function isTokenExpired(token?: string): boolean {
+  if (!token) {
+    return true;
+  }
 
   try {
-    const decoded = jwtDecode<JwtPayload>(token);
-
-    return {
-      id: parseInt(decoded.nameid),
-      name: decoded.unique_name,
-      email: decoded.email,
-      role: decoded.role as any,
-    };
+    const decoded = jwtDecode<JWTPayload>(token);
+    if (!decoded.exp) {
+      return true;
+    }
+    
+    const currentTime = Date.now() / 1000;
+    return decoded.exp < currentTime;
   } catch (error) {
-    console.error("Error decoding token:", error);
-    return null;
+    console.error("Failed to decode token:", error);
+    return true;
+  }
+}
+
+// ==================== Route Access Functions ====================
+
+/**
+ * Check if the user role has access to the specific path
+ */
+export const hasRouteAccess = (
+  role: string | undefined,
+  pathname: string
+): boolean => {
+  if (!role) return false;
+
+  const normalizedRole = role.toLowerCase().trim();
+
+  // Check if route is in public routes
+  const isPublicRoute = ROUTE_GROUPS.PUBLIC.some((route) =>
+    pathname.startsWith(route)
+  );
+
+  // Admin routes
+  if (pathname.startsWith(ROUTES.ADMIN)) {
+    return normalizedRole === "admin";
+  }
+
+  // HR routes
+  if (pathname.startsWith(ROUTES.HR)) {
+    return normalizedRole === "employer" || normalizedRole === "hr";
+  }
+
+  // User dashboard routes
+  if (pathname.startsWith(ROUTES.USER_DASHBOARD)) {
+    return normalizedRole === "user";
+  }
+
+  // Public routes - accessible by all
+  if (isPublicRoute) {
+    return true;
+  }
+
+  // Default: allow access
+  return true;
+};
+
+/**
+ * Get redirect path based on user role
+ */
+export const getRedirectPathByRole = (role: string): string => {
+  const normalizedRole = role.toLowerCase().trim();
+
+  switch (normalizedRole) {
+    case "admin":
+      return ROUTES.ADMIN;
+    case "hr":
+    case "employer":
+      return ROUTES.HR;
+    case "user":
+      return ROUTES.USER_DASHBOARD;
+    default:
+      return ROUTES.HOME;
   }
 };
 
-/**
- * Lấy role của user từ token
- */
-export const getUserRole = (token?: string | null): string => {
-  const userInfo = getUserInfo(token);
-  return userInfo?.role || "";
-};
-
-/**
- * Lấy ID của user từ token
- */
-export const getUserId = (token?: string | null): number | null => {
-  const userInfo = getUserInfo(token);
-  return userInfo?.id || null;
-};
-
-/**
- * Các hàm check role
- */
-export const isAdmin = (token?: string | null): boolean => {
-  return getUserRole(token) === "admin";
-};
-
-export const isEmployer = (token?: string | null): boolean => {
-  return getUserRole(token) === "employer";
-};
-
-export const isUser = (token?: string | null): boolean => {
-  return getUserRole(token) === "user";
-};
-
-/**
- * Các hàm legacy (đã deprecated/xóa)
- */
-export const isAuthenticated = (): boolean => {
-  return false; // Deprecated
-};
-
-export const setUserInfo = (userInfo: UserInfo): void => {
-  // Deprecated
-};
-
-export const clearUserInfo = (): void => {
-  // Deprecated
-};

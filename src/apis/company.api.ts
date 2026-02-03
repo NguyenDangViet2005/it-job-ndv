@@ -13,8 +13,7 @@ import type {
   Company,
   CompanyUpdateRequest,
 } from "@/types/api.type";
-import { getUserRole } from "@/utils/auth";
-
+import { getUserRole } from "@/utils";  
 const ENDPOINT = "/company";
 
 export const companyApi = {
@@ -70,7 +69,7 @@ export const companyApi = {
 
   // Lấy công ty của HR đang đăng nhập
   getMyCompany: (token?: string) => {
-    const role = getUserRole(token);
+    const role = getUserRole(token) || "";
     return apiGet<Company>(`${ENDPOINT}/my-company`, {
       token,
       params: { role },

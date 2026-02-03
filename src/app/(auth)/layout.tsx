@@ -1,4 +1,4 @@
-import { ModeToggle } from "@/components/ui/customs/toggle-them";
+import { ModeToggle } from "@/components/features/toggle-theme";
 
 export default function RootLayout({
   children,

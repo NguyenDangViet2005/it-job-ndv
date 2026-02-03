@@ -7,7 +7,7 @@ import {
   apiGetById,
 } from "./api";
 import type { ApiResponse, JobResponse } from "@/types/api.type";
-import { getUserRole } from "@/utils/auth";
+import { getUserRole } from "@/utils";
 
 const ENDPOINT = "/job";
 

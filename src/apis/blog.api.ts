@@ -7,7 +7,6 @@ import {
   apiGetById,
 } from "./api";
 import type { ApiResponse, BlogResponse } from "@/types/api.type";
-import { getUserRole } from "@/utils/auth";
 
 const ENDPOINT = "/blog";
 
