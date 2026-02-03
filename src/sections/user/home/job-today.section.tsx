@@ -25,7 +25,7 @@ function JobToday() {
         setJobs(response);
       } catch (err) {
         setError(
-          err instanceof Error ? err.message : "Không thể tải công việc"
+          err instanceof Error ? err.message : "Không thể tải công việc",
         );
       } finally {
         setLoading(false);
@@ -34,48 +34,10 @@ function JobToday() {
 
     fetchTodayJobs();
   }, []);
-  if (loading) {
-    return (
-      <div className="w-full mt-10">
-        <SectionTitle
-          title="Công Việc Hôm Nay"
-          subtitle="Cập nhật mới nhất các vị trí tuyển dụng hot trong ngày"
-        />
-        <div className="flex items-center justify-center h-64">
-          <div className="text-muted-foreground">Đang tải...</div>
-        </div>
-      </div>
-    );
-  }
 
-  if (error) {
-    return (
-      <div className="w-full mt-10">
-        <SectionTitle
-          title="Công Việc Hôm Nay"
-          subtitle="Cập nhật mới nhất các vị trí tuyển dụng hot trong ngày"
-        />
-        <div className="flex items-center justify-center h-64">
-          <div className="text-destructive">Lỗi: {error}</div>
-        </div>
-      </div>
-    );
-  }
-
-  if (!jobs || jobs.length === 0) {
-    return (
-      <div className="w-full mt-10">
-        <SectionTitle
-          title="Công Việc Hôm Nay"
-          subtitle="Cập nhật mới nhất các vị trí tuyển dụng hot trong ngày"
-        />
-        <div className="flex items-center justify-center h-64">
-          <div className="text-muted-foreground">
-            Chưa có công việc nào hôm nay
-          </div>
-        </div>
-      </div>
-    );
+  // Ẩn section nếu đang loading, có lỗi, hoặc không có công việc
+  if (loading || error || !jobs || jobs.length === 0) {
+    return null;
   }
 
   return (
