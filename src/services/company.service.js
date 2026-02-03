@@ -25,6 +25,7 @@ const getCompanies = async (pageNumber = 1, pageSize = 10) => {
         { model: Post },
         { model: Review },
         { model: Follow },
+        { model: CompanyMember},
         {
           model: Ward,
           include: [{ model: Province }],
@@ -75,6 +76,7 @@ const getCompanyById = async (id) => {
         { model: Post },
         { model: Review },
         { model: Follow },
+        { model: CompanyMember },
       ],
     });
     return company ? new CompanyResponse(company) : null;

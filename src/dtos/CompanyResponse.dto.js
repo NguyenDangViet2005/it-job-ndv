@@ -34,6 +34,48 @@ class CompanyResponse {
       this.membersCount = company.CompanyMembers.length;
     }
 
+    // Jobs data
+    if (company.Jobs) {
+      this.jobs = company.Jobs.map((job) => ({
+        id: job.id,
+        companyid: job.companyid,
+        title: job.title,
+        description: job.description,
+        type: job.type,
+        quantity: job.quantity,
+        deadline: job.deadline,
+        salary: job.salary,
+        status: job.status,
+        createdat: job.createdat,
+        updatedat: job.updatedat,
+      }));
+    }
+
+    // Posts data
+    if (company.Posts) {
+      this.posts = company.Posts.map((post) => ({
+        id: post.id,
+        userid: post.userid,
+        companyid: post.companyid,
+        content: post.content,
+        createdat: post.createdat,
+        updatedat: post.updatedat,
+      }));
+    }
+
+    // Reviews data
+    if (company.Reviews) {
+      this.reviews = company.Reviews.map((review) => ({
+        id: review.id,
+        userid: review.userid,
+        companyid: review.companyid,
+        rating: review.rating,
+        comment: review.comment,
+        createdat: review.createdat,
+        updatedat: review.updatedat,
+      }));
+    }
+
     this.createdbyuserid = company.createdbyuserid;
     this.createdat = company.createdat;
     this.updatedat = company.updatedat;
