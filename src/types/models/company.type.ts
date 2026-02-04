@@ -71,7 +71,7 @@ export interface PostCompany {
 export interface CompanyLogo {
   id: number;
   name: string;
-  avatar: string;
+  avatar?: string;
 }
 
 export interface CompanyLocation {

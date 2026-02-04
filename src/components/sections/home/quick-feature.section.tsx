@@ -5,7 +5,7 @@ import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { featureCardItems } from "@/constants/navigation.config";
 
-export default function FeatureCards() {
+export default function QuickFeatureSection() {
   return (
     <Card className="w-full max-w-7xl mx-auto shadow-md rounded-2xl text-sm">
       <CardContent className="p-6">

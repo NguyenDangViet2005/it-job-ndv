@@ -1,5 +1,5 @@
 import SearchBar from "@/components/features/navigation/search-bar"
-import HeroSlideshow from "@/components/features/home/hero-slideshow"
+import HeroSlideshow from "@/components/sections/home/hero-slideshow"
 import TextRotator from "@/components/features/text-rotater"
 
 interface HeroSectionProps {

@@ -1,6 +1,6 @@
 "use client";
 
-import BlogListSection from "@/components/features/blog/blog-list.section";
+import BlogListSection from "@/components/sections/blog/blog-list.section";
 import React from "react";
 import Link from "next/link";
 import { ROUTES } from "@/constants";

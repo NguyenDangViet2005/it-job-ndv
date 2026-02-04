@@ -12,8 +12,11 @@ import { Bookmark, Building2, MapPin, MoveLeft, MoveRight } from "lucide-react";
 import SectionTitle from "@/components/features/section-title";
 import { companyApi } from "@/apis";
 import type { Company } from "@/types/api.type";
+import { ROUTES } from "@/constants";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
-function FeaturedCompanies() {
+export default function FeaturedCompanieSection() {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -24,7 +27,6 @@ function FeaturedCompanies() {
         setLoading(true);
         const response = await companyApi.getAll(1, 10);
 
-        // Xử lý data có thể là array hoặc object với $values
         const companiesData = Array.isArray(response.data)
           ? response.data
           : response.data;
@@ -46,8 +48,43 @@ function FeaturedCompanies() {
     return (
       <div className="w-full mx-auto py-10 md:block hidden">
         <SectionTitle title="Công Ty Nổi Bật" />
-        <div className="flex items-center justify-center h-64">
-          <div className="text-muted-foreground">Đang tải...</div>
+        <div className="relative w-full max-w-[900px] mx-auto mt-8">
+          {/* Main skeleton card */}
+          <div className="w-full h-[450px] mb-12">
+            <Skeleton className="w-full h-[350px] rounded-t-lg" />
+            <div className="relative -mt-16 mx-auto w-[820px]">
+              <div className="bg-card rounded-2xl shadow-xl border p-4">
+                <div className="flex items-center gap-3 mb-3">
+                  <Skeleton className="w-12 h-12 rounded-full" />
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-5 w-3/4" />
+                    <Skeleton className="h-4 w-1/2" />
+                  </div>
+                  <Skeleton className="w-10 h-10 rounded" />
+                </div>
+                <div className="space-y-2 mb-3">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-5/6" />
+                </div>
+                <div className="flex gap-4">
+                  <Skeleton className="h-4 w-20" />
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-4 w-16" />
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Navigation skeleton */}
+          <div className="flex items-center justify-center gap-4 mt-2">
+            <Skeleton className="w-10 h-10 rounded-full" />
+            <div className="flex gap-2">
+              <Skeleton className="w-2 h-2 rounded-full" />
+              <Skeleton className="w-2 h-2 rounded-full" />
+              <Skeleton className="w-2 h-2 rounded-full" />
+            </div>
+            <Skeleton className="w-10 h-10 rounded-full" />
+          </div>
         </div>
       </div>
     );
@@ -103,9 +140,9 @@ function FeaturedCompanies() {
           slideShadows: false,
         }}
       >
-        {companies.map((company) => (
+        {companies.map((company: Company) => (
           <SwiperSlide key={company.id} className="!w-[900px] !h-[450px]">
-            <Link href={`/companies/${company.id}`} className="block group ">
+            <Link href={ROUTES.COMPANY_DETAIL(company.id)} className="block group ">
               <div className="shadow-lg bg-card transition-all duration-300 group-hover:scale-105 w-full mb-12 relative">
                 {/* Cover Image */}
                 <div className="relative w-full h-[350px] overflow-hidden rounded-t-lg">
@@ -120,7 +157,6 @@ function FeaturedCompanies() {
                   />
                 </div>
 
-                {/* Info card - positioned below the image */}
                 <div className="p-4 absolute rounded-2xl cursor-target -bottom-16 left-1/2 transform -translate-x-1/2 bg-card w-[820px] shadow-xl cursor-pointer z-10 border group-hover:border-primary/50 transition-colors">
                   <div className="flex items-center gap-3 mb-3">
                     {/* Company Avatar */}
@@ -139,8 +175,8 @@ function FeaturedCompanies() {
                       {company.name}
                     </h3>
 
-                    <button
-                      className="text-muted-foreground hover:text-primary transition-colors"
+                    <Button
+                      className="text-muted-foreground bg-background hover:text-primary hover:bg-background/90 transition-colors"
                       aria-label="Bookmark company"
                       onClick={(e) => {
                         e.preventDefault();
@@ -148,7 +184,7 @@ function FeaturedCompanies() {
                       }}
                     >
                       <Bookmark size={18} />
-                    </button>
+                    </Button>
                   </div>
 
                   <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
@@ -180,21 +216,17 @@ function FeaturedCompanies() {
         ))}
       </Swiper>
 
-      {/* Custom Navigation + Pagination */}
       <div className="flex items-center justify-center gap-4 mt-2 w-fit mx-auto ">
-        <button className=" cursor-target custom-prev bg-card  shadow p-2 rounded-full hover:scale-105 cursor-pointer">
+        <Button className=" cursor-target custom-prev bg-card  shadow p-2 rounded-full hover:scale-105 cursor-pointer text-primary">
           <MoveLeft className="w-6 h-6" />
-        </button>
+        </Button>
 
-        {/* Pagination dots sẽ render vào đây */}
         <div className="custom-pagination cursor-target flex gap-2" />
 
-        <button className=" cursor-target custom-next bg-card  shadow p-2 rounded-full hover:scale-105 cursor-pointer">
+        <Button className=" cursor-target custom-next bg-card  shadow p-2 rounded-full hover:scale-105 cursor-pointer text-primary">
           <MoveRight className="w-6 h-6" />
-        </button>
+        </Button>
       </div>
     </div>
   );
 }
-
-export default FeaturedCompanies;

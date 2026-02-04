@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import JobFilterSidebar from "@/components/features/jobs/job-filter-sidebar.section";
-import JobListSection from "@/components/features/jobs/job-list.section";
+import JobFilterSidebar from "@/components/sections/jobs/job-filter-sidebar.section";
+import JobListSection from "@/components/sections/jobs/job-list.section";
 import { jobApi, skillApi } from "@/apis";
 import type { JobResponse } from "@/types/api.type";
 import { HeroSection } from "@/components/features/hero.section";
-import CompanyListSection from "@/components/features/jobs/company-list.section";
-import JobFilterToolbar from "@/components/features/jobs/job-filter-toolbar.section";
+import CompanyListSection from "@/components/sections/jobs/company-list.section";
+import JobFilterToolbar from "@/components/sections/jobs/job-filter-toolbar.section";
 import Link from "next/link";
 import { ROUTES } from "@/constants";
 import { useDebounce } from "@/lib/hooks/useDebounce";

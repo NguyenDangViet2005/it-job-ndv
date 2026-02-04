@@ -16,7 +16,7 @@ export default function PostCard({
   post,
   index = 0,
   currentUserAvatar,
-  currentUserName = "Bạn",
+  currentUserName = "",
   currentUserId,
   isSaved = false,
   onLikePost,

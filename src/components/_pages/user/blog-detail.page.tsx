@@ -1,4 +1,4 @@
-import BlogDetailSection from "@/components/features/blog/blog-detail.section";
+import BlogDetailSection from "@/components/sections/blog/blog-detail.section";
 
 interface BlogDetailPageProps {
   id: string;

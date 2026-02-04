@@ -1,26 +1,13 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 
-function SubscribeCTA() {
-  return (
-    <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen">
-      <div className="py-10 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-900 md:p-12 shadow-lg border border-blue-100 dark:border-slate-700">
-        <div className="px-12 flex flex-col md:flex-row items-center justify-between gap-8">
-          {/* Center: Text */}
-          <div className="flex-1 text-center md:text-left">
-            <h2 className="text-xl md:text-2xl font-bold text-slate-800 dark:text-slate-100 mb-2">
-              Tải ứng dụng{" "}
-              <span className="text-primary dark:text-primary">IT-Job</span>
-            </h2>
-            <p className="text-sm text-slate-600 dark:text-slate-400">
-              Tìm việc mọi lúc, mọi nơi với ứng dụng di động của chúng tôi
-            </p>
-          </div>
+interface DownloadButtonProps{
+    type: 'appstore' | 'ggplay'
+}
 
-          {/* Right: Download Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 flex-shrink-0">
-            {/* Google Play Button */}
+export default function DownloadButton({type}: DownloadButtonProps){
+    return (
+        <>
+        {type == 'ggplay' ? 
             <Button
               variant="outline"
               className="bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border-slate-300 dark:border-slate-600 px-6 py-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 group"
@@ -48,8 +35,7 @@ function SubscribeCTA() {
                 </div>
               </a>
             </Button>
-
-            {/* App Store Button */}
+            :
             <Button
               variant="outline"
               className="bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border-slate-300 dark:border-slate-600 px-6 py-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 group"
@@ -77,11 +63,7 @@ function SubscribeCTA() {
                 </div>
               </a>
             </Button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+        }
+        </>
+    )
 }
-
-export default SubscribeCTA;

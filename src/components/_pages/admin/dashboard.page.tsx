@@ -1,8 +1,8 @@
 "use client";
 
-import AdminKPI from "@/components/features/admin/admin-kpi.section";
-import StatsChart from "@/components/features/admin/stats-chart.section";
-import RecentActivity from "@/components/features/admin/recent-activity.section";
+import AdminKPI from "@/components/sections/admin/admin-kpi.section";
+import StatsChart from "@/components/sections/admin/stats-chart.section";
+import RecentActivity from "@/components/sections/admin/recent-activity.section";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";

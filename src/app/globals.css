@@ -265,7 +265,7 @@ body[data-scroll-locked] {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: #d1d5db; /* gray-300 */
+  background: #d1d5db;
   opacity: 1;
   transition: all 0.3s ease;
   position: relative;
@@ -274,14 +274,14 @@ body[data-scroll-locked] {
 .dark .custom-pagination .swiper-pagination-bullet,
 .dark .custom-pagination-1 .swiper-pagination-bullet,
 .dark .custom-pagination-2 .swiper-pagination-bullet {
-  background: #4b5563; /* gray-600 */
+  background: #4b5563; 
 }
 
 .custom-pagination .swiper-pagination-bullet-active,
 .custom-pagination-1 .swiper-pagination-bullet-active,
 .custom-pagination-2 .swiper-pagination-bullet-active {
   background: transparent;
-  border: 2px solid #5330f2; /* red-600 */
+  border: 2px solid #309ef2; 
 }
 
 .custom-pagination .swiper-pagination-bullet-active::after,
@@ -290,7 +290,7 @@ body[data-scroll-locked] {
   content: "";
   width: 6px;
   height: 6px;
-  background: #5330f2; /* red-600 */
+  background: #309ef2; 
   border-radius: 50%;
   position: absolute;
   top: 50%;

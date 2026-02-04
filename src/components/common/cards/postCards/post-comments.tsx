@@ -24,14 +24,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import type { NormalizedPost } from "@/types/post-card.types";
 import type { AttachmentResponse } from "@/types/api.type";
 import Link from "next/link";
 import { DEFAULT_AVATARS } from "@/constants";
 import { useAuth } from "@/lib/hooks/useAuth";
 
 interface PostCommentsProps {
-  post: any; // Accept raw post object (API response)
+  post: any;
   currentUserAvatar?: string;
   currentUserName: string;
   currentUserId?: number;
@@ -229,7 +228,7 @@ const PostComments = forwardRef<PostCommentsRef, PostCommentsProps>(
               const commentUser = comment.user || comment.User;
               const commentUserId = commentUser?.id;
               const commentUserAvatar = commentUser?.avatar;
-              const commentUserName = commentUser?.fullName || "Người dùng";
+              const commentUserName = commentUser?.fullname || "Người dùng";
               
               // Check if user has company (from CompanyMembers relationship)
               const userCompanyMember = commentUser?.CompanyMembers?.[0];

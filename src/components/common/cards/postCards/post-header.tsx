@@ -35,7 +35,7 @@ export default function PostHeader({
   onDelete,
 }: PostHeaderProps) {
   // Always show USER info (not company)
-  const userName = post.user?.fullName || post.author || currentUserName;
+  const userName = post.user?.fullname || post.author || currentUserName;
   const userAvatar = post.user?.avatar || post.avatar || currentUserAvatar;
   const userid = post.user?.id || post.userid;
   

@@ -1,7 +1,7 @@
 import { toast } from "sonner";
 import EditPostDialog from "@/components/common/modals/qa/edit-post-modal";
 import CreatePostForm from "@/components/common/forms/qa/CreatePostForm";
-import PostList from "@/components/features/qa/main-content/post-list.section";
+import PostList from "@/components/sections/qa/main-content/post-list.section";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { useCreatePost } from "@/lib/hooks/useCreatePost";
 import { useEditPost } from "@/lib/hooks/useEditPost";
@@ -18,7 +18,7 @@ function MainContent({
   onLoadMoreComments,
   loadingCommentsForPost,
   currentUserAvatar,
-  currentUserName = "Bạn",
+  currentUserName = "",
   currentUserId,
 }: MainContentProps) {
   const { user, token, isAuthenticated } = useAuth();

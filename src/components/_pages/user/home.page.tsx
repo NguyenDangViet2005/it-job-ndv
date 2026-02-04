@@ -1,13 +1,13 @@
-import BlogSection from "@/components/features/home/BlogSection";
-import FeatureCards from "@/components/features/home/FeatureCards";
-import FeaturedCompanies from "@/components/features/home/FeaturedCompanies";
-import FeatureHr from "@/components/features/home/FeatureHr";
-import JobToday from "@/components/features/home/JobToday";
-import NewestJob from "@/components/features/home/NewestJob";
 import { HeroSection } from "@/components/features/hero.section";
-import SubscribeCTA from "@/components/features/home/SubscribeCTA";
+import QuickFeatureSection from "@/components/sections/home/quick-feature.section";
+import FeaturedCompanieSection from "@/components/sections/home/feature-company.section";
+import TopHRSection from "@/components/sections/home/top-hr.section";
+import NewestJobSection from "@/components/sections/home/newest-job.section";
+import JobTodaySection from "@/components/sections/home/job-today.section";
+import QuickBlogSection from "@/components/sections/home/quick-blog.section";
+import SubscribeCTASection from "@/components/features/subcribe-cta.section";
 
-function HomePage() {
+export default function HomePage() {
   return (
     <div className="overflow-x-hidden">
       <HeroSection height={500} />
@@ -15,25 +15,25 @@ function HomePage() {
       <div className="bg-background w-full rounded-t-3xl border-t border-border/50 -mt-20 relative z-10 shadow-2xl shadow-black/5">
         <div className="w-[90%] max-w-[1400px] mx-auto px-4">
           <div className="z-10 -translate-y-20">
-            <FeatureCards />
+            <QuickFeatureSection />
           </div>
           <div className="-mt-10">
-            <FeaturedCompanies />
+            <FeaturedCompanieSection />
           </div>
           <div>
-            <FeatureHr />
+            <TopHRSection />
           </div>
           <div className="pt-10">
-            <JobToday />
+            <JobTodaySection />
           </div>
           <div className="pt-10">
-            <NewestJob />
+            <NewestJobSection />
           </div>
           <div className="py-20">
-            <BlogSection />
+            <QuickBlogSection />
           </div>
           <div className="">
-            <SubscribeCTA />
+            <SubscribeCTASection />
           </div>
         </div>
       </div>
@@ -41,5 +41,4 @@ function HomePage() {
   );
 }
 
-export default HomePage;
 

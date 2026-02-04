@@ -1,7 +1,7 @@
 "use client";
 
-import ProfileSection from "@/components/features/qa/left-sidebar/profile.section";
-import FriendFollow from "@/components/features/qa/right-sidebar/friend-follow.section";
+import ProfileSection from "@/components/sections/qa/left-sidebar/profile.section";
+import FriendFollow from "@/components/sections/qa/right-sidebar/friend-follow.section";
 
 export default function LeftSidebar({ connections }: { connections: any[] }) {
   return (

@@ -4,14 +4,13 @@ import { useEffect, useState } from "react";
 import LogoLoop from "@/components/common/reactbits/logo.loop";
 import SectionTitle from "@/components/features/section-title";
 import { companyApi } from "@/apis";
+import { CompanyLogo } from "@/types";
+import { ROUTES } from "@/constants";
+import { Skeleton } from "@/components/ui/skeleton";
 
-interface CompanyLogo {
-  id: number;
-  name: string;
-  avatar?: string;
-}
 
-function FeatureHr() {
+
+export default function TopHRSection() {
   const [logos, setLogos] = useState<
     Array<{ src: string; alt: string; href: string; title: string }>
   >([]);
@@ -27,12 +26,11 @@ function FeatureHr() {
         const transformedLogos = response.data.map((company: CompanyLogo) => ({
           src: company.avatar || "/logo/default-company.png",
           alt: company.name,
-          href: `/companies/${company.id}`,
+          href: ROUTES.COMPANY_DETAIL(company.id),
           title: company.name,
         }));
         setLogos(transformedLogos);
       } catch (error) {
-        // Fallback to empty array on error
         setLogos([]);
       } finally {
         setLoading(false);
@@ -45,8 +43,15 @@ function FeatureHr() {
     return (
       <div>
         <SectionTitle title="Nhà Tuyển Dụng Hàng Đầu" />
-        <div className="mt-10 flex items-center justify-center h-24">
-          <div className="text-muted-foreground">Đang tải...</div>
+        <div className="mt-10 overflow-hidden">
+          <div className="flex gap-8 animate-pulse">
+            {[...Array(10)].map((_, i) => (
+              <Skeleton 
+                key={i} 
+                className="h-16 w-32 rounded-lg flex-shrink-0" 
+              />
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -82,4 +87,3 @@ function FeatureHr() {
   );
 }
 
-export default FeatureHr;

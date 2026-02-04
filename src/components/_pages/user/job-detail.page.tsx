@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import CompanyJobInfo from "@/components/features/jobs/company-job-info.section";
-import JobDescription from "@/components/features/jobs/job-description.section";
-import JobRequirements from "@/components/features/jobs/job-requirements.section";
-import JobBenefits from "@/components/features/jobs/job-benefits.section";
-import CompanyInfo from "@/components/features/jobs/company-info.section";
+import CompanyJobInfo from "@/components/sections/jobs/company-job-info.section";
+import JobDescription from "@/components/sections/jobs/job-description.section";
+import JobRequirements from "@/components/sections/jobs/job-requirements.section";
+import JobBenefits from "@/components/sections/jobs/job-benefits.section";
+import CompanyInfo from "@/components/sections/jobs/company-info.section";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { jobApi } from "@/apis";

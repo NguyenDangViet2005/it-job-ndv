@@ -1,6 +1,6 @@
 "use client";
 
-import MainContent from "@/components/features/qa/MainContent";
+import MainContent from "@/components/sections/qa/MainContent";
 import { useInfiniteScroll } from "@/lib/hooks/usePost";
 import { useQAPage } from "@/lib/hooks/useQAPage";
 import { usePostInteractions } from "@/lib/hooks/usePostInteractions";

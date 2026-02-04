@@ -1,5 +1,5 @@
-import CompanyFollow from "@/components/features/qa/right-sidebar/company-follow.section";
-import BlogCompany from "@/components/features/qa/left-sidebar/QA-company.section";
+import CompanyFollow from "@/components/sections/qa/right-sidebar/company-follow.section";
+import BlogCompany from "@/components/sections/qa/left-sidebar/QA-company.section";
 
 export default function RightSidebar({
   followList,

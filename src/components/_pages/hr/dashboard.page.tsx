@@ -1,4 +1,4 @@
-import KPI from "@/components/features/hr/kpi.section";
+import KPI from "@/components/sections/hr/kpi.section";
 import QuickActions from "@/components/common/cards/hrCards/quick.action.card";
 import ActivityFeed from "@/components/common/cards/adminCards/activity-feed.card";
 

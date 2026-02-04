@@ -7,12 +7,14 @@ import { useState, useEffect } from "react";
 import SectionTitle from "@/components/features/section-title";
 import { jobApi } from "@/apis";
 import type { JobResponse } from "@/types/api.type";
-import type { Swiper as SwiperType } from "swiper";
 import Link from "next/link";
 import { formatDate } from "@/utils";
 import { useAuth } from "@/lib/hooks/useAuth";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ROUTES } from "@/constants";
+import Image from "next/image";
 
-export default function NewestJob() {
+export default function NewestJobSection() {
   const [jobs, setJobs] = useState<JobResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -47,8 +49,29 @@ export default function NewestJob() {
           showViewAll
           viewAllLink="/jobs"
         />
-        <div className="flex items-center justify-center h-64">
-          <div className="text-muted-foreground">Đang tải...</div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pb-6">
+          {[...Array(8)].map((_, i) => (
+            <div key={i} className="p-5 border rounded-xl bg-card flex flex-col gap-4">
+              <div className="flex gap-3 items-start">
+                <Skeleton className="w-14 h-14 rounded-lg flex-shrink-0" />
+                <div className="flex-1 space-y-2">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-3 w-3/4" />
+                </div>
+              </div>
+              <Skeleton className="h-10 w-full" />
+              <div className="flex gap-2">
+                <Skeleton className="h-6 w-20" />
+                <Skeleton className="h-6 w-24" />
+              </div>
+              <Skeleton className="h-4 w-full" />
+              <div className="flex gap-1.5 pt-2">
+                <Skeleton className="h-6 w-16" />
+                <Skeleton className="h-6 w-16" />
+                <Skeleton className="h-6 w-16" />
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     );
@@ -97,19 +120,19 @@ export default function NewestJob() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pb-6">
         {jobs.map((job) => (
-          <Link href={`/jobs/${job.id}`} key={job.id}>
+          <Link href={ROUTES.JOB_DETAIL(job.id)} key={job.id}>
             <div
               className="p-5 border rounded-xl bg-card flex flex-col gap-4 cursor-pointer 
                 shadow-sm hover:shadow-xl hover:shadow-primary/30 
                 transition-all duration-300 ease-in-out h-full"
             >
-              {/* Header with Company Logo and Info */}
               <div className="flex gap-3 items-start">
                 <div className="flex-shrink-0">
-                  <img
-                    src={job.company?.avatar}
+                  <Image
+                    src={job.company?.avatar || ""}
                     alt={job.company?.name || "Company"}
-                    className="w-14 h-14 object-contain rounded-lg border p-1"
+                    width={56} height={56}
+                    className="ww-14 h-14 object-contain rounded-lg border p-1"
                   />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -122,14 +145,12 @@ export default function NewestJob() {
                 </div>
               </div>
 
-              {/* Description */}
               {job.description && (
                 <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
                   {job.description}
                 </p>
               )}
 
-              {/* Location and Type */}
               <div className="flex flex-wrap gap-2 text-xs">
                 {(job.company?.city || job.company?.address) && (
                   <span className="px-2 py-1 bg-blue-50 text-blue-700 rounded-md border border-blue-200">
@@ -151,7 +172,6 @@ export default function NewestJob() {
                 )}
               </div>
 
-              {/* Quantity, Deadline and Salary */}
               <div className="flex flex-col gap-2 text-xs text-muted-foreground">
                 <div className="flex items-center gap-3">
                   {job.quantity && (
@@ -183,7 +203,6 @@ export default function NewestJob() {
                 )}
               </div>
 
-              {/* Skills */}
               {job.skills && job.skills.length > 0 && (
                 <div className="flex flex-wrap gap-1.5 pt-2 border-t">
                   {job.skills.slice(0, 4).map((skill: any) => (
@@ -202,7 +221,6 @@ export default function NewestJob() {
                 </div>
               )}
 
-              {/* Status Badge */}
               {job.status && (
                 <div className="flex items-center justify-between pt-2 border-t">
                   <span
@@ -232,7 +250,6 @@ export default function NewestJob() {
         ))}
       </div>
 
-      {/* Pagination Controls */}
       <div className="flex items-center justify-center gap-4 mt-6">
         <button
           onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
