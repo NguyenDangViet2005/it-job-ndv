@@ -6,7 +6,7 @@ import SectionTitle from "@/components/features/section-title";
 import { companyApi } from "@/apis";
 import { CompanyLogo } from "@/types";
 import { ROUTES } from "@/constants";
-import { Skeleton } from "@/components/ui/skeleton";
+import { TopHRSkeleton } from "@/components/common/skeletons";
 
 
 
@@ -40,21 +40,7 @@ export default function TopHRSection() {
     fetchCompanyLogos();
   }, []);
   if (loading) {
-    return (
-      <div>
-        <SectionTitle title="Nhà Tuyển Dụng Hàng Đầu" />
-        <div className="mt-10 overflow-hidden">
-          <div className="flex gap-8 animate-pulse">
-            {[...Array(10)].map((_, i) => (
-              <Skeleton 
-                key={i} 
-                className="h-16 w-32 rounded-lg flex-shrink-0" 
-              />
-            ))}
-          </div>
-        </div>
-      </div>
-    );
+    return <TopHRSkeleton />;
   }
 
   if (logos.length === 0) {

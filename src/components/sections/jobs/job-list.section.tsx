@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import JobCard from "@/components/common/cards/jobCards/job.card";
 import {
   Pagination,
@@ -12,7 +11,8 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import type { JobResponse } from "@/types/api.type";
-import { Briefcase, Loader2 } from "lucide-react";
+import { Briefcase } from "lucide-react";
+import { JobListSkeleton } from "@/components/common/skeletons";
 
 interface JobListSectionProps {
   jobs: JobResponse[];
@@ -117,12 +117,7 @@ export default function JobListSection({
   };
 
   if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center h-64 gap-4">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <p className="text-muted-foreground">Đang tải danh sách công việc...</p>
-      </div>
-    );
+    return <JobListSkeleton />;
   }
 
   if (error) {

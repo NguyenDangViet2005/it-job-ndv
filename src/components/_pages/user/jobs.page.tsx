@@ -25,7 +25,6 @@ const JobsPage = () => {
   const [totalPages, setTotalPages] = useState(1);
   const pageSize = 6;
 
-  // Debounce search term với delay 1 giây
   const debouncedSearchTerm = useDebounce(searchTerm, 1000);
 
   useEffect(() => {
@@ -41,7 +40,7 @@ const JobsPage = () => {
       const response = await skillApi.getAll(1, 20);
       setSkills(response.data);
     } catch (err) {
-      console.error("❌ Error fetching skills:", err);
+      console.error("Error fetching skills:", err);
     }
   }
 
