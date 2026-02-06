@@ -1,6 +1,23 @@
-const { Job, Company, Skill, SkillJob, CompanyMember } = require("../models");
+const { Job, Company, Skill, SkillJob, CompanyMember, Application, User } = require("../models");
 const { Op, literal } = require("sequelize");
 const { JobResponse } = require("../dtos/JobResponse.dto");
+
+
+const companyInclude = {
+  model: Company,
+  include: [
+    {
+      model: CompanyMember,
+      attributes: ["userid", "status", "joinedat"],
+      include: [
+        {
+          model: User,
+          attributes: ["id", "fullname", "avatar", "email"],
+        },
+      ],
+    },
+  ],
+};
 
 const getAll = async (pageNumber = 1, pageSize = 10) => {
   try {
@@ -16,13 +33,13 @@ const getAll = async (pageNumber = 1, pageSize = 10) => {
         deadline: { [Op.gt]: today },
       },
       include: [
-        {
-          model: Company,
-          attributes: ["id", "name", "avatar", "website", "address", "hotline"],
-        },
+        companyInclude,
         {
           model: Skill,
           through: { attributes: [] },
+        },
+        {
+          model: Application,
         },
       ],
       offset,
@@ -46,12 +63,13 @@ const getById = async (id) => {
   try {
     const job = await Job.findByPk(id, {
       include: [
-        {
-          model: Company,
-        },
+        companyInclude,
         {
           model: Skill,
           through: { attributes: [] },
+        },
+        {
+          model: Application,
         },
       ],
     });
@@ -173,13 +191,13 @@ const getJobsByCompanyId = async (
     const { count, rows } = await Job.findAndCountAll({
       where: whereClause,
       include: [
-        {
-          model: Company,
-          attributes: ["id", "name", "avatar", "website", "address", "hotline"],
-        },
+        companyInclude,
         {
           model: Skill,
           through: { attributes: [] },
+        },
+        {
+          model: Application,
         },
       ],
       offset,
@@ -219,12 +237,13 @@ const getJobsToday = async () => {
         ],
       },
       include: [
-        {
-          model: Company,
-        },
+        companyInclude,
         {
           model: Skill,
           through: { attributes: [] },
+        },
+        {
+          model: Application,
         },
       ],
     });
@@ -249,13 +268,13 @@ const getJobsBySkill = async (skillid, pageNumber = 1, pageSize = 10) => {
         deadline: { [Op.gt]: today },
       },
       include: [
-        {
-          model: Company,
-          attributes: ["id", "name", "avatar", "website", "address", "hotline"],
-        },
+        companyInclude,
         {
           model: Skill,
           where: { id: skillid },
+        },
+        {
+          model: Application,
         },
       ],
       offset,

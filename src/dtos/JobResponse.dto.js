@@ -10,6 +10,7 @@ class JobCompanyResponse {
     this.companyemail = company.companyemail;
     this.coverimage = company.coverimage;
     this.address = company.address || null;
+    this.memberCount = company.CompanyMembers ? company.CompanyMembers.length : 0;
   }
 }
 
@@ -36,6 +37,7 @@ class JobResponse {
     this.skills = job.Skills
       ? job.Skills.map((skill) => new JobSkillResponse(skill))
       : [];
+    this.applicationCount = job.Applications ? job.Applications.length : 0;
   }
 }
 

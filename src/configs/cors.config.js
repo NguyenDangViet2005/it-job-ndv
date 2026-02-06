@@ -1,7 +1,7 @@
 export const corsOptions = {
   origin: [
     "http://localhost:3000",
-    "https://it-job-ndv.vercel.app"  // Xóa dấu / ở cuối
+    "https://it-job-ndv.vercel.app" 
   ],
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
