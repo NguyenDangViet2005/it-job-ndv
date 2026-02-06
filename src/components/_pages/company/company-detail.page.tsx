@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import {  useRouter } from "next/navigation";
 import { Company } from "@/types/models/company.type";
 import { companyApi } from "@/apis";
 import { Card, CardContent } from "@/components/ui/card";
@@ -28,14 +28,11 @@ import {
 import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Job } from "@/types";
 import { ROUTES } from "@/constants";
 import Link from "next/link";
 
-const CompanyDetailPage = () => {
-  const params = useParams();
+const CompanyDetailPage = ({companyid}: {companyid: string}) => {
   const router = useRouter();
-  const companyId = params?.slug ? parseInt(params.slug as string) : null;
   
   const [company, setCompany] = useState<Company | null>(null);
   const [loading, setLoading] = useState(true);
@@ -43,7 +40,7 @@ const CompanyDetailPage = () => {
 
   useEffect(() => {
     const fetchCompany = async () => {
-      if (!companyId) {
+      if (!companyid) {
         setError("ID công ty không hợp lệ");
         setLoading(false);
         return;
@@ -51,7 +48,7 @@ const CompanyDetailPage = () => {
 
       try {
         setLoading(true);
-        const data = await companyApi.getById(companyId);
+        const data = await companyApi.getById(Number(companyid));
         setCompany(data);
       } catch (err) {
         console.error("Error fetching company:", err);
@@ -62,7 +59,7 @@ const CompanyDetailPage = () => {
     };
 
     fetchCompany();
-  }, [companyId]);
+  }, [companyid]);
 
   if (loading) {
     return <CompanyDetailSkeleton />;
@@ -86,7 +83,7 @@ const CompanyDetailPage = () => {
   }
 
   const openJobs = company.jobs?.filter(job => job.status === 'open') || [];
-  const totalMembers = company.membersCount || company.members?.length || 0;
+  const totalMembers = company.memberCount ||  0;
   const totalFollowers = company.follows?.length || 0;
   const averageRating = company.reviews?.length 
     ? (company.reviews.reduce((sum, r) => sum + r.rating, 0) / company.reviews.length).toFixed(1)
@@ -246,7 +243,7 @@ const CompanyDetailPage = () => {
                   
                   {openJobs.length > 0 ? (
                     <div className="space-y-3">
-                      {openJobs.slice(0, 5).map((job: Job) => (
+                      {openJobs.slice(0, 5).map((job) => (
                         <div key={job.id} className="p-4 border rounded-lg hover:shadow-sm transition-shadow">
                           <div className="flex justify-between items-start gap-4">
                             <div className="flex-1">

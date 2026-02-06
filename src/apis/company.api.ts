@@ -1,3 +1,4 @@
+import { Company } from "@/types";
 import {
   apiGet,
   apiPost,
@@ -9,8 +10,6 @@ import {
 } from "./api";
 import type {
   ApiResponse,
-  ResponseData,
-  Company,
   CompanyUpdateRequest,
 } from "@/types/api.type";
 import { getUserRole } from "@/utils";  

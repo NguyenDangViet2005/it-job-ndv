@@ -1,3 +1,4 @@
+import { User } from "@/types";
 import { apiPost, apiGet } from "./api";
 import type {
   ApiResponse,
@@ -6,7 +7,6 @@ import type {
   RegisterRequest,
   RegisterHRRequest,
   RegisterHRResponse,
-  UserResponse,
 } from "@/types/api.type";
 
 const ENDPOINT = "/auth";
@@ -57,7 +57,7 @@ export const authApi = {
 
   // Lấy thông tin user hiện tại
   getCurrentUser: (token: string) => {
-    return apiGet<ApiResponse<UserResponse>>(`${ENDPOINT}/me`, {
+    return apiGet<ApiResponse<User>>(`${ENDPOINT}/me`, {
       token,
       credentials: "include", // Optional but good practice
     });

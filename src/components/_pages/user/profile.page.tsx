@@ -43,11 +43,10 @@ import EditPostDialog from "@/components/common/modals/qa/edit-post-modal";
 import { userApi } from "@/apis/user.api";
 import { postApi } from "@/apis/post.api";
 import { interactionApi } from "@/apis/interaction.api";
-
-import type { FullPostResponse, AttachmentResponse } from "@/types/api.type";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useInfiniteScroll, useUserMedia, useUserPosts } from "@/lib/hooks/usePost";
+import { Attachment, Post, Comment as PostComment } from "@/types";
 
 interface Skill {
   id: number;
@@ -80,11 +79,11 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
 
   // State for editing posts
   const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [postToEdit, setPostToEdit] = useState<FullPostResponse | null>(null);
+  const [postToEdit, setPostToEdit] = useState<Post | null>(null);
 
   // State for lightbox
   const [lightboxOpen, setLightboxOpen] = useState(false);
-  const [lightboxMedia, setLightboxMedia] = useState<AttachmentResponse[]>([]);
+  const [lightboxMedia, setLightboxMedia] = useState<Attachment[]>([]);
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
 
   // State for uploading avatar/cover
@@ -283,8 +282,8 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
         token,
       );
 
-      setPosts((prev: FullPostResponse[]) => [
-        newPostResponse as unknown as FullPostResponse,
+      setPosts((prev: Post[]) => [
+        newPostResponse as unknown as Post,
         ...prev,
       ]);
       setNewPost("");
@@ -308,8 +307,8 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
     try {
       const result = await interactionApi.toggleLike(postid, user.id, token);
 
-      setPosts((prev: FullPostResponse[]) =>
-        prev.map((post: FullPostResponse) =>
+      setPosts((prev: Post[]) =>
+        prev.map((post: Post) =>
           post.id === postid
             ? {
                 ...post,
@@ -329,8 +328,8 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
 
   // Handle toggle comments
   const handleToggleComments = (postid: number) => {
-    setPosts((prev: FullPostResponse[]) =>
-      prev.map((post: FullPostResponse) =>
+    setPosts((prev: Post[]) =>
+      prev.map((post: Post) =>
         post.id === postid
           ? { ...post, showComments: !(post as any).showComments }
           : post,
@@ -353,15 +352,18 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
         token,
       );
 
-      setPosts((prev: FullPostResponse[]) =>
-        prev.map((post: FullPostResponse) =>
+      setPosts((prev: Post[]) =>
+        prev.map((post: Post) =>
           post.id === postid
             ? {
                 ...post,
                 interaction: {
                   ...post.interaction,
                   totalComments: post.interaction.totalComments + 1,
-                  comments: [newComment, ...(post.interaction.comments || [])],
+                  comments: [
+                    newComment as unknown as PostComment,
+                    ...(post.interaction.comments || []),
+                  ] as PostComment[],
                 },
                 showComments: true,
               }
@@ -375,7 +377,7 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
 
   // Handle edit post
   const handleEditPost = (postid: number) => {
-    const post = posts.find((p: FullPostResponse) => p.id === postid);
+    const post = posts.find((p: Post) => p.id === postid);
     if (post) {
       setPostToEdit(post);
       setEditDialogOpen(true);
@@ -393,7 +395,7 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
 
     try {
       // Find the post to get userid or companyid
-      const post = posts.find((p: FullPostResponse) => p.id === postid);
+      const post = posts.find((p: Post) => p.id === postid);
       if (!post) {
         throw new Error("Post not found");
       }
@@ -416,8 +418,8 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
       );
 
       // Update local state
-      setPosts((prev: FullPostResponse[]) =>
-        prev.map((p: FullPostResponse) =>
+      setPosts((prev: Post[]) =>
+        prev.map((p: Post) =>
           p.id === postid ? { ...p, content } : p,
         ),
       );
@@ -431,7 +433,7 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
 
   // Open lightbox
   const openLightbox = (
-    mediaList: AttachmentResponse[],
+    mediaList: Attachment[],
     startIndex: number = 0,
   ) => {
     setLightboxMedia(mediaList);
@@ -900,7 +902,7 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
                 ) : (
                   <div className="grid grid-cols-3 gap-2">
                     {displayMedia.map(
-                      (item: AttachmentResponse, index: number) => (
+                      (item: Attachment, index: number) => (
                         <div
                           key={item.id}
                           className="cursor-target aspect-square rounded-lg overflow-hidden group relative"
@@ -1078,7 +1080,7 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
               </Card>
             ) : (
               <>
-                {posts.map((post: FullPostResponse, index: number) => (
+                {posts.map((post: Post, index: number) => (
                   <PostCard
                     key={post.id}
                     post={post}

@@ -1,28 +1,24 @@
+import { Attachment, Post, User } from "@/types";
 import { apiGet, apiPut, apiPost, apiDelete, apiGetPaginated } from "./api";
-import type {
-  UserResponse,
-  PostResponse,
-  AttachmentResponse,
-} from "@/types/api.type";
 
 const ENDPOINT = "/user";
 
 export const userApi = {
   // Lấy danh sách tất cả users (admin)
   getAll: (pageNumber: number = 1, pageSize: number = 10, token?: string) => {
-    return apiGetPaginated<UserResponse>(ENDPOINT, pageNumber, pageSize, {
+    return apiGetPaginated<User>(ENDPOINT, pageNumber, pageSize, {
       token,
     });
   },
 
   // Lấy thông tin user theo ID
   getById: (id: number, token?: string) => {
-    return apiGet<UserResponse>(`${ENDPOINT}/${id}`, { token });
+    return apiGet<User>(`${ENDPOINT}/${id}`, { token });
   },
 
   // Cập nhật thông tin user
-  update: (id: number, data: Partial<UserResponse>, token: string) => {
-    return apiPut<{ message: string; data: UserResponse }>(
+  update: (id: number, data: Partial<User>, token: string) => {
+    return apiPut<{ message: string; data: User }>(
       `${ENDPOINT}/${id}`,
       data,
       { token }
@@ -50,7 +46,7 @@ export const userApi = {
       throw new Error(error.message || "Failed to update avatar");
     }
 
-    return response.json() as Promise<{ message: string; data: UserResponse }>;
+    return response.json() as Promise<{ message: string; data: User }>;
   },
 
   // Cập nhật ảnh bìa
@@ -74,7 +70,7 @@ export const userApi = {
       throw new Error(error.message || "Failed to update cover image");
     }
 
-    return response.json() as Promise<{ message: string; data: UserResponse }>;
+    return response.json() as Promise<{ message: string; data: User }>;
   },
 
   // Đổi mật khẩu
@@ -98,7 +94,7 @@ export const userApi = {
     pageSize: number = 10,
     token?: string
   ) => {
-    return apiGetPaginated<PostResponse>(
+    return apiGetPaginated<Post>(
       `${ENDPOINT}/${id}/posts`,
       pageNumber,
       pageSize,
@@ -113,7 +109,7 @@ export const userApi = {
     pageSize: number = 6,
     token?: string
   ) => {
-    return apiGetPaginated<AttachmentResponse>(
+    return apiGetPaginated<Attachment>(
       `${ENDPOINT}/${id}/media`,
       pageNumber,
       pageSize,
@@ -181,6 +177,6 @@ export const userApi = {
       throw new Error(error.message || "Failed to update CV");
     }
 
-    return response.json() as Promise<{ message: string; data: UserResponse }>;
+    return response.json() as Promise<{ message: string; data: User }>;
   },
 };

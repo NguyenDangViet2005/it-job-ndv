@@ -1,5 +1,3 @@
-// Test & Common Navigation Types
-
 export interface NavigationItem {
   id: string;
   label: string;

@@ -2,10 +2,9 @@ import Image from "next/image";
 import { Briefcase, TrendingUp, MoveRight } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { useAuth } from "@/lib/hooks/useAuth";
-import type { JobResponse } from "@/types/api.type";
-import type { Company } from "@/types";
+import type { Company, Job } from "@/types";
 
-const HotJob = ({ props }: { props: JobResponse }) => {
+const HotJob = ({ props }: { props: Job }) => {
   const { user } = useAuth();
   const company = props.company as Company | undefined;
   return (

@@ -1,5 +1,3 @@
-// Connection Model Types
-
 export interface Connection {
   id: number;
   userid: number;

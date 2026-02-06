@@ -33,7 +33,7 @@ import {
   BookOpen,
 } from "lucide-react";
 import Link from "next/link";
-import type { UserResponse } from "@/types/api.type";
+import { User as UserResponse } from "@/types"
 import { ROUTES } from "@/constants";
 
 interface UserDropdownProps {

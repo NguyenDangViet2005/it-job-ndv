@@ -1,11 +1,11 @@
 import { ReactNode } from "react";
 import LeftSidebar from "@/components/sections/qa/left-sidebar/left-sidebar.section";
 import RightSidebar from "@/components/sections/qa/right-sidebar/right-sidebar.section";
-import type { BlogResponse, Company } from "@/types/api.type";
+import { Blog, Company } from "@/types";
 
 interface QAPageLayoutProps {
   children: ReactNode;
-  blogs: BlogResponse[];
+  blogs: Blog[];
   suggestedCompanies: Company[];
   followedCompanyIds: number[];
   connections: any[];

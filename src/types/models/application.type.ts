@@ -1,5 +1,3 @@
-// Application Model Types
-
 import type { Job } from "./job.type";
 import type { User } from "./user.type";
 

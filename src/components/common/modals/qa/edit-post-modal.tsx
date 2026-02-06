@@ -11,14 +11,14 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, ImageIcon, X, Upload } from "lucide-react";
-import type { FullPostResponse } from "@/types/api.type";
+import { Loader2, ImageIcon, X } from "lucide-react";
 import Image from "next/image";
+import { Post } from "@/types";
 
 interface EditPostDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  post: FullPostResponse | null;
+  post: Post | null;
   onSave: (
     postid: number,
     content: string,

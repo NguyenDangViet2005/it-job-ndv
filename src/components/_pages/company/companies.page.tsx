@@ -1,26 +1,21 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
+import  { useState, useMemo, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Building2,
-  MapPin,
-  Users,
-  Briefcase,
-  Search,
   Filter,
   X,
 } from "lucide-react";
 import { companyApi } from "@/apis";
-import type { Company } from "@/types/api.type";
 import { CompanyCard } from "@/components/common/cards/companyCards/company.card";
 import { HeroSection } from "@/components/features/hero.section";
 import Link from "next/link";
 import { ROUTES } from "@/constants";
 import { useDebounce } from "@/lib/hooks/useDebounce";
+import { Company } from "@/types";
 
 interface CompanyFilters {
   search: string;

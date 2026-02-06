@@ -3,15 +3,11 @@ import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MapPin, Clock, Users, Calendar, Bookmark, Eye } from "lucide-react";
-import type { JobResponse } from "@/types/api.type";
+import { MapPin, Clock, Users} from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Job } from "@/types";
 
-interface JobCardProps {
-  job: JobResponse;
-}
-
-export default function JobCard({ job }: JobCardProps) {
+export default function JobCard( job : Job) {
   return (
     <Card className="group hover:shadow-xl hover:-translate-y-1 transition-all duration-500 border border-border bg-card p-4 rounded-none">
       <CardContent className="p-0">

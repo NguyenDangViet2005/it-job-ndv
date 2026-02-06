@@ -1,5 +1,3 @@
-// Blog Model Types
-
 export interface Blog {
   id: number;
   userid: number;

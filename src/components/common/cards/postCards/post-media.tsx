@@ -1,10 +1,10 @@
 "use client";
 
+import { Attachment } from "@/types";
 import { Play } from "lucide-react";
-import type { AttachmentResponse } from "@/types/api.type";
 
 interface PostMediaProps {
-  attachments?: AttachmentResponse[]; // From API
+  attachments?: Attachment[]; // From API
   // Legacy support props (optional)
   images?: string[];
   video?: string;

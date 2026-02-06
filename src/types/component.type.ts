@@ -1,10 +1,11 @@
-import type { FullPostResponse, JobResponse } from "./api.type";
-import type { Company } from "./models/company.type";
-import type { UserResponse } from "./api.type";
+import { Company } from "./models/company.type";
+import { Job } from "./models/job.type";
+import { Post } from "./models/post.type";
+import { User } from "./models/user.type";
 
 // ============ QA/Post Components ============
 export interface MainContentProps {
-  posts: FullPostResponse[];
+  posts: Post[];
   loading: boolean;
   onLikePost: (postid: number) => void;
   onToggleComments: (postid: number) => void;
@@ -24,7 +25,7 @@ export interface MainContentProps {
 }
 
 export interface PostListProps {
-  posts: FullPostResponse[];
+  posts: Post[];
   loading: boolean;
   currentUserAvatar?: string;
   currentUserName?: string;
@@ -47,7 +48,7 @@ export interface PostListProps {
 
 // ============ Job Components ============
 export interface JobListSectionProps {
-  jobs: JobResponse[];
+  jobs: Job[];
   loading: boolean;
   onJobClick: (jobid: number) => void;
 }
@@ -130,13 +131,13 @@ export interface NavigationLinkProps {
 }
 
 export interface UserDropdownProps {
-  user: UserResponse | null;
+  user: User | null;
   onLogout: () => void;
 }
 
 export interface MobileMenuProps {
   isLoggedIn: boolean;
-  user: UserResponse | null;
+  user: User | null;
   onLogout: () => void;
 }
 

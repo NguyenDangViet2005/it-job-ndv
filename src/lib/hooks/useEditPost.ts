@@ -1,17 +1,17 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { postApi } from "@/apis/post.api";
-import type { FullPostResponse } from "@/types/api.type";
+import { Post } from "@/types";
 
 interface UseEditPostProps {
-  posts: FullPostResponse[];
+  posts: Post[];
   token: string | null;
   onSuccess?: () => void;
 }
 
 export function useEditPost({ posts, token, onSuccess }: UseEditPostProps) {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [postToEdit, setPostToEdit] = useState<FullPostResponse | null>(null);
+  const [postToEdit, setPostToEdit] = useState<Post | null>(null);
 
   const handleEditPost = (postid: number) => {
     const post = posts.find((p) => p.id === postid);

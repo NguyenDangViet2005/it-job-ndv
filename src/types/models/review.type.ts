@@ -1,5 +1,3 @@
-// Review Model Types
-
 export interface Review {
   id: number;
   userid: number;

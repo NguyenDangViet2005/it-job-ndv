@@ -22,8 +22,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { navigationItems } from "@/constants/navigation.config";
-import type { UserResponse } from "@/types/api.type";
 import { ROUTES } from "@/constants";
+import { User as UserResponse } from "@/types";
 
 interface MobileMenuProps {
   isLoggedIn: boolean;

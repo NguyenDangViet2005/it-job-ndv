@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import  { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -18,17 +18,17 @@ import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import rehypeRaw from "rehype-raw";
 import { blogApi } from "@/apis";
-import type { BlogResponse } from "@/types/api.type";
 import { formatDate } from "@/utils/format";
 import Image from "next/image";
 import { ROUTES } from "@/constants";
+import { Blog } from "@/types";
 
 interface BlogDetailSectionProps {
   id: string;
 }
 
 function BlogDetailSection({ id }: BlogDetailSectionProps) {
-  const [post, setPost] = useState<BlogResponse | null>(null);
+  const [post, setPost] = useState<Blog | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

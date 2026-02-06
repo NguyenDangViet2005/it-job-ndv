@@ -1,5 +1,3 @@
-// Post Model Types
-
 import type { PostUser } from "./user.type";
 import type { PostCompany } from "./company.type";
 

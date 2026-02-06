@@ -1,5 +1,3 @@
-// Job Model Types
-
 export interface Job {
   id: number;
   companyid: number;
@@ -13,6 +11,7 @@ export interface Job {
   location?: string;
   createdat: string;
   updatedat: string;
+  applicationCount: number,
   company?: {
     id: number;
     name: string;
@@ -20,6 +19,7 @@ export interface Job {
     website?: string;
     address?: string;
     city?: string;
+    memberCount?: number
   };
   skills?: Skill[];
 }

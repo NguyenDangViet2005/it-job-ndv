@@ -11,10 +11,10 @@ import "swiper/css/navigation";
 import { Bookmark, Building2, MapPin, MoveLeft, MoveRight } from "lucide-react";
 import SectionTitle from "@/components/features/section-title";
 import { companyApi } from "@/apis";
-import type { Company } from "@/types/api.type";
 import { ROUTES } from "@/constants";
 import { Button } from "@/components/ui/button";
 import { FeatureCompanySkeleton } from "@/components/common/skeletons";
+import { Company } from "@/types";
 
 export default function FeaturedCompanieSection() {
   const [companies, setCompanies] = useState<Company[]>([]);

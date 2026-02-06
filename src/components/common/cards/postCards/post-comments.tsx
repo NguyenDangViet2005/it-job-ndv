@@ -24,10 +24,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import type { AttachmentResponse } from "@/types/api.type";
 import Link from "next/link";
 import { DEFAULT_AVATARS } from "@/constants";
 import { useAuth } from "@/lib/hooks/useAuth";
+import { Attachment } from "@/types";
 
 interface PostCommentsProps {
   post: any;
@@ -83,10 +83,10 @@ const PostComments = forwardRef<PostCommentsRef, PostCommentsProps>(
     const [editingContent, setEditingContent] = useState("");
     const [editingAttachments, setEditingAttachments] = useState<File[]>([]);
     const [existingAttachments, setExistingAttachments] = useState<
-      AttachmentResponse[]
+      Attachment[]
     >([]);
     const [keepExistingAttachments, setKeepExistingAttachments] = useState<
-      AttachmentResponse[]
+      Attachment[]
     >([]);
 
     const inputRef = useRef<HTMLInputElement>(null);
@@ -138,7 +138,7 @@ const PostComments = forwardRef<PostCommentsRef, PostCommentsProps>(
     const startEditingComment = (
       commentId: number,
       currentContent: string,
-      existingAttachments?: AttachmentResponse[],
+      existingAttachments?: Attachment[],
     ) => {
       setEditingCommentId(commentId);
       setEditingContent(currentContent);
@@ -185,7 +185,7 @@ const PostComments = forwardRef<PostCommentsRef, PostCommentsProps>(
     };
 
     const removeExistingAttachment = (
-      attachmentToRemove: AttachmentResponse,
+      attachmentToRemove: Attachment,
     ) => {
       setKeepExistingAttachments((prev) =>
         prev.filter((att) => att.fileurl !== attachmentToRemove.fileurl),
@@ -376,7 +376,7 @@ const PostComments = forwardRef<PostCommentsRef, PostCommentsProps>(
                           {comment?.attachments?.length > 0 && (
                             <div className="flex gap-2 flex-wrap mt-2">
                               {comment?.attachments?.map(
-                                (att: AttachmentResponse, idx: number) => (
+                                (att: Attachment, idx: number) => (
                                   <img
                                     key={idx}
                                     src={att.fileurl}

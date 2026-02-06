@@ -8,14 +8,14 @@ import "swiper/css/pagination";
 import HotJob from "@/components/sections/jobs/hot-jobs.section";
 import SectionTitle from "@/components/features/section-title";
 import { jobApi } from "@/apis";
-import type { JobResponse } from "@/types/api.type";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { ROUTES } from "@/constants";
 import { JobTodaySkeleton } from "@/components/common/skeletons";
+import { Job } from "@/types";
 
 export default function JobTodaySection() {
-  const [jobs, setJobs] = useState<JobResponse[] | null>(null);
+  const [jobs, setJobs] = useState<Job[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

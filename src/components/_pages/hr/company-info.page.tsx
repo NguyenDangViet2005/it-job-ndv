@@ -38,8 +38,9 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { companyApi } from "@/apis/company.api";
-import type { Company, CompanyUpdateRequest } from "@/types/api.type";
+import type {  CompanyUpdateRequest } from "@/types/api.type";
 import { toast } from "sonner";
+import { Company } from "@/types";
 
 const HRCompanyInfo = () => {
   const { token } = useAuth();

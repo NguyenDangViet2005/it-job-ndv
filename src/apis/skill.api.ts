@@ -1,3 +1,4 @@
+import { Skill } from "@/types";
 import {
   apiGet,
   apiPost,
@@ -6,7 +7,7 @@ import {
   apiGetPaginated,
   apiGetById,
 } from "./api";
-import type { ApiResponse, Skill } from "@/types/api.type";
+import type { ApiResponse } from "@/types/api.type";
 
 const ENDPOINT = "/skills";
 

@@ -5,17 +5,17 @@ import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Clock, ChevronRight, ChevronLeft } from "lucide-react";
+import { Search, ChevronRight, ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { blogApi } from "@/apis";
-import type { BlogResponse } from "@/types/api.type";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatDate } from "@/utils/format";
 import { useDebounce } from "@/lib/hooks/useDebounce";
 import { ROUTES } from "@/constants";
+import { Blog } from "@/types";
 
 function BlogListSection() {
-  const [blogs, setBlogs] = useState<BlogResponse[]>([]);
+  const [blogs, setBlogs] = useState<Blog[]>([]);
   const [categories, setCategories] = useState<
     Array<{ id: number; name: string }>
   >([]);

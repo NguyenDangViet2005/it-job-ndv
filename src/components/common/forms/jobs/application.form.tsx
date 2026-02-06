@@ -13,7 +13,6 @@ import {
   FormMessage,
   FormDescription,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,7 +31,6 @@ import { userApi } from "@/apis/user.api";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { FileText, Upload, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-
 interface ApplicationFormProps {
   jobid: number;
   jobTitle: string;
@@ -116,7 +114,7 @@ export default function ApplicationForm({
           cvurl: cvurl,
           coverletter: values.coverletter,
         },
-        token
+        token,
       );
 
       toast.success("Ứng tuyển thành công!");

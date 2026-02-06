@@ -1,8 +1,5 @@
+import { Application, ApplicationRequest } from "@/types";
 import { apiPost, apiGet, apiGetPaginated, apiPut, apiDelete } from "./api";
-import type {
-  ApplicationRequest,
-  ApplicationResponse,
-} from "@/types/application.type";
 import { getUserRole } from "@/utils"; 
 
 const ENDPOINT = "/application";
@@ -16,7 +13,7 @@ interface UpdateApplicationStatusRequest {
 export const applicationApi = {
   // Tạo đơn ứng tuyển mới
   create: (data: ApplicationRequest, token: string) => {
-    return apiPost<ApplicationResponse>(ENDPOINT, data, { token });
+    return apiPost<Application>(ENDPOINT, data, { token });
   },
 
   // Lấy danh sách đơn ứng tuyển của user
@@ -26,7 +23,7 @@ export const applicationApi = {
     pageSize: number = 10,
     token: string
   ) => {
-    return apiGetPaginated<ApplicationResponse>(
+    return apiGetPaginated<Application>(
       `${ENDPOINT}/user/${userid}`,
       pageNumber,
       pageSize,
@@ -41,7 +38,7 @@ export const applicationApi = {
     pageSize: number = 10,
     token: string
   ) => {
-    return apiGetPaginated<ApplicationResponse>(
+    return apiGetPaginated<Application>(
       `${ENDPOINT}/job/${jobid}`,
       pageNumber,
       pageSize,
@@ -57,7 +54,7 @@ export const applicationApi = {
     token: string
   ) => {
     const role = getUserRole(token) || "";
-    return apiGetPaginated<ApplicationResponse>(
+    return apiGetPaginated<Application>(
       `${ENDPOINT}/company/${companyid}`,
       pageNumber,
       pageSize,
@@ -70,7 +67,7 @@ export const applicationApi = {
 
   // Lấy chi tiết đơn ứng tuyển
   getById: (id: number, token: string) => {
-    return apiGet<ApplicationResponse>(`${ENDPOINT}/${id}`, { token });
+    return apiGet<Application>(`${ENDPOINT}/${id}`, { token });
   },
 
   // Cập nhật trạng thái đơn ứng tuyển (chấp nhận/từ chối)
@@ -80,7 +77,7 @@ export const applicationApi = {
     data: UpdateApplicationStatusRequest,
     token: string
   ) => {
-    return apiPut<ApplicationResponse>(`${ENDPOINT}/${jobid}/${userid}`, data, {
+    return apiPut<Application>(`${ENDPOINT}/${jobid}/${userid}`, data, {
       token,
     });
   },
@@ -93,7 +90,7 @@ export const applicationApi = {
     coverletter: string,
     token: string
   ) => {
-    return apiPut<ApplicationResponse>(
+    return apiPut<Application>(
       `${ENDPOINT}/${jobid}/${userid}`,
       { cvurl, coverletter, status: "accepted" },
       { token }
@@ -108,7 +105,7 @@ export const applicationApi = {
     coverletter: string,
     token: string
   ) => {
-    return apiPut<ApplicationResponse>(
+    return apiPut<Application>(
       `${ENDPOINT}/${jobid}/${userid}`,
       { cvurl, coverletter, status: "rejected" },
       { token }

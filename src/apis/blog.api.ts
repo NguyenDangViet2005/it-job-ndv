@@ -1,3 +1,4 @@
+import { Blog } from "@/types";
 import {
   apiGet,
   apiPost,
@@ -6,7 +7,7 @@ import {
   apiGetPaginated,
   apiGetById,
 } from "./api";
-import type { ApiResponse, BlogResponse } from "@/types/api.type";
+import type { ApiResponse } from "@/types/api.type";
 
 const ENDPOINT = "/blog";
 
@@ -18,7 +19,7 @@ export const blogApi = {
     categoryid?: number,
     token?: string
   ) => {
-    return apiGetPaginated<BlogResponse>(ENDPOINT, pageNumber, pageSize, {
+    return apiGetPaginated<Blog>(ENDPOINT, pageNumber, pageSize, {
       params: categoryid ? { categoryid } : undefined,
       token,
     });
@@ -26,7 +27,7 @@ export const blogApi = {
 
   // Lấy chi tiết blog
   getById: (id: number, token?: string) => {
-    return apiGetById<BlogResponse>(ENDPOINT, id, { token });
+    return apiGetById<Blog>(ENDPOINT, id, { token });
   },
 
   // Lấy blog theo userid
@@ -36,7 +37,7 @@ export const blogApi = {
     pageSize: number = 10,
     token?: string
   ) => {
-    return apiGetPaginated<BlogResponse>(
+    return apiGetPaginated<Blog>(
       `${ENDPOINT}/user/${userid}`,
       pageNumber,
       pageSize,
@@ -105,7 +106,7 @@ export const blogApi = {
     pageSize: number = 10,
     token?: string
   ) => {
-    return apiGetPaginated<BlogResponse>(ENDPOINT, pageNumber, pageSize, {
+    return apiGetPaginated<Blog>(ENDPOINT, pageNumber, pageSize, {
       params: { keyword },
       token,
     });

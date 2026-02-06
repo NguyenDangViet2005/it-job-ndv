@@ -9,14 +9,12 @@ import CompanyInfo from "@/components/sections/jobs/company-info.section";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { jobApi } from "@/apis";
-import type { JobResponse } from "@/types/api.type";
+import { JobDetailSkeleton } from "@/components/common/skeletons";
+import { Job } from "@/types";
 
-type Props = {
-  jobid: string;
-};
 
-export default function JobDetailPage({ jobid }: Props) {
-  const [jobData, setJobData] = useState<JobResponse | null>(null);
+export default function JobDetailPage({ jobid }: {jobid : string}) {
+  const [jobData, setJobData] = useState<Job | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -42,11 +40,7 @@ export default function JobDetailPage({ jobid }: Props) {
   }, [jobid]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-muted-foreground">Đang tải...</div>
-      </div>
-    );
+    return <JobDetailSkeleton />;
   }
 
   if (error || !jobData) {
@@ -59,21 +53,6 @@ export default function JobDetailPage({ jobid }: Props) {
     );
   }
 
-  const jobHeaderData = {
-    id: jobData.id,
-    title: jobData.title,
-    company: jobData.company?.name || "",
-    logo: jobData.company?.avatar || "",
-    location: jobData.company?.city || jobData.company?.address || "",
-    salary: jobData.salary || "Thỏa thuận",
-    type: jobData.type,
-    level: "Middle",
-    postedDate: new Date(jobData.createdat).toLocaleDateString("vi-VN"),
-    applications: 0,
-    skills: jobData.skills || [],
-    quantity: jobData.quantity,
-    deadline: jobData.deadline,
-  };
 
   const descriptionData = {
     overview: jobData.description || "Chưa có mô tả chi tiết",
@@ -116,7 +95,7 @@ export default function JobDetailPage({ jobid }: Props) {
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8 max-w-7xl">
         {/* Job Header */}
-        <CompanyJobInfo job={jobHeaderData} />
+        <CompanyJobInfo {...jobData} />
 
         {/* Main Content */}
         <div className="grid lg:grid-cols-3 gap-8 mt-8">

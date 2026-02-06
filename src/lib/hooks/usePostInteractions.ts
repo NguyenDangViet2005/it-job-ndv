@@ -1,16 +1,16 @@
 import { toast } from "sonner";
 import { interactionApi } from "@/apis/interaction.api";
-import type { FullPostResponse } from "@/types/api.type";
+import { Post, Comment as PostComment } from "@/types";
 
 interface UsePostInteractionsProps {
   isAuthenticated: boolean;
   user: any;
   token: string | null;
-  setPosts: React.Dispatch<React.SetStateAction<FullPostResponse[]>>;
+  setPosts: React.Dispatch<React.SetStateAction<Post[]>>;
   setLoadingCommentsForPost: React.Dispatch<
     React.SetStateAction<number | null>
   >;
-  posts: FullPostResponse[];
+  posts: Post[];
 }
 
 export function usePostInteractions({
@@ -51,8 +51,8 @@ export function usePostInteractions({
   };
 
   const handleToggleComments = (postid: number) => {
-    setPosts((prev: FullPostResponse[]) =>
-      prev.map((post: FullPostResponse) =>
+    setPosts((prev: Post[]) =>
+      prev.map((post: Post) =>
         post.id === postid
           ? { ...post, showComments: !(post as any).showComments }
           : post,
@@ -80,15 +80,18 @@ export function usePostInteractions({
         attachments,
       );
 
-      setPosts((prev: FullPostResponse[]) =>
-        prev.map((post: FullPostResponse) =>
+      setPosts((prev: Post[]) =>
+        prev.map((post: Post) =>
           post.id === postid
             ? {
                 ...post,
                 interaction: {
                   ...post.interaction,
                   totalComments: post.interaction.totalComments + 1,
-                  comments: [newComment, ...(post.interaction.comments || [])],
+                  comments: [
+                    newComment as unknown as PostComment,
+                    ...(post.interaction.comments || []),
+                  ] as PostComment[],
                 },
                 showComments: true,
               }
@@ -124,16 +127,16 @@ export function usePostInteractions({
         keepImageUrls,
       );
 
-      setPosts((prev: FullPostResponse[]) =>
-        prev.map((post: FullPostResponse) =>
+      setPosts((prev: Post[]) =>
+        prev.map((post: Post) =>
           post.id === postid
             ? {
                 ...post,
                 interaction: {
                   ...post.interaction,
                   comments: (post.interaction.comments || []).map((c) =>
-                    c.id === commentId ? updatedComment : c,
-                  ),
+                    c.id === commentId ? (updatedComment as unknown as PostComment) : c,
+                  ) as PostComment[],
                 },
               }
             : post,
@@ -154,8 +157,8 @@ export function usePostInteractions({
     try {
       await interactionApi.deleteComment(postid, commentId, user.id, token);
 
-      setPosts((prev: FullPostResponse[]) =>
-        prev.map((post: FullPostResponse) =>
+      setPosts((prev: Post[]) =>
+        prev.map((post: Post) =>
           post.id === postid
             ? {
                 ...post,
@@ -180,7 +183,7 @@ export function usePostInteractions({
 
     setLoadingCommentsForPost(postid);
     try {
-      const post = posts.find((p: FullPostResponse) => p.id === postid);
+      const post = posts.find((p: Post) => p.id === postid);
       if (!post) return;
 
       const currentPage = Math.ceil(
@@ -193,8 +196,8 @@ export function usePostInteractions({
         token,
       );
 
-      setPosts((prev: FullPostResponse[]) =>
-        prev.map((p: FullPostResponse) =>
+      setPosts((prev: Post[]) =>
+        prev.map((p: Post) =>
           p.id === postid
             ? {
                 ...p,
@@ -203,7 +206,7 @@ export function usePostInteractions({
                   comments: [
                     ...(p.interaction.comments || []),
                     ...(response.data || []),
-                  ],
+                  ] as PostComment[],
                 },
               }
             : p,

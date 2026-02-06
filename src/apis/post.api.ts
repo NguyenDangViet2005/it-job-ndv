@@ -1,14 +1,13 @@
+import { Post } from "@/types";
 import {
   apiPost,
   apiPut,
   apiDelete,
   apiGetPaginated,
-  apiGetById,
   apiGet,
 } from "./api";
 import type {
   ApiResponse,
-  PostResponse,
   PostRequest,
   ResponseData,
 } from "@/types/api.type";
@@ -25,14 +24,14 @@ export const postApi = {
   ) => {
     const params: Record<string, string | number> = { pageNumber, pageSize };
     if (currentUserId) params.currentUserId = currentUserId;
-    return apiGet<ResponseData<PostResponse>>(ENDPOINT, { params, token });
+    return apiGet<ResponseData<Post>>(ENDPOINT, { params, token });
   },
 
   // Lấy chi tiết bài đăng
   getById: (id: number, currentUserId?: number, token?: string) => {
     const params: Record<string, string | number> = {};
     if (currentUserId) params.currentUserId = currentUserId;
-    return apiGet<PostResponse>(`${ENDPOINT}/${id}`, { params, token });
+    return apiGet<Post>(`${ENDPOINT}/${id}`, { params, token });
   },
 
   // Lấy bài đăng theo user
@@ -45,7 +44,7 @@ export const postApi = {
   ) => {
     const params: Record<string, string | number> = { pageNumber, pageSize };
     if (currentUserId) params.currentUserId = currentUserId;
-    return apiGet<ResponseData<PostResponse>>(`${ENDPOINT}/user/${userid}`, {
+    return apiGet<ResponseData<Post>>(`${ENDPOINT}/user/${userid}`, {
       params,
       token,
     });
@@ -61,7 +60,7 @@ export const postApi = {
   ) => {
     const params: Record<string, string | number> = { pageNumber, pageSize };
     if (currentUserId) params.currentUserId = currentUserId;
-    return apiGet<ResponseData<PostResponse>>(
+    return apiGet<ResponseData<Post>>(
       `${ENDPOINT}/company/${companyid}`,
       { params, token }
     );
@@ -105,12 +104,12 @@ export const postApi = {
       throw new Error(error.message || "Failed to create post");
     }
 
-    return response.json() as Promise<PostResponse>;
+    return response.json() as Promise<Post>;
   },
 
   // Cập nhật bài đăng (chỉ text)
   update: (id: number, data: PostRequest, token: string) => {
-    return apiPut<ApiResponse<PostResponse>>(`${ENDPOINT}/${id}`, data, {
+    return apiPut<ApiResponse<Post>>(`${ENDPOINT}/${id}`, data, {
       token,
     });
   },
@@ -157,7 +156,7 @@ export const postApi = {
       throw new Error(error.message || "Failed to update post");
     }
 
-    return response.json() as Promise<PostResponse>;
+    return response.json() as Promise<Post>;
   },
 
   // Xóa bài đăng

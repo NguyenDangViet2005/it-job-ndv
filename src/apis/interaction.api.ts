@@ -1,12 +1,12 @@
+import { Like } from "@/types";
 import { apiPost, apiDelete, apiGetPaginated } from "./api";
-import type { CommentResponse, LikeResponse } from "@/types/api.type";
 
 const ENDPOINT = "/post";
 
 export const interactionApi = {
   // Toggle like cho bài post
   toggleLike: (postid: number, userid: number, token: string) => {
-    return apiPost<LikeResponse>(
+    return apiPost<Like>(
       `${ENDPOINT}/${postid}/like`,
       { postid, userid },
       { token }
@@ -20,7 +20,7 @@ export const interactionApi = {
     pageSize: number = 10,
     token?: string
   ) => {
-    return apiGetPaginated<CommentResponse>(
+    return apiGetPaginated<Comment>(
       `${ENDPOINT}/${postid}/comments`,
       pageNumber,
       pageSize,
@@ -63,7 +63,7 @@ export const interactionApi = {
       throw new Error(error.message || "Failed to add comment");
     }
 
-    return response.json() as Promise<CommentResponse>;
+    return response.json() as Promise<Comment>;
   },
 
   // Cập nhật comment
@@ -110,7 +110,7 @@ export const interactionApi = {
       throw new Error(error.message || "Failed to update comment");
     }
 
-    return response.json() as Promise<CommentResponse>;
+    return response.json() as Promise<Comment>;
   },
 
   // Xóa comment

@@ -29,16 +29,16 @@ import {
 import { useAuth } from "@/lib/hooks/useAuth";
 import { authApi } from "@/apis/auth.api";
 import { locationApi } from "@/apis/location.api";
-import type { ProvinceResponse, WardResponse } from "@/types/api.type";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { Province, Ward } from "@/types";
 
 export default function FormRegisterHR() {
   const { setAuth, setCompany } = useAuth();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [provinces, setProvinces] = useState<ProvinceResponse[]>([]);
-  const [wards, setWards] = useState<WardResponse[]>([]);
+  const [provinces, setProvinces] = useState<Province[]>([]);
+  const [wards, setWards] = useState<Ward[]>([]);
   const [loadingProvinces, setLoadingProvinces] = useState(true);
   const [loadingWards, setLoadingWards] = useState(false);
 

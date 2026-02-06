@@ -1,3 +1,4 @@
+import { Job } from "@/types";
 import {
   apiGet,
   apiPost,
@@ -6,7 +7,7 @@ import {
   apiGetPaginated,
   apiGetById,
 } from "./api";
-import type { ApiResponse, JobResponse } from "@/types/api.type";
+import type { ApiResponse } from "@/types/api.type";
 import { getUserRole } from "@/utils";
 
 const ENDPOINT = "/job";
@@ -14,14 +15,14 @@ const ENDPOINT = "/job";
 export const jobApi = {
   // Lấy danh sách công việc
   getAll: (pageNumber: number = 1, pageSize: number = 10, token?: string) => {
-    return apiGetPaginated<JobResponse>(ENDPOINT, pageNumber, pageSize, {
+    return apiGetPaginated<Job>(ENDPOINT, pageNumber, pageSize, {
       token,
     });
   },
 
   // Lấy chi tiết công việc
   getById: (id: number, token?: string) => {
-    return apiGetById<JobResponse>(ENDPOINT, id, { token });
+    return apiGetById<Job>(ENDPOINT, id, { token });
   },
 
   // Lấy công việc theo công ty
@@ -32,7 +33,7 @@ export const jobApi = {
     token?: string
   ) => {
     const role = getUserRole(token);
-    return apiGetPaginated<JobResponse>(
+    return apiGetPaginated<Job>(
       `${ENDPOINT}/by-company`,
       pageNumber,
       pageSize,
@@ -56,14 +57,14 @@ export const jobApi = {
     },
     token: string
   ) => {
-    return apiPost<ApiResponse<JobResponse>>(`${ENDPOINT}/${companyid}`, data, {
+    return apiPost<ApiResponse<Job>>(`${ENDPOINT}/${companyid}`, data, {
       token,
     });
   },
 
   // Cập nhật công việc
-  update: (id: number, data: Partial<JobResponse>, token: string) => {
-    return apiPut<ApiResponse<JobResponse>>(`${ENDPOINT}/${id}`, data, {
+  update: (id: number, data: Partial<Job>, token: string) => {
+    return apiPut<ApiResponse<Job>>(`${ENDPOINT}/${id}`, data, {
       token,
     });
   },
@@ -84,7 +85,7 @@ export const jobApi = {
     if (!trimmedKeyword) {
       return Promise.reject(new Error("Keyword is required"));
     }
-    return apiGetPaginated<JobResponse>(ENDPOINT, pageNumber, pageSize, {
+    return apiGetPaginated<Job>(ENDPOINT, pageNumber, pageSize, {
       params: { keyword: trimmedKeyword },
       token,
     });
@@ -92,7 +93,7 @@ export const jobApi = {
 
   // Lấy công việc hôm nay
   getToday: (token?: string) => {
-    return apiGet<JobResponse[]>(`${ENDPOINT}/today`, { token });
+    return apiGet<Job[]>(`${ENDPOINT}/today`, { token });
   },
 
   // Lấy công việc theo skill
@@ -102,7 +103,7 @@ export const jobApi = {
     pageSize: number = 10,
     token?: string
   ) => {
-    return apiGetPaginated<JobResponse>(
+    return apiGetPaginated<Job>(
       `${ENDPOINT}/by-skill`,
       pageNumber,
       pageSize,
@@ -121,7 +122,7 @@ export const jobApi = {
     token?: string
   ) => {
     const role = getUserRole(token);
-    return apiGetPaginated<JobResponse>(
+    return apiGetPaginated<Job>(
       `${ENDPOINT}/by-user/${userid}`,
       pageNumber,
       pageSize,

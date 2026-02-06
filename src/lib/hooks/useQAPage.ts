@@ -3,7 +3,7 @@ import { blogApi, companyApi } from "@/apis";
 import { connectionApi } from "@/apis/connection.api";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { usePosts } from "@/lib/hooks/usePost";
-import type { BlogResponse, Company } from "@/types/api.type";
+import { Blog, Company } from "@/types";
 
 export function useQAPage() {
   const { user, token, isAuthenticated, loading: authLoading } = useAuth();
@@ -15,7 +15,7 @@ export function useQAPage() {
   const [loadingCommentsForPost, setLoadingCommentsForPost] = useState<
     number | null
   >(null);
-  const [blogs, setBlogs] = useState<BlogResponse[]>([]);
+  const [blogs, setBlogs] = useState<Blog[]>([]);
   const [suggestedCompanies, setSuggestedCompanies] = useState<Company[]>([]);
   const [followedCompanyIds, setFollowedCompanyIds] = useState<number[]>([]);
   const [connections, setConnections] = useState<any[]>([]);

@@ -2,11 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { postApi } from "@/apis/post.api";
 import { userApi } from "@/apis/user.api";
 import { interactionApi } from "@/apis/interaction.api";
-import type {
-  FullPostResponse,
-  AttachmentResponse,
-  CommentResponse,
-} from "@/types/api.type";
+import { Attachment, Post } from "@/types";
 
 // Hook để load posts với infinite scroll
 // Token và currentUserId được truyền từ useAuth() của component cha
@@ -15,7 +11,7 @@ export function usePosts(
   token?: string | null,
   initialPageSize: number = 10,
 ) {
-  const [posts, setPosts] = useState<FullPostResponse[]>([]);
+  const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
@@ -34,7 +30,7 @@ export function usePosts(
           token || undefined,
         );
 
-        const newPosts = (response.data || []) as unknown as FullPostResponse[];
+        const newPosts = (response.data || []) as unknown as Post[];
         if (reset) {
           setPosts(newPosts);
         } else {
@@ -79,7 +75,7 @@ export function useUserPosts(
   token?: string | null,
   initialPageSize: number = 10,
 ) {
-  const [posts, setPosts] = useState<FullPostResponse[]>([]);
+  const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
@@ -101,7 +97,7 @@ export function useUserPosts(
           token || undefined,
         );
 
-        const newPosts = (response.data || []) as unknown as FullPostResponse[];
+        const newPosts = (response.data || []) as unknown as Post[];
         if (reset) {
           setPosts(newPosts);
         } else {
@@ -146,7 +142,7 @@ export function useUserMedia(
   token?: string | null,
   initialPageSize: number = 6,
 ) {
-  const [media, setMedia] = useState<AttachmentResponse[]>([]);
+  const [media, setMedia] = useState<Attachment[]>([]);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
@@ -206,7 +202,7 @@ export function useComments(
   token?: string | null,
   initialPageSize: number = 10,
 ) {
-  const [comments, setComments] = useState<CommentResponse[]>([]);
+  const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);

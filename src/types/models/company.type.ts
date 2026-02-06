@@ -1,4 +1,4 @@
-// Company Model Types
+import { Job } from "./job.type";
 
 export interface Company {
   id: number;
@@ -22,9 +22,8 @@ export interface Company {
   createdat?: string;
   updatedat?: string;
   follows?: CompanyFollow[];
-  members?: any[];
-  membersCount?: number;
-  jobs?: CompanyJob[];
+  memberCount?: number;
+  jobs?: Job[];
   posts?: any[];
   reviews?: CompanyReview[];
 }
@@ -36,18 +35,6 @@ export interface CompanyFollow {
   updatedat: string;
 }
 
-export interface CompanyJob {
-  id: number;
-  companyid: number;
-  title: string;
-  description: string;
-  type: string;
-  quantity: number;
-  deadline: string;
-  status: string;
-  createdat: string;
-  updatedat: string;
-}
 
 export interface CompanyReview {
   id: number;

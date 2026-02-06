@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { companyApi } from "@/apis";
-import type { Company } from "@/types/api.type";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Company } from "@/types";
 
 interface CompanyListSectionProps {
   selectedCompanyId: number | null;

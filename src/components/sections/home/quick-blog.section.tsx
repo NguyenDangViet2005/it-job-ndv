@@ -4,14 +4,14 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import SectionTitle from "@/components/features/section-title";
 import { blogApi } from "@/apis";
-import type { BlogResponse } from "@/types/api.type";
 import { formatDate } from "@/utils";
 import Link from "next/link";
 import { ROUTES } from "@/constants";
 import { QuickBlogSkeleton } from "@/components/common/skeletons";
+import { Blog } from "@/types";
 
 export default function QuickBlogSection() {
-  const [blogs, setBlogs] = useState<BlogResponse[]>([]);
+  const [blogs, setBlogs] = useState<Blog[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

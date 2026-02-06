@@ -6,16 +6,16 @@ import { MoveLeft, MoveRight } from "lucide-react";
 import { useState, useEffect } from "react";
 import SectionTitle from "@/components/features/section-title";
 import { jobApi } from "@/apis";
-import type { JobResponse } from "@/types/api.type";
 import Link from "next/link";
 import { formatDate } from "@/utils";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { ROUTES } from "@/constants";
 import Image from "next/image";
 import { NewestJobSkeleton } from "@/components/common/skeletons";
+import { Job } from "@/types";
 
 export default function NewestJobSection() {
-  const [jobs, setJobs] = useState<JobResponse[]>([]);
+  const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);

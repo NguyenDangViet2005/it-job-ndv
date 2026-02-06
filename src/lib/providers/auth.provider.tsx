@@ -7,11 +7,11 @@ import { companyApi } from "@/apis/company.api";
 import { AuthContext } from "@/lib/contexts/auth.context";
 import { AuthGuard } from "../guards/auth.guard"; 
 import { ROUTES } from "@/constants";
-import type { UserResponse, CompanyResponse } from "@/types/api.type";
+import { Company, User } from "@/types";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<UserResponse | null>(null);
-  const [company, setCompany] = useState<CompanyResponse | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [company, setCompany] = useState<Company | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -38,7 +38,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   // Internal helper to set state and fetch extra data if needed
-  const handleSetAuth = async (userData: UserResponse, accesstoken: string) => {
+  const handleSetAuth = async (userData: User, accesstoken: string) => {
     setUser(userData);
     setToken(accesstoken);
 
@@ -47,7 +47,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         const companyData = await companyApi.getMyCompany(accesstoken);
         if (companyData) {
-          setCompany(companyData as CompanyResponse);
+          setCompany(companyData as Company);
         }
       } catch (error) {
         console.error("Failed to fetch company info:", error);
@@ -59,15 +59,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // PUBLIC ACTIONS (State Updates Only)
   // ============================================
 
-  const setAuth = (userData: UserResponse, accesstoken: string) => {
+  const setAuth = (userData: User, accesstoken: string) => {
     handleSetAuth(userData, accesstoken);
   };
 
-  const handleSetCompany = (companyData: CompanyResponse) => {
+  const handleSetCompany = (companyData: Company) => {
     setCompany(companyData);
   };
 
-  const updateUser = (userData: Partial<UserResponse>) => {
+  const updateUser = (userData: Partial<User>) => {
     setUser((prev) => {
       if (!prev) return prev;
       return { ...prev, ...userData };

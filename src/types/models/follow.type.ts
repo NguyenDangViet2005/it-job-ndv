@@ -1,5 +1,3 @@
-// Follow Model Types
-
 export interface Follow {
   id: number;
   userid: number;

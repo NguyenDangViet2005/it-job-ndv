@@ -1,5 +1,3 @@
-// Location Model Types
-
 export interface Province {
   id: number;
   name: string;

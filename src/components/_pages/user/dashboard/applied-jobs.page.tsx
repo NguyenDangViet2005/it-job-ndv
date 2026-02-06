@@ -3,13 +3,13 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { applicationApi } from "@/apis/application.api";
-import type { ApplicationResponse } from "@/types/application.type";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Briefcase, Clock, ExternalLink, FileText } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { Application } from "@/types";
 
 const statusColors: Record<string, string> = {
   pending: "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400",
@@ -28,7 +28,7 @@ const statusText: Record<string, string> = {
 export default function AppliedJobsPage() {
   const { user, token } = useAuth();
   const router = useRouter();
-  const [applications, setApplications] = useState<ApplicationResponse[]>([]);
+  const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

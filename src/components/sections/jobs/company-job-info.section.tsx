@@ -11,7 +11,6 @@ import {
   Users,
   Calendar,
   Bookmark,
-  Share2,
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -19,26 +18,11 @@ import { useAuth } from "@/lib/hooks/useAuth";
 import { toast } from "sonner";
 import { ROUTES } from "@/constants";
 import ApplicationModal from "@/components/common/modals/jobs/application.modal";
+import { Job } from "@/types";
+import { formatDate } from "@/utils";
 
-interface JobHeaderProps {
-  job: {
-    id?: number;
-    title: string;
-    company: string;
-    logo: string;
-    location: string;
-    salary: string;
-    type: string;
-    level: string;
-    postedDate: string;
-    applications: number;
-    skills?: Array<{ id: number; name: string }>;
-    quantity?: number;
-    deadline?: string;
-  };
-}
 
-export default function CompanyJobInfo({ job }: JobHeaderProps) {
+export default function CompanyJobInfo( job : Job) {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
   const [isApplicationModalOpen, setIsApplicationModalOpen] = useState(false);
@@ -62,16 +46,6 @@ export default function CompanyJobInfo({ job }: JobHeaderProps) {
     toast.success("Đã lưu công việc");
   };
 
-  const handleShare = () => {
-    // Copy URL to clipboard
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(window.location.href);
-      toast.success("Đã sao chép link công việc");
-    } else {
-      toast.error("Không thể sao chép link");
-    }
-  };
-
   return (
     <>
       <Card className="rounded-none my-8 overflow-hidden border-0 shadow-lg bg-gradient-to-r from-background via-background to-accent/10">
@@ -81,8 +55,8 @@ export default function CompanyJobInfo({ job }: JobHeaderProps) {
             <div className="flex-shrink-0">
               <div className="relative">
                 <Image
-                  src={job.logo}
-                  alt={job.company}
+                  src={job.company?.avatar || ""}
+                  alt={job.company?.name || ""}
                   width={100}
                   height={100}
                   className="cursor-target"
@@ -97,7 +71,7 @@ export default function CompanyJobInfo({ job }: JobHeaderProps) {
                   {job.title}
                 </h1>
                 <p className="text-lg text-muted-foreground mt-1">
-                  {job.company}
+                  {job.company?.name}
                 </p>
               </div>
 
@@ -108,7 +82,7 @@ export default function CompanyJobInfo({ job }: JobHeaderProps) {
                   className="cursor-target text-sm py-1 px-3"
                 >
                   <MapPin className="h-4 w-4 mr-1" />
-                  {job.location}
+                  {job.company?.address}
                 </Badge>
                 <Badge
                   variant="secondary"
@@ -129,7 +103,7 @@ export default function CompanyJobInfo({ job }: JobHeaderProps) {
                   className="cursor-target text-sm py-1 px-3"
                 >
                   <Users className="h-4 w-4 mr-1" />
-                  {job.level}
+                  {job.company?.memberCount}
                 </Badge>
               </div>
 
@@ -137,11 +111,11 @@ export default function CompanyJobInfo({ job }: JobHeaderProps) {
               <div className="flex items-center gap-4 text-sm text-muted-foreground">
                 <div className="flex items-center gap-1">
                   <Calendar className="h-4 w-4" />
-                  <span>Đăng {job.postedDate}</span>
+                  <span>Đăng {formatDate(job.createdat)}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <Users className="h-4 w-4" />
-                  <span>{job.applications} ứng viên</span>
+                  <span>{job.applicationCount} ứng viên</span>
                 </div>
               </div>
             </div>
@@ -172,11 +146,15 @@ export default function CompanyJobInfo({ job }: JobHeaderProps) {
           {/* Quick Highlights */}
           <div className="mt-6 pt-6 border-t border-border">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="text-center">
+               <div className="text-center">
                 <div className="text-2xl font-bold text-primary">
-                  {job.level || "N/A"}
+                  {job.status == "open"
+                    ? "Đang tuyển"
+                    : "Đã đóng"}
                 </div>
-                <div className="text-xs text-muted-foreground">Cấp bậc</div>
+                <div className="text-xs text-muted-foreground">
+                  Trạng thái
+                </div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-primary">
@@ -218,7 +196,7 @@ export default function CompanyJobInfo({ job }: JobHeaderProps) {
           onOpenChange={setIsApplicationModalOpen}
           jobid={job.id}
           jobTitle={job.title}
-          companyName={job.company}
+          companyName={job.company?.name || ""}
         />
       )}
     </>

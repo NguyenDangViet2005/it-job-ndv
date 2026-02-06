@@ -2,17 +2,7 @@
 
 import type { User } from "./models/user.type";
 import type { Company } from "./models/company.type";
-import type { Job } from "./models/job.type";
-import type { Blog, BlogCategory } from "./models/blog.type";
-import type { Post, Comment, Attachment, Like } from "./models/post.type";
-import type { Review } from "./models/review.type";
-import type { Application } from "./models/application.type";
-import type { Province, Ward } from "./models/location.type";
-import type { Follow } from "./models/follow.type";
-import type { Skill } from "./models/job.type";
 
-// Re-export commonly used types
-export type { Company, Skill, Application };
 
 // ============ Generic API Response Types ============
 export interface ResponseData<T> {
@@ -87,8 +77,6 @@ export interface RegisterHRResponse {
   company: Company;
 }
 
-// ============ User Responses ============
-export type UserResponse = User;
 
 // ============ Company Requests ============
 export interface CompanyRequest {
@@ -111,8 +99,6 @@ export interface CompanyUpdateRequest {
   wardid?: number;
 }
 
-// ============ Company Responses ============
-export type CompanyResponse = Company;
 
 // ============ Job Requests ============
 export interface JobRequest {
@@ -126,8 +112,7 @@ export interface JobRequest {
   status: string;
 }
 
-// ============ Job Responses ============
-export type JobResponse = Job;
+
 
 // ============ Blog Requests ============
 export interface BlogRequest {
@@ -140,23 +125,12 @@ export interface BlogRequest {
   image?: string;
 }
 
-// ============ Blog Responses ============
-export type BlogResponse = Blog;
-export type BlogCategoryResponse = BlogCategory;
-
 // ============ Post Requests ============
 export interface PostRequest {
   content: string;
   userid?: number;
   companyid?: number;
 }
-
-// ============ Post Responses ============
-export type PostResponse = Post;
-export type FullPostResponse = Post;
-export type CommentResponse = Comment;
-export type AttachmentResponse = Attachment;
-export type LikeResponse = Like;
 
 // ============ Review Requests ============
 export interface CreateReviewRequest {
@@ -170,8 +144,6 @@ export interface UpdateReviewRequest {
   comment: string;
 }
 
-// ============ Review Responses ============
-export type ReviewResponse = Review;
 
 // ============ Application Requests ============
 export interface ApplicationRequest {
@@ -181,12 +153,6 @@ export interface ApplicationRequest {
   coverletter: string;
 }
 
-// ============ Application Responses ============
-export type ApplicationResponse = Application;
-
-// ============ Location Responses ============
-export type ProvinceResponse = Province;
-export type WardResponse = Ward;
 
 // ============ Follow Requests ============
 export interface FollowRequest {
@@ -194,13 +160,9 @@ export interface FollowRequest {
   companyid: number;
 }
 
-// ============ Follow Responses ============
-export type FollowResponse = Follow;
 
 // ============ Skill Requests ============
 export interface SkillRequest {
   name: string;
 }
 
-// ============ Skill Responses ============
-export type SkillResponse = Skill;

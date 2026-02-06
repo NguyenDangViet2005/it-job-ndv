@@ -1,10 +1,5 @@
-import type {
-  FullPostResponse,
-  CommentResponse,
-  AttachmentResponse,
-} from "@/types/api.type";
+import { Attachment, Post } from "./models/post.type";
 
-// Legacy types for backward compatibility
 export interface LegacyComment {
   id: number;
   author: string;
@@ -25,7 +20,7 @@ export interface LegacyPost {
   image?: string;
   images?: string[];
   video?: string;
-  attachments?: AttachmentResponse[];
+  attachments?: Attachment[];
   likes: number;
   liked: boolean;
   comments: LegacyComment[];
@@ -43,7 +38,7 @@ export interface LegacyPost {
 // Union type for both formats
 export type PostType =
   | LegacyPost
-  | (FullPostResponse & {
+  | (Post & {
       showComments?: boolean;
       title?: string;
       images?: string[];
@@ -100,7 +95,7 @@ export interface NormalizedPost {
     content: string;
     timestamp: string;
     likes: number;
-    attachments?: AttachmentResponse[];
+    attachments?: Attachment[];
   }>;
   totalComments: number;
   showComments: boolean;
@@ -108,7 +103,7 @@ export interface NormalizedPost {
 }
 
 // Helper functions
-export const getAttachmentsArray = (attachments: any): AttachmentResponse[] => {
+export const getAttachmentsArray = (attachments: any): Attachment[] => {
   if (!attachments) return [];
   if (Array.isArray(attachments)) return attachments;
   if (attachments.$values && Array.isArray(attachments.$values)) {
@@ -117,7 +112,7 @@ export const getAttachmentsArray = (attachments: any): AttachmentResponse[] => {
   return [];
 };
 
-export const getCommentsArray = (comments: any): CommentResponse[] => {
+export const getCommentsArray = (comments: any): Comment[] => {
   if (!comments) return [];
   if (Array.isArray(comments)) return comments;
   if (comments.$values && Array.isArray(comments.$values)) {
@@ -128,6 +123,6 @@ export const getCommentsArray = (comments: any): CommentResponse[] => {
 
 export const isApiPost = (
   p: PostType,
-): p is FullPostResponse & { showComments?: boolean } => {
+): p is Post & { showComments?: boolean } => {
   return "interaction" in p || "user" in p || "attachments" in p;
 };

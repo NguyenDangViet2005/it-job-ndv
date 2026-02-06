@@ -10,12 +10,12 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import type { JobResponse } from "@/types/api.type";
 import { Briefcase } from "lucide-react";
 import { JobListSkeleton } from "@/components/common/skeletons";
+import { Job } from "@/types";
 
 interface JobListSectionProps {
-  jobs: JobResponse[];
+  jobs: Job[];
   loading: boolean;
   error: string | null;
   currentPage: number;
@@ -159,7 +159,7 @@ export default function JobListSection({
       {/* Jobs list */}
       <div className="space-y-4">
         {jobs?.map((job) => (
-          <JobCard key={job.id} job={job} />
+          <JobCard key={job.id} {...job} />
         ))}
       </div>
 

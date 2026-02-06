@@ -1,17 +1,17 @@
+import { Company, User } from "@/types";
 import { createContext } from "react";
-import type { UserResponse, CompanyResponse } from "@/types/api.type";
 
 export interface AuthContextType {
-  user: UserResponse | null;
-  company: CompanyResponse | null;
+  user: User | null;
+  company: Company | null;
   token: string | null;
   isAuthenticated: boolean;
   loading: boolean;
 
   // State setters (Actions)
-  setAuth: (user: UserResponse, token: string) => void;
-  setCompany: (company: CompanyResponse) => void;
-  updateUser: (userData: Partial<UserResponse>) => void;
+  setAuth: (user: User, token: string) => void;
+  setCompany: (company: Company) => void;
+  updateUser: (userData: Partial<User>) => void;
   logout: () => void;
 }
 
