@@ -57,7 +57,21 @@ export default function TopHRSection() {
   return (
     <div>
       <SectionTitle title="Nhà Tuyển Dụng Hàng Đầu" />
-      <div className="mt-10">
+      {/* Mobile/Tablet version */}
+      <div className="mt-6 lg:hidden">
+        <LogoLoop
+          logos={logos}
+          speed={120}
+          direction="left"
+          logoHeight={45}
+          gap={30}
+          pauseOnHover
+          scaleOnHover
+          ariaLabel="Nhà tuyển dụng hàng đầu"
+        />
+      </div>
+      {/* Desktop version */}
+      <div className="hidden lg:block mt-10">
         <LogoLoop
           logos={logos}
           speed={120}

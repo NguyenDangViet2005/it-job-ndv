@@ -62,11 +62,11 @@ export default function QuickBlogSection() {
         viewAllLink="/blog"
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-4 lg:gap-6">
         {featured && (
           <div className="md:col-span-7">
             <Link href={ROUTES.BLOG_DETAIL(featured.id)} className="block group">
-              <div className="w-full h-[220px] md:h-[350px] relative overflow-hidden shadow rounded-xl">
+              <div className="w-full h-[180px] md:h-[280px] lg:h-[350px] relative overflow-hidden shadow rounded-xl">
                 <Image
                   src={featured.image || "/cover.png"}
                   alt={featured.title}
@@ -75,13 +75,13 @@ export default function QuickBlogSection() {
                   sizes="(max-width: 768px) 100vw, 58vw"
                 />
               </div>
-              <h3 className="mt-3 font-bold text-lg md:text-xl group-hover:text-primary transition">
+              <h3 className="mt-2 lg:mt-3 font-bold text-sm md:text-base lg:text-xl group-hover:text-primary transition">
                 {featured.title}
               </h3>
-              <p className="text-sm text-muted-foreground mt-1 line-clamp-2 md:line-clamp-3">
+              <p className="text-xs lg:text-sm text-muted-foreground mt-1 line-clamp-2 lg:line-clamp-3">
                 {featured.excerpt}
               </p>
-              <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
+              <div className="flex items-center gap-2 mt-1 lg:mt-2 text-[10px] lg:text-xs text-muted-foreground">
                 <span>{featured.author}</span>
                 <span>•</span>
                 <span>{featured.readtime}</span>
@@ -90,21 +90,21 @@ export default function QuickBlogSection() {
                   {formatDate(featured.createdat)}
                 </span>
               </div>
-              <span className="text-primary text-sm mt-1 inline-block hover:underline">
+              <span className="text-primary text-xs lg:text-sm mt-1 inline-block hover:underline">
                 Đọc thêm
               </span>
             </Link>
           </div>
         )}
 
-        <div className="md:col-span-5 flex flex-col gap-4 max-h-[450px] overflow-auto">
+        <div className="md:col-span-5 flex flex-col gap-3 lg:gap-4 max-h-[350px] lg:max-h-[450px] overflow-auto">
           {others.map((blog) => (
             <a
               key={blog.id}
               href={ROUTES.BLOG_DETAIL(blog.id)}
-              className="flex gap-3 group border-b pb-3 last:border-none"
+              className="flex gap-2 lg:gap-3 group border-b pb-2 lg:pb-3 last:border-none"
             >
-              <div className="w-[120px] md:w-[150px] h-[80px] relative overflow-hidden flex-shrink-0 rounded-lg">
+              <div className="w-[100px] md:w-[120px] lg:w-[150px] h-[65px] lg:h-[80px] relative overflow-hidden flex-shrink-0 rounded-lg">
                 <Image
                   src={blog.image || "/cover.png"}
                   alt={blog.title}
@@ -114,13 +114,13 @@ export default function QuickBlogSection() {
                 />
               </div>
               <div className="flex-1">
-                <h4 className="font-semibold text-sm md:text-base group-hover:text-primary transition line-clamp-2">
+                <h4 className="font-semibold text-xs lg:text-base group-hover:text-primary transition line-clamp-2">
                   {blog.title}
                 </h4>
-                <p className="text-xs md:text-sm text-muted-foreground mt-1 line-clamp-2">
+                <p className="text-[10px] lg:text-sm text-muted-foreground mt-0.5 lg:mt-1 line-clamp-2">
                   {blog.excerpt}
                 </p>
-                <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
+                <div className="flex items-center gap-2 mt-0.5 lg:mt-1 text-[9px] lg:text-xs text-muted-foreground">
                   <span>{blog.readtime}</span>
                 </div>
               </div>

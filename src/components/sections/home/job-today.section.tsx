@@ -46,12 +46,12 @@ export default function JobTodaySection() {
   }
 
   return (
-    <div className="w-full mt-10">
+    <div className="w-full mt-6 lg:mt-10">
       <SectionTitle
         title="Công Việc Hôm Nay"
         subtitle="Cập nhật mới nhất các vị trí tuyển dụng hot trong ngày"
       />
-      <div className="relative w-full px-4 sm:px-6 lg:px-8">
+      <div className="relative w-full px-2 sm:px-4 lg:px-8">
         <Swiper
           modules={[Navigation, Autoplay]}
           loop={(jobs || []).length > 4}
@@ -65,8 +65,8 @@ export default function JobTodaySection() {
             nextEl: ".job-today-next",
           }}
           breakpoints={{
-            0: { slidesPerView: 1 }, 
-            640: { slidesPerView: 2 },
+            0: { slidesPerView: 2 }, 
+            640: { slidesPerView: 3 },
             1024: { slidesPerView: 3 }, 
             1280: { slidesPerView: 4 }, 
           }}

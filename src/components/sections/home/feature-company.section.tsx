@@ -70,7 +70,7 @@ export default function FeaturedCompanieSection() {
     );
   }
   return (
-    <div className="w-full mx-auto py-10 relative md:block hidden">
+    <div className="w-full mx-auto py-6 lg:py-10 relative md:block hidden">
       <SectionTitle title="Công Ty Nổi Bật" />
 
       {/* Swiper */}
@@ -99,11 +99,11 @@ export default function FeaturedCompanieSection() {
         }}
       >
         {companies.map((company: Company) => (
-          <SwiperSlide key={company.id} className="!w-[900px] !h-[450px]">
+          <SwiperSlide key={company.id} className="!w-[700px] lg:!w-[900px] !h-[350px] lg:!h-[450px]">
             <Link href={ROUTES.COMPANY_DETAIL(company.id)} className="block group ">
-              <div className="shadow-lg bg-card transition-all duration-300 group-hover:scale-105 w-full mb-12 relative">
+              <div className="shadow-lg bg-card transition-all duration-300 group-hover:scale-105 w-full mb-10 lg:mb-12 relative">
                 {/* Cover Image */}
-                <div className="relative w-full h-[350px] overflow-hidden rounded-t-lg">
+                <div className="relative w-full h-[250px] lg:h-[350px] overflow-hidden rounded-t-lg">
                   <Image
                     src={company.coverimage || "/cover.png"}
                     alt={company.name}
@@ -115,10 +115,10 @@ export default function FeaturedCompanieSection() {
                   />
                 </div>
 
-                <div className="p-4 absolute rounded-2xl cursor-target -bottom-16 left-1/2 transform -translate-x-1/2 bg-card w-[820px] shadow-xl cursor-pointer z-10 border group-hover:border-primary/50 transition-colors">
-                  <div className="flex items-center gap-3 mb-3">
+                <div className="p-3 lg:p-4 absolute rounded-2xl cursor-target -bottom-12 lg:-bottom-16 left-1/2 transform -translate-x-1/2 bg-card w-[640px] lg:w-[820px] shadow-xl cursor-pointer z-10 border group-hover:border-primary/50 transition-colors">
+                  <div className="flex items-center gap-2 lg:gap-3 mb-2 lg:mb-3">
                     {/* Company Avatar */}
-                    <div className="relative w-12 h-12 rounded-full border overflow-hidden flex-shrink-0 bg-white">
+                    <div className="relative w-10 h-10 lg:w-12 lg:h-12 rounded-full border overflow-hidden flex-shrink-0 bg-white">
                       <Image
                         src={company.avatar || "/logo/default-company.png"}
                         alt={`${company.name} logo`}
@@ -129,27 +129,27 @@ export default function FeaturedCompanieSection() {
                       />
                     </div>
 
-                    <h3 className="font-bold text-base line-clamp-2 flex-1 group-hover:text-primary transition-colors">
+                    <h3 className="font-bold text-sm lg:text-base line-clamp-2 flex-1 group-hover:text-primary transition-colors">
                       {company.name}
                     </h3>
 
                     <Button
-                      className="text-muted-foreground bg-background hover:text-primary hover:bg-background/90 transition-colors"
+                      className="text-muted-foreground bg-background hover:text-primary hover:bg-background/90 transition-colors p-1.5 lg:p-2 h-auto"
                       aria-label="Bookmark company"
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
                       }}
                     >
-                      <Bookmark size={18} />
+                      <Bookmark size={14} className="lg:w-[18px] lg:h-[18px]" />
                     </Button>
                   </div>
 
-                  <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
+                  <p className="text-xs lg:text-sm text-muted-foreground line-clamp-2 mb-2 lg:mb-3">
                     {company.description || "Chưa có mô tả"}
                   </p>
 
-                  <div className="flex items-center gap-4 text-sm flex-wrap">
+                  <div className="flex items-center gap-3 lg:gap-4 text-xs lg:text-sm flex-wrap">
                     {company.website && (
                       <span className="text-primary font-semibold">
                         Website →
