@@ -6,8 +6,8 @@ interface BlogDetailPageProps {
 
 function BlogDetailPage({ id }: BlogDetailPageProps) {
   return (
-    <div className="bg-background">
-      <div className="max-w-[900px] mx-auto px-4 py-20">
+    <div className="bg-background pb-20 sm:pb-0">
+      <div className="max-w-[900px] mx-auto px-3 lg:px-4 py-10 lg:py-20">
         <BlogDetailSection id={id} />
       </div>
     </div>

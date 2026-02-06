@@ -69,69 +69,74 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-3xl">
-      <h1 className="text-3xl font-bold mb-6">Cài đặt tài khoản</h1>
+    <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-8 max-w-3xl">
+      <h1 className="text-xl sm:text-3xl font-bold mb-3 sm:mb-6">Cài đặt tài khoản</h1>
 
-      <div className="space-y-6">
+      <div className="space-y-3 sm:space-y-6">
         <Card>
-          <CardHeader>
-            <CardTitle>Thông tin cá nhân</CardTitle>
-            <CardDescription>Cập nhật thông tin cơ bản của bạn</CardDescription>
+          <CardHeader className="p-3 sm:p-6">
+            <CardTitle className="text-sm sm:text-lg">Thông tin cá nhân</CardTitle>
+            <CardDescription className="text-xs">Cập nhật thông tin cơ bản của bạn</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Họ và tên</Label>
-              <Input id="name" defaultValue={user?.fullname} />
+          <CardContent className="space-y-2 sm:space-y-4 p-3 sm:p-6 pt-0">
+            <div className="space-y-1 sm:space-y-2">
+              <Label htmlFor="name" className="text-xs">Họ và tên</Label>
+              <Input id="name" defaultValue={user?.fullname} className="text-xs sm:text-sm h-8 sm:h-10" />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+            <div className="space-y-1 sm:space-y-2">
+              <Label htmlFor="email" className="text-xs">Email</Label>
               <Input
                 id="email"
                 type="email"
                 defaultValue={user?.email}
                 disabled
+                className="text-xs sm:text-sm h-8 sm:h-10"
               />
             </div>
-            <Button>Lưu thay đổi</Button>
+            <Button className="text-xs h-7 sm:h-9">Lưu thay đổi</Button>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader>
-            <CardTitle>Đổi mật khẩu</CardTitle>
-            <CardDescription>Cập nhật mật khẩu của bạn</CardDescription>
+          <CardHeader className="p-3 sm:p-6">
+            <CardTitle className="text-sm sm:text-lg">Đổi mật khẩu</CardTitle>
+            <CardDescription className="text-xs">Cập nhật mật khẩu của bạn</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="current-password">Mật khẩu hiện tại</Label>
+          <CardContent className="space-y-2 sm:space-y-4 p-3 sm:p-6 pt-0">
+            <div className="space-y-1 sm:space-y-2">
+              <Label htmlFor="current-password" className="text-xs">Mật khẩu hiện tại</Label>
               <Input
                 id="current-password"
                 type="password"
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
+                className="text-xs sm:text-sm h-8 sm:h-10"
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="new-password">Mật khẩu mới</Label>
+            <div className="space-y-1 sm:space-y-2">
+              <Label htmlFor="new-password" className="text-xs">Mật khẩu mới</Label>
               <Input
                 id="new-password"
                 type="password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
+                className="text-xs sm:text-sm h-8 sm:h-10"
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="confirm-password">Xác nhận mật khẩu</Label>
+            <div className="space-y-1 sm:space-y-2">
+              <Label htmlFor="confirm-password" className="text-xs">Xác nhận mật khẩu</Label>
               <Input
                 id="confirm-password"
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
+                className="text-xs sm:text-sm h-8 sm:h-10"
               />
             </div>
             <Button
               onClick={handleChangePassword}
               disabled={isChangingPassword}
+              className="text-xs h-7 sm:h-9"
             >
               {isChangingPassword ? "Đang xử lý..." : "Đổi mật khẩu"}
             </Button>
@@ -139,15 +144,15 @@ export default function SettingsPage() {
         </Card>
 
         <Card className="border-destructive">
-          <CardHeader>
-            <CardTitle className="text-destructive">Xoá tài khoản</CardTitle>
-            <CardDescription>
+          <CardHeader className="p-3 sm:p-6">
+            <CardTitle className="text-destructive text-sm sm:text-lg">Xoá tài khoản</CardTitle>
+            <CardDescription className="text-xs">
               Hành động này không thể hoàn tác. Tất cả dữ liệu của bạn sẽ bị xoá
               vĩnh viễn.
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <Button variant="destructive">Xoá tài khoản</Button>
+          <CardContent className="p-3 sm:p-6 pt-0">
+            <Button variant="destructive" className="text-xs h-7 sm:h-9">Xoá tài khoản</Button>
           </CardContent>
         </Card>
       </div>

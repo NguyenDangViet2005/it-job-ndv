@@ -6,6 +6,8 @@ import {
   Sheet,
   SheetContent,
   SheetTrigger,
+  SheetHeader,
+  SheetTitle,
 } from "@/components/ui/sheet";
 import {
   Avatar,
@@ -35,7 +37,7 @@ export const MobileMenu = ({ isLoggedIn, user, onLogout }: MobileMenuProps) => {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="lg:hidden cursor-target">
+        <Button variant="ghost" size="icon" className="hidden sm:block lg:hidden cursor-target">
           <Menu className="h-5 w-5" />
           <span className="sr-only">Toggle menu</span>
         </Button>
@@ -44,35 +46,29 @@ export const MobileMenu = ({ isLoggedIn, user, onLogout }: MobileMenuProps) => {
         side="right"
         className="w-[300px] sm:w-[400px] pt-10 flex flex-col"
       >
-        {/* Search Bar */}
-        <div className="flex w-full items-center gap-2 mb-6">
-          <Input type="text" className="h-10" placeholder="Nhập từ khóa" />
-          <Button type="submit" size="sm" className="px-4">
-            Tìm kiếm
-          </Button>
-        </div>
-
-        {/* Auth Buttons - Only show when not logged in */}
+        <SheetHeader className="sr-only">
+          <SheetTitle>Menu điều hướng</SheetTitle>
+        </SheetHeader>
+        
         {!isLoggedIn && (
-          <div className="flex flex-col gap-3 pb-6 border-b mb-6">
+          <div className="flex flex-col gap-y-3 pb-6 border-b mb-6">
             <Button
               className="cursor-target w-full h-11"
               variant="default"
               asChild
             >
-              <Link href="/login">Đăng nhập</Link>
+              <Link href={ROUTES.LOGIN}>Đăng nhập</Link>
             </Button>
             <Button
               className="cursor-target w-full h-11"
               variant="outline"
               asChild
             >
-              <Link href="/register">Đăng ký</Link>
+              <Link href={ROUTES.REGISTER}>Đăng ký</Link>
             </Button>
           </div>
         )}
 
-        {/* User Info - Show when logged in */}
         {isLoggedIn && user && (
           <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg mb-6">
             <Avatar className="h-12 w-12">

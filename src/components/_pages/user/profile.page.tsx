@@ -169,23 +169,23 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
 
   // Load user skills
   useEffect(() => {
-    if (targetUserId && token) {
+    if (targetUserId) {
       loadUserSkills();
     }
-  }, [targetUserId, token]);
+  }, [targetUserId]);
 
   const loadUserSkills = async () => {
-    if (!targetUserId || !token) return;
+    if (!targetUserId) return;
 
     try {
       setSkillsLoading(true);
-      const response = await userApi.getSkills(targetUserId, token);
-      // Handle both array response and object with data property
+    const response = await userApi.getSkills(targetUserId, token || undefined);
       const skillsData = Array.isArray(response)
         ? response
         : (response as any)?.data || [];
       setUserSkills(skillsData);
     } catch (error) {
+      console.error("Error loading skills:", error);
       setUserSkills([]);
     } finally {
       setSkillsLoading(false);
@@ -530,7 +530,7 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
       />
 
       {/* Cover Photo */}
-      <div className="relative h-72 md:h-96 bg-white overflow-hidden group border-b-1">
+      <div className="relative h-48 sm:h-64 md:h-80 lg:h-96 bg-white overflow-hidden group border-b-1">
         {displayUser.coverimage ? (
           <div className="relative w-full h-full">
             <img
@@ -544,8 +544,8 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             {isUploadingCover && (
               <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/20">
-                <Loader2 className="h-12 w-12 text-white animate-spin mb-2" />
-                <span className="text-white font-medium bg-black/40 px-3 py-1 rounded-full text-sm">
+                <Loader2 className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-white animate-spin mb-2" />
+                <span className="text-white font-medium bg-black/40 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm">
                   Đang cập nhật ảnh bìa...
                 </span>
               </div>
@@ -555,49 +555,54 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
           <div className="w-full h-full flex items-center justify-center relative">
             {isUploadingCover ? (
               <div className="flex flex-col items-center gap-2">
-                <Loader2 className="h-10 w-10 text-primary animate-spin" />
-                <span className="text-muted-foreground text-sm font-medium">
+                <Loader2 className="h-8 w-8 sm:h-10 sm:w-10 text-primary animate-spin" />
+                <span className="text-muted-foreground text-xs sm:text-sm font-medium">
                   Đang tải ảnh bìa...
                 </span>
               </div>
             ) : (
-              <p className="text-muted-foreground text-lg">
+              <p className="text-muted-foreground text-sm sm:text-base md:text-lg">
                 {isOwnProfile ? "Chưa có ảnh bìa" : ""}
               </p>
             )}
           </div>
         )}
         {isOwnProfile && (
-          <div className="absolute bottom-4 right-4">
+          <div className="absolute bottom-2 right-2 sm:bottom-3 sm:right-3 md:bottom-4 md:right-4">
             <Button
               size="sm"
               variant="secondary"
-              className="cursor-target shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+              className="cursor-target shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 text-xs sm:text-sm px-2 sm:px-3 h-8 sm:h-9"
               onClick={() => coverInputRef.current?.click()}
               disabled={isUploadingCover}
             >
               {isUploadingCover ? (
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 animate-spin" />
               ) : (
-                <Camera className="h-4 w-4" />
+                <Camera className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
               )}
-              {displayUser.coverimage ? "Chỉnh sửa ảnh bìa" : "Thêm ảnh bìa"}
+              <span className="hidden sm:inline">
+                {displayUser.coverimage ? "Chỉnh sửa ảnh bìa" : "Thêm ảnh bìa"}
+              </span>
+              <span className="sm:hidden">
+                {displayUser.coverimage ? "Sửa" : "Thêm"}
+              </span>
             </Button>
           </div>
         )}
       </div>
 
       {/* Profile Header */}
-      <div className="container mx-auto px-4 max-w-6xl">
+      <div className="container mx-auto px-2 sm:px-4 max-w-6xl">
         <div className="bg-background rounded-b-lg shadow-sm border-x border-b">
-          <div className="relative -mt-24 px-6 pb-4">
-            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-              <div className="flex flex-col md:flex-row gap-4 items-center md:items-end pt-6">
+          <div className="relative -mt-16 sm:-mt-20 md:-mt-24 px-3 sm:px-4 md:px-6 pb-3 sm:pb-4">
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3 sm:gap-4">
+              <div className="flex flex-col md:flex-row gap-3 sm:gap-4 items-center md:items-end pt-4 sm:pt-6">
                 {/* Avatar */}
                 <div className="relative group">
                   <Avatar
                     className={cn(
-                      "h-48 w-48 shadow-lg transition-all duration-300 hover:shadow-2xl hover:scale-105",
+                      "h-32 w-32 sm:h-40 sm:w-40 md:h-48 md:w-48 shadow-lg transition-all duration-300 hover:shadow-2xl hover:scale-105",
                       isUploadingAvatar && "blur-[2px] opacity-70",
                     )}
                   >
@@ -605,7 +610,7 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
                       src={displayUser.avatar}
                       alt={displayUser.fullname}
                     />
-                    <AvatarFallback className="text-5xl bg-primary text-primary-foreground">
+                    <AvatarFallback className="text-3xl sm:text-4xl md:text-5xl bg-primary text-primary-foreground">
                       {displayUser.fullname?.charAt(0)}
                     </AvatarFallback>
                   </Avatar>
@@ -624,64 +629,64 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
                       >
                         {isUploadingAvatar ? (
                           <div className="flex flex-col items-center gap-2">
-                            <Loader2 className="h-10 w-10 text-white animate-spin" />
+                            <Loader2 className="h-8 w-8 sm:h-10 sm:w-10 text-white animate-spin" />
                             <span className="text-white text-xs font-medium animate-pulse">
                               Đang tải...
                             </span>
                           </div>
                         ) : (
-                          <Camera className="h-8 w-8 text-white" />
+                          <Camera className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
                         )}
                       </div>
                       <Button
                         size="icon"
                         variant="secondary"
-                        className="cursor-target absolute bottom-2 right-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110"
+                        className="cursor-target absolute bottom-1 right-2 sm:bottom-2 sm:right-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 h-8 w-8 sm:h-10 sm:w-10"
                         onClick={() => avatarInputRef.current?.click()}
                         disabled={isUploadingAvatar}
                       >
-                        <Camera className="h-4 w-4" />
+                        <Camera className="h-3 w-3 sm:h-4 sm:w-4" />
                       </Button>
                     </>
                   )}
                 </div>
 
                 {/* Name & Title */}
-                <div className="text-center md:text-left mb-4">
-                  <h1 className="text-3xl font-bold hover:text-primary transition-colors duration-300">
+                <div className="text-center md:text-left mb-2 sm:mb-4">
+                  <h1 className="text-2xl sm:text-3xl font-bold hover:text-primary transition-colors duration-300">
                     {displayUser.fullname}
                   </h1>
-                  <p className="text-muted-foreground">
+                  <p className="text-sm sm:text-base text-muted-foreground">
                     {displayUser.role === "hr"
                       ? "Nhà tuyển dụng"
                       : "Người tìm việc"}
                   </p>
-                  <p className="text-sm text-muted-foreground flex items-center justify-center md:justify-start gap-1 mt-1 cursor-target hover:text-primary transition-colors duration-300">
-                    <Users className="h-4 w-4" />
+                  <p className="text-xs sm:text-sm text-muted-foreground flex items-center justify-center md:justify-start gap-1 mt-1 cursor-target hover:text-primary transition-colors duration-300">
+                    <Users className="h-3 w-3 sm:h-4 sm:w-4" />
                     <span>245 người theo dõi • 189 đang theo dõi</span>
                   </p>
                 </div>
               </div>
 
               {!isOwnProfile ? (
-                <div className="flex gap-2">
-                  <Button className="cursor-target hover:scale-105 transition-transform duration-300">
-                    <UserPlus className="h-4 w-4 mr-2" />
+                <div className="flex gap-2 justify-center md:justify-start flex-wrap">
+                  <Button className="cursor-target hover:scale-105 transition-transform duration-300 text-xs sm:text-sm h-8 sm:h-9 px-3 sm:px-4">
+                    <UserPlus className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                     Theo dõi
                   </Button>
                   <Button
                     variant="outline"
-                    className="cursor-target hover:scale-105 transition-transform duration-300"
+                    className="cursor-target hover:scale-105 transition-transform duration-300 text-xs sm:text-sm h-8 sm:h-9 px-3 sm:px-4"
                   >
-                    <MessageCircle className="h-4 w-4 mr-2" />
+                    <MessageCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                     Nhắn tin
                   </Button>
                   <Button
                     variant="outline"
                     size="icon"
-                    className="cursor-target hover:scale-105 hover:rotate-90 transition-all duration-300"
+                    className="cursor-target hover:scale-105 hover:rotate-90 transition-all duration-300 h-8 w-8 sm:h-9 sm:w-9"
                   >
-                    <MoreHorizontal className="h-4 w-4" />
+                    <MoreHorizontal className="h-3 w-3 sm:h-4 sm:w-4" />
                   </Button>
                 </div>
               ) : null}
@@ -956,9 +961,9 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
             {/* Create Post Card - Only show for own profile */}
             {isOwnProfile && user && (
               <Card className="hover:shadow-lg transition-all duration-300 animate-in fade-in slide-in-from-bottom-4">
-                <CardContent>
-                  <div className="flex gap-3">
-                    <Avatar className="cursor-target hover:scale-110 transition-transform duration-300">
+                <CardContent className="p-3 sm:p-6">
+                  <div className="flex gap-2 sm:gap-3">
+                    <Avatar className="cursor-target hover:scale-110 transition-transform duration-300 h-10 w-10 sm:h-12 sm:w-12">
                       <AvatarImage src={user.avatar} />
                       <AvatarFallback>
                         {user.fullname?.charAt(0)}
@@ -968,24 +973,24 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
                       placeholder="Bạn đang nghĩ gì?"
                       value={newPost}
                       onChange={(e) => setNewPost(e.target.value)}
-                      className="cursor-target flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 hover:border-primary/50 transition-colors duration-300 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="cursor-target flex min-h-[60px] sm:min-h-[80px] w-full rounded-md border border-input bg-background px-2 sm:px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 hover:border-primary/50 transition-colors duration-300 disabled:cursor-not-allowed disabled:opacity-50"
                     />
                   </div>
 
                   {/* Selected images preview */}
                   {selectedImages.length > 0 && (
-                    <div className="flex gap-2 mt-4 flex-wrap">
+                    <div className="flex gap-2 mt-3 sm:mt-4 flex-wrap">
                       {selectedImages.map((img, index) => (
                         <div key={index} className="relative">
                           <img
                             src={URL.createObjectURL(img)}
                             alt={`Selected ${index + 1}`}
-                            className="w-20 h-20 object-cover rounded-lg"
+                            className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg"
                           />
                           <Button
                             variant="destructive"
                             size="icon"
-                            className="absolute -top-2 -right-2 h-5 w-5 rounded-full"
+                            className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 h-5 w-5 rounded-full"
                             onClick={() => removeSelectedImage(index)}
                           >
                             <X className="h-3 w-3" />
@@ -997,15 +1002,15 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
 
                   {/* Selected video preview */}
                   {selectedVideo && (
-                    <div className="relative mt-4 inline-block">
+                    <div className="relative mt-3 sm:mt-4 inline-block">
                       <video
                         src={URL.createObjectURL(selectedVideo)}
-                        className="w-40 h-24 object-cover rounded-lg"
+                        className="w-32 h-20 sm:w-40 sm:h-24 object-cover rounded-lg"
                       />
                       <Button
                         variant="destructive"
                         size="icon"
-                        className="absolute -top-2 -right-2 h-5 w-5 rounded-full"
+                        className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 h-5 w-5 rounded-full"
                         onClick={() => setSelectedVideo(null)}
                       >
                         <X className="h-3 w-3" />
@@ -1013,39 +1018,39 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
                     </div>
                   )}
 
-                  <Separator className="my-4" />
-                  <div className="flex justify-between items-center">
-                    <div className="flex gap-2">
+                  <Separator className="my-3 sm:my-4" />
+                  <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2 sm:gap-0">
+                    <div className="flex gap-1 sm:gap-2 flex-wrap">
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="cursor-target hover:bg-green-50 dark:hover:bg-green-950 hover:scale-105 transition-all duration-300"
+                        className="cursor-target hover:bg-green-50 dark:hover:bg-green-950 hover:scale-105 transition-all duration-300 flex-1 sm:flex-none text-xs sm:text-sm px-2 sm:px-3"
                         onClick={() => imageInputRef.current?.click()}
                       >
-                        <ImageIcon className="h-4 w-4 mr-2 text-green-600" />
-                        Ảnh
+                        <ImageIcon className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2 text-green-600" />
+                        <span className="hidden sm:inline">Ảnh</span>
                       </Button>
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="cursor-target hover:bg-red-50 dark:hover:bg-red-950 hover:scale-105 transition-all duration-300"
+                        className="cursor-target hover:bg-red-50 dark:hover:bg-red-950 hover:scale-105 transition-all duration-300 flex-1 sm:flex-none text-xs sm:text-sm px-2 sm:px-3"
                         onClick={() => videoInputRef.current?.click()}
                       >
-                        <Video className="h-4 w-4 mr-2 text-red-600" />
-                        Video
+                        <Video className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2 text-red-600" />
+                        <span className="hidden sm:inline">Video</span>
                       </Button>
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="cursor-target hover:bg-yellow-50 dark:hover:bg-yellow-950 hover:scale-105 transition-all duration-300"
+                        className="cursor-target hover:bg-yellow-50 dark:hover:bg-yellow-950 hover:scale-105 transition-all duration-300 flex-1 sm:flex-none text-xs sm:text-sm px-2 sm:px-3"
                       >
-                        <Smile className="h-4 w-4 mr-2 text-yellow-600" />
-                        Cảm xúc
+                        <Smile className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2 text-yellow-600" />
+                        <span className="hidden sm:inline">Cảm xúc</span>
                       </Button>
                     </div>
                     <Button
                       size="sm"
-                      className="cursor-target hover:scale-105 transition-transform duration-300"
+                      className="cursor-target hover:scale-105 transition-transform duration-300 w-full sm:w-auto"
                       onClick={handleCreatePost}
                       disabled={
                         isCreatingPost ||

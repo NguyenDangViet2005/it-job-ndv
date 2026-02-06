@@ -4,6 +4,7 @@ import  { useState, useMemo, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Building2,
   Filter,
@@ -16,6 +17,7 @@ import Link from "next/link";
 import { ROUTES } from "@/constants";
 import { useDebounce } from "@/lib/hooks/useDebounce";
 import { Company } from "@/types";
+import { CompaniesPageSkeleton } from "@/components/common/skeletons";
 
 interface CompanyFilters {
   search: string;
@@ -23,6 +25,8 @@ interface CompanyFilters {
   size: string;
   type: string;
 }
+
+
 
 const CompaniesPage = () => {
   const [companies, setCompanies] = useState<Company[]>([]);
@@ -82,9 +86,6 @@ const CompaniesPage = () => {
     });
   }, [companies, debouncedSearch, filters.location]);
 
-  const handleSearchChange = (value: string) => {
-    setFilters((prev) => ({ ...prev, search: value }));
-  };
 
   const handleFilterChange = (key: keyof CompanyFilters, value: string) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
@@ -106,7 +107,8 @@ const CompaniesPage = () => {
     <div className="min-h-screen bg-background">
       {/* Header Section */}
       <HeroSection />
-      <div className="bg-muted/30 border-b border-border py-2 px-8">
+      <div className="bg-card w-full border-t border-border mt-[-88px] relative z-10 shadow-[0_-20px_50px_-20px_rgba(0,0,0,0.1)]">
+        <div className="bg-muted/30 border-b border-border py-2 px-8">
         <div className="max-w-7xl mx-auto flex items-center gap-2 text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
           <Link
             href={ROUTES.HOME}
@@ -289,11 +291,9 @@ const CompaniesPage = () => {
         </div>
 
         {/* Loading State */}
-        {loading && (
-          <div className="flex items-center justify-center h-64">
-            <div className="text-muted-foreground">Đang tải...</div>
-          </div>
-        )}
+        {loading ? (
+          <CompaniesPageSkeleton />
+        ) : null}
 
         {/* Companies Grid */}
         {!loading && filteredCompanies.length > 0 ? (
@@ -397,6 +397,7 @@ const CompaniesPage = () => {
             </Button>
           </div>
         ) : null}
+      </div>
       </div>
     </div>
   );

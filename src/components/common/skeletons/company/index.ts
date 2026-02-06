@@ -1,0 +1,1 @@
+export { default as CompaniesPageSkeleton} from "./company-list.skeleton"

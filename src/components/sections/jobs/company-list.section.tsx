@@ -36,21 +36,34 @@ export default function CompanyListSection({
 
   if (loading) {
     return (
-      <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide mb-8">
-        {[...Array(6)].map((_, i) => (
-          <div key={i} className="flex-shrink-0 w-40">
-            <Skeleton className="h-24 w-full rounded-xl mb-2" />
-            <Skeleton className="h-4 w-3/4 mx-auto" />
-          </div>
-        ))}
+      <div className="bg-card shadow-sm border border-border p-3 lg:p-5">
+        <div className="hidden lg:block space-y-3">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="flex items-center gap-3">
+              <Skeleton className="h-12 w-12 rounded-lg" />
+              <div className="flex-1">
+                <Skeleton className="h-4 w-3/4 mb-2" />
+                <Skeleton className="h-3 w-1/2" />
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="lg:hidden flex gap-3 overflow-x-auto pb-2">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="flex-shrink-0 w-24">
+              <Skeleton className="h-12 w-12 rounded-lg mx-auto mb-2" />
+              <Skeleton className="h-3 w-full" />
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-card shadow-sm border border-border p-5 sticky top-24">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-lg font-semibold text-foreground">
+    <div className="bg-card shadow-sm border border-border p-3 lg:p-5 lg:sticky lg:top-24">
+      <div className="flex items-center justify-between mb-4 lg:mb-6">
+        <h2 className="text-sm lg:text-lg font-semibold text-foreground">
           Công ty hàng đầu
         </h2>
         {selectedCompanyId && (
@@ -63,7 +76,8 @@ export default function CompanyListSection({
         )}
       </div>
 
-      <div className="space-y-3">
+      {/* Desktop: Vertical scroll */}
+      <div className="hidden lg:block space-y-3 max-h-[calc(100vh-200px)] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent">
         {companies.map((company) => (
           <div
             key={company.id}
@@ -111,8 +125,54 @@ export default function CompanyListSection({
         ))}
       </div>
 
+      {/* Mobile/Tablet: Horizontal scroll */}
+      <div className="lg:hidden flex gap-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent">
+        {companies.map((company) => (
+          <div
+            key={company.id}
+            onClick={() =>
+              onCompanyChange(
+                company.id === selectedCompanyId ? null : company.id,
+              )
+            }
+            className={cn(
+              "group cursor-pointer transition-all duration-300 flex-shrink-0",
+              "flex flex-col items-center gap-2 p-3 rounded-xl border-2 w-24",
+              selectedCompanyId === company.id
+                ? "border-primary shadow-sm bg-primary/5"
+                : "border-transparent hover:bg-accent",
+            )}
+          >
+            <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-white dark:bg-muted border border-border p-1 flex items-center justify-center group-hover:scale-105 transition-transform duration-300 shadow-sm">
+              <Image
+                src={company.avatar || "/logo/default-company.png"}
+                alt={company.name}
+                fill
+                className="object-contain p-1"
+                sizes="48px"
+              />
+            </div>
+            <div className="w-full text-center">
+              <p
+                className={cn(
+                  "text-[10px] font-bold truncate transition-colors",
+                  selectedCompanyId === company.id
+                    ? "text-primary"
+                    : "text-foreground/80 group-hover:text-primary",
+                )}
+              >
+                {company.name}
+              </p>
+            </div>
+            {selectedCompanyId === company.id && (
+              <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+            )}
+          </div>
+        ))}
+      </div>
+
       {companies.length === 0 && !loading && (
-        <p className="text-sm text-muted-foreground text-center py-4">
+        <p className="text-xs lg:text-sm text-muted-foreground text-center py-4">
           Chưa có dữ liệu
         </p>
       )}

@@ -9,11 +9,11 @@ import SubscribeCTASection from "@/components/features/subcribe-cta.section";
 
 export default function HomePage() {
   return (
-    <div className="overflow-x-hidden">
+    <div className="overflow-x-hidden pb-20 sm:pb-0">
       <HeroSection height={500} />
 
       <div className="bg-background w-full rounded-t-3xl border-t border-border/50 -mt-20 relative z-10 shadow-2xl shadow-black/5">
-        <div className="w-[90%] max-w-[1400px] mx-auto px-2 lg:px-4">
+        <div className="w-[90%] max-w-[1400px] mx-auto lg:px-4">
           <div className="z-10 -translate-y-20">
             <QuickFeatureSection />
           </div>
@@ -32,7 +32,7 @@ export default function HomePage() {
           <div className="py-10 lg:py-20">
             <QuickBlogSection />
           </div>
-          <div className="pb-6">
+          <div className="pb-6 sm:pb-6">
             <SubscribeCTASection />
           </div>
         </div>

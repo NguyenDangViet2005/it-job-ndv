@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { MapPin, Clock, Users} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Job } from "@/types";
+import { ROUTES } from "@/constants";
 
 export default function JobCard( job : Job) {
   return (
@@ -13,7 +14,7 @@ export default function JobCard( job : Job) {
       <CardContent className="p-0">
         <div className="flex flex-col md:flex-row gap-6">
           {/* Logo Section */}
-          <div className="md:w-32 md:h-32 w-full h-40 bg-muted/30 p-4 flex items-center justify-center border border-border group-hover:border-primary/20 transition-colors shrink-0">
+          <Link href={ROUTES.JOB_DETAIL(job.id)} className="md:w-32 md:h-32 w-full h-40 bg-muted/30 p-4 flex items-center justify-center border border-border group-hover:border-primary/20 transition-colors shrink-0">
             <div className="relative w-full h-full">
               <Image
                 src={job.company?.avatar || "/logo/default-company.png"}
@@ -23,14 +24,14 @@ export default function JobCard( job : Job) {
                 sizes="(max-width: 768px) 100vw, 128px"
               />
             </div>
-          </div>
+          </Link>
 
           {/* Info Section */}
           <div className="flex-1 min-w-0 flex flex-col justify-between">
             <div className="space-y-1">
               <div className="flex items-start justify-between gap-4">
-                <Link href={`/jobs/${job.id}`} className="block group/title">
-                  <h2 className="text-xl font-semibold text-foreground group-hover/title:text-primary transition-colors">
+                <Link href={ROUTES.JOB_DETAIL(job.id)}>
+                  <h2 className="text-xl font-semibold text-foreground hover:text-primary transition-colors cursor-pointer">
                     {job.title}
                   </h2>
                 </Link>

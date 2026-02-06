@@ -173,44 +173,44 @@ export default function ResumePage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-5xl">
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold">Hồ sơ / CV của tôi</h1>
+    <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-8 max-w-5xl">
+      <div className="space-y-3 sm:space-y-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1">
+          <h1 className="text-xl sm:text-3xl font-bold">Hồ sơ / CV của tôi</h1>
         </div>
 
         <Card className="bg-card">
-          <CardHeader>
-            <CardTitle className="text-foreground">Thông tin chung</CardTitle>
+          <CardHeader className="p-3 sm:p-6">
+            <CardTitle className="text-foreground text-sm sm:text-lg">Thông tin chung</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <CardContent className="space-y-2 sm:space-y-4 p-3 sm:p-6 pt-0">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
               <div>
-                <label className="text-sm font-medium text-foreground">
+                <label className="text-xs font-medium text-foreground">
                   Họ và tên
                 </label>
-                <p className="text-muted-foreground">{user.fullname}</p>
+                <p className="text-xs sm:text-base text-muted-foreground">{user.fullname}</p>
               </div>
               <div>
-                <label className="text-sm font-medium text-foreground">
+                <label className="text-xs font-medium text-foreground">
                   Email
                 </label>
-                <p className="text-muted-foreground">{user.email}</p>
+                <p className="text-xs sm:text-base text-muted-foreground truncate">{user.email}</p>
               </div>
               {user.phone && (
                 <div>
-                  <label className="text-sm font-medium text-foreground">
+                  <label className="text-xs font-medium text-foreground">
                     Số điện thoại
                   </label>
-                  <p className="text-muted-foreground">{user.phone}</p>
+                  <p className="text-xs sm:text-base text-muted-foreground">{user.phone}</p>
                 </div>
               )}
               {user.address && (
                 <div>
-                  <label className="text-sm font-medium text-foreground">
+                  <label className="text-xs font-medium text-foreground">
                     Địa chỉ
                   </label>
-                  <p className="text-muted-foreground">{user.address}</p>
+                  <p className="text-xs sm:text-base text-muted-foreground">{user.address}</p>
                 </div>
               )}
             </div>
@@ -218,16 +218,16 @@ export default function ResumePage() {
         </Card>
 
         <Card className="bg-card">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-foreground">Kỹ năng</CardTitle>
+          <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 p-3 sm:p-6">
+            <CardTitle className="text-foreground text-sm sm:text-lg">Kỹ năng</CardTitle>
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
               <DialogTrigger asChild>
                 <Button
                   size="sm"
                   onClick={loadAllSkills}
-                  className="hover:scale-105 transition-transform"
+                  className="hover:scale-105 transition-transform text-xs h-7 sm:h-9 w-full sm:w-auto"
                 >
-                  <Plus className="h-4 w-4 mr-2" />
+                  <Plus className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                   Thêm kỹ năng
                 </Button>
               </DialogTrigger>
@@ -271,28 +271,28 @@ export default function ResumePage() {
               </DialogContent>
             </Dialog>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-3 sm:p-6 pt-0">
             {loading ? (
-              <div className="flex justify-center py-4">
-                <Loader2 className="h-6 w-6 animate-spin text-primary" />
+              <div className="flex justify-center py-3">
+                <Loader2 className="h-4 w-4 sm:h-6 sm:w-6 animate-spin text-primary" />
               </div>
             ) : userSkills.length === 0 ? (
-              <p className="text-center text-muted-foreground py-4">
+              <p className="text-center text-xs text-muted-foreground py-3">
                 Chưa có kỹ năng nào. Hãy thêm kỹ năng của bạn!
               </p>
             ) : (
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-1.5 sm:gap-2">
                 {userSkills.map((skill) => (
                   <span
                     key={skill.id}
-                    className="group px-3 py-1 bg-primary/10 text-primary rounded-full text-sm flex items-center gap-2 hover:bg-primary/20 transition-colors"
+                    className="group px-2 sm:px-3 py-0.5 sm:py-1 bg-primary/10 text-primary rounded-full text-xs flex items-center gap-1 sm:gap-2 hover:bg-primary/20 transition-colors"
                   >
                     {skill.name}
                     <button
                       onClick={() => handleRemoveSkill(skill.id)}
                       className="hover:bg-primary/30 rounded-full p-0.5 transition-colors"
                     >
-                      <X className="h-3 w-3" />
+                      <X className="h-2.5 w-2.5" />
                     </button>
                   </span>
                 ))}
@@ -302,41 +302,41 @@ export default function ResumePage() {
         </Card>
 
         <Card className="bg-card">
-          <CardHeader>
-            <CardTitle className="text-foreground">CV đã tải lên</CardTitle>
+          <CardHeader className="p-3 sm:p-6">
+            <CardTitle className="text-foreground text-sm sm:text-lg">CV đã tải lên</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-3 sm:p-6 pt-0">
             {(user as any).cvurl ? (
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 border rounded-lg bg-primary/5">
-                  <div className="flex items-center gap-3">
-                    <FileText className="h-8 w-8 text-primary" />
+              <div className="space-y-2 sm:space-y-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-2 sm:p-4 border rounded-lg bg-primary/5 gap-2">
+                  <div className="flex items-center gap-2">
+                    <FileText className="h-5 w-5 sm:h-8 sm:w-8 text-primary flex-shrink-0" />
                     <div>
-                      <p className="font-medium text-foreground">CV của bạn</p>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-xs sm:text-base font-medium text-foreground">CV của bạn</p>
+                      <p className="text-xs text-muted-foreground">
                         Đã tải lên
                       </p>
                     </div>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-1.5 sm:gap-2 w-full sm:w-auto">
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => window.open((user as any).cvurl, "_blank")}
-                      className="hover:bg-primary/10 hover:text-primary"
+                      className="hover:bg-primary/10 hover:text-primary flex-1 sm:flex-none text-xs h-7 sm:h-9"
                     >
                       Xem CV
                     </Button>
                     <Button
                       variant="outline"
                       size="sm"
-                      className="hover:bg-primary/10 hover:text-primary relative"
+                      className="hover:bg-primary/10 hover:text-primary relative flex-1 sm:flex-none text-xs h-7 sm:h-9"
                       disabled={uploadingCV}
                     >
                       {uploadingCV ? (
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        <Loader2 className="h-3 w-3 mr-1 animate-spin" />
                       ) : (
-                        <Upload className="h-4 w-4 mr-2" />
+                        <Upload className="h-3 w-3 mr-1" />
                       )}
                       Tải lại
                       <input
@@ -351,20 +351,20 @@ export default function ResumePage() {
                 </div>
               </div>
             ) : (
-              <div className="border-2 border-dashed rounded-lg p-8 text-center">
-                <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                <p className="text-muted-foreground mb-4">
+              <div className="border-2 border-dashed rounded-lg p-4 sm:p-8 text-center">
+                <FileText className="h-8 w-8 sm:h-12 sm:w-12 mx-auto text-muted-foreground mb-2 sm:mb-4" />
+                <p className="text-xs sm:text-base text-muted-foreground mb-2 sm:mb-4">
                   Chưa có CV nào được tải lên
                 </p>
                 <Button
                   variant="outline"
-                  className="hover:bg-primary/10 hover:text-primary relative"
+                  className="hover:bg-primary/10 hover:text-primary relative text-xs h-7 sm:h-9"
                   disabled={uploadingCV}
                 >
                   {uploadingCV ? (
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    <Loader2 className="h-3 w-3 mr-1 animate-spin" />
                   ) : (
-                    <Upload className="h-4 w-4 mr-2" />
+                    <Upload className="h-3 w-3 mr-1" />
                   )}
                   Tải CV lên
                   <input

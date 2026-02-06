@@ -81,10 +81,10 @@ export default function PostCard({
   return (
     <>
       <Card
-        className="hover:shadow-lg transition-all duration-300 animate-in fade-in slide-in-from-bottom-4"
+        className="hover:shadow-lg transition-all duration-300 animate-in fade-in slide-in-from-bottom-4 mb-4"
         style={{ animationDelay: `${index * 100}ms` }}
       >
-        <CardContent>
+        <CardContent className="p-3 lg:p-6">
           {/* Post Header */}
           <PostHeader
             post={post}

@@ -114,35 +114,28 @@ const JobsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-20 sm:pb-0">
       <HeroSection />
       <div className="bg-card w-full border-t border-border mt-[-88px] relative z-10 shadow-[0_-20px_50px_-20px_rgba(0,0,0,0.1)]">
         {/* Breadcrumb Section */}
-        <div className="bg-muted/30 border-b border-border py-2 px-8">
-          <div className="max-w-7xl mx-auto flex items-center gap-2 text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+        <div className="bg-muted/30 border-b border-border py-2 px-4 lg:px-8">
+          <div className="max-w-7xl mx-auto flex items-center gap-2 text-[9px] lg:text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
             <Link href={ROUTES.HOME} className="hover:text-primary transition-colors">TRANG CHỦ</Link>
             <span>/</span>
             <span className="text-foreground">TÌM KIẾM VIỆC LÀM IT</span>
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 lg:px-8 py-12">
+        <div className="max-w-7xl mx-auto px-3 lg:px-8 py-6 lg:py-12">
           {/* Header & Horizontal Filter */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-6">
-            <div className="space-y-2">
-                <h1 className="text-4xl font-bold text-foreground tracking-tight uppercase">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 lg:mb-8 gap-4 lg:gap-6">
+            <div className="space-y-1 lg:space-y-2">
+                <h1 className="text-2xl lg:text-4xl font-bold text-foreground tracking-tight uppercase">
                     Khám phá sự nghiệp <span className="text-primary">mơ ước</span>
                 </h1>
-                <p className="text-muted-foreground font-medium max-w-xl text-sm">
+                <p className="text-muted-foreground font-medium max-w-xl text-xs lg:text-sm">
                     Kết nối bạn với những công ty công nghệ hàng đầu và những vị trí IT hứa hẹn nhất hiện nay.
                 </p>
-            </div>
-            
-            <div className="flex gap-3">
-                <div className="bg-muted/50 dark:bg-muted/20 px-4 py-2 rounded-xl flex flex-col items-center">
-                    <span className="text-primary font-semibold text-xl">{jobs.length}+</span>
-                    <span className="text-[10px] text-muted-foreground uppercase">Việc mới</span>
-                </div>
             </div>
           </div>
 
@@ -157,7 +150,7 @@ const JobsPage = () => {
             onJobTypeChange={handleJobTypeChange}
           />
 
-          <div className="flex flex-col lg:flex-row gap-8">
+          <div className="flex flex-col lg:flex-row gap-4 lg:gap-8">
             {/* Left Aside: Company List Filter */}
             <aside className="lg:w-72 flex-shrink-0">
                 <CompanyListSection

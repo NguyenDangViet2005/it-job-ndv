@@ -19,11 +19,11 @@ export default function QAPageLayout({
   connections,
 }: QAPageLayoutProps) {
   return (
-    <div className="min-h-screen bg-background mt-20">
-      <div className="max-w-[1400px] mx-auto flex justify-center lg:justify-between px-4 gap-4">
+    <div className="min-h-screen bg-background mt-16 lg:mt-20 pb-20 sm:pb-0">
+      <div className="max-w-[1400px] mx-auto flex justify-center lg:justify-between px-2 lg:px-4 gap-3 lg:gap-4">
         {/* LEFT SIDEBAR - Profile + Connections (Fixed) */}
-        <aside className="hidden lg:block w-64 flex-shrink-0">
-          <div className="fixed top-20 w-64 h-[calc(100vh-5rem)] overflow-hidden flex flex-col">
+        <aside className="hidden lg:block w-56 xl:w-64 flex-shrink-0">
+          <div className="fixed top-20 w-56 xl:w-64 h-[calc(100vh-5rem)] overflow-hidden flex flex-col">
             <LeftSidebar connections={connections} />
           </div>
         </aside>
@@ -34,11 +34,11 @@ export default function QAPageLayout({
         </main>
 
         {/* RIGHT SIDEBAR - Company Posts + Followed Companies (Fixed) */}
-        <aside className="hidden md:block w-[340px] flex-shrink-0">
+        <aside className="hidden md:block w-[280px] lg:w-[320px] xl:w-[340px] flex-shrink-0">
           <div
-            className="fixed top-20 w-[340px] h-[calc(100vh-5rem)] overflow-hidden"
+            className="fixed top-20 w-[280px] lg:w-[320px] xl:w-[340px] h-[calc(100vh-5rem)] overflow-hidden"
             style={{
-              right: "max(1rem, calc((100vw - 1400px)/2 + 1rem))",
+              right: "max(0.5rem, calc((100vw - 1400px)/2 + 1rem))",
             }}
           >
             <RightSidebar

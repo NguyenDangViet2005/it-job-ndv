@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import UserFooter from "@/components/layouts/UserFooter";
 import UserHeader from "@/components/layouts/UserHeader";
+import { MobileBottomNav } from "@/components/features/navigation/mobile-bottom-nav";
 
 
 export default function RootLayout({
@@ -12,8 +13,11 @@ export default function RootLayout({
   return (
     <>
       <UserHeader />
-      {children}
+      <div className="pb-0 sm:pb-0">
+        {children}
+      </div>
       <UserFooter />
+      <MobileBottomNav />
     </>
   );
 }

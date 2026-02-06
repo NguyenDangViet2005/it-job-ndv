@@ -213,11 +213,11 @@ const PostComments = forwardRef<PostCommentsRef, PostCommentsProps>(
     }
 
     return (
-      <div className="mt-4 space-y-4 animate-in fade-in slide-in-from-top-2">
+      <div className="mt-3 lg:mt-4 space-y-3 lg:space-y-4 animate-in fade-in slide-in-from-top-2">
         <Separator />
 
         {/* Comments List */}
-        <div className="space-y-3 max-h-96 overflow-y-auto">
+        <div className="space-y-2 lg:space-y-3 max-h-96 overflow-y-auto">
           {(showComments ? comments : getTopComments(3)).map(
             (comment: any, idx: number) => {
               const commentTime = comment.createdat
@@ -239,24 +239,24 @@ const PostComments = forwardRef<PostCommentsRef, PostCommentsProps>(
               return (
                 <div
                   key={comment.id}
-                  className="flex gap-3 animate-in fade-in slide-in-from-left-2"
+                  className="flex gap-2 lg:gap-3 animate-in fade-in slide-in-from-left-2"
                   style={{ animationDelay: `${idx * 50}ms` }}
                 >
                   <Link href={commentUserId ? `/profile/${commentUserId}` : "#"}>
-                    <Avatar className="h-7 w-7 cursor-target hover:scale-110 transition-transform duration-300">
+                    <Avatar className="h-6 w-6 lg:h-7 lg:w-7 cursor-target hover:scale-110 transition-transform duration-300 flex-shrink-0">
                       <AvatarImage src={commentUserAvatar} />
-                      <AvatarFallback>
+                      <AvatarFallback className="text-xs">
                         {commentUserName.charAt(0)}
                       </AvatarFallback>
                     </Avatar>
                   </Link>
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     {editingCommentId === comment.id ? (
                       <div className="space-y-2">
                         <textarea
                           value={editingContent}
                           onChange={(e) => setEditingContent(e.target.value)}
-                          className="w-full rounded-lg border border-input bg-background px-3 py-2 text-xs min-h-[80px]"
+                          className="w-full rounded-lg border border-input bg-background px-2 lg:px-3 py-2 text-xs lg:text-sm min-h-[60px] lg:min-h-[80px]"
                           autoFocus
                           placeholder="Nội dung bình luận..."
                         />
@@ -354,14 +354,14 @@ const PostComments = forwardRef<PostCommentsRef, PostCommentsProps>(
                       </div>
                     ) : (
                       <>
-                        <div className="bg-muted rounded-2xl px-4 py-2 hover:bg-muted/80 transition-colors duration-300 relative group">
+                        <div className="bg-muted rounded-2xl px-3 lg:px-4 py-2 hover:bg-muted/80 transition-colors duration-300 relative group">
                           <Link href={commentUserId ? `/profile/${commentUserId}` : "#"}>
-                            <p className="font-semibold text-sm cursor-target hover:text-primary transition-colors duration-300">
+                            <p className="font-semibold text-xs lg:text-sm cursor-target hover:text-primary transition-colors duration-300 break-words">
                               {commentUserName}
                             </p>
                           </Link>
                           {hasCompany && companyid && (
-                            <p className="text-xs text-muted-foreground">
+                            <p className="text-[10px] lg:text-xs text-muted-foreground">
                               Làm việc tại{" "}
                               <Link 
                                 href={`/companies/${companyid}`}
@@ -371,17 +371,17 @@ const PostComments = forwardRef<PostCommentsRef, PostCommentsProps>(
                               </Link>
                             </p>
                           )}
-                          <p className="text-sm mt-1">{comment.content}</p>
+                          <p className="text-xs lg:text-sm mt-1 break-words">{comment.content}</p>
                           {/* Display comment attachments if any */}
                           {comment?.attachments?.length > 0 && (
-                            <div className="flex gap-2 flex-wrap mt-2">
+                            <div className="flex gap-1 lg:gap-2 flex-wrap mt-2">
                               {comment?.attachments?.map(
                                 (att: Attachment, idx: number) => (
                                   <img
                                     key={idx}
                                     src={att.fileurl}
                                     alt={`Comment attachment ${idx + 1}`}
-                                    className="w-20 h-20 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity"
+                                    className="w-16 h-16 lg:w-20 lg:h-20 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity"
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       window.open(att.fileurl, "_blank");
@@ -399,9 +399,9 @@ const PostComments = forwardRef<PostCommentsRef, PostCommentsProps>(
                                   <Button
                                     size="icon"
                                     variant="ghost"
-                                    className="absolute top-2 right-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                                    className="absolute top-1 right-1 lg:top-2 lg:right-2 h-5 w-5 lg:h-6 lg:w-6 opacity-0 group-hover:opacity-100 transition-opacity"
                                   >
-                                    <MoreVertical className="h-4 w-4" />
+                                    <MoreVertical className="h-3 w-3 lg:h-4 lg:w-4" />
                                   </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
@@ -430,17 +430,17 @@ const PostComments = forwardRef<PostCommentsRef, PostCommentsProps>(
                               </DropdownMenu>
                             )}
                         </div>
-                        <div className="flex items-center gap-3 mt-1 px-4 text-xs text-muted-foreground">
+                        <div className="flex items-center gap-2 lg:gap-3 mt-1 px-2 lg:px-4 text-[10px] lg:text-xs text-muted-foreground flex-wrap">
                           <span className="cursor-target hover:text-primary hover:underline transition-all duration-300">
                             Thích
                           </span>
                           <span className="cursor-target hover:text-primary hover:underline transition-all duration-300">
                             Trả lời
                           </span>
-                          <span>{commentTime}</span>
+                          <span className="truncate">{commentTime}</span>
                           {comment.likes > 0 && (
                             <span className="flex items-center gap-1">
-                              <ThumbsUp className="h-3 w-3 fill-blue-600 text-blue-600" />
+                              <ThumbsUp className="h-2 w-2 lg:h-3 lg:w-3 fill-blue-600 text-blue-600" />
                               {comment.likes}
                             </span>
                           )}
@@ -499,13 +499,13 @@ const PostComments = forwardRef<PostCommentsRef, PostCommentsProps>(
         )}
 
         {/* Add Comment */}
-        <div className="flex gap-3 pt-2">
-          <Avatar className="h-10 w-10 cursor-target hover:scale-110 transition-transform duration-300">
+        <div className="flex gap-2 lg:gap-3 pt-2">
+          <Avatar className="h-7 w-7 lg:h-10 lg:w-10 cursor-target hover:scale-110 transition-transform duration-300 flex-shrink-0">
             <AvatarImage src={currentUserAvatar || DEFAULT_AVATARS.USER} />
-            <AvatarFallback>{currentUserName.charAt(0)}</AvatarFallback>
+            <AvatarFallback className="text-xs lg:text-sm">{currentUserName.charAt(0)}</AvatarFallback>
           </Avatar>
-          <div className="flex-1 space-y-2">
-            <div className="flex gap-2">
+          <div className="flex-1 space-y-2 min-w-0">
+            <div className="flex gap-1 lg:gap-2">
               <input
                 ref={inputRef}
                 type="text"
@@ -519,7 +519,7 @@ const PostComments = forwardRef<PostCommentsRef, PostCommentsProps>(
                   }
                 }}
                 disabled={isSubmitting || !isAuthenticated}
-                className="cursor-target flex-1 rounded-full border border-input bg-muted px-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring hover:border-primary/50 transition-all duration-300 disabled:opacity-50"
+                className="cursor-target flex-1 rounded-full border border-input bg-muted px-3 lg:px-4 py-1.5 lg:py-2 text-xs lg:text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring hover:border-primary/50 transition-all duration-300 disabled:opacity-50 min-w-0"
               />
               <input
                 ref={attachmentInputRef}
@@ -534,40 +534,40 @@ const PostComments = forwardRef<PostCommentsRef, PostCommentsProps>(
                 variant="ghost"
                 onClick={() => attachmentInputRef.current?.click()}
                 disabled={isSubmitting || !isAuthenticated}
-                className="cursor-target rounded-full hover:bg-accent hover:scale-110 transition-all duration-300"
+                className="cursor-target rounded-full hover:bg-accent hover:scale-110 transition-all duration-300 h-7 w-7 lg:h-9 lg:w-9 flex-shrink-0"
                 title="Đính kèm ảnh/video"
               >
-                <ImageIcon className="h-4 w-4" />
+                <ImageIcon className="h-3 w-3 lg:h-4 lg:w-4" />
               </Button>
               <Button
                 size="icon"
                 variant="ghost"
                 onClick={handleAddComment}
                 disabled={isSubmitting || !commentInput.trim() || !isAuthenticated}
-                className="cursor-target rounded-full hover:bg-primary hover:text-primary-foreground hover:scale-110 transition-all duration-300"
+                className="cursor-target rounded-full hover:bg-primary hover:text-primary-foreground hover:scale-110 transition-all duration-300 h-7 w-7 lg:h-9 lg:w-9 flex-shrink-0"
               >
                 {isSubmitting ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <Loader2 className="h-3 w-3 lg:h-4 lg:w-4 animate-spin" />
                 ) : (
-                  <Send className="h-4 w-4" />
+                  <Send className="h-3 w-3 lg:h-4 lg:w-4" />
                 )}
               </Button>
             </div>
             {/* Selected Attachments Preview */}
             {commentAttachments.length > 0 && (
-              <div className="flex gap-2 flex-wrap">
+              <div className="flex gap-1 lg:gap-2 flex-wrap">
                 {commentAttachments.map((file, idx) => (
                   <div key={idx} className="relative group">
                     <img
                       src={URL.createObjectURL(file)}
                       alt={`Attachment ${idx + 1}`}
-                      className="w-16 h-16 object-cover rounded-lg"
+                      className="w-12 h-12 lg:w-16 lg:h-16 object-cover rounded-lg"
                     />
                     <button
                       onClick={() => removeAttachment(idx)}
-                      className="cursor-target absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="cursor-target absolute -top-1 -right-1 lg:-top-2 lg:-right-2 bg-destructive text-destructive-foreground rounded-full p-0.5 lg:p-1 opacity-0 group-hover:opacity-100 transition-opacity"
                     >
-                      <X className="h-3 w-3" />
+                      <X className="h-2 w-2 lg:h-3 lg:w-3" />
                     </button>
                   </div>
                 ))}

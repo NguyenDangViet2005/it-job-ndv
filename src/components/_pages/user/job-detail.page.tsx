@@ -92,19 +92,19 @@ export default function JobDetailPage({ jobid }: {jobid : string}) {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
+    <div className="min-h-screen bg-background pb-20 sm:pb-0">
+      <div className="container mx-auto px-3 lg:px-4 py-4 lg:py-8 max-w-7xl">
         {/* Job Header */}
         <CompanyJobInfo {...jobData} />
 
         {/* Main Content */}
-        <div className="grid lg:grid-cols-3 gap-8 mt-8">
+        <div className="grid lg:grid-cols-3 gap-4 lg:gap-8 mt-4 lg:mt-8">
           {/* Left Content - Single Card */}
           <div className="lg:col-span-2">
             <Card className="rounded-none">
-              <CardContent className="p-6 space-y-8">
+              <CardContent className="p-3 lg:p-6 space-y-4 lg:space-y-8">
                 <div>
-                  <h3 className="text-xl font-semibold mb-4">
+                  <h3 className="text-base lg:text-xl font-semibold mb-3 lg:mb-4">
                     Mô tả công việc
                   </h3>
                   <JobDescription description={descriptionData} />
@@ -114,7 +114,7 @@ export default function JobDetailPage({ jobid }: {jobid : string}) {
 
                 {/* Requirements Section */}
                 <div>
-                  <h3 className="text-xl font-semibold mb-4">
+                  <h3 className="text-base lg:text-xl font-semibold mb-3 lg:mb-4">
                     Yêu cầu công việc
                   </h3>
                   <JobRequirements requirements={requirementsData} />
@@ -124,7 +124,7 @@ export default function JobDetailPage({ jobid }: {jobid : string}) {
 
                 {/* Benefits Section */}
                 <div>
-                  <h3 className="text-xl font-semibold mb-4">Quyền lợi</h3>
+                  <h3 className="text-base lg:text-xl font-semibold mb-3 lg:mb-4">Quyền lợi</h3>
                   <JobBenefits benefits={benefitsData} />
                 </div>
               </CardContent>
@@ -133,8 +133,8 @@ export default function JobDetailPage({ jobid }: {jobid : string}) {
 
           {/* Right Content - Single Card */}
           <div className="lg:col-span-1">
-            <Card className="rounded-none sticky top-8">
-              <CardContent className="p-6">
+            <Card className="rounded-none lg:sticky lg:top-8">
+              <CardContent className="p-3 lg:p-6">
                 <CompanyInfo
                   jobid={jobData.id}
                   jobTitle={jobData.title}

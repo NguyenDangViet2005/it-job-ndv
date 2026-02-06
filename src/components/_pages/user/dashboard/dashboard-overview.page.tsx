@@ -76,34 +76,34 @@ export default function DashboardOverviewPage() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3 sm:space-y-6">
       {/* Welcome Header */}
       <div>
-        <h1 className="text-3xl font-bold">
+        <h1 className="text-xl sm:text-3xl font-bold">
           Chào mừng trở lại, {user?.fullname}!
         </h1>
-        <p className="text-muted-foreground mt-2">
+        <p className="text-xs sm:text-base text-muted-foreground mt-1">
           Đây là tổng quan về hoạt động tìm việc của bạn
         </p>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
         {stats.map((stat) => (
           <Link key={stat.title} href={stat.href}>
             <Card className="hover:shadow-md hover:border-primary/50 transition-all cursor-pointer bg-card">
-              <CardContent className="pt-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">
+              <CardContent className="p-3 sm:pt-6">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 sm:gap-2">
+                  <div className="flex-1">
+                    <p className="text-xs text-muted-foreground line-clamp-2">
                       {stat.title}
                     </p>
-                    <p className="text-3xl font-bold mt-2 text-foreground">
+                    <p className="text-xl sm:text-3xl font-bold mt-1 text-foreground">
                       {stat.value}
                     </p>
                   </div>
-                  <div className="p-3 rounded-lg bg-primary/10">
-                    <stat.icon className="h-6 w-6 text-primary" />
+                  <div className="p-1.5 sm:p-3 rounded-lg bg-primary/10 self-end sm:self-auto">
+                    <stat.icon className="h-4 w-4 sm:h-6 sm:w-6 text-primary" />
                   </div>
                 </div>
               </CardContent>
@@ -112,25 +112,25 @@ export default function DashboardOverviewPage() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-6">
         {/* Recent Activities */}
         <Card className="bg-card">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-foreground">
-              <Clock className="h-5 w-5 text-primary" />
+          <CardHeader className="p-3 sm:p-6">
+            <CardTitle className="flex items-center gap-2 text-foreground text-sm sm:text-lg">
+              <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
               Hoạt động gần đây
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
+          <CardContent className="p-3 sm:p-6 pt-0">
+            <div className="space-y-2 sm:space-y-4">
               {recentActivities.map((activity, index) => (
                 <div
                   key={index}
-                  className="flex items-start gap-3 pb-4 border-b last:border-0 last:pb-0"
+                  className="flex items-start gap-2 pb-2 sm:pb-4 border-b last:border-0 last:pb-0"
                 >
-                  <div className="mt-1 h-2 w-2 rounded-full bg-primary flex-shrink-0" />
-                  <div className="flex-1">
-                    <p className="text-sm">
+                  <div className="mt-1 h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-primary flex-shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs">
                       <span className="text-muted-foreground">
                         {activity.action}
                       </span>
@@ -139,10 +139,10 @@ export default function DashboardOverviewPage() {
                         {activity.target}
                       </span>
                     </p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-xs text-muted-foreground truncate">
                       {activity.company}
                     </p>
-                    <p className="text-xs text-muted-foreground mt-1">
+                    <p className="text-xs text-muted-foreground mt-0.5">
                       {activity.time}
                     </p>
                   </div>
@@ -154,40 +154,40 @@ export default function DashboardOverviewPage() {
 
         {/* Quick Actions */}
         <Card className="bg-card">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-foreground">
-              <TrendingUp className="h-5 w-5 text-primary" />
+          <CardHeader className="p-3 sm:p-6">
+            <CardTitle className="flex items-center gap-2 text-foreground text-sm sm:text-lg">
+              <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
               Thao tác nhanh
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-2 p-3 sm:p-6 pt-0">
             <Button
-              className="w-full justify-start hover:bg-primary/10 hover:text-primary"
+              className="w-full justify-start hover:bg-primary/10 hover:text-primary text-xs sm:text-sm h-8 sm:h-10"
               variant="outline"
               asChild
             >
               <Link href={ROUTES.JOBS}>
-                <Briefcase className="mr-2 h-4 w-4" />
+                <Briefcase className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                 Tìm việc làm mới
               </Link>
             </Button>
             <Button
-              className="w-full justify-start hover:bg-primary/10 hover:text-primary"
+              className="w-full justify-start hover:bg-primary/10 hover:text-primary text-xs sm:text-sm h-8 sm:h-10"
               variant="outline"
               asChild
             >
               <Link href={ROUTES.USER_RESUME}>
-                <FileText className="mr-2 h-4 w-4" />
+                <FileText className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                 Cập nhật CV
               </Link>
             </Button>
             <Button
-              className="w-full justify-start hover:bg-primary/10 hover:text-primary"
+              className="w-full justify-start hover:bg-primary/10 hover:text-primary text-xs sm:text-sm h-8 sm:h-10"
               variant="outline"
               asChild
             >
               <Link href={user?.id ? ROUTES.PROFILE(user.id) : "#"}>
-                <TrendingUp className="mr-2 h-4 w-4" />
+                <TrendingUp className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                 Xem hồ sơ công khai
               </Link>
             </Button>
@@ -197,44 +197,44 @@ export default function DashboardOverviewPage() {
 
       {/* Profile Completion */}
       <Card className="bg-card">
-        <CardHeader>
-          <CardTitle className="text-foreground">Hoàn thiện hồ sơ</CardTitle>
+        <CardHeader className="p-3 sm:p-6">
+          <CardTitle className="text-foreground text-sm sm:text-lg">Hoàn thiện hồ sơ</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
+        <CardContent className="p-3 sm:p-6 pt-0">
+          <div className="space-y-2 sm:space-y-4">
             <div>
-              <div className="flex justify-between mb-2">
-                <span className="text-sm font-medium text-foreground">
+              <div className="flex justify-between mb-1.5 sm:mb-2">
+                <span className="text-xs font-medium text-foreground">
                   Độ hoàn thiện hồ sơ
                 </span>
-                <span className="text-sm font-medium text-primary">75%</span>
+                <span className="text-xs font-medium text-primary">75%</span>
               </div>
-              <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+              <div className="h-1.5 sm:h-2 bg-gray-100 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-primary transition-all"
                   style={{ width: "75%" }}
                 />
               </div>
             </div>
-            <div className="flex gap-2 flex-wrap">
+            <div className="flex gap-1.5 sm:gap-2 flex-wrap">
               <Button
                 size="sm"
                 variant="outline"
-                className="hover:bg-primary/10 hover:text-primary hover:border-primary"
+                className="hover:bg-primary/10 hover:text-primary hover:border-primary text-xs h-7 sm:h-9 px-2 sm:px-3"
               >
                 Thêm kỹ năng
               </Button>
               <Button
                 size="sm"
                 variant="outline"
-                className="hover:bg-primary/10 hover:text-primary hover:border-primary"
+                className="hover:bg-primary/10 hover:text-primary hover:border-primary text-xs h-7 sm:h-9 px-2 sm:px-3"
               >
                 Thêm kinh nghiệm
               </Button>
               <Button
                 size="sm"
                 variant="outline"
-                className="hover:bg-primary/10 hover:text-primary hover:border-primary"
+                className="hover:bg-primary/10 hover:text-primary hover:border-primary text-xs h-7 sm:h-9 px-2 sm:px-3"
               >
                 Tải CV lên
               </Button>

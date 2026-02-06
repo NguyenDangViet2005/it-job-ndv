@@ -30,7 +30,7 @@ const UserFooter = () => {
     ? "/logo/logo-dark-removebg.png"
     : "/logo/logo-removebg.png";
   return (
-    <footer className="py-8 lg:py-12 mx-auto px-2 lg:px-4 backdrop-blur-md bg-background/60 border-t border-border/40">
+    <footer className="hidden sm:block py-8 lg:py-12 mx-auto px-2 lg:px-4 backdrop-blur-md bg-background/60 border-t border-border/40">
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 xl:gap-12 px-4 lg:px-20">
         {/* Logo và Social Links */}
         <div className="md:col-span-4 lg:col-span-3">

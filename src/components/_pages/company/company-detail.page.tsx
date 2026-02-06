@@ -98,9 +98,9 @@ const CompanyDetailPage = ({companyid}: {companyid: string}) => {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-20 sm:pb-0">
       {/* Cover Image */}
-      <div className="h-48 md:h-64 w-full relative bg-muted overflow-hidden mb-12">
+      <div className="h-32 md:h-48 lg:h-64 w-full relative bg-muted overflow-hidden mb-8 lg:mb-12">
         {company.coverimage ? (
           <Image
             src={company.coverimage}
@@ -115,37 +115,37 @@ const CompanyDetailPage = ({companyid}: {companyid: string}) => {
         <div className="absolute inset-0 bg-black/20" />
       </div>
 
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
+      <div className="container mx-auto px-3 lg:px-4 py-4 lg:py-8 max-w-7xl">
         {/* Header Section */}
-        <div className="relative -mt-20 md:-mt-24 mb-8">
-          <div className="flex flex-col md:flex-row md:items-end gap-6">
-            <Avatar className="h-32 w-32 md:h-40 md:w-40 border-4 border-background rounded-2xl shadow-xl bg-white">
+        <div className="relative -mt-16 md:-mt-20 lg:-mt-24 mb-6 lg:mb-8">
+          <div className="flex flex-col md:flex-row md:items-end gap-4 lg:gap-6">
+            <Avatar className="h-24 w-24 md:h-32 md:w-32 lg:h-40 lg:w-40 border-4 border-background rounded-2xl shadow-xl bg-white">
               <AvatarImage
                 src={company.avatar}
                 alt={company.name}
                 className="object-contain p-2"
               />
-              <AvatarFallback className="rounded-2xl text-3xl font-bold bg-primary/10 text-primary">
+              <AvatarFallback className="rounded-2xl text-xl lg:text-3xl font-bold bg-primary/10 text-primary">
                 {company.name?.charAt(0) || "C"}
               </AvatarFallback>
             </Avatar>
 
-            <div className="flex-1 pb-2 space-y-3">
+            <div className="flex-1 pb-2 space-y-2 lg:space-y-3">
               <div>
                 <div className="flex flex-wrap items-center gap-2 mb-2">
-                  <h1 className="text-2xl md:text-4xl font-bold text-foreground">
+                  <h1 className="text-xl md:text-2xl lg:text-4xl font-bold text-foreground">
                     {company.name}
                   </h1>
-                  <Badge variant="secondary" className="h-6">
+                  <Badge variant="secondary" className="h-5 lg:h-6 text-xs">
                     <CheckCircle2 className="w-3 h-3 mr-1 text-blue-500" />
                     Đã xác thực
                   </Badge>
                 </div>
                 
-                <div className="flex flex-wrap items-center gap-3 text-muted-foreground text-sm">
+                <div className="flex flex-wrap items-center gap-2 lg:gap-3 text-muted-foreground text-xs lg:text-sm">
                   {company.address && (
-                    <div className="flex items-center gap-1.5">
-                      <MapPin className="h-4 w-4 shrink-0" />
+                    <div className="flex items-center gap-1 lg:gap-1.5">
+                      <MapPin className="h-3 w-3 lg:h-4 lg:w-4 shrink-0" />
                       <span>{company.address}</span>
                     </div>
                   )}

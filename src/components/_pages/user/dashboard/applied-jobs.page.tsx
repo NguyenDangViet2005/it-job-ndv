@@ -83,33 +83,33 @@ export default function AppliedJobsPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-5xl">
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold">Việc đã ứng tuyển</h1>
-          <p className="text-muted-foreground">
+    <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-8 max-w-5xl">
+      <div className="space-y-3 sm:space-y-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1 sm:gap-0">
+          <h1 className="text-xl sm:text-3xl font-bold">Việc đã ứng tuyển</h1>
+          <p className="text-xs sm:text-base text-muted-foreground">
             Tổng: {applications.length} đơn ứng tuyển
           </p>
         </div>
 
         {applications.length === 0 ? (
           <Card>
-            <CardContent className="py-16 text-center">
-              <Briefcase className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-              <p className="text-muted-foreground mb-4">
+            <CardContent className="py-8 sm:py-16 text-center px-3">
+              <Briefcase className="h-10 w-10 sm:h-12 sm:w-12 mx-auto text-muted-foreground mb-2 sm:mb-4" />
+              <p className="text-xs sm:text-base text-muted-foreground mb-2 sm:mb-4">
                 Bạn chưa có đơn ứng tuyển nào
               </p>
-              <Button onClick={() => router.push("/jobs")}>Tìm việc làm</Button>
+              <Button onClick={() => router.push("/jobs")} className="text-xs sm:text-base h-8 sm:h-10">Tìm việc làm</Button>
             </CardContent>
           </Card>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-2 sm:space-y-4">
             {applications.map((app) => (
               <Card key={app.id || `${app.jobid}-${app.userid}`}>
-                <CardContent className="pt-6">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex gap-4 flex-1">
-                      <div className="h-16 w-16 rounded-xl border-2 border-border bg-white dark:bg-muted p-2 flex items-center justify-center flex-shrink-0 shadow-sm hover:shadow-md transition-shadow">
+                <CardContent className="p-3 sm:pt-6">
+                  <div className="flex flex-col sm:flex-row items-start justify-between gap-2 sm:gap-4">
+                    <div className="flex gap-2 sm:gap-4 flex-1 w-full">
+                      <div className="h-10 w-10 sm:h-16 sm:w-16 rounded-lg sm:rounded-xl border border-border bg-white dark:bg-muted p-1 sm:p-2 flex items-center justify-center flex-shrink-0">
                         <Image
                           src={app.companyLogo || "/logo/default-company.png"}
                           alt={app.companyName || "Company"}
@@ -119,15 +119,15 @@ export default function AppliedJobsPage() {
                         />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-lg truncate">
+                        <h3 className="font-semibold text-sm sm:text-lg truncate">
                           {app.jobTitle}
                         </h3>
-                        <p className="text-muted-foreground">
+                        <p className="text-xs sm:text-base text-muted-foreground truncate">
                           {app.companyName}
                         </p>
-                        <div className="flex flex-wrap gap-3 mt-2 text-sm text-muted-foreground">
+                        <div className="flex flex-col sm:flex-row sm:flex-wrap gap-1 sm:gap-3 mt-1 sm:mt-2 text-xs text-muted-foreground">
                           <div className="flex items-center gap-1">
-                            <Clock className="h-4 w-4 flex-shrink-0" />
+                            <Clock className="h-3 w-3 flex-shrink-0" />
                             <span>
                               Ứng tuyển:{" "}
                               {new Date(app.createdat).toLocaleDateString(
@@ -136,7 +136,7 @@ export default function AppliedJobsPage() {
                             </span>
                           </div>
                           <div className="flex items-center gap-1">
-                            <FileText className="h-4 w-4 flex-shrink-0" />
+                            <FileText className="h-3 w-3 flex-shrink-0" />
                             <a
                               href={app.cvurl}
                               target="_blank"
@@ -145,33 +145,34 @@ export default function AppliedJobsPage() {
                               onClick={(e) => e.stopPropagation()}
                             >
                               Xem CV
-                              <ExternalLink className="h-3 w-3" />
+                              <ExternalLink className="h-2.5 w-2.5" />
                             </a>
                           </div>
                         </div>
                       </div>
                     </div>
                     <Badge
-                      className={
+                      className={`${
                         statusColors[app.status] || statusColors.pending
-                      }
+                      } text-xs whitespace-nowrap`}
                     >
                       {statusText[app.status] || app.status}
                     </Badge>
                   </div>
 
                   {/* Cover Letter */}
-                  <div className="mt-4 p-3 bg-muted/50 rounded-lg">
-                    <p className="text-sm font-semibold mb-1">Thư xin việc:</p>
-                    <p className="text-sm text-muted-foreground whitespace-pre-wrap line-clamp-3">
+                  <div className="mt-2 sm:mt-4 p-2 sm:p-3 bg-muted/50 rounded-lg">
+                    <p className="text-xs font-semibold mb-0.5 sm:mb-1">Thư xin việc:</p>
+                    <p className="text-xs text-muted-foreground whitespace-pre-wrap line-clamp-3">
                       {app.coverletter}
                     </p>
                   </div>
 
-                  <div className="flex gap-2 mt-4">
+                  <div className="flex gap-2 mt-2 sm:mt-4">
                     <Button
                       variant="outline"
                       size="sm"
+                      className="text-xs h-7 sm:h-9"
                       onClick={() => router.push(`/jobs/${app.jobid}`)}
                     >
                       Xem công việc

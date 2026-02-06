@@ -24,13 +24,13 @@ export const ROUTES = {
   PROFILE_EDIT: "/profile/edit",
 
   // User Dashboard routes
-  USER_DASHBOARD: "/user",
-  USER_RESUME: "/user/resume",
-  USER_APPLIED_JOBS: "/user/applied-jobs",
-  USER_SAVED_JOBS: "/user/saved-jobs",
-  USER_MESSAGES: "/user/messages",
-  USER_SETTINGS: "/user/settings",
-  USER_MY_BLOGS: "/user/my-blogs",
+  USER_DASHBOARD: "/dashboard",
+  USER_RESUME: "/resume",
+  USER_APPLIED_JOBS: "/applied-jobs",
+  USER_SAVED_JOBS: "/saved-jobs",
+  USER_MESSAGES: "/messages",
+  USER_SETTINGS: "/settings",
+  USER_MY_BLOGS: "/my-blogs",
 
   // Job routes
   JOBS: "/jobs",

@@ -65,8 +65,8 @@ export default function JobTodaySection() {
             nextEl: ".job-today-next",
           }}
           breakpoints={{
-            0: { slidesPerView: 2 }, 
-            640: { slidesPerView: 3 },
+            0: { slidesPerView: 1 }, 
+            640: { slidesPerView: 2 },
             1024: { slidesPerView: 3 }, 
             1280: { slidesPerView: 4 }, 
           }}

@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/navigation-menu";
 import { useState, useEffect, Fragment } from "react";
 import Link from "next/link";
-import * as React from "react";
 import { ModeToggle } from "@/components/features/toggle-theme";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/lib/hooks/useAuth";
@@ -132,15 +131,6 @@ const UserHeader = () => {
           </NavigationMenuList>
         </NavigationMenu>
 
-        {/* Search Bar - Tablet */}
-        <div className="w-full sm:w-[30%] items-center gap-2 hidden sm:flex lg:hidden">
-          <Input
-            type="text"
-            className="h-9 shadow-sm"
-            placeholder="Tìm kiếm..."
-          />
-        </div>
-
         {/* Right side - Auth buttons and theme toggle */}
         <div className="flex items-center space-x-3">
           {isLoggedIn ? (
@@ -153,14 +143,14 @@ const UserHeader = () => {
                 size="sm"
                 asChild
               >
-                <Link href="/login">Đăng nhập</Link>
+                <Link href={ROUTES.LOGIN}>Đăng nhập</Link>
               </Button>
               <Button
                 className="cursor-target h-9 px-4 shadow-sm hover:shadow-md transition-all"
                 size="sm"
                 asChild
               >
-                <Link href="/register">Đăng ký</Link>
+                <Link href={ROUTES.REGISTER}>Đăng ký</Link>
               </Button>
             </div>
           )}

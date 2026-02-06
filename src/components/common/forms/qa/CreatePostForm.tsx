@@ -58,12 +58,12 @@ export default function CreatePostForm({
         onChange={onVideoSelect}
       />
 
-      <Card className="hover:shadow-lg transition-all duration-300 animate-in fade-in slide-in-from-bottom-4">
-        <CardContent className="">
-          <div className="flex gap-3">
-            <Avatar className="cursor-target hover:scale-110 transition-transform duration-300">
+      <Card className="mt-2 sm:mt-0 hover:shadow-lg transition-all duration-300 animate-in fade-in slide-in-from-bottom-4">
+        <CardContent className="p-3 lg:p-6">
+          <div className="flex gap-2 lg:gap-3">
+            <Avatar className="cursor-target hover:scale-110 transition-transform duration-300 h-8 w-8 lg:h-10 lg:w-10">
               <AvatarImage src={currentUserAvatar || DEFAULT_AVATARS.USER} />
-              <AvatarFallback>{currentUserName.charAt(0)}</AvatarFallback>
+              <AvatarFallback className="text-xs lg:text-sm">{currentUserName.charAt(0)}</AvatarFallback>
             </Avatar>
             <textarea
               placeholder={
@@ -74,27 +74,27 @@ export default function CreatePostForm({
               value={newPost}
               onChange={(e) => setNewPost(e.target.value)}
               disabled={!isAuthenticated}
-              className="cursor-target flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 hover:border-primary/50 transition-colors duration-300 disabled:cursor-not-allowed disabled:opacity-50"
+              className="cursor-target flex min-h-[60px] lg:min-h-[80px] w-full rounded-md border border-input bg-background px-2 lg:px-3 py-2 text-xs lg:text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 hover:border-primary/50 transition-colors duration-300 disabled:cursor-not-allowed disabled:opacity-50"
             />
           </div>
 
           {/* Selected images preview */}
           {selectedImages.length > 0 && (
-            <div className="flex gap-2 mt-4 flex-wrap">
+            <div className="flex gap-2 mt-3 lg:mt-4 flex-wrap">
               {selectedImages.map((img, index) => (
                 <div key={index} className="relative">
                   <img
                     src={URL.createObjectURL(img)}
                     alt={`Selected ${index + 1}`}
-                    className="w-20 h-20 object-cover rounded-lg"
+                    className="w-16 h-16 lg:w-20 lg:h-20 object-cover rounded-lg"
                   />
                   <Button
                     variant="destructive"
                     size="icon"
-                    className="absolute -top-2 -right-2 h-5 w-5 rounded-full"
+                    className="absolute -top-1 -right-1 lg:-top-2 lg:-right-2 h-4 w-4 lg:h-5 lg:w-5 rounded-full"
                     onClick={() => onRemoveImage(index)}
                   >
-                    <X className="h-3 w-3" />
+                    <X className="h-2 w-2 lg:h-3 lg:w-3" />
                   </Button>
                 </div>
               ))}
@@ -103,52 +103,52 @@ export default function CreatePostForm({
 
           {/* Selected video preview */}
           {selectedVideo && (
-            <div className="relative mt-4 inline-block">
+            <div className="relative mt-3 lg:mt-4 inline-block">
               <video
                 src={URL.createObjectURL(selectedVideo)}
-                className="w-40 h-24 object-cover rounded-lg"
+                className="w-32 h-20 lg:w-40 lg:h-24 object-cover rounded-lg"
               />
               <Button
                 variant="destructive"
                 size="icon"
-                className="absolute -top-2 -right-2 h-5 w-5 rounded-full"
+                className="absolute -top-1 -right-1 lg:-top-2 lg:-right-2 h-4 w-4 lg:h-5 lg:w-5 rounded-full"
                 onClick={onRemoveVideo}
               >
-                <X className="h-3 w-3" />
+                <X className="h-2 w-2 lg:h-3 lg:w-3" />
               </Button>
             </div>
           )}
 
-          <Separator className="my-4" />
-          <div className="flex justify-between items-center">
-            <div className="flex gap-2">
+          <Separator className="my-3 lg:my-4" />
+          <div className="flex justify-between items-center flex-wrap gap-2">
+            <div className="flex gap-1 lg:gap-2 flex-wrap">
               <Button
                 variant="ghost"
                 size="sm"
                 disabled={!isAuthenticated}
-                className="cursor-target hover:bg-green-50 dark:hover:bg-green-950 hover:scale-105 transition-all duration-300"
+                className="cursor-target hover:bg-green-50 dark:hover:bg-green-950 hover:scale-105 transition-all duration-300 h-8 lg:h-9 px-2 lg:px-3 text-xs lg:text-sm"
                 onClick={() => imageInputRef.current?.click()}
               >
-                <ImageIcon className="h-4 w-4 mr-2 text-green-600" />
-                Ảnh
+                <ImageIcon className="h-3 w-3 lg:h-4 lg:w-4 mr-1 lg:mr-2 text-green-600" />
+                <span className="hidden sm:inline">Ảnh</span>
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
                 disabled={!isAuthenticated}
-                className="cursor-target hover:bg-red-50 dark:hover:bg-red-950 hover:scale-105 transition-all duration-300"
+                className="cursor-target hover:bg-red-50 dark:hover:bg-red-950 hover:scale-105 transition-all duration-300 h-8 lg:h-9 px-2 lg:px-3 text-xs lg:text-sm"
                 onClick={() => videoInputRef.current?.click()}
               >
-                <Video className="h-4 w-4 mr-2 text-red-600" />
-                Video
+                <Video className="h-3 w-3 lg:h-4 lg:w-4 mr-1 lg:mr-2 text-red-600" />
+                <span className="hidden sm:inline">Video</span>
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
                 disabled={!isAuthenticated}
-                className="cursor-target hover:bg-yellow-50 dark:hover:bg-yellow-950 hover:scale-105 transition-all duration-300"
+                className="cursor-target hover:bg-yellow-50 dark:hover:bg-yellow-950 hover:scale-105 transition-all duration-300 h-8 lg:h-9 px-2 lg:px-3 text-xs lg:text-sm hidden sm:flex"
               >
-                <Smile className="h-4 w-4 mr-2 text-yellow-600" />
+                <Smile className="h-3 w-3 lg:h-4 lg:w-4 mr-1 lg:mr-2 text-yellow-600" />
                 Cảm xúc
               </Button>
             </div>
@@ -156,12 +156,12 @@ export default function CreatePostForm({
               size="sm"
               onClick={onSubmit}
               disabled={isCreatingPost || !newPost.trim() || !isAuthenticated}
-              className="cursor-target hover:scale-105 transition-transform duration-300 disabled:bg-gray-400"
+              className="cursor-target hover:scale-105 transition-transform duration-300 disabled:bg-gray-400 h-8 lg:h-9 px-3 lg:px-4 text-xs lg:text-sm"
             >
               {isCreatingPost ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <Loader2 className="h-3 w-3 lg:h-4 lg:w-4 animate-spin" />
               ) : (
-                "Đăng bài"
+                "Đăng"
               )}
             </Button>
           </div>
