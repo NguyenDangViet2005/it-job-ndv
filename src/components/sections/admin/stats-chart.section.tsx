@@ -57,47 +57,51 @@ const StatsChart = () => {
   ];
 
   return (
-    <Card className="cursor-target">
+    <Card className="cursor-target h-full flex flex-col">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+        <CardTitle className="flex items-center gap-2 text-lg">
           <BarChart3 className="h-5 w-5 text-primary" />
-          Statistics Overview
+          Tổng Quan Thống Kê
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex-1">
         <Tabs defaultValue="applications" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="applications" className="gap-2 cursor-target">
-              <TrendingUp className="h-4 w-4" />
-              Applications
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4">
+            <TabsTrigger value="applications" className="gap-1 sm:gap-2 cursor-target text-xs sm:text-sm">
+              <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Ứng Tuyển</span>
+              <span className="sm:hidden">ỨT</span>
             </TabsTrigger>
-            <TabsTrigger value="jobs" className="gap-2 cursor-target">
-              <Briefcase className="h-4 w-4" />
-              Job Postings
+            <TabsTrigger value="jobs" className="gap-1 sm:gap-2 cursor-target text-xs sm:text-sm">
+              <Briefcase className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Công Việc</span>
+              <span className="sm:hidden">CV</span>
             </TabsTrigger>
-            <TabsTrigger value="users" className="gap-2 cursor-target">
-              <Users className="h-4 w-4" />
-              User Growth
+            <TabsTrigger value="users" className="gap-1 sm:gap-2 cursor-target text-xs sm:text-sm">
+              <Users className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Người Dùng</span>
+              <span className="sm:hidden">ND</span>
             </TabsTrigger>
-            <TabsTrigger value="departments" className="gap-2 cursor-target">
-              <BarChart3 className="h-4 w-4" />
-              Departments
+            <TabsTrigger value="departments" className="gap-1 sm:gap-2 cursor-target text-xs sm:text-sm">
+              <BarChart3 className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Phòng Ban</span>
+              <span className="sm:hidden">PB</span>
             </TabsTrigger>
           </TabsList>
           
-          <TabsContent value="applications" className="mt-6">
+          <TabsContent value="applications" className="mt-4 sm:mt-6">
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                 <div>
-                  <h3 className="text-lg font-semibold">Weekly Applications & Interviews</h3>
-                  <p className="text-sm text-muted-foreground">Last 7 days performance</p>
+                  <h3 className="text-base sm:text-lg font-semibold">Ứng Tuyển & Phỏng Vấn Hàng Tuần</h3>
+                  <p className="text-xs sm:text-sm text-muted-foreground">Hiệu suất 7 ngày qua</p>
                 </div>
-                <div className="text-right">
-                  <p className="text-2xl font-bold text-blue-500">315</p>
-                  <p className="text-xs text-muted-foreground">Total this week</p>
+                <div className="text-left sm:text-right">
+                  <p className="text-xl sm:text-2xl font-bold text-blue-500">315</p>
+                  <p className="text-xs text-muted-foreground">Tổng tuần này</p>
                 </div>
               </div>
-              <ResponsiveContainer width="100%" height={300}>
+              <ResponsiveContainer width="100%" height={250}>
                 <AreaChart data={applicationData}>
                   <defs>
                     <linearGradient id="colorApplications" x1="0" y1="0" x2="0" y2="1">

@@ -1,9 +1,4 @@
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, Code, GraduationCap, Users } from "lucide-react";
 
@@ -19,34 +14,33 @@ interface JobRequirementsProps {
 const JobRequirements = ({ requirements }: JobRequirementsProps) => {
   const defaultRequirements = {
     technical: [
-      "Flutter/Dart programming",
-      "Android Studio & Xcode",
-      "REST API integration",
-      "State management (Provider, Bloc)",
-      "Git version control",
-      "Firebase services",
+      "Lập trình Flutter/Dart",
+      "Sử dụng thành thạo Android Studio & Xcode",
+      "Tích hợp REST API",
+      "Quản lý trạng thái (Provider, Bloc)",
+      "Quản lý phiên bản bằng Git",
+      "Các dịch vụ Firebase",
     ],
     experience: [
-      "2+ years Flutter development",
-      "Mobile app deployment experience",
-      "Cross-platform development",
-      "Agile/Scrum methodology",
+      "Trên 2 năm kinh nghiệm phát triển Flutter",
+      "Có kinh nghiệm triển khai/đưa ứng dụng lên Store (App Store/Google Play)",
+      "Phát triển ứng dụng đa nền tảng (Cross-platform)",
+      "Làm việc theo quy trình Agile/Scrum",
     ],
     education: [
-      "Bachelor's in Computer Science",
-      "Mobile Development certification",
-      "Related technical field",
+      "Cử nhân chuyên ngành Khoa học máy tính",
+      "Chứng chỉ phát triển ứng dụng di động",
+      "Các chuyên ngành kỹ thuật liên quan",
     ],
     soft: [
-      "Problem-solving skills",
-      "Team collaboration",
-      "English communication",
-      "Attention to detail",
-      "Self-learning ability",
+      "Kỹ năng giải quyết vấn đề",
+      "Khả năng làm việc nhóm và phối hợp",
+      "Giao tiếp tiếng Anh tốt",
+      "Tỉ mỉ, chú trọng đến chi tiết",
+      "Khả năng tự học và nghiên cứu",
     ],
   };
 
-  const req = requirements || defaultRequirements;
 
   return (
     <div className="space-y-6">
@@ -56,7 +50,7 @@ const JobRequirements = ({ requirements }: JobRequirementsProps) => {
           Yêu cầu kỹ thuật
         </h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-          {req.technical.map((skill, index) => (
+          {defaultRequirements.technical.map((skill, index) => (
             <div key={index} className="flex items-center gap-2">
               <CheckCircle2 className="h-4 w-4 text-green-500 flex-shrink-0" />
               <span className="text-sm">{skill}</span>
@@ -76,7 +70,7 @@ const JobRequirements = ({ requirements }: JobRequirementsProps) => {
               Kinh nghiệm
             </h5>
             <div className="space-y-2">
-              {req.experience.map((exp, index) => (
+              {defaultRequirements.experience.map((exp, index) => (
                 <div key={index} className="flex items-center gap-2">
                   <CheckCircle2 className="h-4 w-4 text-blue-500 flex-shrink-0" />
                   <span className="text-sm">{exp}</span>
@@ -90,7 +84,7 @@ const JobRequirements = ({ requirements }: JobRequirementsProps) => {
               Kỹ năng mềm
             </h5>
             <div className="flex flex-wrap gap-2">
-              {req.soft.map((skill, index) => (
+              {defaultRequirements.soft.map((skill, index) => (
                 <Badge
                   key={index}
                   variant="secondary"
@@ -110,7 +104,7 @@ const JobRequirements = ({ requirements }: JobRequirementsProps) => {
           Học vấn
         </h4>
         <div className="space-y-2">
-          {req.education.map((edu, index) => (
+          {defaultRequirements.education.map((edu, index) => (
             <div key={index} className="flex items-center gap-2">
               <CheckCircle2 className="h-4 w-4 text-purple-500 flex-shrink-0" />
               <span className="text-sm">{edu}</span>

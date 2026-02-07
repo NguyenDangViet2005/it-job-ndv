@@ -42,7 +42,7 @@ export const navigationItems: NavigationItem[] = [
   },
   {
     title: "Cộng đồng",
-    href: "#",
+    href: ROUTES.QA, // Đổi từ "#" sang route thực
     items: [
       {
         title: "Hỏi đáp",
@@ -171,7 +171,7 @@ export const hrSidebarItems: SidebarItem[] = [
   {
     title: "Tổng quan",
     href: ROUTES.HR,
-    icon: LayoutDashboard,
+    icon: Building2,
   },
   {
     title: "Quản lý công việc",
@@ -182,11 +182,6 @@ export const hrSidebarItems: SidebarItem[] = [
     title: "Ứng viên",
     href: ROUTES.HR_CANDIDATES,
     icon: Users,
-  },
-  {
-    title: "Công ty",
-    href: ROUTES.HR_COMPANY,
-    icon: Building2,
   },
   {
     title: "Blog",
@@ -221,16 +216,6 @@ export const adminSidebarItems: SidebarItem[] = [
     title: "Blog",
     href: ROUTES.ADMIN_BLOGS,
     icon: Newspaper,
-  },
-  {
-    title: "Mạng xã hội",
-    href: ROUTES.ADMIN_SOCIAL,
-    icon: MessageSquare,
-  },
-  {
-    title: "Báo cáo",
-    href: ROUTES.ADMIN_REPORTS,
-    icon: BarChart3,
   },
 ];
 

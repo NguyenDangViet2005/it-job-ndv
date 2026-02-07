@@ -4,7 +4,6 @@ import { Badge } from "@/components/ui/badge";
 import {
   Avatar,
   AvatarFallback,
-  AvatarImage,
 } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,20 +17,10 @@ import { User, ExternalLink } from "lucide-react";
 import { DataTable } from "@/components/common/tables/common/data-table.card";
 import { applicationApi } from "@/apis/application.api";
 import { useAuth } from "@/lib/hooks/useAuth";
+import HrCandidateManagementSkeleton from "@/components/common/skeletons/hr/candidate-management.skeleton";
+import Image from "next/image";
+import { Application } from "@/types";
 
-interface Application {
-  jobid: number;
-  userid: number;
-  cvurl: string;
-  coverletter: string;
-  status: string;
-  createdat: string;
-  updatedat: string;
-  jobTitle: string;
-  companyName: string;
-  userfullname: string;
-  userEmail: string;
-}
 
 const getStatusBadge = (status: string) => {
   const statusColors = {
@@ -170,15 +159,7 @@ function CandidatesManagement() {
       sortable: true,
       render: (value: string, row: Application) => (
         <div className="flex items-center space-x-3 min-w-[180px]">
-          <Avatar className="h-8 w-8">
-            <AvatarFallback className="text-xs bg-gradient-to-br from-blue-500 to-purple-500 text-white">
-              {value
-                .split(" ")
-                .map((n) => n[0])
-                .join("")
-                .slice(0, 2)}
-            </AvatarFallback>
-          </Avatar>
+          <Image src={row.userAvatar} alt={row.userfullname} height={35} width={35} className="object-contain rounded-full"/>
           <div>
             <div className="font-medium text-sm">{value}</div>
             <div className="text-xs text-muted-foreground">{row.userEmail}</div>
@@ -295,22 +276,23 @@ function CandidatesManagement() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-muted-foreground">Đang tải...</div>
-      </div>
+      <HrCandidateManagementSkeleton/>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div className="space-y-2">
-          <h1 className="text-3xl font-bold font-mono">Ứng Viên</h1>
-          <p className="text-muted-foreground">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
+        <div className="space-y-1 sm:space-y-2">
+          <h1 className="text-2xl sm:text-3xl font-bold font-mono">Ứng Viên</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
             Quản lý {totalItems} đơn ứng tuyển
           </p>
         </div>
-        <Button className="font-mono" onClick={fetchApplications}>
+        <Button
+          className="font-mono text-sm w-full sm:w-auto"
+          onClick={fetchApplications}
+        >
           Làm Mới
         </Button>
       </div>

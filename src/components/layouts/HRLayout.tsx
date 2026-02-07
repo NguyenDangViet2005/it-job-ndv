@@ -34,9 +34,10 @@ import { applicationApi } from "@/apis/application.api";
 import { useAuth } from "@/lib/hooks/useAuth";
 import Image from "next/image";
 import { useTheme } from "next-themes";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ROUTES } from "@/constants";
 import { hrSidebarItems } from "@/constants/navigation.config";
+import { useClickOutside } from "@/lib/hooks/useClickOutside";
 
 export function HRLayout({ children }: { children: React.ReactNode }) {
   const { logout, user, company, token } = useAuth();
@@ -49,6 +50,12 @@ export function HRLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { theme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const sidebarRef = useRef<HTMLDivElement>(null);
+
+  const closeMobileMenu = () => setMobileMenuOpen(false);
+
+  // Tự động đóng mobile menu khi click bên ngoài
+  useClickOutside(sidebarRef as React.RefObject<HTMLElement>, closeMobileMenu, mobileMenuOpen);
 
   const logoSrc =
     mounted && (resolvedTheme === "dark" || theme === "dark")
@@ -107,6 +114,7 @@ export function HRLayout({ children }: { children: React.ReactNode }) {
           <Link
             key={item.href}
             href={item.href}
+            onClick={closeMobileMenu}
             className={cn(
               "flex items-center cursor-target gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
               isActive
@@ -189,7 +197,7 @@ export function HRLayout({ children }: { children: React.ReactNode }) {
         className="w-full justify-start gap-3 border-slate-200 dark:border-slate-700"
         asChild
       >
-        <Link href={ROUTES.HOME}>
+        <Link href={ROUTES.HOME} onClick={closeMobileMenu}>
           <Home className="h-4 w-4" />
           <span>Về trang chủ</span>
         </Link>
@@ -199,7 +207,10 @@ export function HRLayout({ children }: { children: React.ReactNode }) {
       <Button
         variant="ghost"
         className="w-full justify-start gap-3 text-slate-600 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20"
-        onClick={handleLogout}
+        onClick={() => {
+          handleLogout();
+          closeMobileMenu();
+        }}
       >
         <LogOut className="h-4 w-4" />
         <span>Đăng xuất</span>
@@ -208,9 +219,9 @@ export function HRLayout({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
-      {/* Top Header - Clean White Style */}
-      <header className="sticky top-0 z-40 w-full border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
+    <div className="flex flex-col h-screen bg-slate-50 dark:bg-slate-950">
+      {/* Top Header - Fixed */}
+      <header className="flex-shrink-0 z-40 w-full border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
         <div className="flex h-16 items-center justify-between px-4 lg:px-6">
           <div className="flex items-center gap-4">
             <Button
@@ -267,9 +278,9 @@ export function HRLayout({ children }: { children: React.ReactNode }) {
         </div>
       </header>
 
-      <div className="flex">
-        {/* Desktop Sidebar */}
-        <aside className="hidden lg:flex lg:flex-col w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 h-[calc(100vh-4rem)] sticky top-16">
+      <div className="flex flex-1 overflow-hidden">
+        {/* Desktop Sidebar - Fixed */}
+        <aside className="hidden lg:flex lg:flex-col w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex-shrink-0">
           <ScrollArea className="flex-1 p-4">
             <div className="space-y-6">
               <ProfileCard />
@@ -284,6 +295,7 @@ export function HRLayout({ children }: { children: React.ReactNode }) {
           <SheetContent
             side="left"
             className="w-72 p-0 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800"
+            ref={sidebarRef}
           >
             <div className="flex flex-col h-full">
               <div className="p-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800">
@@ -312,8 +324,8 @@ export function HRLayout({ children }: { children: React.ReactNode }) {
           </SheetContent>
         </Sheet>
 
-        {/* Main Content */}
-        <main className="flex-1 overflow-auto bg-slate-50 dark:bg-slate-950">
+        {/* Main Content - Scrollable */}
+        <main className="flex-1 overflow-y-auto bg-slate-50 dark:bg-slate-950">
           <div className="p-6 lg:p-8 max-w-7xl mx-auto">{children}</div>
         </main>
       </div>

@@ -44,7 +44,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
+import HRBlogManagementSkeleton from "@/components/common/skeletons/hr/blog-management.skeleton";
 interface Blog {
   id: number;
   userid?: number;
@@ -219,22 +219,20 @@ export default function HRBlogManagementPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
+     <HRBlogManagementSkeleton/>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Quản lý Blog</h1>
-          <p className="text-muted-foreground mt-1">
+          <h1 className="text-2xl sm:text-3xl font-bold">Quản lý Blog</h1>
+          <p className="text-sm sm:text-base text-muted-foreground mt-1">
             Quản lý các bài viết blog của công ty
           </p>
         </div>
-        <Button onClick={handleCreate} className="gap-2">
+        <Button onClick={handleCreate} className="gap-2 text-sm w-full sm:w-auto">
           <Plus className="h-4 w-4" />
           Tạo blog mới
         </Button>
@@ -261,13 +259,13 @@ export default function HRBlogManagementPage() {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-4">
+        <div className="grid gap-3 sm:gap-4">
           {blogs.map((blog) => (
             <Card key={blog.id} className="hover:shadow-md transition-shadow">
-              <CardContent className="p-6">
-                <div className="flex gap-4">
+              <CardContent className="p-4 sm:p-6">
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                   {blog.image && (
-                    <div className="w-32 h-32 flex-shrink-0 rounded-lg overflow-hidden bg-muted">
+                    <div className="w-full sm:w-32 h-48 sm:h-32 flex-shrink-0 rounded-lg overflow-hidden bg-muted">
                       <img
                         src={blog.image}
                         alt={blog.title}
@@ -277,49 +275,49 @@ export default function HRBlogManagementPage() {
                   )}
 
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-xl font-semibold mb-2 line-clamp-2">
+                    <h3 className="text-lg sm:text-xl font-semibold mb-2 line-clamp-2">
                       {blog.title}
                     </h3>
-                    <p className="text-muted-foreground text-sm line-clamp-2 mb-3">
+                    <p className="text-muted-foreground text-xs sm:text-sm line-clamp-2 mb-3">
                       {blog.excerpt ||
                         blog.content.replace(/<[^>]*>/g, "").substring(0, 150)}
                       ...
                     </p>
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-4 text-xs sm:text-sm text-muted-foreground">
                       <span className="flex items-center gap-1">
-                        <Calendar className="h-4 w-4" />
+                        <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
                         {new Date(blog.createdat).toLocaleDateString("vi-VN")}
                       </span>
                     </div>
                   </div>
 
-                  <div className="flex flex-col gap-2">
+                  <div className="flex sm:flex-col gap-2">
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => router.push(`/blog/${blog.id}`)}
-                      className="gap-2"
+                      className="gap-2 flex-1 sm:flex-none text-xs"
                     >
-                      <Eye className="h-4 w-4" />
-                      Xem
+                      <Eye className="h-3 w-3 sm:h-4 sm:w-4" />
+                      <span className="hidden sm:inline">Xem</span>
                     </Button>
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => handleEdit(blog)}
-                      className="gap-2"
+                      className="gap-2 flex-1 sm:flex-none text-xs"
                     >
-                      <Edit className="h-4 w-4" />
-                      Sửa
+                      <Edit className="h-3 w-3 sm:h-4 sm:w-4" />
+                      <span className="hidden sm:inline">Sửa</span>
                     </Button>
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => setDeleteId(blog.id)}
-                      className="gap-2 text-destructive hover:text-destructive"
+                      className="gap-2 flex-1 sm:flex-none text-xs text-destructive hover:text-destructive"
                     >
-                      <Trash2 className="h-4 w-4" />
-                      Xóa
+                      <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
+                      <span className="hidden sm:inline">Xóa</span>
                     </Button>
                   </div>
                 </div>

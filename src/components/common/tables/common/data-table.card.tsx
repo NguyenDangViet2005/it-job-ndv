@@ -274,7 +274,7 @@ export function DataTable<T extends Record<string, any>>({
                             size="sm"
                             className="w-full font-mono"
                           >
-                            Actions
+                            Thao tác
                             <MoreHorizontal className="ml-2 h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>

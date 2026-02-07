@@ -83,7 +83,7 @@ const CompanyDetailPage = ({companyid}: {companyid: string}) => {
   }
 
   const openJobs = company.jobs?.filter(job => job.status === 'open') || [];
-  const totalMembers = company.memberCount ||  0;
+  const totalMembers = company.membersCount ||  0;
   const totalFollowers = company.follows?.length || 0;
   const averageRating = company.reviews?.length 
     ? (company.reviews.reduce((sum, r) => sum + r.rating, 0) / company.reviews.length).toFixed(1)

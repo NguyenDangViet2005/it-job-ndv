@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { DataTable } from "@/components/common/tables/common/data-table.card";
 import { jobApi } from "@/apis/job.api";
 import { JobDetailModal } from "@/components/common/modals/jobs/job-detail.modal";
@@ -11,6 +12,7 @@ import {
   CreateJobData,
 } from "@/components/common/forms/jobs/create-job.form";
 import { useAuth } from "@/lib/hooks/useAuth";
+import HrJobManagementSkeleton from "@/components/common/skeletons/hr/job-management.skeleton";
 
 interface JobData {
   id: number;
@@ -318,22 +320,25 @@ const JobsManagement = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-muted-foreground">Đang tải...</div>
-      </div>
+      <HrJobManagementSkeleton/>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div className="space-y-2">
-          <h1 className="text-3xl font-bold font-mono">Quản Lý Công Việc</h1>
-          <p className="text-muted-foreground">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
+        <div className="space-y-1 sm:space-y-2">
+          <h1 className="text-2xl sm:text-3xl font-bold font-mono">
+            Quản Lý Công Việc
+          </h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
             Quản lý {totalItems} tin tuyển dụng
           </p>
         </div>
-        <Button className="font-mono" onClick={() => setCreateModalOpen(true)}>
+        <Button
+          className="font-mono text-sm w-full sm:w-auto"
+          onClick={() => setCreateModalOpen(true)}
+        >
           Đăng Tin Tuyển Dụng
         </Button>
       </div>

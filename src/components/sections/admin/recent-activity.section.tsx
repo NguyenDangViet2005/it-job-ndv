@@ -32,11 +32,11 @@ const activities: Activity[] = [
   {
     id: 1,
     type: "user",
-    title: "New User Registration",
-    description: "Nguyen Van A registered as a candidate",
-    timestamp: "2 minutes ago",
+    title: "Đăng Ký Người Dùng Mới",
+    description: "Nguyễn Văn A đăng ký làm ứng viên",
+    timestamp: "2 phút trước",
     user: {
-      name: "Nguyen Van A",
+      name: "Nguyễn Văn A",
       avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"
     },
     status: "success"
@@ -44,19 +44,19 @@ const activities: Activity[] = [
   {
     id: 2,
     type: "job",
-    title: "Job Posted",
-    description: "Senior Full Stack Developer position published",
-    timestamp: "15 minutes ago",
+    title: "Đăng Công Việc",
+    description: "Vị trí Senior Full Stack Developer được đăng",
+    timestamp: "15 phút trước",
     status: "success"
   },
   {
     id: 3,
     type: "application",
-    title: "New Application",
-    description: "Tran Thi B applied for Product Designer",
-    timestamp: "1 hour ago",
+    title: "Đơn Ứng Tuyển Mới",
+    description: "Trần Thị B ứng tuyển vị trí Product Designer",
+    timestamp: "1 giờ trước",
     user: {
-      name: "Tran Thi B",
+      name: "Trần Thị B",
       avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka"
     },
     status: "pending"
@@ -64,46 +64,46 @@ const activities: Activity[] = [
   {
     id: 4,
     type: "post",
-    title: "Blog Post Published",
-    description: "How to ace your technical interview",
-    timestamp: "2 hours ago",
+    title: "Xuất Bản Bài Viết",
+    description: "Cách vượt qua phỏng vấn kỹ thuật",
+    timestamp: "2 giờ trước",
     status: "success"
   },
   {
     id: 5,
     type: "system",
-    title: "System Update",
-    description: "Database backup completed successfully",
-    timestamp: "3 hours ago",
+    title: "Cập Nhật Hệ Thống",
+    description: "Sao lưu cơ sở dữ liệu hoàn tất",
+    timestamp: "3 giờ trước",
     status: "success"
   },
   {
     id: 6,
     type: "comment",
-    title: "New Comment",
-    description: "Le Van C commented on a blog post",
-    timestamp: "4 hours ago",
+    title: "Bình Luận Mới",
+    description: "Lê Văn C bình luận trên bài viết",
+    timestamp: "4 giờ trước",
     user: {
-      name: "Le Van C",
+      name: "Lê Văn C",
       avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Max"
     }
   },
   {
     id: 7,
     type: "job",
-    title: "Job Closed",
-    description: "DevOps Engineer position filled",
-    timestamp: "5 hours ago",
+    title: "Đóng Công Việc",
+    description: "Vị trí DevOps Engineer đã tuyển đủ",
+    timestamp: "5 giờ trước",
     status: "success"
   },
   {
     id: 8,
     type: "user",
-    title: "User Updated Profile",
-    description: "Pham Thi D updated their profile information",
-    timestamp: "6 hours ago",
+    title: "Cập Nhật Hồ Sơ",
+    description: "Phạm Thị D cập nhật thông tin hồ sơ",
+    timestamp: "6 giờ trước",
     user: {
-      name: "Pham Thi D",
+      name: "Phạm Thị D",
       avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah"
     }
   }
@@ -144,39 +144,39 @@ const getStatusIcon = (status?: Activity["status"]) => {
 
 const RecentActivity = () => {
   return (
-    <Card className="h-full cursor-target">
+    <Card className="h-full cursor-target flex flex-col">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+        <CardTitle className="flex items-center gap-2 text-lg">
           <Clock className="h-5 w-5 text-primary" />
-          Recent Activity
+          Hoạt Động Gần Đây
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2">
+      <CardContent className="flex-1">
+        <div className="space-y-3 max-h-[500px] overflow-y-auto pr-2">
           {activities.map((activity) => (
             <div
               key={activity.id}
-              className="flex items-start gap-4 p-3 rounded-lg hover:bg-muted/50 transition-colors group cursor-target"
+              className="flex items-start gap-3 p-2.5 rounded-lg hover:bg-muted/50 transition-colors group cursor-target"
             >
               <div className="flex-shrink-0">
                 {activity.user ? (
-                  <Avatar className="h-10 w-10 ring-2 ring-primary/10 group-hover:ring-primary/30 transition-all">
+                  <Avatar className="h-8 w-8 sm:h-10 sm:w-10 ring-2 ring-primary/10 group-hover:ring-primary/30 transition-all">
                     <AvatarImage src={activity.user.avatar} alt={activity.user.name} />
                     <AvatarFallback>{activity.user.name.charAt(0)}</AvatarFallback>
                   </Avatar>
                 ) : (
-                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                  <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
                     {getActivityIcon(activity.type)}
                   </div>
                 )}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between gap-2">
-                  <div className="flex-1">
-                    <p className="text-sm font-semibold text-foreground">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs sm:text-sm font-semibold text-foreground truncate">
                       {activity.title}
                     </p>
-                    <p className="text-sm text-muted-foreground mt-1">
+                    <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 line-clamp-2">
                       {activity.description}
                     </p>
                   </div>
@@ -186,11 +186,11 @@ const RecentActivity = () => {
                     </div>
                   )}
                 </div>
-                <div className="flex items-center gap-2 mt-2">
-                  <Badge variant="outline" className="text-xs font-mono">
+                <div className="flex items-center gap-2 mt-1.5">
+                  <Badge variant="outline" className="text-[10px] sm:text-xs font-mono">
                     {activity.type}
                   </Badge>
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-[10px] sm:text-xs text-muted-foreground">
                     {activity.timestamp}
                   </span>
                 </div>

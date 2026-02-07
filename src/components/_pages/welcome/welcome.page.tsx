@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import Typed from "typed.js";
 import { useAuth } from "@/lib/hooks/useAuth";
+import { ModeToggle } from "@/components/features/toggle-theme";
 
 const WelcomePage = () => {
   const el = useRef(null);
@@ -44,7 +45,8 @@ const WelcomePage = () => {
 
   return (
     <div className="relative z-10 w-full min-h-screen">
-      <div className="pt-5 pl-10 flex items-center">
+      {/* Header with Logo and Theme Toggle */}
+      <div className="pt-5 px-10 flex items-center justify-between">
         <Link href={ROUTES.HOME} className="cursor-target">
           <Image
             src={logoSrc}
@@ -55,6 +57,7 @@ const WelcomePage = () => {
             className="object-contain"
           />
         </Link>
+        <ModeToggle />
       </div>
       <div className="flex flex-col lg:flex-row mt-10">
         <div className="w-full lg:w-1/2 min-h-[50vh] flex items-center justify-center p-6">

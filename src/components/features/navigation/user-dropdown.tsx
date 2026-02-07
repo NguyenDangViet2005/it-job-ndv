@@ -35,6 +35,7 @@ import {
 import Link from "next/link";
 import { User as UserResponse } from "@/types"
 import { ROUTES } from "@/constants";
+import { useState, useEffect } from "react";
 
 interface UserDropdownProps {
   user: UserResponse | null;
@@ -42,6 +43,22 @@ interface UserDropdownProps {
 }
 
 export const UserDropdown = ({ user, onLogout }: UserDropdownProps) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  const closeDropdown = () => setIsOpen(false);
+
+  // Detect mobile screen
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640); // sm breakpoint
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const isRegularUser = user?.role?.toLowerCase() === "user";
   const isHR =
     user?.role?.toLowerCase() === "hr" ||
@@ -49,7 +66,7 @@ export const UserDropdown = ({ user, onLogout }: UserDropdownProps) => {
   const isAdmin = user?.role?.toLowerCase() === "admin";
 
   return (
-    <DropdownMenu>
+    <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
@@ -76,7 +93,8 @@ export const UserDropdown = ({ user, onLogout }: UserDropdownProps) => {
 
         <DropdownMenuItem asChild>
           <Link
-            href={user?.id ? ROUTES.PROFILE(user.id) : "#"}
+            href={user?.id ? ROUTES.PROFILE(user.id) : ROUTES.PROFILE()}
+            onClick={closeDropdown}
             className="cursor-target flex items-center"
           >
             <User className="mr-2 h-4 w-4" />
@@ -90,6 +108,7 @@ export const UserDropdown = ({ user, onLogout }: UserDropdownProps) => {
             <DropdownMenuItem asChild>
               <Link
                 href={ROUTES.USER_RESUME}
+                onClick={closeDropdown}
                 className="cursor-target flex items-center"
               >
                 <FileText className="mr-2 h-4 w-4" />
@@ -99,6 +118,7 @@ export const UserDropdown = ({ user, onLogout }: UserDropdownProps) => {
             <DropdownMenuItem asChild>
               <Link
                 href={ROUTES.USER_APPLIED_JOBS}
+                onClick={closeDropdown}
                 className="cursor-target flex items-center"
               >
                 <Briefcase className="mr-2 h-4 w-4" />
@@ -108,6 +128,7 @@ export const UserDropdown = ({ user, onLogout }: UserDropdownProps) => {
             <DropdownMenuItem asChild>
               <Link
                 href={ROUTES.USER_MESSAGES}
+                onClick={closeDropdown}
                 className="cursor-target flex items-center"
               >
                 <MessageSquare className="mr-2 h-4 w-4" />
@@ -121,6 +142,7 @@ export const UserDropdown = ({ user, onLogout }: UserDropdownProps) => {
         <DropdownMenuItem asChild>
           <Link
             href={ROUTES.USER_MY_BLOGS}
+            onClick={closeDropdown}
             className="cursor-target flex items-center"
           >
             <BookOpen className="mr-2 h-4 w-4" />
@@ -131,25 +153,26 @@ export const UserDropdown = ({ user, onLogout }: UserDropdownProps) => {
         {/* HR/Admin Separator */}
         {(isHR || isAdmin) && <DropdownMenuSeparator />}
 
-        {/* HR Sub-menu */}
+        {/* HR Menu - Mobile: Direct items, Desktop: Sub-menu */}
         {isHR && (
-          <DropdownMenuSub>
-            <DropdownMenuSubTrigger className="cursor-target flex items-center">
-              <Building2 className="mr-2 h-4 w-4 text-emerald-500" />
-              <span>Quản lý HR</span>
-            </DropdownMenuSubTrigger>
-            <DropdownMenuPortal>
-              <DropdownMenuSubContent className="min-w-[180px]">
+          <>
+            {isMobile ? (
+              <>
+                <DropdownMenuLabel className="text-xs text-muted-foreground flex items-center gap-2">
+                  <Building2 className="h-3 w-3 text-emerald-500" />
+                  Quản lý HR
+                </DropdownMenuLabel>
                 <DropdownMenuItem asChild>
-                  <Link href="/hr" className="cursor-target flex items-center">
+                  <Link href={ROUTES.HR} onClick={closeDropdown} className="cursor-target flex items-center pl-6">
                     <LayoutDashboard className="mr-2 h-4 w-4" />
                     <span>Bảng Điều Khiển</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link
-                    href="/hr/jobs"
-                    className="cursor-target flex items-center"
+                    href={ROUTES.HR_JOBS}
+                    onClick={closeDropdown}
+                    className="cursor-target flex items-center pl-6"
                   >
                     <Briefcase className="mr-2 h-4 w-4" />
                     <span>Quản Lý Công Việc</span>
@@ -157,8 +180,9 @@ export const UserDropdown = ({ user, onLogout }: UserDropdownProps) => {
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link
-                    href="/hr/candidates"
-                    className="cursor-target flex items-center"
+                    href={ROUTES.HR_CANDIDATES}
+                    onClick={closeDropdown}
+                    className="cursor-target flex items-center pl-6"
                   >
                     <UsersIcon className="mr-2 h-4 w-4" />
                     <span>Quản Lý Ứng Viên</span>
@@ -166,31 +190,80 @@ export const UserDropdown = ({ user, onLogout }: UserDropdownProps) => {
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link
-                    href="/hr/infor"
-                    className="cursor-target flex items-center"
+                    href={ROUTES.HR_COMPANY}
+                    onClick={closeDropdown}
+                    className="cursor-target flex items-center pl-6"
                   >
                     <Building2 className="mr-2 h-4 w-4" />
                     <span>Thông Tin Công Ty</span>
                   </Link>
                 </DropdownMenuItem>
-              </DropdownMenuSubContent>
-            </DropdownMenuPortal>
-          </DropdownMenuSub>
+              </>
+            ) : (
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger className="cursor-target flex items-center">
+                  <Building2 className="mr-2 h-4 w-4 text-emerald-500" />
+                  <span>Quản lý HR</span>
+                </DropdownMenuSubTrigger>
+                <DropdownMenuPortal>
+                  <DropdownMenuSubContent className="min-w-[180px]">
+                    <DropdownMenuItem asChild>
+                      <Link href={ROUTES.HR} onClick={closeDropdown} className="cursor-target flex items-center">
+                        <LayoutDashboard className="mr-2 h-4 w-4" />
+                        <span>Bảng Điều Khiển</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link
+                        href={ROUTES.HR_JOBS}
+                        onClick={closeDropdown}
+                        className="cursor-target flex items-center"
+                      >
+                        <Briefcase className="mr-2 h-4 w-4" />
+                        <span>Quản Lý Công Việc</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link
+                        href={ROUTES.HR_CANDIDATES}
+                        onClick={closeDropdown}
+                        className="cursor-target flex items-center"
+                      >
+                        <UsersIcon className="mr-2 h-4 w-4" />
+                        <span>Quản Lý Ứng Viên</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link
+                        href={ROUTES.HR_COMPANY}
+                        onClick={closeDropdown}
+                        className="cursor-target flex items-center"
+                      >
+                        <Building2 className="mr-2 h-4 w-4" />
+                        <span>Thông Tin Công Ty</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuSubContent>
+                </DropdownMenuPortal>
+              </DropdownMenuSub>
+            )}
+          </>
         )}
 
-        {/* Admin Sub-menu */}
+        {/* Admin Menu - Mobile: Direct items, Desktop: Sub-menu */}
         {isAdmin && (
-          <DropdownMenuSub>
-            <DropdownMenuSubTrigger className="cursor-target flex items-center">
-              <Shield className="mr-2 h-4 w-4 text-red-500" />
-              <span>Quản lý Admin</span>
-            </DropdownMenuSubTrigger>
-            <DropdownMenuPortal>
-              <DropdownMenuSubContent className="min-w-[180px]">
+          <>
+            {isMobile ? (
+              <>
+                <DropdownMenuLabel className="text-xs text-muted-foreground flex items-center gap-2">
+                  <Shield className="h-3 w-3 text-red-500" />
+                  Quản lý Admin
+                </DropdownMenuLabel>
                 <DropdownMenuItem asChild>
                   <Link
-                    href="/admin"
-                    className="cursor-target flex items-center"
+                    href={ROUTES.ADMIN}
+                    onClick={closeDropdown}
+                    className="cursor-target flex items-center pl-6"
                   >
                     <LayoutDashboard className="mr-2 h-4 w-4" />
                     <span>Dashboard</span>
@@ -198,8 +271,9 @@ export const UserDropdown = ({ user, onLogout }: UserDropdownProps) => {
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link
-                    href="/admin/jobs"
-                    className="cursor-target flex items-center"
+                    href={ROUTES.ADMIN_JOBS}
+                    onClick={closeDropdown}
+                    className="cursor-target flex items-center pl-6"
                   >
                     <Briefcase className="mr-2 h-4 w-4" />
                     <span>Quản Lý Jobs</span>
@@ -207,8 +281,9 @@ export const UserDropdown = ({ user, onLogout }: UserDropdownProps) => {
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link
-                    href="/admin/users"
-                    className="cursor-target flex items-center"
+                    href={ROUTES.ADMIN_USERS}
+                    onClick={closeDropdown}
+                    className="cursor-target flex items-center pl-6"
                   >
                     <UsersIcon className="mr-2 h-4 w-4" />
                     <span>Người Dùng</span>
@@ -216,31 +291,75 @@ export const UserDropdown = ({ user, onLogout }: UserDropdownProps) => {
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link
-                    href="/admin/company"
-                    className="cursor-target flex items-center"
+                    href={ROUTES.ADMIN_COMPANIES}
+                    onClick={closeDropdown}
+                    className="cursor-target flex items-center pl-6"
                   >
                     <Building2 className="mr-2 h-4 w-4" />
                     <span>Công Ty</span>
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link
-                    href="/admin/analytics"
-                    className="cursor-target flex items-center"
-                  >
-                    <BarChart3 className="mr-2 h-4 w-4" />
-                    <span>Thống Kê</span>
-                  </Link>
-                </DropdownMenuItem>
-              </DropdownMenuSubContent>
-            </DropdownMenuPortal>
-          </DropdownMenuSub>
+              </>
+            ) : (
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger className="cursor-target flex items-center">
+                  <Shield className="mr-2 h-4 w-4 text-red-500" />
+                  <span>Quản lý Admin</span>
+                </DropdownMenuSubTrigger>
+                <DropdownMenuPortal>
+                  <DropdownMenuSubContent className="min-w-[180px]">
+                    <DropdownMenuItem asChild>
+                      <Link
+                        href={ROUTES.ADMIN}
+                        onClick={closeDropdown}
+                        className="cursor-target flex items-center"
+                      >
+                        <LayoutDashboard className="mr-2 h-4 w-4" />
+                        <span>Dashboard</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link
+                        href={ROUTES.ADMIN_JOBS}
+                        onClick={closeDropdown}
+                        className="cursor-target flex items-center"
+                      >
+                        <Briefcase className="mr-2 h-4 w-4" />
+                        <span>Quản Lý Jobs</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link
+                        href={ROUTES.ADMIN_USERS}
+                        onClick={closeDropdown}
+                        className="cursor-target flex items-center"
+                      >
+                        <UsersIcon className="mr-2 h-4 w-4" />
+                        <span>Người Dùng</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link
+                        href={ROUTES.ADMIN_COMPANIES}
+                        onClick={closeDropdown}
+                        className="cursor-target flex items-center"
+                      >
+                        <Building2 className="mr-2 h-4 w-4" />
+                        <span>Công Ty</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuSubContent>
+                </DropdownMenuPortal>
+              </DropdownMenuSub>
+            )}
+          </>
         )}
 
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
           <Link
             href={ROUTES.USER_SETTINGS}
+            onClick={closeDropdown}
             className="cursor-target flex items-center"
           >
             <Settings className="mr-2 h-4 w-4" />
@@ -248,7 +367,10 @@ export const UserDropdown = ({ user, onLogout }: UserDropdownProps) => {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem
-          onClick={onLogout}
+          onClick={() => {
+            onLogout();
+            closeDropdown();
+          }}
           className="cursor-target text-destructive focus:text-destructive"
         >
           <LogOut className="mr-2 h-4 w-4" />

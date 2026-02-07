@@ -3,12 +3,10 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -104,21 +102,23 @@ export function JobDetailModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[50vw] !max-w-none sm:!max-w-none max-h-[90vh] overflow-hidden flex flex-col">
-        <DialogHeader className="flex-shrink-0">
-          <DialogTitle className="text-2xl">
-            {mode === "view" ? "Chi Tiết Công Việc" : "Chỉnh Sửa Công Việc"}
-          </DialogTitle>
-        </DialogHeader>
+      <DialogContent className="w-[95vw] sm:w-[90vw] md:w-[80vw] lg:w-[70vw] xl:w-[60vw] !max-w-none max-h-[90vh] overflow-hidden flex flex-col p-0">
+        <div className="p-4 sm:p-6 flex-shrink-0">
+          <DialogHeader>
+            <DialogTitle className="text-lg sm:text-xl md:text-2xl">
+              {mode === "view" ? "Chi Tiết Công Việc" : "Chỉnh Sửa Công Việc"}
+            </DialogTitle>
+          </DialogHeader>
+        </div>
 
         {mode === "view" && job ? (
-          // VIEW MODE - Simple Design
-          <div className="flex-1 overflow-y-auto overflow-x-hidden space-y-6 px-1">
+          // VIEW MODE
+          <div className="flex-1 overflow-y-auto px-4 sm:px-6 pb-4 sm:pb-6 space-y-4 sm:space-y-6">
             {/* Company Info */}
             {job.company && (
-              <div className="flex items-start gap-4 pb-6 border-b">
+              <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4 pb-4 sm:pb-6 border-b">
                 {job.company.avatar && (
-                  <div className="flex-shrink-0 w-20 h-20 bg-white rounded-lg border p-2 flex items-center justify-center">
+                  <div className="flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-lg border p-2 flex items-center justify-center">
                     <img
                       src={job.company.avatar}
                       alt={job.company.name}
@@ -127,18 +127,18 @@ export function JobDetailModal({
                   </div>
                 )}
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-lg text-gray-900 mb-1">
+                  <h3 className="font-semibold text-base sm:text-lg text-gray-900 mb-1">
                     {job.company.name}
                   </h3>
                   {job.company.address && (
-                    <div className="flex items-center gap-1.5 text-gray-600 text-sm mb-1">
-                      <MapPin className="h-4 w-4 flex-shrink-0 text-red-500" />
-                      <span>{job.company.address}</span>
+                    <div className="flex items-center gap-1.5 text-gray-600 text-xs sm:text-sm mb-1">
+                      <MapPin className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 text-red-500" />
+                      <span className="line-clamp-1">{job.company.address}</span>
                     </div>
                   )}
                   {job.company.website && (
-                    <div className="flex items-center gap-1.5 text-sm">
-                      <Globe className="h-4 w-4 flex-shrink-0 text-blue-500" />
+                    <div className="flex items-center gap-1.5 text-xs sm:text-sm">
+                      <Globe className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 text-blue-500" />
                       <a
                         href={job.company.website}
                         target="_blank"
@@ -155,85 +155,85 @@ export function JobDetailModal({
 
             {/* Job Title */}
             <div className="space-y-2">
-              <Label className="text-sm text-gray-600">
+              <Label className="text-xs sm:text-sm text-gray-600">
                 Tiêu đề công việc <span className="text-red-500">*</span>
               </Label>
-              <div className="px-4 py-3 bg-purple-50 border border-purple-200 rounded-md">
-                <p className="font-semibold text-gray-900">{job.title}</p>
+              <div className="px-3 sm:px-4 py-2 sm:py-3 bg-purple-50 border border-purple-200 rounded-md">
+                <p className="font-semibold text-sm sm:text-base text-gray-900">{job.title}</p>
               </div>
             </div>
 
             {/* Description */}
             <div className="space-y-2">
-              <Label className="text-sm text-gray-600">
+              <Label className="text-xs sm:text-sm text-gray-600">
                 Mô tả công việc <span className="text-red-500">*</span>
               </Label>
-              <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-md min-h-[120px]">
-                <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
+              <div className="px-3 sm:px-4 py-2 sm:py-3 bg-gray-50 border border-gray-200 rounded-md min-h-[100px] sm:min-h-[120px]">
+                <p className="text-xs sm:text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
                   {job.description}
                 </p>
               </div>
             </div>
 
             {/* Type and Status */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div className="space-y-2">
-                <Label className="text-sm text-gray-600">
+                <Label className="text-xs sm:text-sm text-gray-600">
                   Loại hình công việc <span className="text-red-500">*</span>
                 </Label>
-                <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-md">
-                  <p className="text-sm text-gray-900">{getTypeLabel(job.type)}</p>
+                <div className="px-3 sm:px-4 py-2 sm:py-3 bg-gray-50 border border-gray-200 rounded-md">
+                  <p className="text-xs sm:text-sm text-gray-900">{getTypeLabel(job.type)}</p>
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm text-gray-600">
+                <Label className="text-xs sm:text-sm text-gray-600">
                   Trạng thái <span className="text-red-500">*</span>
                 </Label>
-                <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-md">
-                  <p className="text-sm text-gray-900">{getStatusLabel(job.status)}</p>
+                <div className="px-3 sm:px-4 py-2 sm:py-3 bg-gray-50 border border-gray-200 rounded-md">
+                  <p className="text-xs sm:text-sm text-gray-900">{getStatusLabel(job.status)}</p>
                 </div>
               </div>
             </div>
 
             {/* Quantity and Deadline */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div className="space-y-2">
-                <Label className="text-sm text-gray-600">
+                <Label className="text-xs sm:text-sm text-gray-600">
                   Số lượng cần tuyển <span className="text-red-500">*</span>
                 </Label>
-                <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-md">
-                  <p className="text-sm text-gray-900">{job.quantity}</p>
+                <div className="px-3 sm:px-4 py-2 sm:py-3 bg-gray-50 border border-gray-200 rounded-md">
+                  <p className="text-xs sm:text-sm text-gray-900">{job.quantity}</p>
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm text-gray-600">
+                <Label className="text-xs sm:text-sm text-gray-600">
                   Hạn nộp hồ sơ <span className="text-red-500">*</span>
                 </Label>
-                <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-md">
-                  <p className="text-sm text-gray-900">{formatDate(job.deadline)}</p>
+                <div className="px-3 sm:px-4 py-2 sm:py-3 bg-gray-50 border border-gray-200 rounded-md">
+                  <p className="text-xs sm:text-sm text-gray-900">{formatDate(job.deadline)}</p>
                 </div>
               </div>
             </div>
 
             {/* Salary */}
             <div className="space-y-2">
-              <Label className="text-sm text-gray-600">Mức lương</Label>
-              <div className="px-4 py-3 bg-green-50 border border-green-200 rounded-md">
-                <p className="font-semibold text-green-700">{job.salary || "Thỏa thuận"}</p>
+              <Label className="text-xs sm:text-sm text-gray-600">Mức lương</Label>
+              <div className="px-3 sm:px-4 py-2 sm:py-3 bg-green-50 border border-green-200 rounded-md">
+                <p className="font-semibold text-xs sm:text-sm text-green-700">{job.salary || "Thỏa thuận"}</p>
               </div>
             </div>
 
             {/* Skills */}
             {job.skills && job.skills.length > 0 && (
               <div className="space-y-2">
-                <Label className="text-sm text-gray-600">Kỹ năng yêu cầu</Label>
+                <Label className="text-xs sm:text-sm text-gray-600">Kỹ năng yêu cầu</Label>
                 <div className="flex gap-2 flex-wrap">
                   {job.skills.map((skill) => (
                     <span 
                       key={skill.id} 
-                      className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-md border border-gray-200"
+                      className="px-2 sm:px-3 py-1 text-xs sm:text-sm bg-gray-100 text-gray-700 rounded-md border border-gray-200"
                     >
                       {skill.name}
                     </span>
@@ -245,12 +245,12 @@ export function JobDetailModal({
         ) : (
           // EDIT MODE
           form && onFormChange && (
-            <div className="flex-1 overflow-y-auto overflow-x-hidden pr-2 space-y-5">
+            <div className="flex-1 overflow-y-auto px-4 sm:px-6 pb-4 sm:pb-6 space-y-3 sm:space-y-5">
               {/* Company Info at Top - Edit Mode */}
               {job?.company && (
-                <div className="flex items-center gap-5 p-5 bg-gradient-to-r from-muted/40 to-muted/20 rounded-xl border">
+                <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-5 p-3 sm:p-5 bg-gradient-to-r from-muted/40 to-muted/20 rounded-xl border">
                   {job.company.avatar && (
-                    <div className="flex-shrink-0 w-24 h-24 bg-white rounded-xl border-2 shadow-sm p-2 flex items-center justify-center">
+                    <div className="flex-shrink-0 w-16 h-16 sm:w-24 sm:h-24 bg-white rounded-xl border-2 shadow-sm p-2 flex items-center justify-center">
                       <img
                         src={job.company.avatar}
                         alt={job.company.name}
@@ -260,11 +260,11 @@ export function JobDetailModal({
                   )}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <Building2 className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-                      <p className="font-bold text-xl truncate">{job.company.name}</p>
+                      <Building2 className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground flex-shrink-0" />
+                      <p className="font-bold text-base sm:text-xl truncate">{job.company.name}</p>
                     </div>
                     {job.company.address && (
-                      <p className="text-sm text-muted-foreground truncate">
+                      <p className="text-xs sm:text-sm text-muted-foreground truncate">
                         📍 {job.company.address}
                       </p>
                     )}
@@ -273,7 +273,7 @@ export function JobDetailModal({
                         href={job.company.website}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-sm text-blue-600 hover:underline inline-block mt-1 truncate max-w-full"
+                        className="text-xs sm:text-sm text-blue-600 hover:underline inline-block mt-1 truncate max-w-full"
                       >
                         🌐 {job.company.website}
                       </a>
@@ -284,7 +284,7 @@ export function JobDetailModal({
 
               {/* Title */}
               <div className="space-y-2">
-                <Label htmlFor="title" className="text-base font-semibold">
+                <Label htmlFor="title" className="text-sm sm:text-base font-semibold">
                   Tiêu đề công việc <span className="text-red-500">*</span>
                 </Label>
                 <Input
@@ -292,13 +292,13 @@ export function JobDetailModal({
                   value={form.title}
                   onChange={(e) => onFormChange({ ...form, title: e.target.value })}
                   placeholder="VD: Senior Frontend Developer"
-                  className="h-11"
+                  className="h-10 sm:h-11 text-sm"
                 />
               </div>
 
               {/* Description */}
               <div className="space-y-2">
-                <Label htmlFor="description" className="text-base font-semibold">
+                <Label htmlFor="description" className="text-sm sm:text-base font-semibold">
                   Mô tả công việc <span className="text-red-500">*</span>
                 </Label>
                 <textarea
@@ -309,21 +309,21 @@ export function JobDetailModal({
                   }
                   placeholder="Nhập mô tả chi tiết về công việc, yêu cầu, trách nhiệm..."
                   rows={5}
-                  className="w-full px-3 py-2 border rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full px-3 py-2 border rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-primary text-sm"
                 />
               </div>
 
               {/* Type and Status */}
-              <div className="grid grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-5">
                 <div className="space-y-2">
-                  <Label htmlFor="type" className="text-base font-semibold">
+                  <Label htmlFor="type" className="text-sm sm:text-base font-semibold">
                     Loại hình công việc <span className="text-red-500">*</span>
                   </Label>
                   <Select
                     value={form.type}
                     onValueChange={(value) => onFormChange({ ...form, type: value })}
                   >
-                    <SelectTrigger className="h-11">
+                    <SelectTrigger className="h-10 sm:h-11 text-sm">
                       <SelectValue placeholder="Chọn loại hình" />
                     </SelectTrigger>
                     <SelectContent>
@@ -336,7 +336,7 @@ export function JobDetailModal({
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="status" className="text-base font-semibold">
+                  <Label htmlFor="status" className="text-sm sm:text-base font-semibold">
                     Trạng thái <span className="text-red-500">*</span>
                   </Label>
                   <Select
@@ -345,7 +345,7 @@ export function JobDetailModal({
                       onFormChange({ ...form, status: value })
                     }
                   >
-                    <SelectTrigger className="h-11">
+                    <SelectTrigger className="h-10 sm:h-11 text-sm">
                       <SelectValue placeholder="Chọn trạng thái" />
                     </SelectTrigger>
                     <SelectContent>
@@ -358,9 +358,9 @@ export function JobDetailModal({
               </div>
 
               {/* Quantity and Deadline */}
-              <div className="grid grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-5">
                 <div className="space-y-2">
-                  <Label htmlFor="quantity" className="text-base font-semibold">
+                  <Label htmlFor="quantity" className="text-sm sm:text-base font-semibold">
                     Số lượng cần tuyển <span className="text-red-500">*</span>
                   </Label>
                   <Input
@@ -375,12 +375,12 @@ export function JobDetailModal({
                       })
                     }
                     placeholder="VD: 5"
-                    className="h-11"
+                    className="h-10 sm:h-11 text-sm"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="deadline" className="text-base font-semibold">
+                  <Label htmlFor="deadline" className="text-sm sm:text-base font-semibold">
                     Hạn nộp hồ sơ <span className="text-red-500">*</span>
                   </Label>
                   <Input
@@ -390,14 +390,14 @@ export function JobDetailModal({
                     onChange={(e) =>
                       onFormChange({ ...form, deadline: e.target.value })
                     }
-                    className="h-11"
+                    className="h-10 sm:h-11 text-sm"
                   />
                 </div>
               </div>
 
               {/* Salary Edit */}
               <div className="space-y-2">
-                <Label htmlFor="salary" className="text-base font-semibold">
+                <Label htmlFor="salary" className="text-sm sm:text-base font-semibold">
                   Mức lương
                 </Label>
                 <Input
@@ -407,7 +407,7 @@ export function JobDetailModal({
                     onFormChange({ ...form, salary: e.target.value })
                   }
                   placeholder="VD: 15 - 25 triệu, Thỏa thuận..."
-                  className="h-11"
+                  className="h-10 sm:h-11 text-sm"
                 />
               </div>
             </div>
@@ -415,18 +415,20 @@ export function JobDetailModal({
         )}
 
         {mode === "edit" && onSave && (
-          <DialogFooter className="flex-shrink-0 gap-2 pt-4 border-t">
-            <Button
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-              className="min-w-[100px]"
-            >
-              Hủy
-            </Button>
-            <Button onClick={onSave} className="min-w-[100px]">
-              Lưu Thay Đổi
-            </Button>
-          </DialogFooter>
+          <div className="flex-shrink-0 px-4 sm:px-6 pb-4 sm:pb-6 pt-3 sm:pt-4 border-t">
+            <div className="flex gap-2 justify-end">
+              <Button
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+                className="min-w-[80px] sm:min-w-[100px] text-sm"
+              >
+                Hủy
+              </Button>
+              <Button onClick={onSave} className="min-w-[80px] sm:min-w-[100px] text-sm">
+                Lưu
+              </Button>
+            </div>
+          </div>
         )}
       </DialogContent>
     </Dialog>

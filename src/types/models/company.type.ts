@@ -22,7 +22,8 @@ export interface Company {
   createdat?: string;
   updatedat?: string;
   follows?: CompanyFollow[];
-  memberCount?: number;
+  members?: CompanyMember[];
+  membersCount?: number;
   jobs?: Job[];
   posts?: any[];
   reviews?: CompanyReview[];
@@ -33,6 +34,15 @@ export interface CompanyFollow {
   companyid: number;
   createdat: string;
   updatedat: string;
+}
+
+export interface CompanyMember {
+  companyid: number;
+  userid: number;
+  status: string;
+  joinedat: string;
+  createdat: string;
+  updatedat?: string;
 }
 
 

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { hasRouteAccess } from "@/utils/auth";
+import { ROUTES } from "./routes";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -24,19 +25,19 @@ export default function ProtectedRoute({
 
     // Check authentication
     if (!token || !user) {
-      router.push("/login");
+      router.push(ROUTES.LOGIN);
       return;
     }
 
     // Check role-based access
     if (allowedRoles && !allowedRoles.includes(user.role)) {
-      router.push("/access-denied");
+      router.push(ROUTES.ACCESS_DENIED);
       return;
     }
 
     // Check route access
     if (pathname && user?.role && !hasRouteAccess(user.role, pathname)) {
-      router.push("/access-denied");
+      router.push(ROUTES.ACCESS_DENIED);
       return;
     }
 

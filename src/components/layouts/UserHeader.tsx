@@ -108,7 +108,7 @@ const UserHeader = () => {
                         {item.items.map((subItem) => (
                           <NavigationMenuLink key={subItem.title} asChild>
                             <Link
-                              href={subItem.href}
+                              href={subItem.href || ""}
                               className="group block select-none space-y-1 cursor-target rounded-md p-3 leading-none no-underline outline-none transition-colors duration-200 hover:text-primary focus:text-primary"
                             >
                               <div className="text-sm font-medium">

@@ -103,7 +103,7 @@ export default function CompanyJobInfo( job : Job) {
                   className="cursor-target text-sm py-1 px-3"
                 >
                   <Users className="h-4 w-4 mr-1" />
-                  {job.company?.memberCount}
+                  Số lượng tuyển dụng: {job.quantity}
                 </Badge>
               </div>
 

@@ -75,8 +75,8 @@ const CompanyInfo = ({
           </Badge>
           <Badge variant="secondary" className="text-xs">
             <Users className="h-3 w-3 mr-1" />
-            {company?.memberCount
-              ? `${company.memberCount} nhân viên`
+            {company?.membersCount
+              ? `${company.membersCount} nhân viên`
               : "Chưa cập nhật"}
           </Badge>
         </div>

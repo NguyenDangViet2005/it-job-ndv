@@ -32,6 +32,7 @@ import { locationApi } from "@/apis/location.api";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Province, Ward } from "@/types";
+import { ROUTES } from "@/constants";
 
 export default function FormRegisterHR() {
   const { setAuth, setCompany } = useAuth();
@@ -120,7 +121,7 @@ export default function FormRegisterHR() {
         if (company) setCompany(company);
 
         toast.success("Đăng ký nhà tuyển dụng thành công!");
-        router.push("/hr");
+        router.push(ROUTES.HR);
       } else {
         toast.error(response.message || "Đăng ký thất bại. Vui lòng thử lại.");
       }

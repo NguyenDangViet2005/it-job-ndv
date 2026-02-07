@@ -41,6 +41,9 @@ import { companyApi } from "@/apis/company.api";
 import type {  CompanyUpdateRequest } from "@/types/api.type";
 import { toast } from "sonner";
 import { Company } from "@/types";
+import KPI from "@/components/sections/hr/kpi.section";
+import Image from "next/image";
+import HRCompanyInfoSkeleton from "@/components/common/skeletons/hr/company-info.skeleton";
 
 const HRCompanyInfo = () => {
   const { token } = useAuth();
@@ -55,6 +58,14 @@ const HRCompanyInfo = () => {
 
   // Company data from API
   const [companyData, setCompanyData] = useState<Company | null>(null);
+
+  // Stats data
+  const [stats, setStats] = useState({
+    totalJobs: 0,
+    totalPosts: 0,
+    totalFollowers: 0,
+    totalReviews: 0,
+  });
 
   // Form data for editing
   const [formData, setFormData] = useState({
@@ -76,6 +87,15 @@ const HRCompanyInfo = () => {
       setLoading(true);
       const company = await companyApi.getMyCompany(token || undefined);
       setCompanyData(company);
+      
+      // Set stats from company data
+      setStats({
+        totalJobs: company.jobs?.length || 0,
+        totalPosts: company.posts?.length || 0,
+        totalFollowers: company.follows?.length || 0,
+        totalReviews: company.reviews?.length || 0,
+      });
+
       setFormData({
         name: company.name || "",
         nationality: company.nationality || "",
@@ -246,14 +266,7 @@ const HRCompanyInfo = () => {
 
   // Loading state
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="h-12 w-12 animate-spin text-blue-600" />
-          <p className="text-muted-foreground">Đang tải thông tin công ty...</p>
-        </div>
-      </div>
-    );
+    return <HRCompanyInfoSkeleton />;
   }
 
   // No company data
@@ -290,13 +303,13 @@ const HRCompanyInfo = () => {
       />
 
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="space-y-2">
-          <h1 className="text-4xl font-bold font-mono bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
-            Thông Tin Công Ty
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div className="space-y-1">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold font-mono bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
+            Bảng Điều Khiển HR
           </h1>
-          <p className="text-muted-foreground text-lg">
-            Quản lý hồ sơ và thông tin công ty của bạn
+          <p className="text-muted-foreground text-sm sm:text-base">
+            Tổng quan về hoạt động tuyển dụng và thông tin công ty
           </p>
         </div>
         <div className="flex gap-2">
@@ -304,18 +317,18 @@ const HRCompanyInfo = () => {
             <Button
               onClick={handleCancelEdit}
               variant="outline"
-              className="gap-2 cursor-target"
+              className="gap-2 cursor-target text-sm"
               disabled={saving}
             >
               <X className="h-4 w-4" />
-              Hủy
+              <span className="hidden sm:inline">Hủy</span>
             </Button>
           )}
           <Button
             onClick={() => (isEditing ? handleSave() : setIsEditing(true))}
             disabled={saving}
             className={cn(
-              "gap-2 cursor-target",
+              "gap-2 cursor-target text-sm",
               isEditing
                 ? "bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
                 : "bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700",
@@ -324,30 +337,34 @@ const HRCompanyInfo = () => {
             {saving ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
-                Đang lưu...
+                <span className="hidden sm:inline">Đang lưu...</span>
               </>
             ) : isEditing ? (
               <>
                 <Save className="h-4 w-4" />
-                Lưu Thay Đổi
+                <span className="hidden sm:inline">Lưu</span>
               </>
             ) : (
               <>
                 <Edit className="h-4 w-4" />
-                Chỉnh Sửa
+                <span className="hidden sm:inline">Chỉnh Sửa</span>
               </>
             )}
           </Button>
         </div>
       </div>
 
+      {/* KPI Stats */}
+      <KPI />
+
       {/* Cover Image & Logo */}
-      <Card className="overflow-hidden cursor-target">
-        <div className="relative h-64 bg-gradient-to-r from-blue-500 to-cyan-500">
+      <Card className="overflow-hidden cursor-target p-0">
+        <div className="relative h-48 sm:h-56 md:h-64 bg-gradient-to-r from-blue-500 to-cyan-500">
           {companyData.coverimage ? (
-            <img
+            <Image
               src={companyData.coverimage}
               alt="Cover"
+              fill
               className="w-full h-full object-cover"
             />
           ) : (
@@ -357,61 +374,62 @@ const HRCompanyInfo = () => {
             <Button
               variant="secondary"
               size="sm"
-              className="absolute top-4 right-4 gap-2 cursor-target"
+              className="absolute top-2 right-2 sm:top-4 sm:right-4 gap-1 sm:gap-2 cursor-target text-xs sm:text-sm"
               onClick={handleCoverClick}
               disabled={uploadingCover}
             >
               {uploadingCover ? (
                 <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Đang tải...
+                  <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 animate-spin" />
+                  <span className="hidden sm:inline">Đang tải...</span>
                 </>
               ) : (
                 <>
-                  <Camera className="h-4 w-4" />
-                  Đổi Ảnh Bìa
+                  <Camera className="h-3 w-3 sm:h-4 sm:w-4" />
+                  <span className="hidden sm:inline">Đổi Ảnh Bìa</span>
                 </>
               )}
             </Button>
           )}
         </div>
-        <CardContent className="relative pt-16 pb-6">
-          <div className="absolute -top-16 left-6">
+        <CardContent className="relative pt-12 sm:pt-16 pb-4 sm:pb-6 px-4 sm:px-6">
+          <div className="absolute -top-12 sm:-top-16 left-4 sm:left-6">
             <div className="relative">
-              <div className="w-32 h-32 rounded-2xl bg-white p-2 shadow-xl ring-4 ring-background">
+              <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-2xl bg-white p-2 shadow-xl ring-4 ring-background">
                 {companyData.avatar ? (
-                  <img
+                  <Image
                     src={companyData.avatar}
                     alt={companyData.name}
-                    className="w-full h-full rounded-xl object-cover"
+                    fill
+                    className="w-full h-full rounded-xl object-contain"
                   />
                 ) : (
                   <div className="w-full h-full rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
-                    <Building2 className="h-12 w-12 text-white" />
+                    <Building2 className="h-8 w-8 sm:h-12 sm:w-12 text-white" />
                   </div>
                 )}
               </div>
               {isEditing && (
                 <Button
                   size="sm"
-                  className="absolute -bottom-2 -right-2 h-8 w-8 p-0 rounded-full cursor-target"
+                  className="absolute -bottom-2 -right-2 h-7 w-7 sm:h-8 sm:w-8 p-0 rounded-full cursor-target"
                   onClick={handleAvatarClick}
                   disabled={uploadingAvatar}
                 >
                   {uploadingAvatar ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 animate-spin" />
                   ) : (
-                    <Upload className="h-4 w-4" />
+                    <Upload className="h-3 w-3 sm:h-4 sm:w-4" />
                   )}
                 </Button>
               )}
             </div>
           </div>
-          <div className="ml-40 space-y-2">
-            <div className="flex items-start justify-between">
-              <div>
-                <h2 className="text-3xl font-bold">{companyData.name}</h2>
-                <p className="text-muted-foreground mt-1">
+          <div className="sm:ml-40 space-y-2">
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
+              <div className="flex-1">
+                <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold mt-5 sm:-mt-15">{companyData.name}</h2>
+                <p className="text-muted-foreground mt-1 text-sm sm:text-base">
                   {companyData.description?.substring(0, 100) ||
                     "Chưa có mô tả"}
                   {companyData.description &&
@@ -421,27 +439,27 @@ const HRCompanyInfo = () => {
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <Star className="h-5 w-5 fill-yellow-500 text-yellow-500" />
-                <span className="text-2xl font-bold">4.5</span>
+                <Star className="h-4 w-4 sm:h-5 sm:w-5 fill-yellow-500 text-yellow-500" />
+                <span className="text-xl sm:text-2xl font-bold">4.5</span>
               </div>
             </div>
-            <div className="flex flex-wrap gap-2 mt-4">
+            <div className="flex flex-wrap gap-2 mt-3 sm:mt-4">
               {companyData.nationality && (
-                <Badge variant="outline" className="gap-1">
+                <Badge variant="outline" className="gap-1 text-xs">
                   <Globe className="h-3 w-3" />
                   {companyData.nationality}
                 </Badge>
               )}
               {companyData.foundedyear && (
-                <Badge variant="outline" className="gap-1">
+                <Badge variant="outline" className="gap-1 text-xs">
                   <Calendar className="h-3 w-3" />
-                  Founded {companyData.foundedyear}
+                  Thành lập {companyData.foundedyear}
                 </Badge>
               )}
               {companyData.address && (
-                <Badge variant="outline" className="gap-1">
+                <Badge variant="outline" className="gap-1 text-xs">
                   <MapPin className="h-3 w-3" />
-                  {companyData.address}
+                  <span className="truncate max-w-[200px]">{companyData.address}</span>
                 </Badge>
               )}
             </div>
@@ -450,56 +468,56 @@ const HRCompanyInfo = () => {
       </Card>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <Card className="cursor-target hover:shadow-lg transition-shadow">
-          <CardContent className="p-6">
+          <CardContent className="p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Tổng Công Việc</p>
-                <p className="text-3xl font-bold text-blue-600">
-                  {companyData.jobs?.length || 0}
+                <p className="text-xs sm:text-sm text-muted-foreground">Tổng Công Việc</p>
+                <p className="text-2xl sm:text-3xl font-bold text-blue-600">
+                  {stats.totalJobs}
                 </p>
               </div>
-              <Briefcase className="h-10 w-10 text-blue-600" />
+              <Briefcase className="h-8 w-8 sm:h-10 sm:w-10 text-blue-600" />
             </div>
           </CardContent>
         </Card>
         <Card className="cursor-target hover:shadow-lg transition-shadow">
-          <CardContent className="p-6">
+          <CardContent className="p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Bài Viết</p>
-                <p className="text-3xl font-bold text-green-600">
-                  {companyData.posts?.length || 0}
+                <p className="text-xs sm:text-sm text-muted-foreground">Bài Viết</p>
+                <p className="text-2xl sm:text-3xl font-bold text-green-600">
+                  {stats.totalPosts}
                 </p>
               </div>
-              <TrendingUp className="h-10 w-10 text-green-600" />
+              <TrendingUp className="h-8 w-8 sm:h-10 sm:w-10 text-green-600" />
             </div>
           </CardContent>
         </Card>
         <Card className="cursor-target hover:shadow-lg transition-shadow">
-          <CardContent className="p-6">
+          <CardContent className="p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Người Theo Dõi</p>
-                <p className="text-3xl font-bold text-purple-600">
-                  {companyData.follows?.length || 0}
+                <p className="text-xs sm:text-sm text-muted-foreground">Người Theo Dõi</p>
+                <p className="text-2xl sm:text-3xl font-bold text-purple-600">
+                  {stats.totalFollowers}
                 </p>
               </div>
-              <Users className="h-10 w-10 text-purple-600" />
+              <Users className="h-8 w-8 sm:h-10 sm:w-10 text-purple-600" />
             </div>
           </CardContent>
         </Card>
         <Card className="cursor-target hover:shadow-lg transition-shadow">
-          <CardContent className="p-6">
+          <CardContent className="p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Đánh Giá</p>
-                <p className="text-3xl font-bold text-orange-600">
-                  {companyData.reviews?.length || 0}
+                <p className="text-xs sm:text-sm text-muted-foreground">Đánh Giá</p>
+                <p className="text-2xl sm:text-3xl font-bold text-orange-600">
+                  {stats.totalReviews}
                 </p>
               </div>
-              <Star className="h-10 w-10 text-orange-600" />
+              <Star className="h-8 w-8 sm:h-10 sm:w-10 text-orange-600" />
             </div>
           </CardContent>
         </Card>
@@ -516,44 +534,44 @@ const HRCompanyInfo = () => {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="basic" className="space-y-4 mt-6">
+        <TabsContent value="basic" className="space-y-4 mt-4 sm:mt-6">
           <Card>
-            <CardHeader>
-              <CardTitle>Tổng Quan Công Ty</CardTitle>
+            <CardHeader className="px-4 sm:px-6">
+              <CardTitle className="text-base sm:text-lg">Tổng Quan Công Ty</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-4 sm:space-y-6 px-4 sm:px-6">
               <div className="space-y-2">
-                <Label htmlFor="name">Tên Công Ty *</Label>
+                <Label htmlFor="name" className="text-sm">Tên Công Ty *</Label>
                 <Input
                   id="name"
                   value={formData.name}
                   onChange={handleInputChange}
                   disabled={!isEditing}
-                  className="cursor-target"
+                  className="cursor-target text-sm"
                   placeholder="Nhập tên công ty"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="nationality">Quốc Tịch</Label>
+                  <Label htmlFor="nationality" className="text-sm">Quốc Tịch</Label>
                   <Input
                     id="nationality"
                     value={formData.nationality}
                     onChange={handleInputChange}
                     disabled={!isEditing}
-                    className="cursor-target"
+                    className="cursor-target text-sm"
                     placeholder="VD: Việt Nam"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="foundedyear">Năm Thành Lập</Label>
+                  <Label htmlFor="foundedyear" className="text-sm">Năm Thành Lập</Label>
                   <Input
                     id="foundedyear"
                     type="number"
                     value={formData.foundedyear}
                     onChange={handleInputChange}
                     disabled={!isEditing}
-                    className="cursor-target"
+                    className="cursor-target text-sm"
                     placeholder="VD: 2020"
                     min="1800"
                     max="2100"
@@ -561,14 +579,14 @@ const HRCompanyInfo = () => {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="description">Mô Tả</Label>
+                <Label htmlFor="description" className="text-sm">Mô Tả</Label>
                 <textarea
                   id="description"
                   value={formData.description}
                   onChange={handleInputChange}
                   disabled={!isEditing}
                   rows={5}
-                  className="w-full px-3 py-2 border rounded-md cursor-target resize-none disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full px-3 py-2 border rounded-md cursor-target resize-none disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                   placeholder="Mô tả về công ty của bạn..."
                 />
               </div>
@@ -576,37 +594,37 @@ const HRCompanyInfo = () => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="contact" className="space-y-4 mt-6">
+        <TabsContent value="contact" className="space-y-4 mt-4 sm:mt-6">
           <Card>
-            <CardHeader>
-              <CardTitle>Thông Tin Liên Hệ</CardTitle>
+            <CardHeader className="px-4 sm:px-6">
+              <CardTitle className="text-base sm:text-lg">Thông Tin Liên Hệ</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-4 sm:space-y-6 px-4 sm:px-6">
               <div className="space-y-2">
-                <Label htmlFor="website">Website</Label>
+                <Label htmlFor="website" className="text-sm">Website</Label>
                 <div className="flex gap-2">
-                  <Globe className="h-5 w-5 text-muted-foreground mt-2" />
+                  <Globe className="h-5 w-5 text-muted-foreground mt-2 flex-shrink-0" />
                   <Input
                     id="website"
                     type="url"
                     value={formData.website}
                     onChange={handleInputChange}
                     disabled={!isEditing}
-                    className="cursor-target"
+                    className="cursor-target text-sm"
                     placeholder="https://example.com"
                   />
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="address">Địa Chỉ</Label>
+                <Label htmlFor="address" className="text-sm">Địa Chỉ</Label>
                 <div className="flex gap-2">
-                  <MapPin className="h-5 w-5 text-muted-foreground mt-2" />
+                  <MapPin className="h-5 w-5 text-muted-foreground mt-2 flex-shrink-0" />
                   <Input
                     id="address"
                     value={formData.address}
                     onChange={handleInputChange}
                     disabled={!isEditing}
-                    className="cursor-target"
+                    className="cursor-target text-sm"
                     placeholder="Nhập địa chỉ công ty"
                   />
                 </div>

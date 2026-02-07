@@ -26,6 +26,9 @@ import Link from "next/link";
 import { navigationItems } from "@/constants/navigation.config";
 import { ROUTES } from "@/constants";
 import { User as UserResponse } from "@/types";
+import { useMobileMenu } from "@/lib/hooks/useMobileMenu";
+import { useClickOutside } from "@/lib/hooks/useClickOutside";
+import { useRef } from "react";
 
 interface MobileMenuProps {
   isLoggedIn: boolean;
@@ -34,10 +37,16 @@ interface MobileMenuProps {
 }
 
 export const MobileMenu = ({ isLoggedIn, user, onLogout }: MobileMenuProps) => {
+  const { isOpen, openMenu, closeMenu, toggleMenu } = useMobileMenu();
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  // Tự động đóng menu khi click bên ngoài
+  useClickOutside(menuRef as React.RefObject<HTMLElement>, closeMenu, isOpen);
+
   return (
-    <Sheet>
+    <Sheet open={isOpen} onOpenChange={(open) => open ? openMenu() : closeMenu()}>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="hidden sm:block lg:hidden cursor-target">
+        <Button variant="ghost" size="icon" className="hidden sm:block lg:hidden cursor-target" onClick={toggleMenu}>
           <Menu className="h-5 w-5" />
           <span className="sr-only">Toggle menu</span>
         </Button>
@@ -45,6 +54,7 @@ export const MobileMenu = ({ isLoggedIn, user, onLogout }: MobileMenuProps) => {
       <SheetContent
         side="right"
         className="w-[300px] sm:w-[400px] pt-10 flex flex-col"
+        ref={menuRef}
       >
         <SheetHeader className="sr-only">
           <SheetTitle>Menu điều hướng</SheetTitle>
@@ -57,14 +67,14 @@ export const MobileMenu = ({ isLoggedIn, user, onLogout }: MobileMenuProps) => {
               variant="default"
               asChild
             >
-              <Link href={ROUTES.LOGIN}>Đăng nhập</Link>
+              <Link href={ROUTES.LOGIN} onClick={closeMenu}>Đăng nhập</Link>
             </Button>
             <Button
               className="cursor-target w-full h-11"
               variant="outline"
               asChild
             >
-              <Link href={ROUTES.REGISTER}>Đăng ký</Link>
+              <Link href={ROUTES.REGISTER} onClick={closeMenu}>Đăng ký</Link>
             </Button>
           </div>
         )}
@@ -96,6 +106,7 @@ export const MobileMenu = ({ isLoggedIn, user, onLogout }: MobileMenuProps) => {
               <div key={item.title}>
                 <Link
                   href={item.href}
+                  onClick={closeMenu}
                   className="flex items-center px-3 py-2.5 text-sm font-medium rounded-md hover:bg-muted transition-colors"
                 >
                   {item.title}
@@ -106,6 +117,7 @@ export const MobileMenu = ({ isLoggedIn, user, onLogout }: MobileMenuProps) => {
                       <Link
                         key={subItem.title}
                         href={subItem.href}
+                        onClick={closeMenu}
                         className="flex items-center px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-md transition-colors"
                       >
                         {subItem.title}
@@ -123,7 +135,8 @@ export const MobileMenu = ({ isLoggedIn, user, onLogout }: MobileMenuProps) => {
                   TÀI KHOẢN
                 </h3>
                 <Link
-                  href={user?.id ? ROUTES.PROFILE(user.id) : "#"}
+                  href={user?.id ? ROUTES.PROFILE(user.id) : ROUTES.PROFILE()}
+                  onClick={closeMenu}
                   className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md hover:bg-muted transition-colors"
                 >
                   <User className="h-4 w-4" />
@@ -131,6 +144,7 @@ export const MobileMenu = ({ isLoggedIn, user, onLogout }: MobileMenuProps) => {
                 </Link>
                 <Link
                   href={ROUTES.USER_RESUME}
+                  onClick={closeMenu}
                   className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md hover:bg-muted transition-colors"
                 >
                   <FileText className="h-4 w-4" />
@@ -138,6 +152,7 @@ export const MobileMenu = ({ isLoggedIn, user, onLogout }: MobileMenuProps) => {
                 </Link>
                 <Link
                   href={ROUTES.USER_APPLIED_JOBS}
+                  onClick={closeMenu}
                   className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md hover:bg-muted transition-colors"
                 >
                   <Briefcase className="h-4 w-4" />
@@ -145,6 +160,7 @@ export const MobileMenu = ({ isLoggedIn, user, onLogout }: MobileMenuProps) => {
                 </Link>
                 <Link
                   href={ROUTES.USER_SETTINGS}
+                  onClick={closeMenu}
                   className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md hover:bg-muted transition-colors"
                 >
                   <Settings className="h-4 w-4" />
@@ -159,7 +175,10 @@ export const MobileMenu = ({ isLoggedIn, user, onLogout }: MobileMenuProps) => {
         {isLoggedIn && (
           <div className="pt-4 border-t mt-4">
             <Button
-              onClick={onLogout}
+              onClick={() => {
+                onLogout();
+                closeMenu();
+              }}
               variant="destructive"
               className="w-full cursor-target"
             >

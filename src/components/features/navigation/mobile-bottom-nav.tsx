@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Briefcase, Building2, User, Menu } from "lucide-react";
+import { Home, Briefcase, Building2, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ROUTES } from "@/constants";
 import { useState } from "react";
@@ -40,6 +40,11 @@ export function MobileBottomNav() {
   const [menuOpen, setMenuOpen] = useState(false);
   const { user, isAuthenticated, logout } = useAuth();
 
+  // Hàm đóng menu
+  const closeMenu = () => {
+    setMenuOpen(false);
+  };
+
   return (
     <nav className="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-t border-border shadow-lg">
       <div className="flex items-center justify-around h-16 px-2">
@@ -73,7 +78,7 @@ export function MobileBottomNav() {
                               <p className="text-xs text-muted-foreground">{user.email}</p>
                             </div>
                           </div>
-                          <Link href={ROUTES.PROFILE()} onClick={() => setMenuOpen(false)}>
+                          <Link href={ROUTES.PROFILE()} onClick={closeMenu}>
                             <Button className="w-full mt-3" variant="outline" size="sm">
                               Xem hồ sơ
                             </Button>
@@ -81,12 +86,12 @@ export function MobileBottomNav() {
                         </div>
                       ) : (
                         <div className="p-4 rounded-lg border bg-card flex flex-col gap-2">
-                          <Link href={ROUTES.LOGIN} onClick={() => setMenuOpen(false)}>
+                          <Link href={ROUTES.LOGIN} onClick={closeMenu}>
                             <Button className="w-full" variant="outline" size="sm">
                               Đăng nhập
                             </Button>
                           </Link>
-                          <Link href={ROUTES.REGISTER} onClick={() => setMenuOpen(false)}>
+                          <Link href={ROUTES.REGISTER} onClick={closeMenu}>
                             <Button className="w-full" size="sm">
                               Đăng ký
                             </Button>
@@ -104,7 +109,7 @@ export function MobileBottomNav() {
                             {!item.items || item.items.length === 0 ? (
                               <Link
                                 href={item.href}
-                                onClick={() => setMenuOpen(false)}
+                                onClick={closeMenu}
                                 className="block px-4 py-3 rounded-lg hover:bg-accent transition-colors"
                               >
                                 <span className="font-medium">{item.title}</span>
@@ -118,7 +123,7 @@ export function MobileBottomNav() {
                                   <Link
                                     key={subItem.title}
                                     href={subItem.href}
-                                    onClick={() => setMenuOpen(false)}
+                                    onClick={closeMenu}
                                     className="block px-6 py-2.5 rounded-lg hover:bg-accent transition-colors"
                                   >
                                     <div className="font-medium text-sm">{subItem.title}</div>
@@ -142,7 +147,7 @@ export function MobileBottomNav() {
                           className="w-full text-destructive border-1 border-destructive hover:text-destructive hover:bg-destructive/10"
                           onClick={() => {
                             logout();
-                            setMenuOpen(false);
+                            closeMenu();
                           }}
                         >
                           Đăng xuất

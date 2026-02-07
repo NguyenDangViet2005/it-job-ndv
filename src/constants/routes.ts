@@ -57,7 +57,7 @@ export const ROUTES = {
   POST_DETAIL: (postid: number | string) => `/social/posts/${postid}`,
 
   // HR/Employer routes
-  HR: "/hr",
+  HR: "/hr/company",
   HR_JOBS: "/hr/jobs",
   HR_JOB_CREATE: "/hr/jobs/create",
   HR_JOB_EDIT: (jobid: number | string) => `/hr/jobs/${jobid}/edit`,
@@ -67,18 +67,16 @@ export const ROUTES = {
   HR_SETTINGS: "/hr/settings",
 
   // Admin routes
-  ADMIN: "/admin",
+  ADMIN: "/admin/dashboard",
   ADMIN_DASHBOARD: "/admin/dashboard",
   ADMIN_USERS: "/admin/users",
-  ADMIN_COMPANIES: "/admin/companies",
+  ADMIN_COMPANIES: "/admin/company",
   ADMIN_JOBS: "/admin/jobs",
-  ADMIN_BLOGS: "/admin/blogs",
-  ADMIN_SOCIAL: "/admin/social",
-  ADMIN_REPORTS: "/admin/reports",
+  ADMIN_BLOGS: "/admin/blog",
   ADMIN_SETTINGS: "/admin/settings",
 
   // Error routes
-  NOT_FOUND: "/404",
+  NOT_FOUND: "/not-found",
   UNAUTHORIZED: "/401",
   SERVER_ERROR: "/500",
 } as const;
@@ -131,8 +129,6 @@ export const ROUTE_GROUPS = {
     ROUTES.ADMIN_COMPANIES,
     ROUTES.ADMIN_JOBS,
     ROUTES.ADMIN_BLOGS,
-    ROUTES.ADMIN_SOCIAL,
-    ROUTES.ADMIN_REPORTS,
     ROUTES.ADMIN_SETTINGS,
   ],
 } as const;
