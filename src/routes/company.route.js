@@ -8,6 +8,7 @@ router.get("/", companyController.getCompanies);
 router.get("/logos", companyController.getCompanyLogos);
 
 router.get("/my-company", verifyToken, companyController.getMyCompany);
+router.put("/my-company", verifyToken, companyController.updateMyCompany);
 router.post(
   "/upload-avatar",
   verifyToken,

@@ -181,11 +181,45 @@ const uploadCover = async (req, res) => {
     );
     res
       .status(200)
-      .json({ avatarUrl: coverUrl, message: "Upload ảnh bìa thành công" });
+      .json({ coverimageUrl: coverUrl, message: "Upload ảnh bìa thành công" });
   } catch (error) {
     res
       .status(500)
       .json({ message: "Error uploading cover", error: error.message });
+  }
+};
+
+const updateMyCompany = async (req, res) => {
+  try {
+    if (req.user.role !== "employer") {
+      return res.status(403).json({ message: "Access denied. Employer only." });
+    }
+
+    const userid = req.user.id;
+    const company = await companyService.getCompanyByUserId(userid);
+
+    if (!company) {
+      return res
+        .status(404)
+        .json({ message: "Bạn chưa được liên kết với công ty nào" });
+    }
+
+    const updatedCompany = await companyService.updateCompany(
+      company.id,
+      req.body,
+    );
+
+    // Fetch full company data with relations
+    const fullCompany = await companyService.getCompanyByUserId(userid);
+
+    res.status(200).json({
+      data: fullCompany,
+      message: "Cập nhật thông tin công ty thành công",
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error updating company", error: error.message });
   }
 };
 
@@ -199,4 +233,5 @@ module.exports = {
   getMyCompany,
   uploadAvatar,
   uploadCover,
+  updateMyCompany,
 };

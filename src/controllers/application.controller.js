@@ -27,7 +27,7 @@ const create = async (req, res) => {
     const userid = req.user.id;
     const { jobid, cvurl, coverletter } = req.body;
 
-    if (!jobId) {
+    if (!jobid) {
       return res.status(400).json({ message: "JobId is required" });
     }
 
@@ -107,7 +107,7 @@ const update = async (req, res) => {
     }
     const { jobid, userid } = req.params;
     const updateData = req.body;
-    const result = await applicationService.update(jobId, userid, updateData);
+    const result = await applicationService.update(jobid, userid, updateData);
     if (!result) {
       return res.status(404).json({ message: "Application not found" });
     }
@@ -130,7 +130,7 @@ const deleteApp = async (req, res) => {
         message: "Access denied. You can only delete your own application.",
       });
     }
-    const result = await applicationService.deleteApp(jobId, userid);
+    const result = await applicationService.deleteApp(jobid, userid);
     if (!result) {
       return res.status(404).json({ message: "Không tìm thấy đơn ứng tuyển" });
     }

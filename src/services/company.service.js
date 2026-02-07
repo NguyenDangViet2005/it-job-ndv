@@ -134,7 +134,7 @@ const deleteCompany = async (id) => {
     });
     const jobids = jobs.map((j) => j.id);
 
-    if (jobIds.length > 0) {
+    if (jobids.length > 0) {
       await Application.destroy({ where: { jobid: jobids } });
       await SkillJob.destroy({ where: { jobid: jobids } });
       await Job.destroy({ where: { companyid: id } });
@@ -197,7 +197,7 @@ const getCompanyByUserId = async (userid) => {
         { model: Follow },
       ],
     });
-    return company;
+    return company ? new CompanyResponse(company) : null;
   } catch (error) {
     throw error;
   }

@@ -15,8 +15,8 @@ router.get(
   applicationController.getByCompanyId,
 );
 
-router.put("/:jobId/:userid", verifyToken, applicationController.update);
+router.put("/:jobid/:userid", verifyToken, applicationController.update);
 
-router.delete("/:jobId/:userid", verifyToken, applicationController.deleteApp);
+router.delete("/:jobid/:userid", verifyToken, applicationController.deleteApp);
 
 module.exports = router;

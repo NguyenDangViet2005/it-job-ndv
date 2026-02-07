@@ -16,6 +16,7 @@ class ApplicationResponse {
     // Additional info from User
     this.userfullname = data.User?.fullname || null;
     this.userEmail = data.User?.email || null;
+    this.userAvatar = data.User?.avatar || "";
   }
 }
 

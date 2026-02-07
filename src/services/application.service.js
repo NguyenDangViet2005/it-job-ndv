@@ -140,7 +140,7 @@ const getByCompanyId = async (companyid, pageNumber = 1, pageSize = 10) => {
   }
 };
 
-const update = async (jobId, userid, updateData) => {
+const update = async (jobid, userid, updateData) => {
   try {
     const application = await Application.findOne({
       where: { jobid, userid },
@@ -170,7 +170,7 @@ const update = async (jobId, userid, updateData) => {
   }
 };
 
-const deleteApp = async (jobId, userid) => {
+const deleteApp = async (jobid, userid) => {
   try {
     const application = await Application.findOne({
       where: { jobid, userid },
