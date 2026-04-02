@@ -57,7 +57,7 @@ export const jobApi = {
     },
     token: string
   ) => {
-    return apiPost<ApiResponse<Job>>(`${ENDPOINT}/${companyid}`, data, {
+    return apiPost<ApiResponse<Job>>(`${ENDPOINT}/`, data, {
       token,
     });
   },
