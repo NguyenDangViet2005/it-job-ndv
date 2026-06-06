@@ -55,6 +55,12 @@ const getResourceTypeFromUrl = (url) => {
 const getPublicIdFromUrl = (url) => {
   if (!url) return null;
   try {
+    const resourceType = getResourceTypeFromUrl(url);
+    if (resourceType === "raw") {
+      const regex = /\/upload\/(?:v\d+\/)?(.+)$/;
+      const match = url.match(regex);
+      return match ? match[1] : null;
+    }
     const regex = /\/upload\/(?:v\d+\/)?(.+)\.[^.]+$/;
     const match = url.match(regex);
     if (match && match[1]) {
@@ -79,6 +85,12 @@ const uploadFile = async (file) => {
       folder: targetFolder,
       resource_type: resourceType,
     };
+
+    if (resourceType === "raw" && file.originalname) {
+      const randomString = Math.random().toString(36).substring(2, 10);
+      const ext = file.originalname.toLowerCase().split(".").pop();
+      uploadOptions.public_id = `${randomString}_${Date.now()}.${ext}`;
+    }
 
     if (resourceType === "image") {
       uploadOptions.transformation = [
