@@ -15,6 +15,7 @@ interface ApplicationModalProps {
   jobid: number;
   jobTitle: string;
   companyName: string;
+  onSuccess?: () => void;
 }
 
 export default function ApplicationModal({
@@ -23,6 +24,7 @@ export default function ApplicationModal({
   jobid,
   jobTitle,
   companyName,
+  onSuccess,
 }: ApplicationModalProps) {
   const handleClose = () => {
     onOpenChange(false);
@@ -46,6 +48,7 @@ export default function ApplicationModal({
           jobTitle={jobTitle}
           companyName={companyName}
           onClose={handleClose}
+          onSuccess={onSuccess}
           isModal={true}
         />
       </DialogContent>

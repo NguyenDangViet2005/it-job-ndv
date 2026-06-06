@@ -8,6 +8,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { toast } from "sonner";
+import LoadingScreen from "@/components/common/loading-screen";
+import { openCV } from "@/utils";
 import {
   Avatar,
   AvatarFallback,
@@ -458,14 +460,7 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
   };
 
   if (profileLoading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="h-12 w-12 animate-spin mx-auto mb-4" />
-          <p className="text-muted-foreground">Đang tải thông tin...</p>
-        </div>
-      </div>
-    );
+    return <LoadingScreen fullScreen={true} message="Đang tải thông tin cá nhân..." />;
   }
 
   if (!displayUser) {
@@ -824,7 +819,7 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
                       variant="outline"
                       className="w-full cursor-target hover:scale-105 transition-transform duration-300"
                       onClick={() =>
-                        window.open((displayUser as any).cvurl, "_blank")
+                        openCV((displayUser as any).cvurl, `CV_${displayUser?.fullname || "User"}.pdf`)
                       }
                     >
                       <FileText className="h-4 w-4 mr-2" />

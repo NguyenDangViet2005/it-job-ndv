@@ -10,6 +10,9 @@ import { Briefcase, Clock, ExternalLink, FileText } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Application } from "@/types";
+import { openCV } from "@/utils";
+
+import LoadingScreen from "@/components/common/loading-screen";
 
 const statusColors: Record<string, string> = {
   pending: "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400",
@@ -63,13 +66,7 @@ export default function AppliedJobsPage() {
   }, [user, token, router]);
 
   if (loading) {
-    return (
-      <div className="container mx-auto px-4 py-8 max-w-5xl">
-        <div className="text-center py-16">
-          <p className="text-muted-foreground">Đang tải...</p>
-        </div>
-      </div>
-    );
+    return <LoadingScreen fullScreen={true} message="Đang tải danh sách ứng tuyển..." />;
   }
 
   if (error) {
@@ -137,16 +134,16 @@ export default function AppliedJobsPage() {
                           </div>
                           <div className="flex items-center gap-1">
                             <FileText className="h-3 w-3 flex-shrink-0" />
-                            <a
-                              href={app.cvurl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-blue-600 hover:underline flex items-center gap-1"
-                              onClick={(e) => e.stopPropagation()}
+                            <button
+                              className="text-blue-600 hover:underline flex items-center gap-1 text-sm font-medium"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                openCV(app.cvurl, `CV_${app.userfullname || "User"}.pdf`);
+                              }}
                             >
                               Xem CV
                               <ExternalLink className="h-2.5 w-2.5" />
-                            </a>
+                            </button>
                           </div>
                         </div>
                       </div>

@@ -31,11 +31,13 @@ import { userApi } from "@/apis/user.api";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { FileText, Upload, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { openCV } from "@/utils";
 interface ApplicationFormProps {
   jobid: number;
   jobTitle: string;
   companyName: string;
   onClose?: () => void;
+  onSuccess?: () => void;
   isModal?: boolean;
 }
 
@@ -44,6 +46,7 @@ export default function ApplicationForm({
   jobTitle,
   companyName,
   onClose,
+  onSuccess,
   isModal = false,
 }: ApplicationFormProps) {
   const { user, token, updateUser } = useAuth();
@@ -120,6 +123,10 @@ export default function ApplicationForm({
       toast.success("Ứng tuyển thành công!");
       form.reset();
 
+      if (onSuccess) {
+        onSuccess();
+      }
+
       // Đóng modal hoặc redirect sau 1 giây
       setTimeout(() => {
         if (isModal && onClose) {
@@ -188,7 +195,7 @@ export default function ApplicationForm({
                   type="button"
                   variant="outline"
                   size="sm"
-                  onClick={() => window.open((user as any).cvurl, "_blank")}
+                  onClick={() => openCV((user as any).cvurl)}
                   className="hover:bg-primary/10 hover:text-primary"
                 >
                   Xem CV

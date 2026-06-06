@@ -9,22 +9,35 @@ import CompanyInfo from "@/components/sections/jobs/company-info.section";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { jobApi } from "@/apis";
+import { applicationApi } from "@/apis/application.api";
+import { useAuth } from "@/lib/hooks/useAuth";
 import { JobDetailSkeleton } from "@/components/common/skeletons";
 import { Job } from "@/types";
 
 
 export default function JobDetailPage({ jobid }: {jobid : string}) {
+  const { user, token } = useAuth();
   const [jobData, setJobData] = useState<Job | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [hasApplied, setHasApplied] = useState(false);
 
   useEffect(() => {
     async function fetchJobDetail() {
       try {
         setLoading(true);
         const response = await jobApi.getById(Number(jobid));
-
         setJobData(response as any);
+
+        if (user && token) {
+          const appsResponse = await applicationApi.getByUser(user.id, 1, 100, token);
+          if (appsResponse && appsResponse.data) {
+            const applied = appsResponse.data.some(
+              (app: any) => app.jobid === Number(jobid)
+            );
+            setHasApplied(applied);
+          }
+        }
       } catch (err) {
         setError(
           err instanceof Error
@@ -37,7 +50,7 @@ export default function JobDetailPage({ jobid }: {jobid : string}) {
     }
 
     fetchJobDetail();
-  }, [jobid]);
+  }, [jobid, user, token]);
 
   if (loading) {
     return <JobDetailSkeleton />;
@@ -95,7 +108,11 @@ export default function JobDetailPage({ jobid }: {jobid : string}) {
     <div className="min-h-screen bg-background pb-20 sm:pb-0">
       <div className="container mx-auto px-3 lg:px-4 py-4 lg:py-8 max-w-7xl">
         {/* Job Header */}
-        <CompanyJobInfo {...jobData} />
+        <CompanyJobInfo
+          {...jobData}
+          hasApplied={hasApplied}
+          onApplySuccess={() => setHasApplied(true)}
+        />
 
         {/* Main Content */}
         <div className="grid lg:grid-cols-3 gap-4 lg:gap-8 mt-4 lg:mt-8">
@@ -139,6 +156,8 @@ export default function JobDetailPage({ jobid }: {jobid : string}) {
                   jobid={jobData.id}
                   jobTitle={jobData.title}
                   company={jobData.company}
+                  hasApplied={hasApplied}
+                  onApplySuccess={() => setHasApplied(true)}
                 />
               </CardContent>
             </Card>

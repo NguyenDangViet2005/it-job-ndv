@@ -13,6 +13,7 @@ import { useAuth } from "@/lib/hooks/useAuth";
 import { userApi } from "@/apis/user.api";
 import { skillApi } from "@/apis/skill.api";
 import { toast } from "sonner";
+import { openCV } from "@/utils";
 import {
   Dialog,
   DialogContent,
@@ -322,7 +323,7 @@ export default function ResumePage() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => window.open((user as any).cvurl, "_blank")}
+                      onClick={() => openCV((user as any).cvurl, `CV_${user?.fullname || "User"}.pdf`)}
                       className="hover:bg-primary/10 hover:text-primary flex-1 sm:flex-none text-xs h-7 sm:h-9"
                     >
                       Xem CV

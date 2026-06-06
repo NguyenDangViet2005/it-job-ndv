@@ -31,10 +31,14 @@ const CompanyInfo = ({
   jobid,
   jobTitle,
   company,
+  hasApplied,
+  onApplySuccess,
 }: {
   jobid?: number;
   jobTitle?: string;
   company?: Company;
+  hasApplied?: boolean;
+  onApplySuccess?: () => void;
 }) => {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
@@ -152,9 +156,9 @@ const CompanyInfo = ({
           className="w-full"
           size="lg"
           onClick={handleApply}
-          disabled={!jobid}
+          disabled={!jobid || hasApplied}
         >
-          Ứng tuyển ngay
+          {hasApplied ? "Đã ứng tuyển" : "Ứng tuyển ngay"}
         </Button>
 
         <Button variant="outline" className="w-full" onClick={handleSaveJob}>
@@ -170,6 +174,7 @@ const CompanyInfo = ({
           jobid={jobid}
           jobTitle={jobTitle || "Vị trí tuyển dụng"}
           companyName={company?.name || ""}
+          onSuccess={onApplySuccess}
         />
       )}
     </>

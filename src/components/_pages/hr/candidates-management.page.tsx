@@ -17,6 +17,7 @@ import { User, ExternalLink } from "lucide-react";
 import { DataTable } from "@/components/common/tables/common/data-table.card";
 import { applicationApi } from "@/apis/application.api";
 import { useAuth } from "@/lib/hooks/useAuth";
+import { openCV } from "@/utils";
 import HrCandidateManagementSkeleton from "@/components/common/skeletons/hr/candidate-management.skeleton";
 import Image from "next/image";
 import { Application } from "@/types";
@@ -199,16 +200,14 @@ function CandidatesManagement() {
       key: "cvurl" as keyof Application,
       header: "CV",
       sortable: false,
-      render: (value: string) => (
-        <a
-          href={value}
-          target="_blank"
-          rel="noopener noreferrer"
+      render: (value: string, row: Application) => (
+        <button
+          onClick={() => openCV(value, `CV_${row.userfullname}.pdf`)}
           className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 text-xs"
         >
           <ExternalLink className="h-3 w-3" />
           Xem CV
-        </a>
+        </button>
       ),
     },
     {
@@ -249,15 +248,13 @@ function CandidatesManagement() {
               </div>
               <div>
                 <h3 className="font-semibold mb-2">CV</h3>
-                <a
-                  href={row.cvurl}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <button
+                  onClick={() => openCV(row.cvurl, `CV_${row.userfullname}.pdf`)}
                   className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800"
                 >
                   <ExternalLink className="h-4 w-4" />
                   Xem CV đầy đủ
-                </a>
+                </button>
               </div>
             </div>
           </DialogContent>

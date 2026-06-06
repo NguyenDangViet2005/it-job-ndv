@@ -22,7 +22,16 @@ import { Job } from "@/types";
 import { formatDate } from "@/utils";
 
 
-export default function CompanyJobInfo( job : Job) {
+interface CompanyJobInfoProps extends Job {
+  hasApplied?: boolean;
+  onApplySuccess?: () => void;
+}
+
+export default function CompanyJobInfo({
+  hasApplied,
+  onApplySuccess,
+  ...job
+}: CompanyJobInfoProps) {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
   const [isApplicationModalOpen, setIsApplicationModalOpen] = useState(false);
@@ -125,8 +134,9 @@ export default function CompanyJobInfo( job : Job) {
                 size="lg"
                 className="cursor-target lg:min-w-[140px]"
                 onClick={handleApply}
+                disabled={hasApplied}
               >
-                Ứng tuyển ngay
+                {hasApplied ? "Đã ứng tuyển" : "Ứng tuyển ngay"}
               </Button>
               <div className="flex gap-2">
                 <Button
@@ -196,6 +206,7 @@ export default function CompanyJobInfo( job : Job) {
           jobid={job.id}
           jobTitle={job.title}
           companyName={job.company?.name || ""}
+          onSuccess={onApplySuccess}
         />
       )}
     </>
