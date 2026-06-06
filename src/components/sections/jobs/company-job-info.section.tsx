@@ -30,7 +30,6 @@ export default function CompanyJobInfo( job : Job) {
   const handleApply = () => {
     if (!isAuthenticated) {
       toast.error("Vui lòng đăng nhập để ứng tuyển");
-      router.push(ROUTES.LOGIN);
       return;
     }
     setIsApplicationModalOpen(true);

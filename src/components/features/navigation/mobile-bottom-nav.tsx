@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { Home, Briefcase, Building2, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ROUTES } from "@/constants";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { navigationItems } from "@/constants/navigation.config";
 import { useAuth } from "@/lib/hooks/useAuth";
@@ -39,6 +39,13 @@ export function MobileBottomNav() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const { user, isAuthenticated, logout } = useAuth();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const isLoggedIn = mounted ? isAuthenticated : false;
 
   // Hàm đóng menu
   const closeMenu = () => {
@@ -67,7 +74,7 @@ export function MobileBottomNav() {
                   
                   <div className="flex-1 overflow-auto p-4 space-y-4">
                       {/* User Info */}
-                      {isAuthenticated && user ? (
+                      {isLoggedIn && user ? (
                         <div className="p-4 rounded-lg border bg-card">
                           <div className="flex items-center gap-3">
                             <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
@@ -141,7 +148,7 @@ export function MobileBottomNav() {
                       </div>
 
                       {/* Logout */}
-                      {isAuthenticated && (
+                      {isLoggedIn && (
                         <Button
                           variant="ghost"
                           className="w-full text-destructive border-1 border-destructive hover:text-destructive hover:bg-destructive/10"

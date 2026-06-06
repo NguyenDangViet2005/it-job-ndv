@@ -3,8 +3,9 @@
 import { useAuth } from "@/lib/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { Loader2 } from "lucide-react";
 import { ROUTES } from "@/constants";
+import LoadingScreen from "@/components/common/loading-screen";
+
 export default function ProfileRedirect() {
   const { user, loading } = useAuth();
   const router = useRouter();
@@ -19,12 +20,5 @@ export default function ProfileRedirect() {
     }
   }, [user, loading, router]);
 
-  return (
-    <div className="min-h-screen bg-background flex items-center justify-center">
-      <div className="text-center">
-        <Loader2 className="h-12 w-12 animate-spin mx-auto mb-4" />
-        <p className="text-muted-foreground">Đang chuyển hướng...</p>
-      </div>
-    </div>
-  );
+  return <LoadingScreen message="Đang chuyển hướng..." fullScreen={true} />;
 }

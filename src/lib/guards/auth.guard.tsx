@@ -5,6 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "../hooks/useAuth"; 
 import { ROUTES } from "@/constants"; 
 import { hasRouteAccess } from "@/utils/auth";
+import LoadingScreen from "@/components/common/loading-screen";
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
   const { user, loading, isAuthenticated } = useAuth();
@@ -36,6 +37,10 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
       }
     }
   }, [pathname, loading, user, isAuthenticated, router]);
+
+  if (loading) {
+    return <LoadingScreen message="Đang khởi tạo hệ thống..." />;
+  }
 
   return <>{children}</>;
 }

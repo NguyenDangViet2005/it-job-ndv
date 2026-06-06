@@ -22,6 +22,7 @@ import {
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/hooks/useAuth";
+import { toast } from "sonner";
 import ApplicationModal from "@/components/common/modals/jobs/application.modal";
 import { ROUTES } from "@/constants";
 import { Company } from "@/types";
@@ -40,18 +41,22 @@ const CompanyInfo = ({
   const [isApplicationModalOpen, setIsApplicationModalOpen] = useState(false);
 
   const handleApply = () => {
+    if (!isAuthenticated) {
+      toast.error("Vui lòng đăng nhập để ứng tuyển");
+      return;
+    }
     setIsApplicationModalOpen(true);
   };
 
   const handleSaveJob = () => {
     if (!isAuthenticated) {
-      alert("Vui lòng đăng nhập để lưu công việc");
+      toast.error("Vui lòng đăng nhập để lưu công việc");
       router.push(ROUTES.LOGIN);
       return;
     }
 
     // TODO: Implement save job functionality
-    alert("Đã lưu công việc");
+    toast.success("Đã lưu công việc");
   };
 
   return (

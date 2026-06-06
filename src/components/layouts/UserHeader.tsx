@@ -28,8 +28,8 @@ const UserHeader = () => {
   const { theme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
-  // Use isAuthenticated directly instead of localStorage to avoid hydration mismatch
-  const isLoggedIn = isAuthenticated;
+  // Use isAuthenticated only after mount to prevent hydration mismatch
+  const isLoggedIn = mounted ? isAuthenticated : false;
 
   useEffect(() => {
     setMounted(true);
