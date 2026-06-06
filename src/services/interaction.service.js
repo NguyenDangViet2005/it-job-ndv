@@ -22,7 +22,7 @@ const formatCommentResponse = (interaction) => {
   return commentData;
 };
 
-const getCommentsByPostId = async (postId, page = 1, pageSize = 10) => {
+const getCommentsByPostId = async (postid, page = 1, pageSize = 10) => {
   try {
     const offset = (page - 1) * pageSize;
     const totalComments = await Interaction.count({
@@ -78,7 +78,7 @@ const getCommentsByPostId = async (postId, page = 1, pageSize = 10) => {
   }
 };
 
-const toggleLike = async (postId, userid) => {
+const toggleLike = async (postid, userid) => {
   try {
     const existingLike = await Interaction.findOne({
       where: {
@@ -121,7 +121,7 @@ const toggleLike = async (postId, userid) => {
   }
 };
 
-const addComment = async (postId, userid, content, files = []) => {
+const addComment = async (postid, userid, content, files = []) => {
   const transaction = await sequelize.transaction();
   try {
     const interaction = await Interaction.create(
