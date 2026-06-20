@@ -32,7 +32,7 @@ const login = async (req, res) => {
     res.cookie("refreshtoken", refreshtoken, {
       httpOnly: true,
       secure: env.app.env === "production",
-      sameSite: "lax",
+      sameSite: env.app.env === "production" ? "none" : "lax",
       path: "/",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
@@ -64,7 +64,7 @@ const refreshtoken = async (req, res) => {
     res.cookie("refreshtoken", result.refreshtoken, {
       httpOnly: true,
       secure: env.app.env === "production",
-      sameSite: "lax",
+      sameSite: env.app.env === "production" ? "none" : "lax",
       path: "/",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
@@ -81,7 +81,12 @@ const refreshtoken = async (req, res) => {
     console.error("Refresh token controller error:", error.message);
     res
       .status(401)
-      .clearCookie("refreshtoken")
+      .clearCookie("refreshtoken", {
+        httpOnly: true,
+        secure: env.app.env === "production",
+        sameSite: env.app.env === "production" ? "none" : "lax",
+        path: "/",
+      })
       .json({
         success: false,
         message: error.message || "Invalid refresh token",
@@ -106,7 +111,7 @@ const logout = async (req, res) => {
     res.clearCookie("refreshtoken", {
       httpOnly: true,
       secure: env.app.env === "production",
-      sameSite: "strict",
+      sameSite: env.app.env === "production" ? "none" : "lax",
       path: "/",
     });
 

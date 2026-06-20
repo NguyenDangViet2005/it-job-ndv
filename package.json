@@ -1,7 +1,8 @@
 {
   "name": "it_job_express",
   "version": "1.0.0",
-  "main": "index.js",
+  "type": "commonjs",
+  "main": "server.js",
   "scripts": {
     "dev": "cross-env NODE_ENV=development nodemon ./src/server.js",
     "start": "cross-env NODE_ENV=production node ./src/server.js",
