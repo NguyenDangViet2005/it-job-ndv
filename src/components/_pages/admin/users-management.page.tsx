@@ -12,6 +12,8 @@ import {
 import { AdminStatsGrid } from "@/components/common/cards";
 import { userApi } from "@/apis";
 import { useAuth } from "@/lib/hooks/useAuth";
+import { toast } from "sonner";
+import { ConfirmModal } from "@/components/common/modals";
 
 const UsersManagement = () => {
   const { token } = useAuth();
@@ -22,6 +24,8 @@ const UsersManagement = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<AdminUser | null>(null);
   const [filterRole, setFilterRole] = useState("all");
   const pageSize = 10;
 
@@ -104,29 +108,31 @@ const UsersManagement = () => {
   // Handle actions
   const handleEdit = (user: AdminUser) => {};
 
-  const handleDelete = async (user: AdminUser) => {
-    if (
-      !confirm(
-        `Bạn có chắc muốn xóa "${user.fullname}"?\n\nCẢNH BÁO: Hành động này sẽ xóa tất cả dữ liệu liên quan (bài đăng, ứng tuyển, blog, v.v.) và không thể hoàn tác.`,
-      )
-    ) {
-      return;
-    }
+  const handleDelete = (user: AdminUser) => {
+    setUserToDelete(user);
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDeleteUser = async () => {
+    if (!userToDelete) return;
 
     try {
       if (!token) {
-        alert("Vui lòng đăng nhập với quyền Admin");
+        toast.error("Vui lòng đăng nhập với quyền Admin");
         return;
       }
 
-      await userApi.delete(user.id, token);
-      alert("Xóa người dùng thành công");
+      await userApi.delete(userToDelete.id, token);
+      toast.success("Xóa người dùng thành công");
       fetchUsers(); // Refresh list
     } catch (err) {
-      alert(
+      toast.error(
         "Không thể xóa người dùng: " +
           (err instanceof Error ? err.message : "Lỗi không xác định"),
       );
+    } finally {
+      setShowDeleteConfirm(false);
+      setUserToDelete(null);
     }
   };
 
@@ -179,6 +185,15 @@ const UsersManagement = () => {
         emptyTitle="Chưa có người dùng nào"
         emptyDescription="Mời người dùng mới để bắt đầu"
       />
+      {userToDelete && (
+        <ConfirmModal
+          open={showDeleteConfirm}
+          onOpenChange={setShowDeleteConfirm}
+          title="Xóa người dùng"
+          description={`Bạn có chắc muốn xóa "${userToDelete.fullname}"? CẢNH BÁO: Hành động này sẽ xóa tất cả dữ liệu liên quan (bài đăng, ứng tuyển, blog, v.v.) và không thể hoàn tác.`}
+          onConfirm={confirmDeleteUser}
+        />
+      )}
     </div>
   );
 };

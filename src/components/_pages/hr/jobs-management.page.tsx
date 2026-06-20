@@ -13,6 +13,8 @@ import {
 } from "@/components/common/forms/jobs/create-job.form";
 import { useAuth } from "@/lib/hooks/useAuth";
 import HrJobManagementSkeleton from "@/components/common/skeletons/hr/job-management.skeleton";
+import { toast } from "sonner";
+import { ConfirmModal } from "@/components/common/modals";
 
 interface JobData {
   id: number;
@@ -47,6 +49,8 @@ const JobsManagement = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"view" | "edit">("view");
   const [selectedJob, setSelectedJob] = useState<JobData | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [jobToDelete, setJobToDelete] = useState<JobData | null>(null);
 
   // Create job modal
   const [createModalOpen, setCreateModalOpen] = useState(false);
@@ -232,7 +236,7 @@ const JobsManagement = () => {
       setModalMode("view");
       setModalOpen(true);
     } catch (error) {
-      alert("Không thể tải thông tin công việc");
+      toast.error("Không thể tải thông tin công việc");
     }
   };
 
@@ -254,22 +258,22 @@ const JobsManagement = () => {
       setModalMode("edit");
       setModalOpen(true);
     } catch (error) {
-      alert("Không thể tải thông tin công việc");
+      toast.error("Không thể tải thông tin công việc");
     }
   };
 
   const handleCreateJob = async (data: CreateJobData) => {
     if (!user?.id || !token) {
-      alert("Vui lòng đăng nhập để thực hiện chức năng này");
+      toast.error("Vui lòng đăng nhập để thực hiện chức năng này");
       return;
     }
 
     try {
       await jobApi.create(user.id, data, token);
-      alert("Đăng tin tuyển dụng thành công!");
+      toast.success("Đăng tin tuyển dụng thành công!");
       fetchJobs();
     } catch (error) {
-      alert("Đăng tin thất bại!");
+      toast.error("Đăng tin thất bại!");
       throw error;
     }
   };
@@ -279,28 +283,31 @@ const JobsManagement = () => {
 
     try {
       await jobApi.update(selectedJob.id, editForm, token);
-      alert("Cập nhật thành công!");
+      toast.success("Cập nhật thành công!");
       setModalOpen(false);
       fetchJobs();
     } catch (error) {
-      alert("Cập nhật thất bại!");
+      toast.error("Cập nhật thất bại!");
     }
   };
 
-  const handleDeleteJob = async (job: JobData) => {
-    if (!confirm(`Bạn có chắc muốn gỡ bỏ tin "${job.title}"?`)) return;
+  const handleDeleteJob = (job: JobData) => {
+    setJobToDelete(job);
+    setShowDeleteConfirm(true);
+  };
 
-    if (!token) {
-      alert("Không tìm thấy token xác thực");
-      return;
-    }
+  const confirmDeleteJob = async () => {
+    if (!jobToDelete || !token) return;
 
     try {
-      await jobApi.delete(job.id, token);
-      alert("Đã gỡ bỏ thành công!");
+      await jobApi.delete(jobToDelete.id, token);
+      toast.success("Đã gỡ bỏ thành công!");
       fetchJobs();
     } catch (error) {
-      alert("Gỡ bỏ thất bại!");
+      toast.error("Gỡ bỏ thất bại!");
+    } finally {
+      setShowDeleteConfirm(false);
+      setJobToDelete(null);
     }
   };
 
@@ -371,6 +378,15 @@ const JobsManagement = () => {
         onFormChange={setEditForm}
         onSave={handleSaveEdit}
       />
+      {jobToDelete && (
+        <ConfirmModal
+          open={showDeleteConfirm}
+          onOpenChange={setShowDeleteConfirm}
+          title="Gỡ bỏ tin tuyển dụng"
+          description={`Bạn có chắc muốn gỡ bỏ tin "${jobToDelete.title}"? Hành động này không thể hoàn tác.`}
+          onConfirm={confirmDeleteJob}
+        />
+      )}
     </div>
   );
 };

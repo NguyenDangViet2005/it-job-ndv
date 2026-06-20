@@ -20,7 +20,7 @@ import { BlogFormModal, BlogDeleteModal } from "@/components/common/modals";
 import { Blog, BlogCategory } from "@/types";
 
 export default function MyBlogsPage() {
-  const { user, token } = useAuth();
+  const { user, token, loading: authLoading } = useAuth();
   const router = useRouter();
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [categories, setCategories] = useState<BlogCategory[]>([]);
@@ -32,11 +32,14 @@ export default function MyBlogsPage() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
+    if (authLoading) return;
     if (user && token) {
       loadMyBlogs();
       loadCategories();
+    } else {
+      setLoading(false);
     }
-  }, [user, token]);
+  }, [user, token, authLoading]);
 
   const loadMyBlogs = async () => {
     if (!user || !token) return;
@@ -161,14 +164,6 @@ export default function MyBlogsPage() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-3 sm:space-y-6">
       {/* Header */}
@@ -186,7 +181,12 @@ export default function MyBlogsPage() {
       </div>
 
       {/* Blog List */}
-      {blogs.length === 0 ? (
+      {loading ? (
+        <div className="flex flex-col items-center justify-center py-12 bg-white dark:bg-gray-800 rounded-lg border border-border/50 min-h-[300px]">
+          <Loader2 className="h-8 w-8 animate-spin text-primary mb-2" />
+          <p className="text-muted-foreground text-sm font-medium">Đang tải danh sách blog</p>
+        </div>
+      ) : blogs.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-6 sm:py-12 px-3">
             <div className="text-center space-y-2 sm:space-y-4">

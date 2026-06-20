@@ -18,6 +18,8 @@ import { DataTable } from "@/components/common/tables/common/data-table.card";
 import { applicationApi } from "@/apis/application.api";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { openCV } from "@/utils";
+import { toast } from "sonner";
+import { ConfirmModal } from "@/components/common/modals";
 import HrCandidateManagementSkeleton from "@/components/common/skeletons/hr/candidate-management.skeleton";
 import Image from "next/image";
 import { Application } from "@/types";
@@ -60,6 +62,8 @@ function CandidatesManagement() {
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalItems, setTotalItems] = useState(0);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [appToDelete, setAppToDelete] = useState<Application | null>(null);
 
   useEffect(() => {
     fetchApplications();
@@ -100,10 +104,10 @@ function CandidatesManagement() {
         row.coverletter,
         token,
       );
-      alert(`✅ Đã chấp nhận ứng viên ${row.userfullname}`);
+      toast.success(`Đã chấp nhận ứng viên ${row.userfullname}`);
       await fetchApplications(); // Refresh data
     } catch (error) {
-      alert("❌ Có lỗi xảy ra khi chấp nhận ứng viên");
+      toast.error("Có lỗi xảy ra khi chấp nhận ứng viên");
     }
   };
 
@@ -117,25 +121,31 @@ function CandidatesManagement() {
         row.coverletter,
         token,
       );
-      alert(`❌ Đã từ chối ứng viên ${row.userfullname}`);
+      toast.success(`Đã từ chối ứng viên ${row.userfullname}`);
       await fetchApplications(); // Refresh data
     } catch (error) {
-      alert("❌ Có lỗi xảy ra khi từ chối ứng viên");
+      toast.error("Có lỗi xảy ra khi từ chối ứng viên");
     }
   };
 
-  const handleDelete = async (row: Application) => {
-    if (
-      confirm(`⚠️ Bạn có chắc muốn xóa đơn ứng tuyển của ${row.userfullname}?`)
-    ) {
-      try {
-        const token = "your-token-here"; // TODO: Get from auth context
-        await applicationApi.delete(row.jobid, row.userid, token);
-        alert(`✅ Đã xóa đơn ứng tuyển của ${row.userfullname} thành công`);
-        await fetchApplications(); // Refresh data
-      } catch (error) {
-        alert("❌ Có lỗi xảy ra khi xóa đơn ứng tuyển");
-      }
+  const handleDelete = (row: Application) => {
+    setAppToDelete(row);
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDeleteApplication = async () => {
+    if (!appToDelete) return;
+
+    try {
+      const token = "your-token-here"; // TODO: Get from auth context
+      await applicationApi.delete(appToDelete.jobid, appToDelete.userid, token);
+      toast.success(`Đã xóa đơn ứng tuyển của ${appToDelete.userfullname} thành công`);
+      await fetchApplications(); // Refresh data
+    } catch (error) {
+      toast.error("Có lỗi xảy ra khi xóa đơn ứng tuyển");
+    } finally {
+      setShowDeleteConfirm(false);
+      setAppToDelete(null);
     }
   };
 
@@ -317,6 +327,15 @@ function CandidatesManagement() {
           }
         }}
       />
+      {appToDelete && (
+        <ConfirmModal
+          open={showDeleteConfirm}
+          onOpenChange={setShowDeleteConfirm}
+          title="Xóa đơn ứng tuyển"
+          description={`Bạn có chắc chắn muốn xóa đơn ứng tuyển của ${appToDelete.userfullname}? Hành động này không thể hoàn tác.`}
+          onConfirm={confirmDeleteApplication}
+        />
+      )}
     </div>
   );
 }

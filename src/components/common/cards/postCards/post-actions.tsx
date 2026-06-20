@@ -33,29 +33,23 @@ export default function PostActions({
     <>
       {/* Post Stats */}
       <div className="flex items-center justify-between text-sm text-muted-foreground mb-3">
-        <div className="flex items-center gap-2 cursor-target hover:text-primary transition-colors duration-300">
+        <div className="flex items-center gap-2 cursor-target hover:text-primary">
           <div className="flex -space-x-1">
-            <div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center animate-pulse">
+            <div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center">
               <ThumbsUp className="h-3 w-3 text-white fill-white" />
-            </div>
-            <div
-              className="w-5 h-5 rounded-full bg-red-500 flex items-center justify-center animate-pulse"
-              style={{ animationDelay: "150ms" }}
-            >
-              <Heart className="h-3 w-3 text-white fill-white" />
             </div>
           </div>
           <span>{likes}</span>
         </div>
         <div className="flex gap-3">
           <span
-            className="cursor-target hover:text-primary hover:underline transition-all duration-300"
+            className="cursor-target hover:text-primary hover:underline"
             onClick={onToggleComments}
           >
             {totalComments} bình luận
           </span>
           {shares > 0 && (
-            <span className="cursor-target hover:text-primary hover:underline transition-all duration-300">
+            <span className="cursor-target hover:text-primary hover:underline">
               {shares} chia sẻ
             </span>
           )}
@@ -69,7 +63,7 @@ export default function PostActions({
         <Button
           variant="ghost"
           disabled={!isAuthenticated}
-          className={`cursor-target flex-1 transition-all duration-300 hover:scale-105 ${
+          className={`cursor-target flex-1 ${
             liked
               ? "text-blue-600 hover:text-blue-700"
               : "hover:bg-blue-50 dark:hover:bg-blue-950"
@@ -77,7 +71,7 @@ export default function PostActions({
           onClick={onLike}
         >
           <ThumbsUp
-            className={`h-4 w-4 mr-2 transition-all duration-300 ${
+            className={`h-4 w-4 mr-2 ${
               liked ? "fill-blue-600" : ""
             }`}
           />
@@ -86,7 +80,7 @@ export default function PostActions({
         <Button
           variant="ghost"
           disabled={!isAuthenticated}
-          className="cursor-target flex-1 hover:bg-green-50 dark:hover:bg-green-950 hover:scale-105 transition-all duration-300"
+          className="cursor-target flex-1 hover:bg-green-50 dark:hover:bg-green-950"
           onClick={onCommentButtonClick || onToggleComments}
         >
           <MessageCircle className="h-4 w-4 mr-2" />
@@ -97,7 +91,7 @@ export default function PostActions({
           disabled={!isAuthenticated}
           onClick={() => {
           }}
-          className="cursor-target flex-1 hover:bg-amber-50 dark:hover:bg-amber-950 hover:scale-105 transition-all duration-300"
+          className="cursor-target flex-1 hover:bg-amber-50 dark:hover:bg-amber-950"
         >
           <Share2 className="h-4 w-4 mr-2" />
           Chia sẻ

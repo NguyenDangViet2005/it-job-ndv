@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 interface CreateJobFormProps {
   open: boolean;
@@ -55,9 +56,13 @@ export function CreateJobForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!formData.title.trim() || !formData.description.trim() || !formData.deadline) {
-      alert("Vui lòng điền đầy đủ thông tin");
+
+    if (
+      !formData.title.trim() ||
+      !formData.description.trim() ||
+      !formData.deadline
+    ) {
+      toast.error("Vui lòng điền đầy đủ thông tin");
       return;
     }
 
@@ -86,7 +91,9 @@ export function CreateJobForm({
       <DialogContent className="w-[95vw] sm:w-[90vw] md:w-[80vw] lg:w-[70vw] xl:w-[60vw] !max-w-none max-h-[90vh] overflow-hidden p-0">
         <div className="p-4 sm:p-6">
           <DialogHeader>
-            <DialogTitle className="text-lg sm:text-xl">Đăng tin tuyển dụng mới</DialogTitle>
+            <DialogTitle className="text-lg sm:text-xl">
+              Đăng tin tuyển dụng mới
+            </DialogTitle>
           </DialogHeader>
 
           <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4 mt-4">

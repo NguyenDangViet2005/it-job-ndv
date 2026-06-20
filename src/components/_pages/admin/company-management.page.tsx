@@ -12,6 +12,8 @@ import {
 import { AdminStatsGrid } from "@/components/common/cards"; 
 import { companyApi } from "@/apis";
 import { useAuth } from "@/lib/hooks/useAuth";
+import { toast } from "sonner";
+import { ConfirmModal } from "@/components/common/modals";
 
 const CompanyManagement = () => {
   const { token } = useAuth();
@@ -22,6 +24,8 @@ const CompanyManagement = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [companyToDelete, setCompanyToDelete] = useState<AdminCompany | null>(null);
   const pageSize = 10;
 
   const fetchCompanies = async () => {
@@ -115,29 +119,31 @@ const CompanyManagement = () => {
   // Handle actions
   const handleEdit = (company: AdminCompany) => {};
 
-  const handleDelete = async (company: AdminCompany) => {
-    if (
-      !confirm(
-        `Bạn có chắc muốn xóa "${company.name}"?\n\nCẢNH BÁO: Tất cả Jobs, đơn ứng tuyển và dữ liệu liên quan sẽ bị xóa vĩnh viễn.`,
-      )
-    ) {
-      return;
-    }
+  const handleDelete = (company: AdminCompany) => {
+    setCompanyToDelete(company);
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDeleteCompany = async () => {
+    if (!companyToDelete) return;
 
     try {
       if (!token) {
-        alert("Vui lòng đăng nhập với quyền Admin");
+        toast.error("Vui lòng đăng nhập với quyền Admin");
         return;
       }
 
-      await companyApi.delete(company.id, token);
-      alert("Xóa công ty thành công");
+      await companyApi.delete(companyToDelete.id, token);
+      toast.success("Xóa công ty thành công");
       fetchCompanies(); // Refresh list
     } catch (err) {
-      alert(
+      toast.error(
         "Không thể xóa công ty: " +
           (err instanceof Error ? err.message : "Lỗi không xác định"),
       );
+    } finally {
+      setShowDeleteConfirm(false);
+      setCompanyToDelete(null);
     }
   };
 
@@ -183,6 +189,15 @@ const CompanyManagement = () => {
         emptyTitle="Chưa có công ty nào"
         emptyDescription="Mời công ty đăng ký để bắt đầu"
       />
+      {companyToDelete && (
+        <ConfirmModal
+          open={showDeleteConfirm}
+          onOpenChange={setShowDeleteConfirm}
+          title="Xóa công ty"
+          description={`Bạn có chắc muốn xóa "${companyToDelete.name}"? CẢNH BÁO: Tất cả Jobs, đơn ứng tuyển và dữ liệu liên quan sẽ bị xóa vĩnh viễn và không thể hoàn tác.`}
+          onConfirm={confirmDeleteCompany}
+        />
+      )}
     </div>
   );
 };

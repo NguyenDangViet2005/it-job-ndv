@@ -11,6 +11,8 @@ import {
 import { AdminStatsGrid } from "@/components/common/cards";
 import { jobApi } from "@/apis";
 import { useAuth } from "@/lib/hooks/useAuth";
+import { toast } from "sonner";
+import { ConfirmModal } from "@/components/common/modals";
 
 const JobsManagement = () => {
   const { token } = useAuth();
@@ -22,6 +24,8 @@ const JobsManagement = () => {
   const [totalItems, setTotalItems] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [jobToDelete, setJobToDelete] = useState<AdminJob | null>(null);
   const pageSize = 10;
 
   const fetchJobs = async () => {
@@ -95,29 +99,31 @@ const JobsManagement = () => {
   // Handle actions
   const handleEdit = (job: AdminJob) => {};
 
-  const handleDelete = async (job: AdminJob) => {
-    if (
-      !confirm(
-        `Bạn có chắc muốn xóa "${job.title}"?\n\nCẢNH BÁO: Các đơn ứng tuyển liên quan cũng sẽ bị xóa.`,
-      )
-    ) {
-      return;
-    }
+  const handleDelete = (job: AdminJob) => {
+    setJobToDelete(job);
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDeleteJob = async () => {
+    if (!jobToDelete) return;
 
     try {
       if (!token) {
-        alert("Vui lòng đăng nhập với quyền Admin");
+        toast.error("Vui lòng đăng nhập với quyền Admin");
         return;
       }
 
-      await jobApi.delete(job.id, token);
-      alert("Xóa công việc thành công");
+      await jobApi.delete(jobToDelete.id, token);
+      toast.success("Xóa công việc thành công");
       fetchJobs(); // Refresh list
     } catch (err) {
-      alert(
+      toast.error(
         "Không thể xóa công việc: " +
           (err instanceof Error ? err.message : "Lỗi không xác định"),
       );
+    } finally {
+      setShowDeleteConfirm(false);
+      setJobToDelete(null);
     }
   };
 
@@ -170,6 +176,15 @@ const JobsManagement = () => {
         emptyTitle="Chưa có công việc nào"
         emptyDescription="Tạo tin tuyển dụng mới để bắt đầu"
       />
+      {jobToDelete && (
+        <ConfirmModal
+          open={showDeleteConfirm}
+          onOpenChange={setShowDeleteConfirm}
+          title="Xóa công việc"
+          description={`Bạn có chắc muốn xóa "${jobToDelete.title}"? CẢNH BÁO: Các đơn ứng tuyển liên quan cũng sẽ bị xóa vĩnh viễn và không thể hoàn tác.`}
+          onConfirm={confirmDeleteJob}
+        />
+      )}
     </div>
   );
 };

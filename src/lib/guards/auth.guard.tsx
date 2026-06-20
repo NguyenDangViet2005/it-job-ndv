@@ -39,7 +39,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
   }, [pathname, loading, user, isAuthenticated, router]);
 
   if (loading) {
-    return <LoadingScreen message="Đang khởi tạo hệ thống..." />;
+    return <LoadingScreen message="Đang tải...." />;
   }
 
   return <>{children}</>;

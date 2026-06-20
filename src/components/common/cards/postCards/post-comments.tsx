@@ -28,6 +28,7 @@ import Link from "next/link";
 import { DEFAULT_AVATARS } from "@/constants";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { Attachment } from "@/types";
+import { ConfirmModal } from "@/components/common/modals";
 
 interface PostCommentsProps {
   post: any;
@@ -88,6 +89,8 @@ const PostComments = forwardRef<PostCommentsRef, PostCommentsProps>(
     const [keepExistingAttachments, setKeepExistingAttachments] = useState<
       Attachment[]
     >([]);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [commentToDelete, setCommentToDelete] = useState<number | null>(null);
 
     const inputRef = useRef<HTMLInputElement>(null);
     const attachmentInputRef = useRef<HTMLInputElement>(null);
@@ -125,12 +128,20 @@ const PostComments = forwardRef<PostCommentsRef, PostCommentsProps>(
       }
     };
 
-    const handleDeleteComment = async (commentId: number) => {
-      if (onDeleteComment && confirm("Đồng ý xóa bình luận này?")) {
+    const handleDeleteComment = (commentId: number) => {
+      setCommentToDelete(commentId);
+      setShowDeleteConfirm(true);
+    };
+
+    const confirmDeleteComment = async () => {
+      if (commentToDelete && onDeleteComment) {
         try {
-          await onDeleteComment(commentId);
+          await onDeleteComment(commentToDelete);
         } catch (error) {
           console.error("Failed to delete comment", error);
+        } finally {
+          setShowDeleteConfirm(false);
+          setCommentToDelete(null);
         }
       }
     };
@@ -218,7 +229,7 @@ const PostComments = forwardRef<PostCommentsRef, PostCommentsProps>(
 
         {/* Comments List */}
         <div className="space-y-2 lg:space-y-3 max-h-96 overflow-y-auto">
-          {(showComments ? comments : getTopComments(3)).map(
+          {(showComments ? comments : getTopComments(2)).map(
             (comment: any, idx: number) => {
               const commentTime = comment.createdat
                 ? new Date(comment.createdat).toLocaleDateString("vi-VN")
@@ -455,39 +466,18 @@ const PostComments = forwardRef<PostCommentsRef, PostCommentsProps>(
         </div>
 
         {/* Show more comments button */}
-        {!showComments && totalComments > 3 && (
+        {!showComments && totalComments > 2 && (
           <Button
             variant="ghost"
             size="sm"
             onClick={onToggleComments}
             className="cursor-target w-full hover:bg-muted transition-all duration-300"
           >
-            Xem thêm {totalComments - 3} bình luận
+            Xem thêm {totalComments - 2} bình luận
           </Button>
         )}
 
-        {showComments &&
-          comments.length < totalComments &&
-          onLoadMoreComments && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onLoadMoreComments}
-              disabled={loadingComments}
-              className="cursor-target w-full hover:bg-muted transition-all duration-300"
-            >
-              {loadingComments ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Đang tải...
-                </>
-              ) : (
-                `Xem thêm ${totalComments - comments.length} bình luận`
-              )}
-            </Button>
-          )}
-
-        {showComments && comments.length > 3 && (
+        {showComments && comments.length > 2 && (
           <Button
             variant="ghost"
             size="sm"
@@ -575,6 +565,13 @@ const PostComments = forwardRef<PostCommentsRef, PostCommentsProps>(
             )}
           </div>
         </div>
+        <ConfirmModal
+          open={showDeleteConfirm}
+          onOpenChange={setShowDeleteConfirm}
+          title="Xóa bình luận"
+          description="Bạn có chắc chắn muốn xóa bình luận này? Hành động này không thể hoàn tác."
+          onConfirm={confirmDeleteComment}
+        />
       </div>
     );
   },
