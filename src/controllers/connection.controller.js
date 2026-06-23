@@ -1,0 +1,167 @@
+const connectionService = require("../services/connection.service");
+const jwt = require("jsonwebtoken");
+const env = require("../configs/env.config");
+
+const getCurrentUserId = (req) => {
+  if (req.user) return req.user.id;
+  const authHeader = req.headers.authorization;
+  if (authHeader) {
+    try {
+      const token = authHeader.split(" ")[1];
+      const decoded = jwt.verify(token, env.jwt.accessSecret);
+      return decoded.id;
+    } catch (e) {}
+  }
+  return null;
+};
+
+const sendConnectionRequest = async (req, res, next) => {
+  try {
+    const userid = req.body.userid || getCurrentUserId(req);
+    const connecteduserid = req.body.connecteduserid;
+
+    if (!userid || !connectedUserId) {
+      return res
+        .status(400)
+        .json({ message: "UserId and ConnectedUserId are required" });
+    }
+
+    if (userid === connecteduserid) {
+      return res.status(400).json({ message: "Cannot connect to yourself" });
+    }
+
+    const result = await connectionService.sendConnectionRequest(
+      userid,
+      connecteduserid,
+    );
+    res.status(201).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const acceptConnectionRequest = async (req, res, next) => {
+  try {
+    const userid = getCurrentUserId(req);
+    const connectionId = parseInt(req.params.connectionId);
+
+    if (!userid) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const result = await connectionService.acceptConnectionRequest(
+      connectionId,
+      userid,
+    );
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const rejectConnectionRequest = async (req, res, next) => {
+  try {
+    const userid = getCurrentUserId(req);
+    const connectionId = parseInt(req.params.connectionId);
+
+    if (!userid) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const result = await connectionService.rejectConnectionRequest(
+      connectionId,
+      userid,
+    );
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const removeConnection = async (req, res, next) => {
+  try {
+    const userid = getCurrentUserId(req);
+    const connectionId = parseInt(req.params.connectionId);
+
+    if (!userid) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const result = await connectionService.removeConnection(
+      connectionId,
+      userid,
+    );
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getUserConnections = async (req, res, next) => {
+  try {
+    const userid = parseInt(req.params.userid || getCurrentUserId(req));
+    const page = parseInt(req.query.pageNumber) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 10;
+
+    const result = await connectionService.getUserConnections(
+      userid,
+      page,
+      pageSize,
+    );
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getPendingRequests = async (req, res, next) => {
+  try {
+    const userid = getCurrentUserId(req);
+    const page = parseInt(req.query.pageNumber) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 10;
+
+    if (!userid) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const result = await connectionService.getPendingRequests(
+      userid,
+      page,
+      pageSize,
+    );
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getSentRequests = async (req, res, next) => {
+  try {
+    const userid = getCurrentUserId(req);
+    const page = parseInt(req.query.pageNumber) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 10;
+
+    if (!userid) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const result = await connectionService.getSentRequests(
+      userid,
+      page,
+      pageSize,
+    );
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = {
+  sendConnectionRequest,
+  acceptConnectionRequest,
+  rejectConnectionRequest,
+  removeConnection,
+  getUserConnections,
+  getPendingRequests,
+  getSentRequests,
+};
