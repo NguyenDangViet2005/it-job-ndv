@@ -27,24 +27,6 @@ if (env.facebook.appId && env.facebook.appSecret) {
               : "https://res.cloudinary.com/duc6z828y/image/upload/c_crop,w_650,h_650,ar_1:1/v1768581047/avatar_nbspgd.avif";
           let coverimage = null;
 
-          // Fetch high-quality avatar and cover from Facebook Graph API
-          try {
-            const graphRes = await fetch(
-              `https://graph.facebook.com/v19.0/me?fields=cover,picture.width(500).height(500)&access_token=${accessToken}`
-            );
-            if (graphRes.ok) {
-              const graphData = await graphRes.json();
-              if (graphData.picture && graphData.picture.data && graphData.picture.data.url) {
-                avatar = graphData.picture.data.url;
-              }
-              if (graphData.cover && graphData.cover.source) {
-                coverimage = graphData.cover.source;
-              }
-            }
-          } catch (fetchError) {
-            console.error("Error fetching Facebook avatar/cover:", fetchError.message);
-          }
-
           // 1. Find user by provider and providerId
           let user = await User.findOne({
             where: { provider: "facebook", providerId: providerId },

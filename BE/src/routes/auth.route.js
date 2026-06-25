@@ -18,6 +18,11 @@ router.get(
     passport.authenticate("facebook", { session: false }, (err, user, info) => {
       if (err) {
         console.error("Facebook Strategy Error:", err);
+        if (err.name === "FacebookTokenError" || (err.message && err.message.includes("used"))) {
+          // If the authorization code is already used, it means another concurrent request succeeded.
+          // Redirect to client URL where silent refresh will pick up the cookie.
+          return res.redirect(`${env.client.url}/`);
+        }
         return res.redirect(`${env.client.url}/login?error=facebook_auth_failed`);
       }
       if (!user) {
