@@ -4,7 +4,11 @@ module.exports = {
     name: process.env.APP_NAME,
     env: process.env.NODE_ENV,
     port: Number(process.env.PORT),
-    backendUrl: process.env.BACKEND_URL || "http://localhost:8081",
+    backendUrl:
+      process.env.BACKEND_URL ||
+      (process.env.NODE_ENV === "production"
+        ? "https://it-job-ndv-express.onrender.com"
+        : "http://localhost:8081"),
   },
 
   client: {
