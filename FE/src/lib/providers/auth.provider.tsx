@@ -19,6 +19,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Initialize Auth (Silent Refresh)
   useEffect(() => {
     const initAuth = async () => {
+      if (typeof window !== "undefined" && window.location.pathname.startsWith("/callback")) {
+        setLoading(false);
+        return;
+      }
       try {
         setLoading(true);
         // On init, no current token exists yet - backend will generate new one
