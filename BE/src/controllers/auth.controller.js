@@ -130,7 +130,9 @@ const facebookCallback = async (req, res) => {
   try {
     const user = req.user;
     if (!user) {
-      return res.redirect(`${env.client.url}/login?error=facebook_failed`);
+      const failedRedirect = `${env.client.url}/login?error=facebook_failed`;
+      if (req.rejectAuth) req.rejectAuth(new Error("User not found"));
+      return res.redirect(failedRedirect);
     }
 
     const { accesstoken, refreshtoken } = await authService.loginWithFacebook(user);
@@ -145,10 +147,16 @@ const facebookCallback = async (req, res) => {
     });
 
     // Redirect to frontend callback route with token and refreshtoken
-    res.redirect(`${env.client.url}/callback?token=${accesstoken}&refreshtoken=${refreshtoken}`);
+    const successRedirect = `${env.client.url}/callback?token=${accesstoken}&refreshtoken=${refreshtoken}`;
+    if (req.resolveAuth) {
+      req.resolveAuth(successRedirect);
+    }
+    res.redirect(successRedirect);
   } catch (error) {
     console.error("Facebook Login Error:", error);
-    res.redirect(`${env.client.url}/login?error=facebook_error`);
+    const errorRedirect = `${env.client.url}/login?error=facebook_error`;
+    if (req.rejectAuth) req.rejectAuth(error);
+    res.redirect(errorRedirect);
   }
 };
 
