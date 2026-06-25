@@ -62,4 +62,13 @@ export const authApi = {
       credentials: "include", // Optional but good practice
     });
   },
+
+  // Thiết lập cookie cho refreshtoken (Dùng cho OAuth)
+  setCookie: async (refreshtoken: string) => {
+    return await apiPost<ApiResponse<void>>(
+      `${ENDPOINT}/set-cookie`,
+      { refreshtoken },
+      { credentials: "include" }
+    );
+  },
 };

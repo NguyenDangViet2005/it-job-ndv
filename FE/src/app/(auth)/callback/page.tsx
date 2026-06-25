@@ -4,6 +4,7 @@ import { useEffect, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { userApi } from "@/apis/user.api";
+import { authApi } from "@/apis/auth.api";
 import { getRedirectPathByRole } from "@/helpers/permission.helper";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "sonner";
@@ -19,6 +20,7 @@ function CallbackContent() {
     calledRef.current = true;
 
     const token = searchParams.get("token");
+    const refreshtoken = searchParams.get("refreshtoken");
 
     if (!token) {
       toast.error("Đăng nhập thất bại. Không tìm thấy token.");
@@ -28,6 +30,15 @@ function CallbackContent() {
 
     const handleCallback = async () => {
       try {
+        // Set refresh token cookie from frontend if provided
+        if (refreshtoken) {
+          try {
+            await authApi.setCookie(refreshtoken);
+          } catch (cookieErr) {
+            console.error("Failed to set refresh token cookie via endpoint:", cookieErr);
+          }
+        }
+
         // Decode token to get user id
         const decoded: any = jwtDecode(token);
         const userId = decoded.id;

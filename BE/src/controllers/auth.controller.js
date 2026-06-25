@@ -144,11 +144,32 @@ const facebookCallback = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
-    // Redirect to frontend callback route with token
-    res.redirect(`${env.client.url}/callback?token=${accesstoken}`);
+    // Redirect to frontend callback route with token and refreshtoken
+    res.redirect(`${env.client.url}/callback?token=${accesstoken}&refreshtoken=${refreshtoken}`);
   } catch (error) {
     console.error("Facebook Login Error:", error);
     res.redirect(`${env.client.url}/login?error=facebook_error`);
+  }
+};
+
+const setCookie = async (req, res) => {
+  try {
+    const { refreshtoken } = req.body;
+    if (!refreshtoken) {
+      return res.status(400).json({ message: "Refresh token is required" });
+    }
+
+    res.cookie("refreshtoken", refreshtoken, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
+      path: "/",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
+    res.status(200).json({ success: true, message: "Cookie set successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -158,4 +179,5 @@ module.exports = {
   logout,
   refreshtoken,
   facebookCallback,
+  setCookie,
 };
