@@ -11,6 +11,8 @@ class UserResponse {
     this.address = user.address;
     this.cvurl = user.cvurl;
     this.role = user.role || "user";
+    this.provider = user.provider;
+    this.providerId = user.providerId;
     this.createdat = user.createdat;
     this.updatedat = user.updatedat;
   }

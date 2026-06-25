@@ -9,12 +9,15 @@ const { testConnection } = require("./configs/sequelize.config");
 const { apiRouter } = require("./routes/index.route");
 const { corsOptions } = require("./configs/cors.config");
 
+const passport = require("./configs/passport.config");
+
 const app = express();
 
 // Middleware global
 app.use(express.json());
 app.use(cookieParser());
 app.use(morgan("dev"));
+app.use(passport.initialize());
 
 //CORS
 app.use(cors(corsOptions));

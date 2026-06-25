@@ -121,9 +121,36 @@ const logout = async (req, res) => {
   }
 };
 
+const facebookCallback = async (req, res) => {
+  try {
+    const user = req.user;
+    if (!user) {
+      return res.redirect(`${env.client.url}/login?error=facebook_failed`);
+    }
+
+    const { accesstoken, refreshtoken } = await authService.loginWithFacebook(user);
+
+    // Set Refresh Token in HttpOnly Cookie
+    res.cookie("refreshtoken", refreshtoken, {
+      httpOnly: true,
+      secure: env.app.env === "production",
+      sameSite: env.app.env === "production" ? "none" : "lax",
+      path: "/",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
+    // Redirect to frontend callback route with token
+    res.redirect(`${env.client.url}/auth/callback?token=${accesstoken}`);
+  } catch (error) {
+    console.error("Facebook Login Error:", error);
+    res.redirect(`${env.client.url}/login?error=facebook_error`);
+  }
+};
+
 module.exports = {
   register,
   login,
   logout,
   refreshtoken,
+  facebookCallback,
 };

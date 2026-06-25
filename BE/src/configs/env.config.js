@@ -4,10 +4,16 @@ module.exports = {
     name: process.env.APP_NAME,
     env: process.env.NODE_ENV,
     port: Number(process.env.PORT),
+    backendUrl: process.env.BACKEND_URL || "http://localhost:8081",
   },
 
   client: {
     url: process.env.CLIENT_URL,
+  },
+
+  facebook: {
+    appId: process.env.APP_ID,
+    appSecret: process.env.APP_SECRET,
   },
 
   db: {

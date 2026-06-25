@@ -20,6 +20,7 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { FcGoogle } from "react-icons/fc";
+import { FaFacebook } from "react-icons/fa";
 import { LoginFormData, loginFormSchema } from "@/validators/login.validation";
 
 import { useRouter } from "next/navigation";
@@ -33,6 +34,12 @@ export default function FormLogin() {
   const { setAuth } = useAuth();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+
+  const handleFacebookLogin = () => {
+    window.location.href = `${
+      process.env.NEXT_PUBLIC_BE_ENDPOINT || "http://localhost:8081/api"
+    }/auth/facebook`;
+  };
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginFormSchema),
@@ -153,6 +160,17 @@ export default function FormLogin() {
             >
               <FcGoogle className="cursor-target text-lg" />
               <span className="text-sm">Đăng nhập bằng Google</span>
+            </Button>
+
+            {/* Facebook Login */}
+            <Button
+              type="button"
+              onClick={handleFacebookLogin}
+              variant="outline"
+              className="cursor-target w-full h-9 flex items-center justify-center gap-2 border-gray-300 dark:border-gray-700 bg-[#1877F2] text-white hover:bg-[#166FE5] hover:text-white"
+            >
+              <FaFacebook className="cursor-target text-lg" />
+              <span className="text-sm">Đăng nhập bằng Facebook</span>
             </Button>
 
             {/* Link phụ */}
