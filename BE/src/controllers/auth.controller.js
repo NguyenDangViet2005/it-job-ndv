@@ -2,6 +2,11 @@ const authService = require("../services/auth.service");
 const jwt = require("jsonwebtoken");
 const env = require("../configs/env.config");
 
+const isProduction =
+  env.app.env === "production" ||
+  process.env.NODE_ENV === "production" ||
+  (env.client.url && !env.client.url.includes("localhost"));
+
 const register = async (req, res) => {
   try {
     const user = await authService.register(req.body);
@@ -31,8 +36,8 @@ const login = async (req, res) => {
     // Set Refresh Token in HttpOnly Cookie
     res.cookie("refreshtoken", refreshtoken, {
       httpOnly: true,
-      secure: env.app.env === "production",
-      sameSite: env.app.env === "production" ? "none" : "lax",
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
       path: "/",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
@@ -63,8 +68,8 @@ const refreshtoken = async (req, res) => {
     // Set new Refresh Token in HttpOnly Cookie
     res.cookie("refreshtoken", result.refreshtoken, {
       httpOnly: true,
-      secure: env.app.env === "production",
-      sameSite: env.app.env === "production" ? "none" : "lax",
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
       path: "/",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
@@ -83,8 +88,8 @@ const refreshtoken = async (req, res) => {
       .status(401)
       .clearCookie("refreshtoken", {
         httpOnly: true,
-        secure: env.app.env === "production",
-        sameSite: env.app.env === "production" ? "none" : "lax",
+        secure: isProduction,
+        sameSite: isProduction ? "none" : "lax",
         path: "/",
       })
       .json({
@@ -110,8 +115,8 @@ const logout = async (req, res) => {
 
     res.clearCookie("refreshtoken", {
       httpOnly: true,
-      secure: env.app.env === "production",
-      sameSite: env.app.env === "production" ? "none" : "lax",
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
       path: "/",
     });
 
@@ -133,8 +138,8 @@ const facebookCallback = async (req, res) => {
     // Set Refresh Token in HttpOnly Cookie
     res.cookie("refreshtoken", refreshtoken, {
       httpOnly: true,
-      secure: env.app.env === "production",
-      sameSite: env.app.env === "production" ? "none" : "lax",
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
       path: "/",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
