@@ -2,6 +2,8 @@ const express = require("express");
 const authController = require("../controllers/auth.controller");
 const passport = require("../configs/passport.config");
 
+const env = require("../configs/env.config");
+
 const router = express.Router();
 
 router.post("/register", authController.register);
@@ -12,7 +14,19 @@ router.post("/refresh-token", authController.refreshtoken);
 router.get("/facebook", passport.authenticate("facebook", { scope: ["email"] }));
 router.get(
   "/facebook/callback",
-  passport.authenticate("facebook", { session: false, failureRedirect: "/login-fail" }),
+  (req, res, next) => {
+    passport.authenticate("facebook", { session: false }, (err, user, info) => {
+      if (err) {
+        console.error("Facebook Strategy Error:", err);
+        return res.redirect(`${env.client.url}/login?error=facebook_auth_failed`);
+      }
+      if (!user) {
+        return res.redirect(`${env.client.url}/login?error=facebook_failed`);
+      }
+      req.user = user;
+      next();
+    })(req, res, next);
+  },
   authController.facebookCallback
 );
 
