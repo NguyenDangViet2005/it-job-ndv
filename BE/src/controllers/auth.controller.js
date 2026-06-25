@@ -145,7 +145,7 @@ const facebookCallback = async (req, res) => {
     });
 
     // Redirect to frontend callback route with token
-    res.redirect(`${env.client.url}/auth/callback?token=${accesstoken}`);
+    res.redirect(`${env.client.url}/callback?token=${accesstoken}`);
   } catch (error) {
     console.error("Facebook Login Error:", error);
     res.redirect(`${env.client.url}/login?error=facebook_error`);
