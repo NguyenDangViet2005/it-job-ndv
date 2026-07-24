@@ -8,7 +8,15 @@ export interface MetadataOptions {
   noIndex?: boolean;
 }
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://it-job.vn";
+const getSiteUrl = (): string => {
+  if (process.env.NEXT_PUBLIC_SITE_URL) {
+    return process.env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, "");
+  }
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`.replace(/\/$/, "");
+  }
+  return "https://it-job-ndv.vercel.app";
+};
 
 export const getMetadata = (
   options: string | MetadataOptions,
@@ -19,9 +27,15 @@ export const getMetadata = (
       ? { title: options, description: fallbackDesc }
       : options;
 
+  const siteUrl = getSiteUrl();
   const { title, description, image, path = "", noIndex = false } = opts;
   const desc = description || title;
-  const ogImageUrl = image || "/media/open-graph.webp";
+  
+  const rawImage = image || "/media/open-graph.webp";
+  const absoluteImageUrl = rawImage.startsWith("http")
+    ? rawImage
+    : `${siteUrl}${rawImage.startsWith("/") ? "" : "/"}${rawImage}`;
+
   const pageUrl = path ? `${siteUrl}${path.startsWith("/") ? path : `/${path}`}` : siteUrl;
 
   return {
@@ -47,7 +61,9 @@ export const getMetadata = (
       type: "website",
       images: [
         {
-          url: ogImageUrl,
+          url: absoluteImageUrl,
+          width: 1200,
+          height: 630,
           alt: title,
         },
       ],
@@ -56,7 +72,7 @@ export const getMetadata = (
       card: "summary_large_image",
       title,
       description: desc,
-      images: [ogImageUrl],
+      images: [absoluteImageUrl],
     },
     robots: noIndex
       ? {
@@ -69,4 +85,3 @@ export const getMetadata = (
         },
   };
 };
-
