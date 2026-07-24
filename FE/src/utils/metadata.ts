@@ -6,7 +6,22 @@ export interface MetadataOptions {
   image?: string;
   path?: string;
   noIndex?: boolean;
+  keywords?: string[];
 }
+
+const defaultKeywords = [
+  "Tuyển dụng IT",
+  "Tìm việc làm IT",
+  "Việc làm lập trình viên",
+  "Tuyển dụng ReactJS",
+  "Tuyển dụng Node.js",
+  "Việc làm Frontend",
+  "Việc làm Backend",
+  "Việc làm Fullstack",
+  "Việc làm IT Hà Nội",
+  "Việc làm IT TP.HCM",
+  "IT Job Việt Nam",
+];
 
 const getSiteUrl = (): string => {
   if (process.env.NEXT_PUBLIC_SITE_URL) {
@@ -28,8 +43,9 @@ export const getMetadata = (
       : options;
 
   const siteUrl = getSiteUrl();
-  const { title, description, image, path = "", noIndex = false } = opts;
+  const { title, description, image, path = "", noIndex = false, keywords } = opts;
   const desc = description || title;
+  const pageKeywords = keywords && keywords.length > 0 ? keywords : defaultKeywords;
   
   const rawImage = image || "/media/open-graph.webp";
   const absoluteImageUrl = rawImage.startsWith("http")
@@ -42,6 +58,7 @@ export const getMetadata = (
     metadataBase: new URL(siteUrl),
     title,
     description: desc,
+    keywords: pageKeywords,
     alternates: {
       canonical: pageUrl,
     },

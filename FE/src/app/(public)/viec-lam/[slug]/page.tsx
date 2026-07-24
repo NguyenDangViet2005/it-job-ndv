@@ -32,12 +32,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       : `Ứng tuyển ngay vị trí ${job.title} tại ${companyName} với mức lương hấp dẫn và nhiều đãi ngộ tại IT Job.`;
     const image = job.company?.avatar || "/icons/icon.svg";
     const canonicalSlug = createSlugWithId(job.title, job.id);
+    const jobSkills = job.skills ? job.skills.map((s: any) => s.name) : [];
+    const keywords = [
+      job.title,
+      companyName,
+      `Tuyển dụng ${job.title}`,
+      `Việc làm ${job.title}`,
+      ...jobSkills,
+    ];
 
     return getMetadata({
       title,
       description: cleanDesc,
       image,
       path: `/viec-lam/${canonicalSlug}`,
+      keywords,
     });
   } catch (error) {
     return getMetadata("Chi tiết công việc | IT Job");
