@@ -75,7 +75,7 @@ function BlogListSection() {
       <section className="grid grid-cols-1 md:grid-cols-4 gap-4">
         {featuredBlogs[0] && (
           <div className="md:col-span-2 relative aspect-[16/10] group overflow-hidden">
-            <Link href={ROUTES.BLOG_DETAIL(featuredBlogs[0].id)}>
+            <Link href={ROUTES.BLOG_DETAIL(featuredBlogs[0].id, featuredBlogs[0].title)}>
               <Image
                 src={featuredBlogs[0].image || "/cover.png"}
                 alt={featuredBlogs[0].title}
@@ -103,7 +103,7 @@ function BlogListSection() {
               key={blog.id}
               className="relative aspect-square md:aspect-auto h-full group overflow-hidden"
             >
-              <Link href={ROUTES.BLOG_DETAIL(blog.id)}>
+              <Link href={ROUTES.BLOG_DETAIL(blog.id, blog.title)}>
                 <Image
                   src={blog.image || "/cover.png"}
                   alt={blog.title}
@@ -166,7 +166,7 @@ function BlogListSection() {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
           {latestBlogs.map((blog) => (
             <div key={blog.id} className="group space-y-3">
-              <Link href={ROUTES.BLOG_DETAIL(blog.id)}>
+              <Link href={ROUTES.BLOG_DETAIL(blog.id, blog.title)}>
                 <div className="relative aspect-video bg-muted/30 overflow-hidden border border-border">
                   <Image
                     src={blog.image || "/cover.png"}
@@ -199,7 +199,7 @@ function BlogListSection() {
               </div>
 
               <div className="relative aspect-video group overflow-hidden">
-                <Link href={`/blog/${sectionBlogs[0].id}`}>
+                <Link href={ROUTES.BLOG_DETAIL(sectionBlogs[0].id, sectionBlogs[0].title)}>
                   <Image
                     src={sectionBlogs[0].image || "/cover.png"}
                     alt=""
@@ -219,7 +219,7 @@ function BlogListSection() {
                 {sectionBlogs.slice(1).map((b) => (
                   <Link
                     key={b.id}
-                    href={`/blog/${b.id}`}
+                    href={ROUTES.BLOG_DETAIL(b.id, b.title)}
                     className="flex gap-4 group"
                   >
                     <div className="w-20 h-14 relative shrink-0 bg-muted">

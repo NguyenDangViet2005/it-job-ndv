@@ -1,22 +1,13 @@
-"use client";
+'use client'
 
-import { useAuth } from "@/lib/hooks/useAuth";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { toast } from "sonner";
-import LoadingScreen from "@/components/common/loading-screen";
-import { openCV } from "@/utils";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
+import { useAuth } from '@/lib/hooks/useAuth'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { toast } from 'sonner'
+import LoadingScreen from '@/components/common/loading/loading-screen'
+import { openCV } from '@/utils'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator'
 import {
   MapPin,
   Briefcase,
@@ -34,76 +25,80 @@ import {
   X,
   Play,
   FileText,
-} from "lucide-react";
+} from 'lucide-react'
 
-import { useState, useRef, useEffect } from "react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import PostCard from "@/components/common/cards/postCards/post-card";
-import EditPostDialog from "@/components/common/modals/qa/edit-post-modal";
+import { useState, useRef, useEffect } from 'react'
+import { Dialog, DialogContent } from '@/components/ui/dialog'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+import PostCard from '@/components/common/cards/postCards/post-card'
+import EditPostDialog from '@/components/common/modals/qa/edit-post-modal'
 
-import { userApi } from "@/apis/user.api";
-import { postApi } from "@/apis/post.api";
-import { interactionApi } from "@/apis/interaction.api";
-import { useRouter } from "next/navigation";
-import { cn } from "@/lib/utils";
-import { useInfiniteScroll, useUserMedia, useUserPosts } from "@/lib/hooks/usePost";
-import { Attachment, Post, Comment as PostComment } from "@/types";
+import { userApi } from '@/apis/user.api'
+import { postApi } from '@/apis/post.api'
+import { interactionApi } from '@/apis/interaction.api'
+import { useRouter } from 'next/navigation'
+import { cn } from '@/lib/utils'
+import {
+  useInfiniteScroll,
+  useUserMedia,
+  useUserPosts,
+} from '@/lib/hooks/usePost'
+import { Attachment, Post, Comment as PostComment } from '@/types'
 
 interface Skill {
-  id: number;
-  name: string;
+  id: number
+  name: string
 }
 
 interface ProfilePageProps {
-  userid?: string;
+  userid?: string
 }
 
 export default function ProfilePage({ userid }: ProfilePageProps) {
-  const { user, token, updateUser } = useAuth();
-  const router = useRouter();
+  const { user, token, updateUser } = useAuth()
+  const router = useRouter()
 
   // Profile user data (người được xem profile)
-  const [profileUser, setProfileUser] = useState<any>(null);
-  const [profileLoading, setProfileLoading] = useState(true);
-  const [profileError, setProfileError] = useState<string | null>(null);
+  const [profileUser, setProfileUser] = useState<any>(null)
+  const [profileLoading, setProfileLoading] = useState(true)
+  const [profileError, setProfileError] = useState<string | null>(null)
 
   // Check if current user is viewing their own profile
-  const isOwnProfile = user?.id === Number(userid) || (!userid && user);
-  const displayUser = isOwnProfile ? user : profileUser;
-  const targetUserId = userid ? Number(userid) : user?.id || 0;
+  const isOwnProfile = user?.id === Number(userid) || (!userid && user)
+  const displayUser = isOwnProfile ? user : profileUser
+  const targetUserId = userid ? Number(userid) : user?.id || 0
 
   // State for creating posts
-  const [newPost, setNewPost] = useState("");
-  const [selectedImages, setSelectedImages] = useState<File[]>([]);
-  const [selectedVideo, setSelectedVideo] = useState<File | null>(null);
-  const [isCreatingPost, setIsCreatingPost] = useState(false);
+  const [newPost, setNewPost] = useState('')
+  const [selectedImages, setSelectedImages] = useState<File[]>([])
+  const [selectedVideo, setSelectedVideo] = useState<File | null>(null)
+  const [isCreatingPost, setIsCreatingPost] = useState(false)
 
   // State for editing posts
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [postToEdit, setPostToEdit] = useState<Post | null>(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false)
+  const [postToEdit, setPostToEdit] = useState<Post | null>(null)
 
   // State for lightbox
-  const [lightboxOpen, setLightboxOpen] = useState(false);
-  const [lightboxMedia, setLightboxMedia] = useState<Attachment[]>([]);
-  const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false)
+  const [lightboxMedia, setLightboxMedia] = useState<Attachment[]>([])
+  const [currentMediaIndex, setCurrentMediaIndex] = useState(0)
 
   // State for uploading avatar/cover
-  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
-  const [isUploadingCover, setIsUploadingCover] = useState(false);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false)
+  const [isUploadingCover, setIsUploadingCover] = useState(false)
 
   // State for skills
-  const [userSkills, setUserSkills] = useState<Skill[]>([]);
-  const [skillsLoading, setSkillsLoading] = useState(true);
+  const [userSkills, setUserSkills] = useState<Skill[]>([])
+  const [skillsLoading, setSkillsLoading] = useState(true)
 
   // Refs for file inputs
-  const avatarInputRef = useRef<HTMLInputElement>(null);
-  const coverInputRef = useRef<HTMLInputElement>(null);
-  const imageInputRef = useRef<HTMLInputElement>(null);
-  const videoInputRef = useRef<HTMLInputElement>(null);
+  const avatarInputRef = useRef<HTMLInputElement>(null)
+  const coverInputRef = useRef<HTMLInputElement>(null)
+  const imageInputRef = useRef<HTMLInputElement>(null)
+  const videoInputRef = useRef<HTMLInputElement>(null)
 
   // Media gallery state
-  const [showAllMedia, setShowAllMedia] = useState(false);
+  const [showAllMedia, setShowAllMedia] = useState(false)
 
   // Hooks for data
   const {
@@ -112,7 +107,7 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
     hasMore: hasMorePosts,
     loadMore: loadMorePosts,
     setPosts,
-  } = useUserPosts(targetUserId, user?.id, token);
+  } = useUserPosts(targetUserId, user?.id, token)
 
   const {
     media,
@@ -120,194 +115,190 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
     hasMore: hasMoreMedia,
     totalItems: totalMedia,
     loadMore: loadMoreMedia,
-  } = useUserMedia(targetUserId, token);
+  } = useUserMedia(targetUserId, token)
 
   // Infinite scroll ref
   const loadMoreRef = useInfiniteScroll(
     loadMorePosts,
     hasMorePosts,
     postsLoading,
-  );
+  )
 
   // Load profile user data if viewing someone else's profile
   useEffect(() => {
     const loadData = async () => {
       if (!userid) {
-        setProfileLoading(false);
-        return;
+        setProfileLoading(false)
+        return
       }
 
-      const targetId = Number(userid);
-      const isOwn = user?.id === targetId;
+      const targetId = Number(userid)
+      const isOwn = user?.id === targetId
 
       if (isOwn) {
         // Viewing own profile, use current user data
-        setProfileLoading(false);
-        return;
+        setProfileLoading(false)
+        return
       }
 
       // Viewing someone else's profile, fetch their data
       try {
-        setProfileLoading(true);
-        setProfileError(null);
+        setProfileLoading(true)
+        setProfileError(null)
 
         // Try with token first, if no token, try without (public profile)
-        const response = await userApi.getById(targetId, token || undefined);
-        setProfileUser(response);
+        const response = await userApi.getById(targetId, token || undefined)
+        setProfileUser(response)
       } catch (error) {
         const errorMessage =
           error instanceof Error
             ? error.message
-            : "Không thể tải thông tin người dùng";
-        setProfileError(errorMessage);
-        setProfileUser(null);
+            : 'Không thể tải thông tin người dùng'
+        setProfileError(errorMessage)
+        setProfileUser(null)
       } finally {
-        setProfileLoading(false);
+        setProfileLoading(false)
       }
-    };
+    }
 
-    loadData();
-  }, [userid, user?.id, token, user?.cvurl]); // Re-run when cvurl changes
+    loadData()
+  }, [userid, user?.id, token, user?.cvurl]) // Re-run when cvurl changes
 
   // Load user skills
   useEffect(() => {
     if (targetUserId) {
-      loadUserSkills();
+      loadUserSkills()
     }
-  }, [targetUserId]);
+  }, [targetUserId])
 
   const loadUserSkills = async () => {
-    if (!targetUserId) return;
+    if (!targetUserId) return
 
     try {
-      setSkillsLoading(true);
-    const response = await userApi.getSkills(targetUserId, token || undefined);
+      setSkillsLoading(true)
+      const response = await userApi.getSkills(targetUserId, token || undefined)
       const skillsData = Array.isArray(response)
         ? response
-        : (response as any)?.data || [];
-      setUserSkills(skillsData);
+        : (response as any)?.data || []
+      setUserSkills(skillsData)
     } catch (error) {
-      console.error("Error loading skills:", error);
-      setUserSkills([]);
+      console.error('Error loading skills:', error)
+      setUserSkills([])
     } finally {
-      setSkillsLoading(false);
+      setSkillsLoading(false)
     }
-  };
+  }
 
   // Handle avatar upload
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || !user || !token) return;
+    const file = e.target.files?.[0]
+    if (!file || !user || !token) return
 
-    setIsUploadingAvatar(true);
+    setIsUploadingAvatar(true)
     try {
-      const response = await userApi.updateAvatar(user.id, file, token);
+      const response = await userApi.updateAvatar(user.id, file, token)
       // Update user state instead of reloading
       if (response.data?.avatar) {
         // Use cache busting but in client-side event handler (safe from hydration issues)
-        const timestamp = Date.now();
-        const avatarUrl = response.data.avatar.includes("?")
+        const timestamp = Date.now()
+        const avatarUrl = response.data.avatar.includes('?')
           ? `${response.data.avatar}&t=${timestamp}`
-          : `${response.data.avatar}?t=${timestamp}`;
-        updateUser({ avatar: avatarUrl });
-        toast.success("Cập nhật avatar thành công!");
+          : `${response.data.avatar}?t=${timestamp}`
+        updateUser({ avatar: avatarUrl })
+        toast.success('Cập nhật avatar thành công!')
       }
     } catch (error) {
-      toast.error("Cập nhật avatar thất bại!");
+      toast.error('Cập nhật avatar thất bại!')
     } finally {
-      setIsUploadingAvatar(false);
+      setIsUploadingAvatar(false)
     }
-  };
+  }
 
   // Handle cover image upload
   const handleCoverChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || !user || !token) return;
+    const file = e.target.files?.[0]
+    if (!file || !user || !token) return
 
-    setIsUploadingCover(true);
+    setIsUploadingCover(true)
     try {
-      const response = await userApi.updateCoverImage(user.id, file, token);
+      const response = await userApi.updateCoverImage(user.id, file, token)
       // Update user state instead of reloading
       if (response.data?.coverimage) {
         // Thêm timestamp để tránh browser cache
-        const coverimageUrl = response.data.coverimage.includes("?")
+        const coverimageUrl = response.data.coverimage.includes('?')
           ? `${response.data.coverimage}&t=${Date.now()}`
-          : `${response.data.coverimage}?t=${Date.now()}`;
-        updateUser({ coverimage: coverimageUrl });
-        toast.success("Cập nhật ảnh bìa thành công!");
+          : `${response.data.coverimage}?t=${Date.now()}`
+        updateUser({ coverimage: coverimageUrl })
+        toast.success('Cập nhật ảnh bìa thành công!')
       }
     } catch (error) {
-      toast.error("Cập nhật ảnh bìa thất bại!");
+      toast.error('Cập nhật ảnh bìa thất bại!')
     } finally {
-      setIsUploadingCover(false);
+      setIsUploadingCover(false)
     }
-  };
+  }
 
   // Handle image selection for post
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
+    const files = Array.from(e.target.files || [])
     if (files.length > 0) {
-      setSelectedImages((prev) => [...prev, ...files].slice(0, 10));
-      setSelectedVideo(null);
+      setSelectedImages((prev) => [...prev, ...files].slice(0, 10))
+      setSelectedVideo(null)
     }
-  };
+  }
 
   // Handle video selection for post
   const handleVideoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+    const file = e.target.files?.[0]
     if (file) {
-      setSelectedVideo(file);
-      setSelectedImages([]);
+      setSelectedVideo(file)
+      setSelectedImages([])
     }
-  };
+  }
 
   // Remove selected image
   const removeSelectedImage = (index: number) => {
-    setSelectedImages((prev) => prev.filter((_, i) => i !== index));
-  };
+    setSelectedImages((prev) => prev.filter((_, i) => i !== index))
+  }
 
   // Create new post
   const handleCreatePost = async () => {
-    if (!newPost.trim() && selectedImages.length === 0 && !selectedVideo)
-      return;
+    if (!newPost.trim() && selectedImages.length === 0 && !selectedVideo) return
     if (!user || !token) {
-      router.push("/login");
-      return;
+      router.push('/login')
+      return
     }
 
-    setIsCreatingPost(true);
+    setIsCreatingPost(true)
     try {
       const newPostResponse = await postApi.create(
         { content: newPost, userid: user.id },
         selectedImages.length > 0 ? selectedImages : undefined,
         selectedVideo || undefined,
         token,
-      );
+      )
 
-      setPosts((prev: Post[]) => [
-        newPostResponse as unknown as Post,
-        ...prev,
-      ]);
-      setNewPost("");
-      setSelectedImages([]);
-      setSelectedVideo(null);
-      toast.success("Đăng bài thành công!");
+      setPosts((prev: Post[]) => [newPostResponse as unknown as Post, ...prev])
+      setNewPost('')
+      setSelectedImages([])
+      setSelectedVideo(null)
+      toast.success('Đăng bài thành công!')
     } catch (error) {
-      toast.error("Đăng bài thất bại!");
+      toast.error('Đăng bài thất bại!')
     } finally {
-      setIsCreatingPost(false);
+      setIsCreatingPost(false)
     }
-  };
+  }
 
   // Handle like post
   const handleLikePost = async (postid: number) => {
     if (!user || !token) {
-      router.push("/login");
-      return;
+      router.push('/login')
+      return
     }
 
     try {
-      const result = await interactionApi.toggleLike(postid, user.id, token);
+      const result = await interactionApi.toggleLike(postid, user.id, token)
 
       setPosts((prev: Post[]) =>
         prev.map((post: Post) =>
@@ -322,11 +313,11 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
               }
             : post,
         ),
-      );
+      )
     } catch (error) {
-      console.error("Failed to toggle like:", error);
+      console.error('Failed to toggle like:', error)
     }
-  };
+  }
 
   // Handle toggle comments
   const handleToggleComments = (postid: number) => {
@@ -336,14 +327,14 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
           ? { ...post, showComments: !(post as any).showComments }
           : post,
       ),
-    );
-  };
+    )
+  }
 
   // Handle add comment
   const handleAddComment = async (postid: number, content: string) => {
     if (!user || !token) {
-      router.push("/login");
-      return;
+      router.push('/login')
+      return
     }
 
     try {
@@ -352,7 +343,7 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
         user.id,
         content,
         token,
-      );
+      )
 
       setPosts((prev: Post[]) =>
         prev.map((post: Post) =>
@@ -371,20 +362,20 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
               }
             : post,
         ),
-      );
+      )
     } catch (error) {
-      console.error("Failed to add comment:", error);
+      console.error('Failed to add comment:', error)
     }
-  };
+  }
 
   // Handle edit post
   const handleEditPost = (postid: number) => {
-    const post = posts.find((p: Post) => p.id === postid);
+    const post = posts.find((p: Post) => p.id === postid)
     if (post) {
-      setPostToEdit(post);
-      setEditDialogOpen(true);
+      setPostToEdit(post)
+      setEditDialogOpen(true)
     }
-  };
+  }
 
   // Handle save edited post
   const handleSaveEditedPost = async (
@@ -393,21 +384,21 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
     newImages: File[],
     keepImageUrls: string[],
   ) => {
-    if (!token) return;
+    if (!token) return
 
     try {
       // Find the post to get userid or companyid
-      const post = posts.find((p: Post) => p.id === postid);
+      const post = posts.find((p: Post) => p.id === postid)
       if (!post) {
-        throw new Error("Post not found");
+        throw new Error('Post not found')
       }
 
       // Prepare update data with userid or companyid
-      const updateData: any = { content };
+      const updateData: any = { content }
       if (post.user?.id) {
-        updateData.userid = post.user.id;
+        updateData.userid = post.user.id
       } else if (post.company?.id) {
-        updateData.companyid = post.company.id;
+        updateData.companyid = post.company.id
       }
 
       // Always use updateWithImages to handle both new images and keepImageUrls
@@ -417,50 +408,50 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
         newImages.length > 0 ? newImages : undefined,
         keepImageUrls,
         token,
-      );
+      )
 
       // Update local state
       setPosts((prev: Post[]) =>
-        prev.map((p: Post) =>
-          p.id === postid ? { ...p, content } : p,
-        ),
-      );
-      toast.success("Cập nhật bài viết thành công!");
+        prev.map((p: Post) => (p.id === postid ? { ...p, content } : p)),
+      )
+      toast.success('Cập nhật bài viết thành công!')
     } catch (error) {
-      console.error("Error updating post:", error);
-      toast.error("Không thể cập nhật bài viết!");
-      throw error;
+      console.error('Error updating post:', error)
+      toast.error('Không thể cập nhật bài viết!')
+      throw error
     }
-  };
+  }
 
   // Open lightbox
-  const openLightbox = (
-    mediaList: Attachment[],
-    startIndex: number = 0,
-  ) => {
-    setLightboxMedia(mediaList);
-    setCurrentMediaIndex(startIndex);
-    setLightboxOpen(true);
-  };
+  const openLightbox = (mediaList: Attachment[], startIndex: number = 0) => {
+    setLightboxMedia(mediaList)
+    setCurrentMediaIndex(startIndex)
+    setLightboxOpen(true)
+  }
 
   // Close lightbox
   const closeLightbox = () => {
-    setLightboxOpen(false);
-  };
+    setLightboxOpen(false)
+  }
 
   // Navigate lightbox
   const nextMedia = () => {
-    setCurrentMediaIndex((prev) => (prev + 1) % lightboxMedia.length);
-  };
+    setCurrentMediaIndex((prev) => (prev + 1) % lightboxMedia.length)
+  }
 
   const prevMedia = () => {
     setCurrentMediaIndex(
       (prev) => (prev - 1 + lightboxMedia.length) % lightboxMedia.length,
-    );
-  };
+    )
+  }
 
   if (profileLoading) {
-    return <LoadingScreen fullScreen={true} message="Đang tải thông tin cá nhân..." />;
+    return (
+      <LoadingScreen
+        fullScreen={true}
+        message="Đang tải thông tin cá nhân..."
+      />
+    )
   }
 
   if (!displayUser) {
@@ -470,8 +461,8 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
           <CardContent className="pt-6">
             <p className="text-center text-muted-foreground mb-2">
               {!user
-                ? "Vui lòng đăng nhập để xem trang cá nhân"
-                : "Không tìm thấy người dùng"}
+                ? 'Vui lòng đăng nhập để xem trang cá nhân'
+                : 'Không tìm thấy người dùng'}
             </p>
             {profileError && (
               <p className="text-center text-destructive text-sm mb-4">
@@ -479,17 +470,17 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
               </p>
             )}
             <div className="flex justify-center mt-4">
-              <Button onClick={() => router.push(user ? "/home" : "/login")}>
-                {user ? "Về trang chủ" : "Đăng nhập"}
+              <Button onClick={() => router.push(user ? '/home' : '/login')}>
+                {user ? 'Về trang chủ' : 'Đăng nhập'}
               </Button>
             </div>
           </CardContent>
         </Card>
       </div>
-    );
+    )
   }
 
-  const displayMedia = showAllMedia ? media : media.slice(0, 6);
+  const displayMedia = showAllMedia ? media : media.slice(0, 6)
 
   return (
     <div className="min-h-screen bg-background mb-4">
@@ -532,8 +523,8 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
               src={displayUser.coverimage}
               alt="Cover"
               className={cn(
-                "w-full h-full object-cover transition-transform duration-500 group-hover:scale-105",
-                isUploadingCover && "blur-sm opacity-50",
+                'w-full h-full object-cover transition-transform duration-500 group-hover:scale-105',
+                isUploadingCover && 'blur-sm opacity-50',
               )}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -557,7 +548,7 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
               </div>
             ) : (
               <p className="text-muted-foreground text-sm sm:text-base md:text-lg">
-                {isOwnProfile ? "Chưa có ảnh bìa" : ""}
+                {isOwnProfile ? 'Chưa có ảnh bìa' : ''}
               </p>
             )}
           </div>
@@ -577,10 +568,10 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
                 <Camera className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
               )}
               <span className="hidden sm:inline">
-                {displayUser.coverimage ? "Chỉnh sửa ảnh bìa" : "Thêm ảnh bìa"}
+                {displayUser.coverimage ? 'Chỉnh sửa ảnh bìa' : 'Thêm ảnh bìa'}
               </span>
               <span className="sm:hidden">
-                {displayUser.coverimage ? "Sửa" : "Thêm"}
+                {displayUser.coverimage ? 'Sửa' : 'Thêm'}
               </span>
             </Button>
           </div>
@@ -597,8 +588,8 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
                 <div className="relative group">
                   <Avatar
                     className={cn(
-                      "h-32 w-32 sm:h-40 sm:w-40 md:h-48 md:w-48 shadow-lg transition-all duration-300 hover:shadow-2xl hover:scale-105",
-                      isUploadingAvatar && "blur-[2px] opacity-70",
+                      'h-32 w-32 sm:h-40 sm:w-40 md:h-48 md:w-48 shadow-lg transition-all duration-300 hover:shadow-2xl hover:scale-105',
+                      isUploadingAvatar && 'blur-[2px] opacity-70',
                     )}
                   >
                     <AvatarImage
@@ -613,10 +604,10 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
                     <>
                       <div
                         className={cn(
-                          "absolute inset-0 rounded-full bg-black/40 transition-all duration-300 flex items-center justify-center cursor-pointer",
+                          'absolute inset-0 rounded-full bg-black/40 transition-all duration-300 flex items-center justify-center cursor-pointer',
                           isUploadingAvatar
-                            ? "opacity-100 cursor-wait"
-                            : "opacity-0 group-hover:opacity-100",
+                            ? 'opacity-100 cursor-wait'
+                            : 'opacity-0 group-hover:opacity-100',
                         )}
                         onClick={() =>
                           !isUploadingAvatar && avatarInputRef.current?.click()
@@ -652,9 +643,9 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
                     {displayUser.fullname}
                   </h1>
                   <p className="text-sm sm:text-base text-muted-foreground">
-                    {displayUser.role === "hr"
-                      ? "Nhà tuyển dụng"
-                      : "Người tìm việc"}
+                    {displayUser.role === 'hr'
+                      ? 'Nhà tuyển dụng'
+                      : 'Người tìm việc'}
                   </p>
                   <p className="text-xs sm:text-sm text-muted-foreground flex items-center justify-center md:justify-start gap-1 mt-1 cursor-target hover:text-primary transition-colors duration-300">
                     <Users className="h-3 w-3 sm:h-4 sm:w-4" />
@@ -702,9 +693,9 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
                 <div className="flex items-center gap-2 text-muted-foreground cursor-target hover:text-primary hover:translate-x-2 transition-all duration-300">
                   <Briefcase className="h-4 w-4" />
                   <span>
-                    {displayUser.role === "hr"
-                      ? "Nhà tuyển dụng"
-                      : "Người tìm việc"}
+                    {displayUser.role === 'hr'
+                      ? 'Nhà tuyển dụng'
+                      : 'Người tìm việc'}
                   </span>
                 </div>
                 <div className="flex items-center gap-2 text-muted-foreground cursor-target hover:text-primary hover:translate-x-2 transition-all duration-300">
@@ -739,9 +730,9 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
                   <div className="flex items-center gap-2 text-muted-foreground cursor-target hover:text-primary hover:translate-x-2 transition-all duration-300">
                     <Calendar className="h-4 w-4" />
                     <span>
-                      Sinh ngày{" "}
+                      Sinh ngày{' '}
                       {new Date(displayUser.dateofbirth).toLocaleDateString(
-                        "vi-VN",
+                        'vi-VN',
                       )}
                     </span>
                   </div>
@@ -762,11 +753,11 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
                       />
                     </svg>
                     <span>
-                      {displayUser.gender === "male"
-                        ? "Nam"
-                        : displayUser.gender === "female"
-                          ? "Nữ"
-                          : "Khác"}
+                      {displayUser.gender === 'male'
+                        ? 'Nam'
+                        : displayUser.gender === 'female'
+                          ? 'Nữ'
+                          : 'Khác'}
                     </span>
                   </div>
                 )}
@@ -795,7 +786,7 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
                     variant="link"
                     size="sm"
                     className="cursor-target hover:scale-105 transition-transform duration-300"
-                    onClick={() => router.push("/user/resume")}
+                    onClick={() => router.push('/user/resume')}
                   >
                     Chỉnh sửa
                   </Button>
@@ -808,7 +799,7 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
                       <FileText className="h-8 w-8 text-primary flex-shrink-0" />
                       <div className="flex-1 min-w-0">
                         <p className="font-medium text-foreground">
-                          CV của {isOwnProfile ? "bạn" : displayUser.fullname}
+                          CV của {isOwnProfile ? 'bạn' : displayUser.fullname}
                         </p>
                         <p className="text-sm text-muted-foreground">
                           Đã tải lên
@@ -819,7 +810,10 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
                       variant="outline"
                       className="w-full cursor-target hover:scale-105 transition-transform duration-300"
                       onClick={() =>
-                        openCV((displayUser as any).cvurl, `CV_${displayUser?.fullname || "User"}.pdf`)
+                        openCV(
+                          (displayUser as any).cvurl,
+                          `CV_${displayUser?.fullname || 'User'}.pdf`,
+                        )
                       }
                     >
                       <FileText className="h-4 w-4 mr-2" />
@@ -828,7 +822,7 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
                   </div>
                 ) : (
                   <p className="text-center text-muted-foreground py-4">
-                    {isOwnProfile ? "Bạn chưa tải CV lên" : "Chưa có CV"}
+                    {isOwnProfile ? 'Bạn chưa tải CV lên' : 'Chưa có CV'}
                   </p>
                 )}
               </CardContent>
@@ -843,7 +837,7 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
                     variant="link"
                     size="sm"
                     className="cursor-target hover:scale-105 transition-transform duration-300"
-                    onClick={() => router.push("/user/resume")}
+                    onClick={() => router.push('/user/resume')}
                   >
                     Chỉnh sửa
                   </Button>
@@ -886,7 +880,7 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
                     className="cursor-target hover:scale-105 transition-transform duration-300"
                     onClick={() => setShowAllMedia(!showAllMedia)}
                   >
-                    {showAllMedia ? "Thu gọn" : "Xem tất cả"}
+                    {showAllMedia ? 'Thu gọn' : 'Xem tất cả'}
                   </Button>
                 )}
               </CardHeader>
@@ -901,36 +895,34 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
                   </p>
                 ) : (
                   <div className="grid grid-cols-3 gap-2">
-                    {displayMedia.map(
-                      (item: Attachment, index: number) => (
-                        <div
-                          key={item.id}
-                          className="cursor-target aspect-square rounded-lg overflow-hidden group relative"
-                          onClick={() => openLightbox(media, index)}
-                        >
-                          {item.filetype === "video" ? (
-                            <>
-                              <video
-                                src={item.fileurl}
-                                className="w-full h-full object-cover"
-                              />
-                              <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                                <Play className="h-8 w-8 text-white" />
-                              </div>
-                            </>
-                          ) : (
-                            <img
+                    {displayMedia.map((item: Attachment, index: number) => (
+                      <div
+                        key={item.id}
+                        className="cursor-target aspect-square rounded-lg overflow-hidden group relative"
+                        onClick={() => openLightbox(media, index)}
+                      >
+                        {item.filetype === 'video' ? (
+                          <>
+                            <video
                               src={item.fileurl}
-                              alt={`Media ${index + 1}`}
-                              className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110"
+                              className="w-full h-full object-cover"
                             />
-                          )}
-                          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                            <ImageIcon className="h-6 w-6 text-white" />
-                          </div>
+                            <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                              <Play className="h-8 w-8 text-white" />
+                            </div>
+                          </>
+                        ) : (
+                          <img
+                            src={item.fileurl}
+                            alt={`Media ${index + 1}`}
+                            className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110"
+                          />
+                        )}
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                          <ImageIcon className="h-6 w-6 text-white" />
                         </div>
-                      ),
-                    )}
+                      </div>
+                    ))}
                   </div>
                 )}
                 {showAllMedia && hasMoreMedia && (
@@ -943,7 +935,7 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
                     {mediaLoading ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
                     ) : (
-                      "Xem thêm"
+                      'Xem thêm'
                     )}
                   </Button>
                 )}
@@ -1057,7 +1049,7 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
                       {isCreatingPost ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
                       ) : (
-                        "Đăng"
+                        'Đăng'
                       )}
                     </Button>
                   </div>
@@ -1090,21 +1082,21 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
                     onLikePost={handleLikePost}
                     onToggleComments={handleToggleComments}
                     onAddComment={handleAddComment}
-                    onSavePost={(postid) => console.log("Save post:", postid)}
+                    onSavePost={(postid) => console.log('Save post:', postid)}
                     onReportPost={(postid) =>
-                      console.log("Report post:", postid)
+                      console.log('Report post:', postid)
                     }
                     onEditPost={handleEditPost}
                     onDeletePost={async (postid) => {
-                      if (!token) return;
+                      if (!token) return
                       try {
-                        const { postApi } = await import("@/apis/post.api");
-                        await postApi.delete(postid, token);
-                        setPosts(posts.filter((p) => p.id !== postid));
-                        toast.success("Xóa bài viết thành công!");
+                        const { postApi } = await import('@/apis/post.api')
+                        await postApi.delete(postid, token)
+                        setPosts(posts.filter((p) => p.id !== postid))
+                        toast.success('Xóa bài viết thành công!')
                       } catch (error) {
-                        console.error("Error deleting post:", error);
-                        toast.error("Không thể xóa bài viết!");
+                        console.error('Error deleting post:', error)
+                        toast.error('Không thể xóa bài viết!')
                       }
                     }}
                   />
@@ -1141,7 +1133,7 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
               </Button>
             )}
             <div className="relative w-full h-full flex items-center justify-center p-12">
-              {lightboxMedia[currentMediaIndex]?.filetype === "video" ? (
+              {lightboxMedia[currentMediaIndex]?.filetype === 'video' ? (
                 <video
                   src={lightboxMedia[currentMediaIndex]?.fileurl}
                   controls
@@ -1179,11 +1171,11 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
                     onClick={() => setCurrentMediaIndex(idx)}
                     className={`cursor-target relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 transition-all duration-300 ${
                       idx === currentMediaIndex
-                        ? "ring-2 ring-white scale-110"
-                        : "opacity-60 hover:opacity-100"
+                        ? 'ring-2 ring-white scale-110'
+                        : 'opacity-60 hover:opacity-100'
                     }`}
                   >
-                    {item.filetype === "video" ? (
+                    {item.filetype === 'video' ? (
                       <>
                         <video
                           src={item.fileurl}
@@ -1214,6 +1206,5 @@ export default function ProfilePage({ userid }: ProfilePageProps) {
         onSave={handleSaveEditedPost}
       />
     </div>
-  );
+  )
 }
-

@@ -51,9 +51,9 @@ const UserHeader = () => {
   // Prevent hydration mismatch by not rendering theme-dependent content until mounted
   const logoSrc = mounted
     ? resolvedTheme === "dark" || theme === "dark"
-      ? "/logo/logo-dark-removebg.png"
-      : "/logo/logo-removebg.png"
-    : "/logo/logo-removebg.png"; // Default to light logo for SSR
+      ? "/logo/logo-dark-removebg.webp"
+      : "/logo/logo-removebg.webp"
+    : "/logo/logo-removebg.webp"; // Default to light logo for SSR
 
   return (
     <header

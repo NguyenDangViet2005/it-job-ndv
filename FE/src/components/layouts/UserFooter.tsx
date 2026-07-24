@@ -27,8 +27,8 @@ const UserFooter = () => {
 
   // Determine logo based on theme
   const logoSrc = mounted && (resolvedTheme === "dark" || theme === "dark")
-    ? "/logo/logo-dark-removebg.png"
-    : "/logo/logo-removebg.png";
+    ? "/logo/logo-dark-removebg.webp"
+    : "/logo/logo-removebg.webp";
   return (
     <footer className="hidden sm:block py-8 lg:py-12 mx-auto px-2 lg:px-4 backdrop-blur-md bg-background/60 border-t border-border/40">
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 xl:gap-12 px-4 lg:px-20">

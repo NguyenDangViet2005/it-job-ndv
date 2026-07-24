@@ -26,7 +26,7 @@ export default function TopHRSection() {
         const transformedLogos = response.data.map((company: CompanyLogo) => ({
           src: company.avatar || "/logo/default-company.png",
           alt: company.name,
-          href: ROUTES.COMPANY_DETAIL(company.id),
+          href: ROUTES.COMPANY_DETAIL(company.id, company.name),
           title: company.name,
         }));
         setLogos(transformedLogos);

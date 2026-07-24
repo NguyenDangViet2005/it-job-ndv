@@ -65,7 +65,7 @@ export default function QuickBlogSection() {
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4 lg:gap-6">
         {featured && (
           <div className="md:col-span-7">
-            <Link href={ROUTES.BLOG_DETAIL(featured.id)} className="block group">
+            <Link href={ROUTES.BLOG_DETAIL(featured.id, featured.title)} className="block group">
               <div className="w-full h-[180px] md:h-[280px] lg:h-[350px] relative overflow-hidden shadow rounded-xl">
                 <Image
                   src={featured.image || "/cover.png"}
@@ -99,9 +99,9 @@ export default function QuickBlogSection() {
 
         <div className="md:col-span-5 flex flex-col gap-3 lg:gap-4 max-h-[350px] lg:max-h-[450px] overflow-auto">
           {others.map((blog) => (
-            <a
+            <Link
               key={blog.id}
-              href={ROUTES.BLOG_DETAIL(blog.id)}
+              href={ROUTES.BLOG_DETAIL(blog.id, blog.title)}
               className="flex gap-2 lg:gap-3 group border-b pb-2 lg:pb-3 last:border-none"
             >
               <div className="w-[100px] md:w-[120px] lg:w-[150px] h-[65px] lg:h-[80px] relative overflow-hidden flex-shrink-0 rounded-lg">
@@ -124,7 +124,7 @@ export default function QuickBlogSection() {
                   <span>{blog.readtime}</span>
                 </div>
               </div>
-            </a>
+            </Link>
           ))}
         </div>
       </div>

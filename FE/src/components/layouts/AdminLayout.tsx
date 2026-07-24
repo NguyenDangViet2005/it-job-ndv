@@ -38,8 +38,8 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
 
   const logoSrc =
     mounted && (resolvedTheme === "dark" || theme === "dark")
-      ? "/logo/logo-dark-removebg.png"
-      : "/logo/logo-removebg.png";
+      ? "/logo/logo-dark-removebg.webp"
+      : "/logo/logo-removebg.webp";
 
   useEffect(() => {
     setMounted(true);

@@ -1,14 +1,29 @@
 /**
  * String utility functions
- * Pure functions for string manipulation
+ * Pure functions for string manipulation and SEO slug creation
  */
 
 /**
- * Convert string to slug format
- * Example: "Hello World!" => "hello-world"
+ * Remove Vietnamese tones/diacritics from string
+ * Example: "Tuyển dụng Senior" => "Tuyen dung Senior"
+ */
+export const removeVietnameseTones = (str: string): string => {
+  if (!str) return "";
+  return str
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d")
+    .replace(/Đ/g, "D");
+};
+
+/**
+ * Convert string to slug format (supports Vietnamese)
+ * Example: "Tuyển dụng Senior ReactJS!" => "tuyen-dung-senior-reactjs"
  */
 export const slugify = (text: string): string => {
-  return text
+  if (!text) return "";
+  const noTones = removeVietnameseTones(text);
+  return noTones
     .toString()
     .toLowerCase()
     .trim()
@@ -20,78 +35,26 @@ export const slugify = (text: string): string => {
 };
 
 /**
- * Truncate text to specified length
- * Example: truncate("Hello World", 5) => "Hello..."
+ * Create a friendly SEO slug combining item title/name and ID
+ * Example: createSlugWithId("Senior ReactJS Developer", 12) => "senior-reactjs-developer-12"
  */
-export const truncate = (text: string, length: number, suffix = "..."): string => {
-  if (text.length <= length) return text;
-  return text.substring(0, length).trim() + suffix;
+export const createSlugWithId = (title: string, id: number | string): string => {
+  const slug = slugify(title);
+  return slug ? `${slug}-${id}` : `${id}`;
 };
 
 /**
- * Capitalize first letter of string
- * Example: "hello" => "Hello"
+ * Extract numerical ID from a slug string
+ * Example: extractIdFromSlug("senior-reactjs-developer-12") => 12
+ * Example: extractIdFromSlug("12") => 12
  */
-export const capitalize = (text: string): string => {
-  if (!text) return "";
-  return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
-};
-
-/**
- * Capitalize first letter of each word
- * Example: "hello world" => "Hello World"
- */
-export const capitalizeWords = (text: string): string => {
-  return text
-    .split(" ")
-    .map((word) => capitalize(word))
-    .join(" ");
-};
-
-/**
- * Remove HTML tags from string
- */
-export const stripHtml = (html: string): string => {
-  return html.replace(/<[^>]*>/g, "");
-};
-
-/**
- * Extract initials from name
- * Example: "John Doe" => "JD"
- */
-export const getInitials = (name: string): string => {
-  return name
-    .split(" ")
-    .map((word) => word.charAt(0))
-    .join("")
-    .toUpperCase()
-    .slice(0, 2);
-};
-
-/**
- * Generate random string
- */
-export const randomString = (length: number): string => {
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  let result = "";
-  for (let i = 0; i < length; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
+export const extractIdFromSlug = (slug: string): number => {
+  if (!slug) return 0;
+  if (/^\d+$/.test(slug)) {
+    return parseInt(slug, 10);
   }
-  return result;
-};
-
-/**
- * Check if string is valid email
- */
-export const isValidEmail = (email: string): boolean => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-};
-
-/**
- * Check if string is valid phone number (Vietnamese format)
- */
-export const isValidPhone = (phone: string): boolean => {
-  const phoneRegex = /^[0-9]{10,11}$/;
-  return phoneRegex.test(phone);
+  const parts = slug.split("-");
+  const lastPart = parts[parts.length - 1];
+  const parsedId = parseInt(lastPart, 10);
+  return isNaN(parsedId) ? 0 : parsedId;
 };

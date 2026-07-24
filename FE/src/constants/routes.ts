@@ -1,3 +1,5 @@
+import { createSlugWithId } from "@/utils/string";
+
 /**
  * Application routes configuration
  * Centralized route definitions for easy maintenance
@@ -6,14 +8,14 @@
 export const ROUTES = {
   // Public routes
   WELCOME: "/" as string,
-  HOME: "/home",
+  HOME: "/trang-chu",
   ABOUT: "/about",
   CONTACT: "/contact",
 
   // Auth routes
-  LOGIN: "/login",
-  REGISTER: "/register",
-  REGISTER_HR: "/register/hr",
+  LOGIN: "/dang-nhap",
+  REGISTER: "/dang-ky",
+  REGISTER_HR: "/dang-ky/nha-tuyen-dung",
   FORGOT_PASSWORD: "/forgot-password",
   RESET_PASSWORD: "/reset-password",
   ACCESS_DENIED: "/access-denied",
@@ -33,23 +35,26 @@ export const ROUTES = {
   USER_MY_BLOGS: "/my-blogs",
 
   // Job routes
-  JOBS: "/jobs",
-  JOB_DETAIL: (jobid: number | string) => `/jobs/${jobid}`,
-  JOB_SEARCH: "/jobs/search",
+  JOBS: "/viec-lam",
+  JOB_DETAIL: (jobid: number | string, title?: string) =>
+    title ? `/viec-lam/${createSlugWithId(title, jobid)}` : `/viec-lam/${jobid}`,
+  JOB_SEARCH: "/tim-kiem",
 
   // Company routes
-  COMPANIES: "/companies",
-  COMPANY_DETAIL: (companyid: number | string) => `/companies/${companyid}`,
-  COMPANY_SEARCH: "/companies/search",
+  COMPANIES: "/cong-ty",
+  COMPANY_DETAIL: (companyid: number | string, name?: string) =>
+    name ? `/cong-ty/${createSlugWithId(name, companyid)}` : `/cong-ty/${companyid}`,
+  COMPANY_SEARCH: "/cong-ty/tim-kiem",
 
   // Blog routes
-  BLOGS: "/blog",
-  BLOG_DETAIL: (blogId: number | string) => `/blog/${blogId}`,
-  BLOG_CREATE: "/blog/create",
-  BLOG_EDIT: (blogId: number | string) => `/blog/${blogId}/edit`,
+  BLOGS: "/bai-viet",
+  BLOG_DETAIL: (blogId: number | string, title?: string) =>
+    title ? `/bai-viet/${createSlugWithId(title, blogId)}` : `/bai-viet/${blogId}`,
+  BLOG_CREATE: "/bai-viet/create",
+  BLOG_EDIT: (blogId: number | string) => `/bai-viet/${blogId}/edit`,
 
   // Community routes
-  QA: "/QA",
+  QA: "/hoi-dap",
   NOTIFICATIONS: "/notifications",
 
   // Social routes

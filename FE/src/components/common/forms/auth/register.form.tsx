@@ -1,8 +1,8 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { useRouter } from 'next/navigation'
 import {
   Form,
   FormField,
@@ -10,70 +10,64 @@ import {
   FormLabel,
   FormControl,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-} from "@/components/ui/card";
-import { FcGoogle } from "react-icons/fc";
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import {
   RegisterFormData,
   RegisterFormSchema,
-} from "@/validators/register.validation";
-import { authApi } from "@/apis/auth.api";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { ROUTES } from "@/constants";
-import { toast } from "sonner";
+} from '@/validators/register.validation'
+import { authApi } from '@/apis/auth.api'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { ROUTES } from '@/constants'
+import { toast } from 'sonner'
 
 export default function FormRegister() {
-  const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter()
+  const [isLoading, setIsLoading] = useState(false)
 
   const form = useForm<RegisterFormData>({
     resolver: zodResolver(RegisterFormSchema),
     defaultValues: {
-      fullname: "",
-      email: "",
-      phone: "",
-      password: "",
-      gender: "",
-      dateofbirth: "",
+      fullname: '',
+      email: '',
+      phone: '',
+      password: '',
+      gender: '',
+      dateofbirth: '',
     },
-  });
+  })
 
   const onSubmit = async (values: RegisterFormData) => {
-    setIsLoading(true);
+    setIsLoading(true)
 
     // Filter out empty string values for dateofbirth
     const payload = {
       ...values,
-      dateofbirth: values.dateofbirth === "" ? undefined : values.dateofbirth,
-      gender: values.gender === "" ? undefined : values.gender,
-    };
+      dateofbirth: values.dateofbirth === '' ? undefined : values.dateofbirth,
+      gender: values.gender === '' ? undefined : values.gender,
+    }
 
     try {
-      const response = await authApi.registerUser(payload);
+      const response = await authApi.registerUser(payload)
 
       if (response.success) {
-        toast.success("Đăng ký thành công!");
-        router.push(ROUTES.LOGIN);
+        toast.success('Đăng ký thành công!')
+        router.push(ROUTES.LOGIN)
       } else {
-        toast.error(response.message || "Đăng ký thất bại. Vui lòng thử lại.");
+        toast.error(response.message || 'Đăng ký thất bại. Vui lòng thử lại.')
       }
     } catch (error: any) {
-      toast.error(error.message || "Đăng ký thất bại. Vui lòng thử lại.");
+      toast.error(error.message || 'Đăng ký thất bại. Vui lòng thử lại.')
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   const handleGoogleRegister = () => {
     // Ở đây bạn có thể gọi API đăng ký bằng Google
-  };
+  }
 
   return (
     <Card className="w-full max-w-md p-6 bg-white/70 dark:bg-gray-900/70 backdrop-blur-lg border border-gray-200 dark:border-gray-700 shadow-xl rounded-2xl">
@@ -169,7 +163,7 @@ export default function FormRegister() {
               disabled={isLoading}
               className="cursor-target w-full h-9 bg-primary text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isLoading ? "Đang đăng ký..." : "Đăng ký"}
+              {isLoading ? 'Đang đăng ký...' : 'Đăng ký'}
             </Button>
 
             {/* Divider */}
@@ -181,20 +175,9 @@ export default function FormRegister() {
               <div className="flex-grow h-px bg-gray-300 dark:bg-gray-700"></div>
             </div>
 
-            {/* Google Register */}
-            <Button
-              type="button"
-              onClick={handleGoogleRegister}
-              variant="outline"
-              className="cursor-target w-full h-9 flex items-center justify-center gap-2 border-gray-300 dark:border-gray-700"
-            >
-              <FcGoogle className="cursor-target text-lg" />
-              <span className="text-sm">Đăng ký bằng Google</span>
-            </Button>
-
             {/* Link to HR register */}
             <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-2">
-              Bạn là nhà tuyển dụng?{" "}
+              Bạn là nhà tuyển dụng?{' '}
               <a
                 href="/register/hr"
                 className="cursor-target text-green-600 dark:text-green-400 hover:underline"
@@ -205,7 +188,7 @@ export default function FormRegister() {
 
             {/* Link phụ */}
             <p className="text-center text-xs text-gray-600 dark:text-gray-400 mt-2">
-              Đã có tài khoản?{" "}
+              Đã có tài khoản?{' '}
               <a
                 href="/login"
                 className="cursor-target text-primary hover:underline"
@@ -217,5 +200,5 @@ export default function FormRegister() {
         </Form>
       </CardContent>
     </Card>
-  );
+  )
 }

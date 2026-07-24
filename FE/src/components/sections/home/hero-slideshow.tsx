@@ -4,9 +4,9 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 
 const banners = [
-  "/banners/banner1.png",
-  "/banners/banner2.png",
-  "/banners/banner3.png",
+  "/banners/banner1.webp",
+  "/banners/banner2.webp",
+  "/banners/banner3.webp",
 ];
 
 export default function HeroSlideshow() {

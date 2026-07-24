@@ -18,7 +18,7 @@ export default function RootLayout({
 }>) {
   return (
     <>
-      <html lang="en" suppressHydrationWarning>
+      <html lang="vi" suppressHydrationWarning>
         <head />
         <body>
           <Toaster />

@@ -87,7 +87,7 @@ export default function NewestJobSection() {
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 lg:gap-4 pb-4 lg:pb-6">
         {jobs.map((job) => (
-          <Link href={ROUTES.JOB_DETAIL(job.id)} key={job.id}>
+          <Link href={ROUTES.JOB_DETAIL(job.id, job.title)} key={job.id}>
             <div
               className="p-3 lg:p-5 border rounded-xl bg-card flex flex-col gap-2 lg:gap-4 cursor-pointer 
                 shadow-sm hover:shadow-xl hover:shadow-primary/30 

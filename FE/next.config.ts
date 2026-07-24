@@ -52,6 +52,70 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      {
+        source: "/home",
+        destination: "/trang-chu",
+        permanent: true,
+      },
+      {
+        source: "/jobs",
+        destination: "/viec-lam",
+        permanent: true,
+      },
+      {
+        source: "/jobs/:id",
+        destination: "/viec-lam/:id",
+        permanent: true,
+      },
+      {
+        source: "/companies",
+        destination: "/cong-ty",
+        permanent: true,
+      },
+      {
+        source: "/companies/:id",
+        destination: "/cong-ty/:id",
+        permanent: true,
+      },
+      {
+        source: "/blog",
+        destination: "/bai-viet",
+        permanent: true,
+      },
+      {
+        source: "/blog/:id",
+        destination: "/bai-viet/:id",
+        permanent: true,
+      },
+      {
+        source: "/QA",
+        destination: "/hoi-dap",
+        permanent: true,
+      },
+      {
+        source: "/search",
+        destination: "/tim-kiem",
+        permanent: true,
+      },
+      {
+        source: "/login",
+        destination: "/dang-nhap",
+        permanent: true,
+      },
+      {
+        source: "/register",
+        destination: "/dang-ky",
+        permanent: true,
+      },
+      {
+        source: "/register/hr",
+        destination: "/dang-ky/nha-tuyen-dung",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

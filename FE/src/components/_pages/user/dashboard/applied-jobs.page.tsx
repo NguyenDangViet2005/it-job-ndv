@@ -1,72 +1,72 @@
-"use client";
+'use client'
 
-import { useEffect, useState } from "react";
-import { useAuth } from "@/lib/hooks/useAuth";
-import { applicationApi } from "@/apis/application.api";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Briefcase, Clock, ExternalLink, FileText } from "lucide-react";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
-import { Application } from "@/types";
-import { openCV } from "@/utils";
+import { useEffect, useState } from 'react'
+import { useAuth } from '@/lib/hooks/useAuth'
+import { applicationApi } from '@/apis/application.api'
+import { Card, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Briefcase, Clock, ExternalLink, FileText } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import Image from 'next/image'
+import { Application } from '@/types'
+import { openCV } from '@/utils'
 
-import LoadingScreen from "@/components/common/loading-screen";
+import LoadingScreen from '@/components/common/loading/loading-screen'
 
 const statusColors: Record<string, string> = {
-  pending: "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400",
-  reviewing: "bg-blue-500/10 text-blue-700 dark:text-blue-400",
-  rejected: "bg-red-500/10 text-red-700 dark:text-red-400",
-  accepted: "bg-green-500/10 text-green-700 dark:text-green-400",
-};
+  pending: 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-400',
+  reviewing: 'bg-blue-500/10 text-blue-700 dark:text-blue-400',
+  rejected: 'bg-red-500/10 text-red-700 dark:text-red-400',
+  accepted: 'bg-green-500/10 text-green-700 dark:text-green-400',
+}
 
 const statusText: Record<string, string> = {
-  pending: "Đang chờ",
-  reviewing: "Đang xem xét",
-  rejected: "Đã từ chối",
-  accepted: "Đã chấp nhận",
-};
+  pending: 'Đang chờ',
+  reviewing: 'Đang xem xét',
+  rejected: 'Đã từ chối',
+  accepted: 'Đã chấp nhận',
+}
 
 export default function AppliedJobsPage() {
-  const { user, token } = useAuth();
-  const router = useRouter();
-  const [applications, setApplications] = useState<Application[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { user, token } = useAuth()
+  const router = useRouter()
+  const [applications, setApplications] = useState<Application[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!user || !token) {
-      router.push("/login");
-      return;
+      router.push('/login')
+      return
     }
 
     async function fetchApplications() {
       try {
-        setLoading(true);
-        const response = await applicationApi.getByUser(
-          user!.id,
-          1,
-          50,
-          token!,
-        );
-        setApplications(response.data || []);
+        setLoading(true)
+        const response = await applicationApi.getByUser(user!.id, 1, 50, token!)
+        setApplications(response.data || [])
       } catch (err) {
         setError(
           err instanceof Error
             ? err.message
-            : "Không thể tải danh sách ứng tuyển",
-        );
+            : 'Không thể tải danh sách ứng tuyển',
+        )
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
     }
 
-    fetchApplications();
-  }, [user, token, router]);
+    fetchApplications()
+  }, [user, token, router])
 
   if (loading) {
-    return <LoadingScreen fullScreen={true} message="Đang tải danh sách ứng tuyển..." />;
+    return (
+      <LoadingScreen
+        fullScreen={true}
+        message="Đang tải danh sách ứng tuyển..."
+      />
+    )
   }
 
   if (error) {
@@ -76,7 +76,7 @@ export default function AppliedJobsPage() {
           <p className="text-destructive">{error}</p>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -96,7 +96,12 @@ export default function AppliedJobsPage() {
               <p className="text-xs sm:text-base text-muted-foreground mb-2 sm:mb-4">
                 Bạn chưa có đơn ứng tuyển nào
               </p>
-              <Button onClick={() => router.push("/jobs")} className="text-xs sm:text-base h-8 sm:h-10">Tìm việc làm</Button>
+              <Button
+                onClick={() => router.push('/jobs')}
+                className="text-xs sm:text-base h-8 sm:h-10"
+              >
+                Tìm việc làm
+              </Button>
             </CardContent>
           </Card>
         ) : (
@@ -108,8 +113,8 @@ export default function AppliedJobsPage() {
                     <div className="flex gap-2 sm:gap-4 flex-1 w-full">
                       <div className="h-10 w-10 sm:h-16 sm:w-16 rounded-lg sm:rounded-xl border border-border bg-white dark:bg-muted p-1 sm:p-2 flex items-center justify-center flex-shrink-0">
                         <Image
-                          src={app.companyLogo || "/logo/default-company.png"}
-                          alt={app.companyName || "Company"}
+                          src={app.companyLogo || '/logo/default-company.png'}
+                          alt={app.companyName || 'Company'}
                           width={64}
                           height={64}
                           className="h-full w-full object-contain"
@@ -126,9 +131,9 @@ export default function AppliedJobsPage() {
                           <div className="flex items-center gap-1">
                             <Clock className="h-3 w-3 flex-shrink-0" />
                             <span>
-                              Ứng tuyển:{" "}
+                              Ứng tuyển:{' '}
                               {new Date(app.createdat).toLocaleDateString(
-                                "vi-VN",
+                                'vi-VN',
                               )}
                             </span>
                           </div>
@@ -137,8 +142,11 @@ export default function AppliedJobsPage() {
                             <button
                               className="text-blue-600 hover:underline flex items-center gap-1 text-sm font-medium"
                               onClick={(e) => {
-                                e.stopPropagation();
-                                openCV(app.cvurl, `CV_${app.userfullname || "User"}.pdf`);
+                                e.stopPropagation()
+                                openCV(
+                                  app.cvurl,
+                                  `CV_${app.userfullname || 'User'}.pdf`,
+                                )
                               }}
                             >
                               Xem CV
@@ -159,7 +167,9 @@ export default function AppliedJobsPage() {
 
                   {/* Cover Letter */}
                   <div className="mt-2 sm:mt-4 p-2 sm:p-3 bg-muted/50 rounded-lg">
-                    <p className="text-xs font-semibold mb-0.5 sm:mb-1">Thư xin việc:</p>
+                    <p className="text-xs font-semibold mb-0.5 sm:mb-1">
+                      Thư xin việc:
+                    </p>
                     <p className="text-xs text-muted-foreground whitespace-pre-wrap line-clamp-3">
                       {app.coverletter}
                     </p>
@@ -182,5 +192,5 @@ export default function AppliedJobsPage() {
         )}
       </div>
     </div>
-  );
+  )
 }

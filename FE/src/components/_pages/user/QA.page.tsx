@@ -1,11 +1,11 @@
-"use client";
+'use client'
 
-import MainContent from "@/components/sections/qa/MainContent";
-import { useInfiniteScroll } from "@/lib/hooks/usePost";
-import { useQAPage } from "@/lib/hooks/useQAPage";
-import { usePostInteractions } from "@/lib/hooks/usePostInteractions";
-import QAPageLayout from "@/components/layouts/user.QA.layout"; 
-import LoadingScreen from "@/components/common/loading-screen";
+import MainContent from '@/components/sections/qa/MainContent'
+import { useInfiniteScroll } from '@/lib/hooks/usePost'
+import { useQAPage } from '@/lib/hooks/useQAPage'
+import { usePostInteractions } from '@/lib/hooks/usePostInteractions'
+import QAPageLayout from '@/components/layouts/user.QA.layout'
+import LoadingScreen from '@/components/common/loading/loading-screen'
 
 export default function QAPage() {
   const {
@@ -24,7 +24,7 @@ export default function QAPage() {
     suggestedCompanies,
     followedCompanyIds,
     connections,
-  } = useQAPage();
+  } = useQAPage()
 
   const {
     handleLikePost,
@@ -40,12 +40,12 @@ export default function QAPage() {
     setPosts,
     setLoadingCommentsForPost,
     posts,
-  });
+  })
 
-  const loadMoreRef = useInfiniteScroll(loadMore, hasMore, loading);
+  const loadMoreRef = useInfiniteScroll(loadMore, hasMore, loading)
 
   if (authLoading) {
-    return <LoadingScreen fullScreen={true} message="Đang tải dữ liệu..." />;
+    return <LoadingScreen fullScreen={true} message="Đang tải dữ liệu..." />
   }
 
   return (
@@ -71,5 +71,5 @@ export default function QAPage() {
       />
       <div ref={loadMoreRef} className="h-10" />
     </QAPageLayout>
-  );
+  )
 }

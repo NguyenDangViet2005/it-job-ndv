@@ -40,8 +40,8 @@ const WelcomePage = () => {
   }, []);
   const logoSrc =
     mounted && (resolvedTheme === "dark" || theme === "dark")
-      ? "/logo/logo-dark-removebg.png"
-      : "/logo/logo-removebg.png";
+      ? "/logo/logo-dark-removebg.webp"
+      : "/logo/logo-removebg.webp";
 
   return (
     <div className="relative z-10 w-full min-h-screen">

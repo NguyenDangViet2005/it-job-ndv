@@ -73,7 +73,7 @@ export default function JobTodaySection() {
         >
           {jobs?.map((job) => (
             <SwiperSlide>
-              <Link href={ROUTES.JOB_DETAIL(job.id)} key={job.id}>
+              <Link href={ROUTES.JOB_DETAIL(job.id, job.title)} key={job.id}>
                 <HotJob props={job} />
               </Link>
             </SwiperSlide>

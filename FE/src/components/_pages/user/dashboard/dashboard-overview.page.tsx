@@ -1,11 +1,6 @@
-"use client";
+'use client'
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 import {
   Briefcase,
@@ -13,61 +8,61 @@ import {
   FileText,
   TrendingUp,
   Clock,
-} from "lucide-react";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { useAuth } from "@/lib/hooks/useAuth";
-import { ROUTES } from "@/constants";
-import LoadingScreen from "@/components/common/loading-screen";
+} from 'lucide-react'
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import { useAuth } from '@/lib/hooks/useAuth'
+import { ROUTES } from '@/constants'
+import LoadingScreen from '@/components/common/loading/loading-screen'
 
 export default function DashboardOverviewPage() {
-  const { user, loading } = useAuth();
+  const { user, loading } = useAuth()
 
   if (loading) {
-    return <LoadingScreen fullScreen={true} message="Đang tải tổng quan..." />;
+    return <LoadingScreen fullScreen={true} message="Đang tải tổng quan..." />
   }
 
   const stats = [
     {
-      title: "Việc đã ứng tuyển",
-      value: "8",
+      title: 'Việc đã ứng tuyển',
+      value: '8',
       icon: Briefcase,
       href: ROUTES.USER_APPLIED_JOBS,
     },
     {
-      title: "Tin nhắn mới",
-      value: "3",
+      title: 'Tin nhắn mới',
+      value: '3',
       icon: MessageSquare,
       href: ROUTES.USER_MESSAGES,
     },
     {
-      title: "CV đã tải lên",
-      value: "2",
+      title: 'CV đã tải lên',
+      value: '2',
       icon: FileText,
       href: ROUTES.USER_RESUME,
     },
-  ];
+  ]
 
   const recentActivities = [
     {
-      action: "Đã ứng tuyển vào vị trí",
-      target: "Senior Frontend Developer",
-      company: "Tech Corp",
-      time: "2 giờ trước",
+      action: 'Đã ứng tuyển vào vị trí',
+      target: 'Senior Frontend Developer',
+      company: 'Tech Corp',
+      time: '2 giờ trước',
     },
     {
-      action: "Đã lưu công việc",
-      target: "Full Stack Developer",
-      company: "Startup XYZ",
-      time: "5 giờ trước",
+      action: 'Đã lưu công việc',
+      target: 'Full Stack Developer',
+      company: 'Startup XYZ',
+      time: '5 giờ trước',
     },
     {
-      action: "Nhận tin nhắn từ",
-      target: "HR Manager",
-      company: "Innovation Ltd",
-      time: "1 ngày trước",
+      action: 'Nhận tin nhắn từ',
+      target: 'HR Manager',
+      company: 'Innovation Ltd',
+      time: '1 ngày trước',
     },
-  ];
+  ]
 
   return (
     <div className="space-y-3 sm:space-y-6">
@@ -129,7 +124,7 @@ export default function DashboardOverviewPage() {
                         {activity.action}
                       </span>
                       <span className="font-semibold text-foreground">
-                        {" "}
+                        {' '}
                         {activity.target}
                       </span>
                     </p>
@@ -180,7 +175,7 @@ export default function DashboardOverviewPage() {
               variant="outline"
               asChild
             >
-              <Link href={user?.id ? ROUTES.PROFILE(user.id) : "#"}>
+              <Link href={user?.id ? ROUTES.PROFILE(user.id) : '#'}>
                 <TrendingUp className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                 Xem hồ sơ công khai
               </Link>
@@ -192,7 +187,9 @@ export default function DashboardOverviewPage() {
       {/* Profile Completion */}
       <Card className="bg-card">
         <CardHeader className="p-3 sm:p-6">
-          <CardTitle className="text-foreground text-sm sm:text-lg">Hoàn thiện hồ sơ</CardTitle>
+          <CardTitle className="text-foreground text-sm sm:text-lg">
+            Hoàn thiện hồ sơ
+          </CardTitle>
         </CardHeader>
         <CardContent className="p-3 sm:p-6 pt-0">
           <div className="space-y-2 sm:space-y-4">
@@ -206,7 +203,7 @@ export default function DashboardOverviewPage() {
               <div className="h-1.5 sm:h-2 bg-gray-100 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-primary transition-all"
-                  style={{ width: "75%" }}
+                  style={{ width: '75%' }}
                 />
               </div>
             </div>
@@ -237,5 +234,5 @@ export default function DashboardOverviewPage() {
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }

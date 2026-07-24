@@ -1,9 +1,36 @@
 import { Metadata } from "next";
 
-export const getMetadata = (title: string, description?: string): Metadata => {
+export interface MetadataOptions {
+  title: string;
+  description?: string;
+  image?: string;
+  path?: string;
+  noIndex?: boolean;
+}
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://it-job.vn";
+
+export const getMetadata = (
+  options: string | MetadataOptions,
+  fallbackDesc?: string
+): Metadata => {
+  const opts: MetadataOptions =
+    typeof options === "string"
+      ? { title: options, description: fallbackDesc }
+      : options;
+
+  const { title, description, image, path = "", noIndex = false } = opts;
+  const desc = description || title;
+  const ogImageUrl = image || "/media/open-graph.webp";
+  const pageUrl = path ? `${siteUrl}${path.startsWith("/") ? path : `/${path}`}` : siteUrl;
+
   return {
+    metadataBase: new URL(siteUrl),
     title,
-    description: description || title,
+    description: desc,
+    alternates: {
+      canonical: pageUrl,
+    },
     icons: {
       icon: [
         { url: "/icons/icon.svg", sizes: "any" },
@@ -11,5 +38,35 @@ export const getMetadata = (title: string, description?: string): Metadata => {
         { url: "/icon-32x32.png", sizes: "32x32", type: "image/png" },
       ],
     },
+    openGraph: {
+      title,
+      description: desc,
+      url: pageUrl,
+      siteName: "IT Job",
+      locale: "vi_VN",
+      type: "website",
+      images: [
+        {
+          url: ogImageUrl,
+          alt: title,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description: desc,
+      images: [ogImageUrl],
+    },
+    robots: noIndex
+      ? {
+          index: false,
+          follow: true,
+        }
+      : {
+          index: true,
+          follow: true,
+        },
   };
 };
+

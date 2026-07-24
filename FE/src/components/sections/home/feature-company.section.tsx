@@ -100,7 +100,7 @@ export default function FeaturedCompanieSection() {
       >
         {companies.map((company: Company) => (
           <SwiperSlide key={company.id} className="!w-[700px] lg:!w-[900px] !h-[350px] lg:!h-[450px]">
-            <Link href={ROUTES.COMPANY_DETAIL(company.id)} className="block group ">
+            <Link href={ROUTES.COMPANY_DETAIL(company.id, company.name)} className="block group ">
               <div className="shadow-lg bg-card transition-all duration-300 group-hover:scale-105 w-full mb-10 lg:mb-12 relative">
                 {/* Cover Image */}
                 <div className="relative w-full h-[250px] lg:h-[350px] overflow-hidden rounded-t-lg">
