@@ -13,9 +13,9 @@ export default function RootLayout({
   return (
     <>
       <UserHeader />
-      <div className="pb-0 sm:pb-0">
+      <main id="main-content" className="pb-0 sm:pb-0">
         {children}
-      </div>
+      </main>
       <UserFooter />
       <MobileBottomNav />
     </>
