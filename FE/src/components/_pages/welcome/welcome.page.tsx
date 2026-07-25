@@ -8,6 +8,8 @@ import { useEffect, useRef, useState } from "react";
 import Typed from "typed.js";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { ModeToggle } from "@/components/features/toggle-theme";
+import { LottieAnimation } from "@/components/common/lottie-animation";
+import { AppLogo } from "@/components/common/app-logo";
 
 const WelcomePage = () => {
   const el = useRef(null);
@@ -38,50 +40,31 @@ const WelcomePage = () => {
       typed.destroy();
     };
   }, []);
-  const logoSrc =
-    mounted && (resolvedTheme === "dark" || theme === "dark")
-      ? "/logo/logo-dark-removebg.webp"
-      : "/logo/logo-removebg.webp";
 
   return (
     <div className="relative z-10 w-full min-h-screen">
       {/* Header with Logo and Theme Toggle */}
       <div className="pt-5 px-10 flex items-center justify-between">
         <Link href={ROUTES.HOME} className="cursor-target">
-          <Image
-            src={logoSrc}
-            width={160}
-            height={80}
-            alt="IT-Job Logo"
-            priority
-            className="object-contain"
-          />
+          <AppLogo width={160} height={80} />
         </Link>
         <ModeToggle />
       </div>
       <div className="flex flex-col lg:flex-row mt-10">
-        <div className="w-full lg:w-1/2 min-h-[50vh] flex items-center justify-center p-6">
-          <div className="w-full max-w-2xl aspect-video overflow-hidden">
-            <video
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="w-full h-full object-cover"
-            >
-              <source src="/media/welcome.mp4" type="video/mp4" />
-              <div className="w-full h-full bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center text-white">
-                Video Loading...
-              </div>
-            </video>
+        <div className="w-full lg:w-3/5 min-h-[50vh] flex items-center justify-center p-6">
+          <div className="w-full max-w-2xl flex items-center justify-center">
+            <LottieAnimation
+              src="/media/welcome.json"
+              className="w-full h-auto max-h-[500px]"
+            />
           </div>
         </div>
 
         {/* Right Side - Content */}
-        <div className="w-full lg:w-1/2 min-h-[50vh] flex flex-col items-center justify-center p-6">
-          <div className="w-full max-w-xl space-y-6 lg:space-y-8">
+        <div className="w-full lg:w-2/5 min-h-[50vh] flex flex-col items-center justify-center p-6 text-[0.8rem]">
+          <div className="w-full max-w-xl space-y-4 lg:space-y-6">
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 rounded-full bg-blue-50 dark:bg-blue-950/50 px-4 py-2 text-sm font-medium text-primary dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+            <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 dark:bg-emerald-950/50 px-3.5 py-1.5 text-xs font-medium text-primary dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
@@ -90,8 +73,8 @@ const WelcomePage = () => {
             </div>
 
             {/* Heading */}
-            <div className="space-y-3 lg:space-y-4">
-              <h1 className="text-4xl md:text-5xl lg:text-5xl font-bold tracking-tight leading-tight">
+            <div className="space-y-2 lg:space-y-3">
+              <h1 className="text-3xl md:text-4xl lg:text-4xl font-bold tracking-tight leading-tight">
                 <span className="bg-primary bg-clip-text text-transparent">
                   Kết nối
                 </span>
@@ -101,20 +84,20 @@ const WelcomePage = () => {
                 </span>
               </h1>
 
-              <div className="h-[60px] lg:h-[70px] flex items-start">
+              <div className="h-[50px] lg:h-[55px] flex items-start">
                 <p
-                  className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed font-light"
+                  className="text-base text-gray-700 dark:text-gray-300 leading-relaxed font-light"
                   ref={el}
                 ></p>
               </div>
             </div>
 
             {/* Features */}
-            <div className="grid grid-cols-1 gap-3 lg:gap-4 py-2 lg:py-4">
-              <div className="flex items-start gap-3 text-left">
-                <div className="mt-0.5 rounded-2xl bg-blue-50 dark:bg-blue-950/50 p-2 flex-shrink-0">
+            <div className="grid grid-cols-1 gap-2.5 lg:gap-3 py-2 lg:py-3">
+              <div className="flex items-start gap-2.5 text-left">
+                <div className="mt-0.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 p-1.5 flex-shrink-0">
                   <svg
-                    className="w-5 h-5 text-primary"
+                    className="w-4 h-4 text-primary"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -128,18 +111,18 @@ const WelcomePage = () => {
                   </svg>
                 </div>
                 <div className="flex-1">
-                  <h3 className="font-semibold text-base text-gray-900 dark:text-gray-100">
+                  <h3 className="font-semibold text-sm text-gray-900 dark:text-gray-100">
                     Hàng ngàn việc làm IT
                   </h3>
-                  <p className="text-xs text-gray-700 dark:text-gray-400">
+                  <p className="text-[11px] text-gray-700 dark:text-gray-400">
                     Cơ hội việc làm từ các công ty công nghệ hàng đầu
                   </p>
                 </div>
               </div>
-              <div className="flex items-start gap-3 text-left">
-                <div className="mt-0.5 rounded-2xl bg-blue-50 dark:bg-blue-950/50 p-2 flex-shrink-0">
+              <div className="flex items-start gap-2.5 text-left">
+                <div className="mt-0.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 p-1.5 flex-shrink-0">
                   <svg
-                    className="w-5 h-5 text-primary"
+                    className="w-4 h-4 text-primary"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -153,10 +136,10 @@ const WelcomePage = () => {
                   </svg>
                 </div>
                 <div className="flex-1">
-                  <h3 className="font-semibold text-base text-gray-900 dark:text-gray-100">
+                  <h3 className="font-semibold text-sm text-gray-900 dark:text-gray-100">
                     Ứng tuyển nhanh chóng
                   </h3>
-                  <p className="text-xs text-gray-700 dark:text-gray-400">
+                  <p className="text-[11px] text-gray-700 dark:text-gray-400">
                     Quy trình đơn giản, phản hồi nhanh từ nhà tuyển dụng
                   </p>
                 </div>
@@ -164,10 +147,10 @@ const WelcomePage = () => {
             </div>
 
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 pt-2">
+            <div className="flex flex-col sm:flex-row gap-3 pt-2">
               {user ? (
                 <div className="flex-1 flex items-center justify-center">
-                  <span className="text-lg font-semibold text-gray-900 dark:text-white">
+                  <span className="text-base font-semibold text-gray-900 dark:text-white">
                     Xin chào, {user.fullname}
                   </span>
                 </div>
@@ -182,7 +165,7 @@ const WelcomePage = () => {
                 </Link>
               )}
               <Link href={ROUTES.HOME} className="flex-1">
-                <Button className="cursor-pointer w-full text-base font-semibold px-8 h-12 bg-primary text-white shadow-lg shadow-primary/30 hover:shadow-primary/40 transition-all duration-300 hover:scale-105">
+                <Button className="cursor-pointer w-full text-base font-semibold px-8 h-12 bg-primary text-white shadow-lg hover:shadow-primary/40 transition-all duration-300 hover:scale-105">
                   Khám phá việc làm
                 </Button>
               </Link>

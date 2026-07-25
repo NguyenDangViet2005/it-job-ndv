@@ -29,7 +29,7 @@ export default function JobDetailPage({ jobid }: {jobid : string}) {
         const response = await jobApi.getById(Number(jobid));
         setJobData(response as any);
 
-        if (user && token) {
+        if (user && token && user.role === "user") {
           const appsResponse = await applicationApi.getByUser(user.id, 1, 100, token);
           if (appsResponse && appsResponse.data) {
             const applied = appsResponse.data.some(

@@ -38,6 +38,7 @@ import { useState, useEffect, useRef } from "react";
 import { ROUTES } from "@/constants";
 import { hrSidebarItems } from "@/constants/navigation.config";
 import { useClickOutside } from "@/lib/hooks/useClickOutside";
+import { AppLogo } from "@/components/common/app-logo";
 
 export function HRLayout({ children }: { children: React.ReactNode }) {
   const { logout, user, company, token } = useAuth();
@@ -56,15 +57,6 @@ export function HRLayout({ children }: { children: React.ReactNode }) {
 
   // Tự động đóng mobile menu khi click bên ngoài
   useClickOutside(sidebarRef as React.RefObject<HTMLElement>, closeMobileMenu, mobileMenuOpen);
-
-  const logoSrc =
-    mounted && (resolvedTheme === "dark" || theme === "dark")
-      ? "/logo/logo-dark-removebg.webp"
-      : "/logo/logo-removebg.webp";
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   // Fetch dynamic data
   useEffect(() => {
@@ -233,15 +225,8 @@ export function HRLayout({ children }: { children: React.ReactNode }) {
               <Menu className="h-5 w-5" />
             </Button>
             <div className="flex items-center">
-              <Link href={ROUTES.HOME} className="cursor-target">
-                <Image
-                  src={logoSrc}
-                  width={120}
-                  height={40}
-                  alt="IT-Job Logo"
-                  priority
-                  className="object-contain h-10"
-                />
+              <Link href={ROUTES.HR} className="flex items-center gap-2">
+                <AppLogo width={120} height={40} />
               </Link>
             </div>
           </div>

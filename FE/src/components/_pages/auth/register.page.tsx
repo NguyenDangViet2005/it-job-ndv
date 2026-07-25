@@ -4,6 +4,8 @@ import FormRegister from "@/components/common/forms/auth/register.form";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/constants";
 import { ArrowLeft } from "lucide-react";
+import { LottieAnimation } from "@/components/common/lottie-animation";
+import { AppLogo } from "@/components/common/app-logo";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/hooks/useAuth";
@@ -43,21 +45,13 @@ export default function RegisterPage() {
         </Link>
       </div>
 
-      {/* Left Side - Video */}
+      {/* Left Side - Animation */}
       <div className="w-full lg:w-1/2 min-h-[40vh] lg:min-h-screen flex items-center justify-center p-6 lg:p-12">
-        <div className="w-full max-w-2xl aspect-video overflow-hidden">
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="w-full h-full object-cover"
-          >
-            <source src="/media/welcome.mp4" type="video/mp4" />
-            <div className="w-full h-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white">
-              Video Loading...
-            </div>
-          </video>
+        <div className="w-full max-w-2xl flex items-center justify-center">
+          <LottieAnimation
+            src="/media/welcome.json"
+            className="w-full h-auto max-h-[500px]"
+          />
         </div>
       </div>
 

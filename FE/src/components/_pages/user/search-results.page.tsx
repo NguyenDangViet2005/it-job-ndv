@@ -107,7 +107,7 @@ export default function SearchResultsPage() {
                 Đang tìm kiếm...
               </p>
             </div>
-          ) : !searchData ? (
+          ) : (!searchData || ((!searchData.jobs || searchData.jobs.length === 0) && (!searchData.companies || searchData.companies.length === 0))) ? (
             /* No Results */
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-12 text-center">
               <div className="w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-6">
