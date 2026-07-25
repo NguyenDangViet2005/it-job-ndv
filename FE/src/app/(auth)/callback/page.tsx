@@ -83,7 +83,6 @@ export default function AuthCallbackPage() {
       fallback={
         <div className="w-full h-screen flex flex-col items-center justify-center gap-4">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-          <p className="text-gray-500 dark:text-gray-400">Đang tải...</p>
         </div>
       }
     >

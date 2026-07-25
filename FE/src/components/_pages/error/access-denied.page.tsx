@@ -2,56 +2,25 @@
 
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Home, ArrowLeft } from "lucide-react";
-import Image from "next/image";
-import { ROUTES } from "@/constants";
-import { useEffect, useState } from "react";
+import { ArrowLeft } from "lucide-react";
+import { LottieAnimation } from "@/components/common/lottie-animation";
 
 export default function AccessDeniedPage() {
   const router = useRouter();
-  const [previousPath, setPreviousPath] = useState<string | null>(null);
-
-  useEffect(() => {
-    // Lấy trang trước đó từ sessionStorage
-    const stored = sessionStorage.getItem("nav_history");
-    if (stored) {
-      try {
-        const history: string[] = JSON.parse(stored);
-        // Lấy trang trước đó (không phải trang hiện tại)
-        if (history.length >= 2) {
-          setPreviousPath(history[history.length - 2]);
-        }
-      } catch (e) {
-        // Ignore parse errors
-      }
-    }
-  }, []);
 
   const handleGoBack = () => {
-    if (previousPath) {
-      router.replace(previousPath);
-    } else {
-      handleGoHome();
-    }
-  };
-
-  const handleGoHome = () => {
-    // Redirect về trang chủ
-    router.replace(ROUTES.HOME);
+    // Với render inline, router.back() sẽ thực sự đưa người dùng về trang trước đó trong lịch sử trình duyệt
+    router.back();
   };
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-background p-4">
       <div className="max-w-2xl w-full text-center space-y-6">
-        {/* Image */}
+        {/* Lottie Animation */}
         <div className="flex justify-center">
-          <Image
-            src="/media/unauthorize.jpg"
-            alt="403 Access Denied"
-            width={700}
-            height={500}
-            className="object-contain"
-            priority
+          <LottieAnimation
+            src="/media/access-denied.json"
+            className="w-full max-w-md h-80"
           />
         </div>
 
@@ -66,26 +35,15 @@ export default function AccessDeniedPage() {
           </p>
         </div>
 
-        {/* Buttons */}
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          {previousPath && (
-            <Button
-              onClick={handleGoBack}
-              size="lg"
-              variant="outline"
-              className="cursor-pointer px-8"
-            >
-              <ArrowLeft className="w-5 h-5 mr-2" />
-              Quay lại
-            </Button>
-          )}
+        {/* Centered Single Back Button */}
+        <div className="flex justify-center">
           <Button
-            onClick={handleGoHome}
+            onClick={handleGoBack}
             size="lg"
             className="cursor-pointer bg-primary-foreground hover:bg-primary/90 hover:text-primary-foreground text-primary px-8 border-primary border-1"
           >
-            <Home className="w-5 h-5 mr-2" />
-            Về trang chủ
+            <ArrowLeft className="w-5 h-5 mr-2" />
+            Trở lại
           </Button>
         </div>
       </div>

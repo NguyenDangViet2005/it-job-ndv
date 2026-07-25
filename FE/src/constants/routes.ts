@@ -26,13 +26,14 @@ export const ROUTES = {
   PROFILE_EDIT: "/profile/edit",
 
   // User Dashboard routes
-  USER_DASHBOARD: "/dashboard",
-  USER_RESUME: "/resume",
-  USER_APPLIED_JOBS: "/applied-jobs",
+  // User Dashboard routes
+  USER_DASHBOARD: "/tong-quan",
+  USER_RESUME: "/ho-so-cv",
+  USER_APPLIED_JOBS: "/cong-viec-da-ung-tuyen",
   USER_SAVED_JOBS: "/saved-jobs",
-  USER_MESSAGES: "/messages",
-  USER_SETTINGS: "/settings",
-  USER_MY_BLOGS: "/my-blogs",
+  USER_MESSAGES: "/tin-nhan",
+  USER_SETTINGS: "/cai-dat",
+  USER_MY_BLOGS: "/bai-viet-cua-toi",
 
   // Job routes
   JOBS: "/viec-lam",
@@ -62,23 +63,23 @@ export const ROUTES = {
   POST_DETAIL: (postid: number | string) => `/social/posts/${postid}`,
 
   // HR/Employer routes
-  HR: "/hr/company",
-  HR_JOBS: "/hr/jobs",
-  HR_JOB_CREATE: "/hr/jobs/create",
-  HR_JOB_EDIT: (jobid: number | string) => `/hr/jobs/${jobid}/edit`,
-  HR_CANDIDATES: "/hr/candidates",
-  HR_COMPANY: "/hr/company",
-  HR_BLOG: "/hr/blog",
-  HR_SETTINGS: "/hr/settings",
+  HR: "/hr/cong-ty",
+  HR_JOBS: "/hr/tin-tuyen-dung",
+  HR_JOB_CREATE: "/hr/tin-tuyen-dung/create",
+  HR_JOB_EDIT: (jobid: number | string) => `/hr/tin-tuyen-dung/${jobid}/edit`,
+  HR_CANDIDATES: "/hr/ung-vien",
+  HR_COMPANY: "/hr/cong-ty",
+  HR_BLOG: "/hr/bai-viet",
+  HR_SETTINGS: "/hr/cai-dat",
 
   // Admin routes
-  ADMIN: "/admin/dashboard",
-  ADMIN_DASHBOARD: "/admin/dashboard",
-  ADMIN_USERS: "/admin/users",
-  ADMIN_COMPANIES: "/admin/company",
-  ADMIN_JOBS: "/admin/jobs",
-  ADMIN_BLOGS: "/admin/blog",
-  ADMIN_SETTINGS: "/admin/settings",
+  ADMIN: "/admin/tong-quan",
+  ADMIN_DASHBOARD: "/admin/tong-quan",
+  ADMIN_USERS: "/admin/nguoi-dung",
+  ADMIN_COMPANIES: "/admin/cong-ty",
+  ADMIN_JOBS: "/admin/tin-tuyen-dung",
+  ADMIN_BLOGS: "/admin/bai-viet",
+  ADMIN_SETTINGS: "/admin/cai-dat",
 
   // Error routes
   NOT_FOUND: "/not-found",

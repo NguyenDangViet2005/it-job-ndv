@@ -1,6 +1,6 @@
-"use client";
+'use client'
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button'
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -8,52 +8,46 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu";
-import { useState, useEffect, Fragment } from "react";
-import Link from "next/link";
-import { ModeToggle } from "@/components/features/toggle-theme";
-import { Input } from "@/components/ui/input";
-import { useAuth } from "@/lib/hooks/useAuth";
-import { navigationItems } from "@/constants/navigation.config";
-import { NavigationLink } from "@/components/features/navigation/navigation-link";
-import { UserDropdown } from "@/components/features/navigation/user-dropdown";
-import { MobileMenu } from "@/components/features/navigation/mobile-menu";
-import Image from "next/image";
-import { useTheme } from "next-themes";
-import { ROUTES } from "@/constants";
+} from '@/components/ui/navigation-menu'
+import { useState, useEffect, Fragment } from 'react'
+import Link from 'next/link'
+import { ModeToggle } from '@/components/features/toggle-theme'
+import { Input } from '@/components/ui/input'
+import { useAuth } from '@/lib/hooks/useAuth'
+import { AppLogo } from '@/components/common/app-logo'
+import { navigationItems } from '@/constants/navigation.config'
+import { NavigationLink } from '@/components/features/navigation/navigation-link'
+import { UserDropdown } from '@/components/features/navigation/user-dropdown'
+import { MobileMenu } from '@/components/features/navigation/mobile-menu'
+import Image from 'next/image'
+import { useTheme } from 'next-themes'
+import { ROUTES } from '@/constants'
 
 const UserHeader = () => {
-  const [scrolled, setScrolled] = useState(false);
-  const { user, isAuthenticated, logout } = useAuth();
-  const { theme, resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
+  const [scrolled, setScrolled] = useState(false)
+  const { user, isAuthenticated, logout } = useAuth()
+  const { theme, resolvedTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
 
   // Use isAuthenticated only after mount to prevent hydration mismatch
-  const isLoggedIn = mounted ? isAuthenticated : false;
+  const isLoggedIn = mounted ? isAuthenticated : false
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 100);
-    };
+      setScrolled(window.scrollY > 100)
+    }
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   const handleLogout = () => {
-    logout();
-  };
-
-  // Prevent hydration mismatch by not rendering theme-dependent content until mounted
-  const logoSrc = mounted
-    ? resolvedTheme === "dark" || theme === "dark"
-      ? "/logo/logo-dark-removebg.webp"
-      : "/logo/logo-removebg.webp"
-    : "/logo/logo-removebg.webp"; // Default to light logo for SSR
+    logout()
+  }
 
   return (
     <header
@@ -64,24 +58,20 @@ const UserHeader = () => {
         transition-all duration-300
         ${
           scrolled
-            ? "bg-white/80 dark:bg-black/60 shadow-lg backdrop-blur-md"
-            : "bg-background/50"
+            ? 'bg-white/80 dark:bg-black/60 shadow-lg backdrop-blur-md'
+            : 'bg-background/50'
         }
         hover:bg-white dark:hover:bg-card hover:shadow-xl
       `}
     >
       <div className="flex h-14 items-center justify-between">
         {/* Logo */}
-        <div className="p-2 h-full flex items-center">
-          <Link href={ROUTES.HOME} className="cursor-target">
-            <Image
-              src={logoSrc}
-              width={80}
-              height={50}
-              alt="IT-Job Logo"
-              priority
-              className="object-contain"
-            />
+        <div className="pt-2 h-full flex items-center">
+          <Link
+            href={ROUTES.HOME}
+            className="flex items-center gap-2 cursor-target transition-transform hover:scale-105"
+          >
+            <AppLogo width={160} height={80} />
           </Link>
         </div>
 
@@ -108,7 +98,7 @@ const UserHeader = () => {
                         {item.items.map((subItem) => (
                           <NavigationMenuLink key={subItem.title} asChild>
                             <Link
-                              href={subItem.href || ""}
+                              href={subItem.href || ''}
                               className="group block select-none space-y-1 cursor-target rounded-md p-3 leading-none no-underline outline-none transition-colors duration-200 hover:text-primary focus:text-primary"
                             >
                               <div className="text-sm font-medium">
@@ -166,7 +156,7 @@ const UserHeader = () => {
         </div>
       </div>
     </header>
-  );
-};
+  )
+}
 
-export default UserHeader;
+export default UserHeader

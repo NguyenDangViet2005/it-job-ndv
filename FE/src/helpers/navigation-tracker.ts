@@ -25,16 +25,18 @@ export function NavigationTracker() {
         }
       }
 
-      // Thêm pathname mới vào history
-      history.push(pathname);
+      // Chỉ thêm nếu đường dẫn khác với trang cuối cùng trong history
+      if (history.length === 0 || history[history.length - 1] !== pathname) {
+        history.push(pathname);
 
-      // Giới hạn history chỉ lưu 10 trang gần nhất
-      if (history.length > 10) {
-        history.shift();
+        // Giới hạn history chỉ lưu 10 trang gần nhất
+        if (history.length > 10) {
+          history.shift();
+        }
+
+        // Lưu vào sessionStorage
+        sessionStorage.setItem("nav_history", JSON.stringify(history));
       }
-
-      // Lưu vào sessionStorage
-      sessionStorage.setItem("nav_history", JSON.stringify(history));
     }
   }, [pathname]);
 

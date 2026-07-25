@@ -1,6 +1,6 @@
-"use client";
+'use client'
 
-import JobCard from "@/components/common/cards/jobCards/job.card";
+import JobCard from '@/components/common/cards/jobCards/job.card'
 import {
   Pagination,
   PaginationContent,
@@ -9,18 +9,19 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/components/ui/pagination";
-import { Briefcase } from "lucide-react";
-import { JobListSkeleton } from "@/components/common/skeletons";
-import { Job } from "@/types";
+} from '@/components/ui/pagination'
+import { Briefcase } from 'lucide-react'
+import type { Job } from '@/types/models/job.type'
+import LoadingScreen from '@/components/common/loading/loading-screen'
+import { JobListSkeleton } from '@/components/common/skeletons'
 
 interface JobListSectionProps {
-  jobs: Job[];
-  loading: boolean;
-  error: string | null;
-  currentPage: number;
-  totalPages: number;
-  onPageChange: (page: number) => void;
+  jobs: Job[]
+  loading: boolean
+  error: string | null
+  currentPage: number
+  totalPages: number
+  onPageChange: (page: number) => void
 }
 
 export default function JobListSection({
@@ -32,13 +33,13 @@ export default function JobListSection({
   onPageChange,
 }: JobListSectionProps) {
   const handlePageChange = (page: number) => {
-    onPageChange(page);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+    onPageChange(page)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
 
   const renderPaginationItems = () => {
-    const items = [];
-    const maxVisible = 5;
+    const items = []
+    const maxVisible = 5
 
     if (totalPages <= maxVisible) {
       for (let i = 1; i <= totalPages; i++) {
@@ -51,8 +52,8 @@ export default function JobListSection({
             >
               {i}
             </PaginationLink>
-          </PaginationItem>
-        );
+          </PaginationItem>,
+        )
       }
     } else {
       items.push(
@@ -64,19 +65,19 @@ export default function JobListSection({
           >
             1
           </PaginationLink>
-        </PaginationItem>
-      );
+        </PaginationItem>,
+      )
 
       if (currentPage > 3) {
         items.push(
           <PaginationItem key="ellipsis-1">
             <PaginationEllipsis />
-          </PaginationItem>
-        );
+          </PaginationItem>,
+        )
       }
 
-      const start = Math.max(2, currentPage - 1);
-      const end = Math.min(totalPages - 1, currentPage + 1);
+      const start = Math.max(2, currentPage - 1)
+      const end = Math.min(totalPages - 1, currentPage + 1)
 
       for (let i = start; i <= end; i++) {
         items.push(
@@ -88,16 +89,16 @@ export default function JobListSection({
             >
               {i}
             </PaginationLink>
-          </PaginationItem>
-        );
+          </PaginationItem>,
+        )
       }
 
       if (currentPage < totalPages - 2) {
         items.push(
           <PaginationItem key="ellipsis-2">
             <PaginationEllipsis />
-          </PaginationItem>
-        );
+          </PaginationItem>,
+        )
       }
 
       items.push(
@@ -109,15 +110,15 @@ export default function JobListSection({
           >
             {totalPages}
           </PaginationLink>
-        </PaginationItem>
-      );
+        </PaginationItem>,
+      )
     }
 
-    return items;
-  };
+    return items
+  }
 
   if (loading) {
-    return <JobListSkeleton />;
+    return <JobListSkeleton />
   }
 
   if (error) {
@@ -126,7 +127,7 @@ export default function JobListSection({
         <div className="text-destructive text-lg font-medium">Lỗi: {error}</div>
         <p className="text-muted-foreground">Vui lòng thử lại sau</p>
       </div>
-    );
+    )
   }
 
   if (!jobs || jobs.length === 0) {
@@ -140,7 +141,7 @@ export default function JobListSection({
           Thử thay đổi bộ lọc để xem thêm kết quả
         </p>
       </div>
-    );
+    )
   }
 
   return (
@@ -148,10 +149,10 @@ export default function JobListSection({
       {/* Results count */}
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
-          Hiển thị{" "}
+          Hiển thị{' '}
           <span className="font-medium text-foreground">
             {jobs?.length || 0}
-          </span>{" "}
+          </span>{' '}
           công việc
         </p>
       </div>
@@ -174,8 +175,8 @@ export default function JobListSection({
                 }
                 className={
                   currentPage === 1
-                    ? "pointer-events-none opacity-50"
-                    : "cursor-pointer"
+                    ? 'pointer-events-none opacity-50'
+                    : 'cursor-pointer'
                 }
               />
             </PaginationItem>
@@ -189,8 +190,8 @@ export default function JobListSection({
                 }
                 className={
                   currentPage === totalPages
-                    ? "pointer-events-none opacity-50"
-                    : "cursor-pointer"
+                    ? 'pointer-events-none opacity-50'
+                    : 'cursor-pointer'
                 }
               />
             </PaginationItem>
@@ -198,5 +199,5 @@ export default function JobListSection({
         </Pagination>
       )}
     </div>
-  );
+  )
 }

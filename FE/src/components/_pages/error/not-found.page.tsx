@@ -2,8 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Home } from "lucide-react";
-import Image from "next/image";
+import { ArrowLeft } from "lucide-react";
+import { LottieAnimation } from "@/components/common/lottie-animation";
 
 export default function NotFoundPage() {
   const router = useRouter();
@@ -11,15 +11,11 @@ export default function NotFoundPage() {
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-background p-4">
       <div className="max-w-2xl w-full text-center space-y-6">
-        {/* Image */}
+        {/* Lottie Animation */}
         <div className="flex justify-center">
-          <Image
-            src="/media/notfound.jpg"
-            alt="404 Not Found"
-            width={700}
-            height={500}
-            className="object-contain"
-            priority
+          <LottieAnimation
+            src="/media/lonely-404.json"
+            className="w-full max-w-md h-80"
           />
         </div>
 

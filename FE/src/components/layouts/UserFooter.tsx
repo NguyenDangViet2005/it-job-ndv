@@ -14,34 +14,16 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useTheme } from "next-themes";
-import { useState, useEffect } from "react";
+import { AppLogo } from "@/components/common/app-logo";
 
 const UserFooter = () => {
-  const { theme, resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // Determine logo based on theme
-  const logoSrc = mounted && (resolvedTheme === "dark" || theme === "dark")
-    ? "/logo/logo-dark-removebg.webp"
-    : "/logo/logo-removebg.webp";
   return (
     <footer className="hidden sm:block py-8 lg:py-12 mx-auto px-2 lg:px-4 backdrop-blur-md bg-background/60 border-t border-border/40">
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 xl:gap-12 px-4 lg:px-20">
         {/* Logo và Social Links */}
         <div className="md:col-span-4 lg:col-span-3">
           <Link href="/" className="flex items-center mb-4 lg:mb-6">
-            <Image
-              src={logoSrc}
-              width={180}
-              height={80}
-              alt="IT-Job Logo"
-              className="object-contain"
-            />
+            <AppLogo width={180} height={80} />
           </Link>
 
           <p className="text-muted-foreground/90 mb-4 lg:mb-6 leading-relaxed text-sm lg:text-base">

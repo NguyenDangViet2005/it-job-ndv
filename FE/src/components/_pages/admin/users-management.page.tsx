@@ -27,31 +27,50 @@ const UsersManagement = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [userToDelete, setUserToDelete] = useState<AdminUser | null>(null);
   const [filterRole, setFilterRole] = useState("all");
+  const [allUsers, setAllUsers] = useState<AdminUser[]>([]);
   const pageSize = 10;
 
   const fetchUsers = async () => {
     try {
       setLoading(true);
       setError(null);
+
+      // Fetch current page data for table
       const response = await userApi.getAll(
         currentPage,
         pageSize,
         token || undefined,
       );
 
-      // Handle backend response format with $values
-      let usersData = response.data;
+      // Handle response.users, response.data, response.$values or direct array
+      const resAny = response as any;
+      let rawData = resAny.users || resAny.data || (Array.isArray(resAny) ? resAny : []);
       if (
-        usersData &&
-        typeof usersData === "object" &&
-        "$values" in usersData
+        rawData &&
+        typeof rawData === "object" &&
+        "$values" in rawData
       ) {
-        usersData = (usersData as any).$values;
+        rawData = rawData.$values;
       }
 
-      setUsers(Array.isArray(usersData) ? usersData : []);
-      setTotalPages(response.totalPages || 1);
-      setTotalItems(response.totalItems || 0);
+      const usersList = Array.isArray(rawData) ? rawData : [];
+      setUsers(usersList);
+      setTotalPages(resAny.totalPages || (usersList.length > 0 ? Math.ceil(usersList.length / pageSize) : 1));
+      const totalCount = resAny.totalItems || usersList.length;
+      setTotalItems(totalCount);
+
+      // Fetch all users for global stats calculation if total items > current page size
+      if (totalCount > pageSize) {
+        const allRes = await userApi.getAll(1, totalCount, token || undefined);
+        const allResAny = allRes as any;
+        let allRawData = allResAny.users || allResAny.data || (Array.isArray(allResAny) ? allResAny : []);
+        if (allRawData && typeof allRawData === "object" && "$values" in allRawData) {
+          allRawData = allRawData.$values;
+        }
+        setAllUsers(Array.isArray(allRawData) ? allRawData : usersList);
+      } else {
+        setAllUsers(usersList);
+      }
     } catch (err) {
       setError(
         err instanceof Error
@@ -65,7 +84,7 @@ const UsersManagement = () => {
 
   useEffect(() => {
     fetchUsers();
-  }, [currentPage]);
+  }, [currentPage, token]);
 
   // Filter users client-side
   const filteredUsers = users.filter((user) => {
@@ -77,29 +96,30 @@ const UsersManagement = () => {
     return matchesSearch && matchesFilter;
   });
 
-  // Stats
+  // Calculate global stats across all users
+  const statsSource = allUsers.length > 0 ? allUsers : users;
   const stats = [
     {
       label: "Tổng người dùng",
-      value: totalItems,
+      value: totalItems || statsSource.length,
       icon: Users,
       color: "from-blue-500/20 to-blue-600/20",
     },
     {
       label: "Đang hoạt động",
-      value: users.length,
+      value: statsSource.length,
       icon: CheckCircle,
       color: "from-green-500/20 to-green-600/20",
     },
     {
       label: "Nhà tuyển dụng",
-      value: users.filter((u) => u.role?.toLowerCase() === "employer").length,
+      value: statsSource.filter((u) => u.role?.toLowerCase() === "employer").length,
       icon: Clock,
       color: "from-yellow-500/20 to-yellow-600/20",
     },
     {
       label: "Admin",
-      value: users.filter((u) => u.role?.toLowerCase() === "admin").length,
+      value: statsSource.filter((u) => u.role?.toLowerCase() === "admin").length,
       icon: Shield,
       color: "from-red-500/20 to-red-600/20",
     },
@@ -151,7 +171,7 @@ const UsersManagement = () => {
         error={error}
         currentPage={currentPage}
         totalPages={totalPages}
-        totalItems={filteredUsers.length}
+        totalItems={totalItems || filteredUsers.length}
         pageSize={pageSize}
         onPageChange={setCurrentPage}
         searchPlaceholder="Tìm kiếm theo tên hoặc email..."

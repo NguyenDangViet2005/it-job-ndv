@@ -254,12 +254,12 @@ const CompanyDetailPage = ({companyid}: {companyid: string}) => {
                                 </Badge>
                                 {job.salary && (
                                   <span className="text-muted-foreground flex items-center gap-1">
-                                    💰 {job.salary}
+                                    Lương: {job.salary}
                                   </span>
                                 )}
                                 {job.deadline && (
                                   <span className="text-muted-foreground flex items-center gap-1">
-                                    📅 Hạn: {new Date(job.deadline).toLocaleDateString('vi-VN')}
+                                     Hạn nộp hồ sơ: {new Date(job.deadline).toLocaleDateString('vi-VN')}
                                   </span>
                                 )}
                               </div>

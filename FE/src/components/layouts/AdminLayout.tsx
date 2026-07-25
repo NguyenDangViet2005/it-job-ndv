@@ -16,34 +16,27 @@ import { cn } from "@/lib/utils";
 import { ModeToggle } from "@/components/features/toggle-theme";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAuth } from "@/lib/hooks/useAuth";
-import Image from "next/image";
 import { useTheme } from "next-themes";
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { ROUTES } from "@/constants";
 import { adminSidebarItems } from "@/constants/navigation.config";
 import { useClickOutside } from "@/lib/hooks/useClickOutside";
+import { AppLogo } from "@/components/common/app-logo";
 
-export function AdminLayout({ children }: { children: React.ReactNode }) {
-  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
-  const pathname = usePathname();
+interface AdminLayoutProps {
+  children: React.ReactNode;
+}
+
+export function AdminLayout({ children }: AdminLayoutProps) {
   const { logout } = useAuth();
-  const { theme, resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
+  const pathname = usePathname();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
 
   const closeMobileMenu = () => setMobileMenuOpen(false);
 
   // Tự động đóng mobile menu khi click bên ngoài
   useClickOutside(sidebarRef as React.RefObject<HTMLElement>, closeMobileMenu, mobileMenuOpen);
-
-  const logoSrc =
-    mounted && (resolvedTheme === "dark" || theme === "dark")
-      ? "/logo/logo-dark-removebg.webp"
-      : "/logo/logo-removebg.webp";
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const NavigationContent = () => (
     <nav className="space-y-1">
@@ -141,15 +134,8 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
             >
               <Menu className="h-5 w-5" />
             </Button>
-            <Link href={ROUTES.HOME} className="cursor-target">
-              <Image
-                src={logoSrc}
-                width={120}
-                height={40}
-                alt="IT-Job Logo"
-                priority
-                className="object-contain h-10"
-              />
+            <Link href={ROUTES.ADMIN_DASHBOARD} className="flex items-center gap-2">
+              <AppLogo width={120} height={40} />
             </Link>
           </div>
 

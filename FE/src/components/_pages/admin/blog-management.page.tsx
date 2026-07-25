@@ -130,7 +130,7 @@ const BlogManagement = () => {
   useEffect(() => {
     fetchBlogs();
     loadCategories();
-  }, [currentPage]);
+  }, [currentPage, token]);
 
   useEffect(() => {
     if (editBlog) {

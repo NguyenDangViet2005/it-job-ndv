@@ -23,12 +23,12 @@ export const hasRouteAccess = (
   );
 
   // Admin routes
-  if (pathname.startsWith(ROUTES.ADMIN)) {
+  if (pathname.startsWith("/admin")) {
     return normalizedRole === "admin";
   }
 
   // HR routes
-  if (pathname.startsWith(ROUTES.HR)) {
+  if (pathname.startsWith("/hr")) {
     return normalizedRole === "employer" || normalizedRole === "hr";
   }
 
