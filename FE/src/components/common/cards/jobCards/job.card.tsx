@@ -41,7 +41,7 @@ export default function JobCard( job : Job) {
                     className={cn(
                       "rounded-full px-3 text-[10px] tracking-wider",
                       job.status === "open"
-                        ? "bg-green-700 hover:bg-green-800"
+                        ? "bg-emerald-600 dark:bg-emerald-500 text-white hover:bg-emerald-700"
                         : "bg-muted text-muted-foreground",
                     )}
                   >

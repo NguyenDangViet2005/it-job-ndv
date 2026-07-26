@@ -89,21 +89,23 @@ export default function NewestJobSection() {
         {jobs.map((job) => (
           <Link href={ROUTES.JOB_DETAIL(job.id, job.title)} key={job.id}>
             <div
-              className="p-3 lg:p-5 border rounded-xl bg-card flex flex-col gap-2 lg:gap-4 cursor-pointer 
-                shadow-sm hover:shadow-xl hover:shadow-primary/30 
+              className="p-3 lg:p-5 border border-border rounded-xl bg-card text-card-foreground flex flex-col gap-2.5 lg:gap-4 cursor-pointer 
+                shadow-sm hover:shadow-xl hover:shadow-primary/20 hover:border-primary/40 
                 transition-all duration-300 ease-in-out h-full"
             >
               <div className="flex gap-2 lg:gap-3 items-start">
                 <div className="flex-shrink-0">
-                  <Image
-                    src={job.company?.avatar || ""}
-                    alt={job.company?.name || "Company"}
-                    width={40} height={40}
-                    className="w-10 h-10 lg:w-14 lg:h-14 object-contain rounded-lg border p-1"
-                  />
+                  <div className="w-10 h-10 lg:w-14 lg:h-14 bg-white dark:bg-muted/40 rounded-lg border border-border p-1 lg:p-1.5 flex items-center justify-center overflow-hidden">
+                    <Image
+                      src={job.company?.avatar || "/logo/default-company.png"}
+                      alt={job.company?.name || "Company"}
+                      width={40} height={40}
+                      className="w-full h-full object-contain rounded"
+                    />
+                  </div>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-xs lg:text-base line-clamp-2 mb-0.5 lg:mb-1 hover:text-primary transition-colors">
+                  <h3 className="font-bold text-xs lg:text-base text-foreground line-clamp-2 mb-0.5 lg:mb-1 hover:text-primary transition-colors">
                     {job.title}
                   </h3>
                   <p className="text-[10px] lg:text-sm font-medium text-muted-foreground line-clamp-1">
@@ -113,19 +115,19 @@ export default function NewestJobSection() {
               </div>
 
               {job.description && (
-                <p className="text-[10px] lg:text-sm text-muted-foreground line-clamp-2 leading-tight lg:leading-relaxed">
+                <p className="text-[10px] lg:text-sm text-foreground/80 dark:text-muted-foreground line-clamp-2 leading-tight lg:leading-relaxed">
                   {job.description}
                 </p>
               )}
 
               <div className="flex flex-wrap gap-1 lg:gap-2 text-[9px] lg:text-xs">
                 {(job.company?.city || job.company?.address) && (
-                  <span className="px-1.5 lg:px-2 py-0.5 lg:py-1 bg-blue-50 text-blue-700 rounded lg:rounded-md border border-blue-200">
+                  <span className="px-1.5 lg:px-2 py-0.5 lg:py-1 bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded lg:rounded-md border border-blue-500/20 font-medium">
                     {job.company?.city || job.company?.address}
                   </span>
                 )}
                 {job.type && (
-                  <span className="px-1.5 lg:px-2 py-0.5 lg:py-1 bg-green-50 text-green-700 rounded lg:rounded-md border border-green-200">
+                  <span className="px-1.5 lg:px-2 py-0.5 lg:py-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded lg:rounded-md border border-emerald-500/20 font-medium">
                     {job.type === "full-time"
                       ? "Full-time"
                       : job.type === "part-time"
@@ -161,12 +163,12 @@ export default function NewestJobSection() {
               </div>
 
               {job.skills && job.skills.length > 0 && (
-                <div className="flex flex-wrap gap-1 lg:gap-1.5 pt-1 lg:pt-2 border-t">
+                <div className="flex flex-wrap gap-1 lg:gap-1.5 pt-1 lg:pt-2 border-t border-border">
                   {job.skills.slice(0, 2).map((skill: any, idx: number) => (
                     idx < 2 && (
                       <span
                         key={skill.id}
-                        className="text-[9px] lg:text-xs px-1.5 lg:px-2.5 py-0.5 lg:py-1 bg-primary/10 text-primary rounded lg:rounded-md font-medium"
+                        className="text-[9px] lg:text-xs px-1.5 lg:px-2.5 py-0.5 lg:py-1 bg-primary/10 text-primary dark:text-primary rounded lg:rounded-md font-semibold border border-primary/20"
                       >
                         {skill.name}
                       </span>
@@ -175,18 +177,18 @@ export default function NewestJobSection() {
                   {job.skills.slice(2, 4).map((skill: any, idx: number) => (
                     <span
                       key={skill.id}
-                      className="hidden lg:inline-block text-xs px-2.5 py-1 bg-primary/10 text-primary rounded-md font-medium"
+                      className="hidden lg:inline-block text-xs px-2.5 py-1 bg-primary/10 text-primary dark:text-primary rounded-md font-semibold border border-primary/20"
                     >
                       {skill.name}
                     </span>
                   ))}
                   {job.skills.length > 2 && (
-                    <span className="text-[9px] lg:text-xs px-1.5 lg:px-2.5 py-0.5 lg:py-1 bg-gray-100 text-gray-600 rounded lg:rounded-md font-medium lg:hidden">
+                    <span className="text-[9px] lg:text-xs px-1.5 lg:px-2.5 py-0.5 lg:py-1 bg-muted text-muted-foreground border border-border rounded lg:rounded-md font-medium lg:hidden">
                       +{job.skills.length - 2}
                     </span>
                   )}
                   {job.skills.length > 4 && (
-                    <span className="hidden lg:inline-block text-xs px-2.5 py-1 bg-gray-100 text-gray-600 rounded-md font-medium">
+                    <span className="hidden lg:inline-block text-xs px-2.5 py-1 bg-muted text-muted-foreground border border-border rounded-md font-medium">
                       +{job.skills.length - 4}
                     </span>
                   )}
@@ -194,14 +196,14 @@ export default function NewestJobSection() {
               )}
 
               {job.status && (
-                <div className="flex items-center justify-between pt-1 lg:pt-2 border-t">
+                <div className="flex items-center justify-between pt-1 lg:pt-2 border-t border-border">
                   <span
-                    className={`text-[9px] lg:text-xs px-1.5 lg:px-2.5 py-0.5 lg:py-1 rounded lg:rounded-md font-medium ${
+                    className={`text-[9px] lg:text-xs px-1.5 lg:px-2.5 py-0.5 lg:py-1 rounded lg:rounded-md font-medium border ${
                       job.status === "open"
-                        ? "bg-green-100 text-green-700"
+                        ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
                         : job.status === "closed"
-                          ? "bg-red-100 text-red-700"
-                          : "bg-yellow-100 text-yellow-700"
+                          ? "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20"
+                          : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
                     }`}
                   >
                     {job.status === "open"
