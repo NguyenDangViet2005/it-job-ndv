@@ -35,9 +35,9 @@ export default function RegisterPage() {
       <div className="absolute top-6 left-6 z-50">
         <Link href={ROUTES.WELCOME}>
           <Button
-            variant="outline"
+            variant="default"
             size="sm"
-            className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm hover:bg-white dark:hover:bg-slate-900 cursor-pointer"
+            className="bg-white/90 dark:bg-slate-900/90 text-black dark:text-white backdrop-blur-sm hover:bg-white dark:hover:bg-slate-900 cursor-pointer"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Quay lại

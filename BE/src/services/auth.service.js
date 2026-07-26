@@ -97,6 +97,27 @@ const loginWithFacebook = async (user) => {
   return new LoginResponse(accesstoken, refreshtoken, userWithoutPassword);
 };
 
+const loginWithGoogle = async (user) => {
+  const userWithoutPassword = user?.toJSON();
+  delete userWithoutPassword.password;
+
+  const { accesstoken, refreshtoken } = generateTokens(user.id, user.role);
+
+  // Save session to SessionLogin table
+  await SessionLogin.destroy({ where: { userid: user.id } }); // Remove old sessions
+  await SessionLogin.create({
+    userid: user.id,
+    accesstoken,
+    refreshtoken,
+  });
+
+  // Also update refreshtoken in User table for backward compatibility
+  user.refreshtoken = refreshtoken;
+  await user.save();
+
+  return new LoginResponse(accesstoken, refreshtoken, userWithoutPassword);
+};
+
 const logout = async (userid) => {
   if (userid) {
     // Delete session from SessionLogin
@@ -181,9 +202,11 @@ const refreshtokenService = async (refreshtoken) => {
 };
 
 module.exports = {
+  generateTokens,
   register,
   login,
   logout,
   loginWithFacebook,
+  loginWithGoogle,
   refreshtoken: refreshtokenService,
 };

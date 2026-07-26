@@ -1,7 +1,7 @@
-const passport = require("passport");
-const FacebookStrategy = require("passport-facebook").Strategy;
-const User = require("../models/user.model");
-const env = require("./env.config");
+const passport = require('passport')
+const FacebookStrategy = require('passport-facebook').Strategy
+const User = require('../models/user.model')
+const env = require('./env.config')
 
 if (env.facebook.appId && env.facebook.appSecret) {
   passport.use(
@@ -10,83 +10,165 @@ if (env.facebook.appId && env.facebook.appSecret) {
         clientID: env.facebook.appId,
         clientSecret: env.facebook.appSecret,
         callbackURL: `${env.app.backendUrl}/api/auth/facebook/callback`,
-        profileFields: ["id", "displayName", "emails", "photos"],
+        profileFields: ['id', 'displayName', 'emails', 'photos'],
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
           const email =
-            profile.emails && profile.emails[0]
-              ? profile.emails[0].value
-              : null;
-          const providerId = profile.id;
-          const fullname = profile.displayName;
-          
+            profile.emails && profile.emails[0] ? profile.emails[0].value : null
+          const providerId = profile.id
+          const fullname = profile.displayName
+
           let avatar =
             profile.photos && profile.photos[0]
               ? profile.photos[0].value
-              : "https://res.cloudinary.com/duc6z828y/image/upload/c_crop,w_650,h_650,ar_1:1/v1768581047/avatar_nbspgd.avif";
-          let coverimage = null;
+              : 'https://res.cloudinary.com/duc6z828y/image/upload/c_crop,w_650,h_650,ar_1:1/v1768581047/avatar_nbspgd.avif'
+          let coverimage = null
 
           // 1. Find user by provider and providerId
           let user = await User.findOne({
-            where: { provider: "facebook", providerId: providerId },
-          });
+            where: { provider: 'facebook', providerId: providerId },
+          })
 
           if (user) {
-            let hasChanged = false;
+            let hasChanged = false
             if (avatar && user.avatar !== avatar) {
-              user.avatar = avatar;
-              hasChanged = true;
+              user.avatar = avatar
+              hasChanged = true
             }
             if (coverimage && user.coverimage !== coverimage) {
-              user.coverimage = coverimage;
-              hasChanged = true;
+              user.coverimage = coverimage
+              hasChanged = true
             }
             if (hasChanged) {
-              await user.save();
+              await user.save()
             }
-            return done(null, user);
+            return done(null, user)
           }
 
           // 2. If not found by provider/providerId, search by email
           if (email) {
-            user = await User.findOne({ where: { email } });
+            user = await User.findOne({ where: { email } })
             if (user) {
               // Update user with provider info
-              user.provider = "facebook";
-              user.providerId = providerId;
+              user.provider = 'facebook'
+              user.providerId = providerId
               if (avatar) {
-                user.avatar = avatar;
+                user.avatar = avatar
               }
               if (coverimage) {
-                user.coverimage = coverimage;
+                user.coverimage = coverimage
               }
-              await user.save();
-              return done(null, user);
+              await user.save()
+              return done(null, user)
             }
           }
 
           // 3. If still not found, create new user
           user = await User.create({
             email: email || `${providerId}@facebook.com`,
-            fullname: fullname || "Facebook User",
-            provider: "facebook",
+            fullname: fullname || 'Facebook User',
+            provider: 'facebook',
             providerId: providerId,
             password: null,
             avatar: avatar,
             coverimage: coverimage,
-            role: "user",
-          });
+            role: 'user',
+          })
 
-          return done(null, user);
+          return done(null, user)
         } catch (error) {
-          return done(error, null);
+          return done(error, null)
         }
-      }
-    )
-  );
+      },
+    ),
+  )
 } else {
-  console.warn("⚠️ Facebook App ID or Secret missing, Facebook Strategy not loaded");
+  console.warn(
+    '⚠️ Facebook App ID or Secret missing, Facebook Strategy not loaded',
+  )
 }
 
-module.exports = passport;
+// Google Strategy
+const GoogleStrategy = require('passport-google-oauth20').Strategy
+
+if (env.google.clientId) {
+  passport.use(
+    new GoogleStrategy(
+      {
+        clientID: env.google.clientId,
+        clientSecret: env.google.clientSecret || 'dummy_secret_for_dev',
+        callbackURL:
+          process.env.NODE_ENV === 'production'
+            ? 'https://it-job-ndv-express.onrender.com/api/auth/callback/google'
+            : 'http://localhost:8081/api/auth/callback/google',
+      },
+      async (accessToken, refreshToken, profile, done) => {
+        try {
+          const email =
+            profile.emails && profile.emails[0] ? profile.emails[0].value : null
+          const providerId = profile.id
+          const fullname = profile.displayName
+
+          let avatar =
+            profile.photos && profile.photos[0]
+              ? profile.photos[0].value
+              : 'https://res.cloudinary.com/duc6z828y/image/upload/c_crop,w_650,h_650,ar_1:1/v1768581047/avatar_nbspgd.avif'
+          let coverimage = null
+
+          // 1. Find user by provider and providerId
+          let user = await User.findOne({
+            where: { provider: 'google', providerId: providerId },
+          })
+
+          if (user) {
+            let hasChanged = false
+            if (avatar && user.avatar !== avatar) {
+              user.avatar = avatar
+              hasChanged = true
+            }
+            if (hasChanged) {
+              await user.save()
+            }
+            return done(null, user)
+          }
+
+          // 2. If not found by provider/providerId, search by email
+          if (email) {
+            user = await User.findOne({ where: { email } })
+            if (user) {
+              // Update user with provider info
+              user.provider = 'google'
+              user.providerId = providerId
+              if (avatar && !user.avatar) {
+                user.avatar = avatar
+              }
+              await user.save()
+              return done(null, user)
+            }
+          }
+
+          // 3. If still not found, create new user
+          user = await User.create({
+            email: email || `${providerId}@google.com`,
+            fullname: fullname || 'Google User',
+            provider: 'google',
+            providerId: providerId,
+            password: null,
+            avatar: avatar,
+            coverimage: coverimage,
+            role: 'user',
+          })
+
+          return done(null, user)
+        } catch (error) {
+          return done(error, null)
+        }
+      },
+    ),
+  )
+} else {
+  console.warn('⚠️ Google Client ID missing, Google Strategy not loaded')
+}
+
+module.exports = passport

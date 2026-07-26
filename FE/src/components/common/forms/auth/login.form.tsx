@@ -42,6 +42,13 @@ export default function FormLogin() {
     }/auth/facebook`;
   };
 
+  const handleGoogleLogin = () => {
+    setIsLoading(true);
+    window.location.href = `${
+      process.env.NEXT_PUBLIC_BE_ENDPOINT || "http://localhost:8081/api"
+    }/auth/google`;
+  };
+
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
@@ -78,10 +85,6 @@ export default function FormLogin() {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleGoogleLogin = () => {
-    // Ở đây bạn có thể gọi API đăng nhập Google
   };
 
   return (
@@ -156,8 +159,9 @@ export default function FormLogin() {
             <Button
               type="button"
               onClick={handleGoogleLogin}
+              disabled={isLoading}
               variant="outline"
-              className="cursor-target w-full h-9 flex items-center justify-center gap-2 border-gray-300 dark:border-gray-700"
+              className="cursor-target w-full h-9 flex items-center justify-center gap-2 border-gray-300 dark:border-gray-700 disabled:opacity-50"
             >
               <FcGoogle className="cursor-target text-lg" />
               <span className="text-sm">Đăng nhập bằng Google</span>

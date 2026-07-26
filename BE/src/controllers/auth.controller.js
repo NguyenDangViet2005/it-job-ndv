@@ -160,6 +160,39 @@ const facebookCallback = async (req, res) => {
   }
 };
 
+const googleCallback = async (req, res) => {
+  try {
+    const user = req.user;
+    if (!user) {
+      return res.redirect(`${env.client.url}/dang-nhap?error=google_failed`);
+    }
+
+    // Generate Tokens & Save Session
+    const { accesstoken, refreshtoken } = await authService.loginWithGoogle(user);
+
+    // Set Refresh Token in HttpOnly Cookie
+    res.cookie("refreshtoken", refreshtoken, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
+      path: "/",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
+    // Redirect to frontend callback route with token and refreshtoken
+    const successRedirect = `${env.client.url}/callback?token=${accesstoken}&refreshtoken=${refreshtoken}`;
+    if (req.resolveAuth) {
+      req.resolveAuth(successRedirect);
+    }
+    res.redirect(successRedirect);
+  } catch (error) {
+    console.error("Google Login Error:", error);
+    const errorRedirect = `${env.client.url}/dang-nhap?error=google_error`;
+    if (req.rejectAuth) req.rejectAuth(error);
+    res.redirect(errorRedirect);
+  }
+};
+
 const setCookie = async (req, res) => {
   try {
     const { refreshtoken } = req.body;
@@ -187,5 +220,6 @@ module.exports = {
   logout,
   refreshtoken,
   facebookCallback,
+  googleCallback,
   setCookie,
 };

@@ -6,6 +6,7 @@ import { useAuth } from "@/lib/hooks/useAuth";
 import { userApi } from "@/apis/user.api";
 import { authApi } from "@/apis/auth.api";
 import { getRedirectPathByRole } from "@/helpers/permission.helper";
+import { ROUTES } from "@/constants";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "sonner";
 
@@ -49,9 +50,9 @@ function CallbackContent() {
         if (response) {
           // Set auth state
           setAuth(response, token);
-          toast.success("Đăng nhập bằng Facebook thành công!");
+          toast.success("Đăng nhập tài khoản thành công!");
           
-          const redirectPath = getRedirectPathByRole(response.role);
+          const redirectPath = response.role === "user" ? ROUTES.HOME : getRedirectPathByRole(response.role);
           router.push(redirectPath);
         } else {
           toast.error("Đăng nhập thất bại. Không thể tải thông tin người dùng.");

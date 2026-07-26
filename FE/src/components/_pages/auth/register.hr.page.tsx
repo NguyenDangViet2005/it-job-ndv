@@ -1,14 +1,14 @@
-"use client";
+'use client'
 
-import FormRegisterHR from "@/components/common/forms/auth/register.hr.form";
-import { Button } from "@/components/ui/button";
-import { ROUTES } from "@/constants";
-import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import FormRegisterHR from '@/components/common/forms/auth/register.hr.form'
+import { Button } from '@/components/ui/button'
+import { ROUTES } from '@/constants'
+import { ArrowLeft } from 'lucide-react'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 export default function RegisterHRPage() {
-  const router = useRouter();
+  const router = useRouter()
 
   return (
     <div className="relative z-10 w-full min-h-screen overflow-y-auto">
@@ -16,9 +16,9 @@ export default function RegisterHRPage() {
       <div className="absolute top-4 left-4 z-50">
         <Link href={ROUTES.WELCOME}>
           <Button
-            variant="outline"
+            variant="default"
             size="sm"
-            className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm hover:bg-white dark:hover:bg-slate-900 cursor-pointer"
+            className="bg-white/90 dark:bg-slate-900/90 text-black dark:text-white backdrop-blur-sm hover:bg-white dark:hover:bg-slate-900 cursor-pointer"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Quay lại
@@ -42,6 +42,5 @@ export default function RegisterHRPage() {
         <FormRegisterHR />
       </div>
     </div>
-  );
+  )
 }
-

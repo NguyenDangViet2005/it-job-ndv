@@ -20,6 +20,11 @@ module.exports = {
     appSecret: process.env.APP_SECRET,
   },
 
+  google: {
+    clientId: process.env.GOOGLE_CLIENT_ID || process.env.CUSTOMER_ID || "598416758150-6uvtssg87ei6c2asfpunqiq4p9eiubc1.apps.googleusercontent.com",
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET || process.env.CLIENT_SECRET || process.env.CUSTOMER_SECRET,
+  },
+
   db: {
     host: process.env.DB_HOST,
     port: Number(process.env.DB_PORT),
