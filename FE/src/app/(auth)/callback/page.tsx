@@ -9,6 +9,7 @@ import { getRedirectPathByRole } from "@/helpers/permission.helper";
 import { ROUTES } from "@/constants";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "sonner";
+import LoadingScreen from "@/components/common/loading/loading-screen";
 
 function CallbackContent() {
   const router = useRouter();
@@ -68,25 +69,12 @@ function CallbackContent() {
     handleCallback();
   }, [searchParams, router, setAuth]);
 
-  return (
-    <div className="w-full h-screen flex flex-col items-center justify-center gap-4">
-      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      <p className="text-gray-500 dark:text-gray-400 animate-pulse">
-        Đang đồng bộ hóa tài khoản Facebook...
-      </p>
-    </div>
-  );
+  return <LoadingScreen message="Đang xử lý đồng bộ hóa tài khoản và đăng nhập..." fullScreen={true} />;
 }
 
 export default function AuthCallbackPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="w-full h-screen flex flex-col items-center justify-center gap-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-        </div>
-      }
-    >
+    <Suspense fallback={<LoadingScreen message="Đang tải..." fullScreen={true} />}>
       <CallbackContent />
     </Suspense>
   );

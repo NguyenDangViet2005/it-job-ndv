@@ -1,22 +1,24 @@
 const express = require("express");
 const authController = require("../controllers/auth.controller");
 const passport = require("../configs/passport.config");
+const { authLimiter } = require("../middlewares/rate-limit.middleware");
 
 const env = require("../configs/env.config");
 
 const router = express.Router();
 
-router.post("/register", authController.register);
-router.post("/login", authController.login);
+router.post("/register", authLimiter, authController.register);
+router.post("/login", authLimiter, authController.login);
 router.post("/logout", authController.logout);
-router.post("/refresh-token", authController.refreshtoken);
+router.post("/refresh-token", authLimiter, authController.refreshtoken);
 router.post("/set-cookie", authController.setCookie);
 
 const pendingAuths = new Map();
 
-router.get("/facebook", passport.authenticate("facebook", { scope: ["email"] }));
+router.get("/facebook", authLimiter, passport.authenticate("facebook", { scope: ["email"] }));
 router.get(
   "/facebook/callback",
+  authLimiter,
   async (req, res, next) => {
     const code = req.query.code;
     if (code) {
@@ -79,7 +81,7 @@ router.get(
 );
 
 // Google OAuth Routes
-router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
+router.get("/google", authLimiter, passport.authenticate("google", { scope: ["profile", "email"] }));
 
 // Route callback theo cấu hình trên Google Cloud Console (hoặc /api/auth/google/callback)
 const handleGoogleAuthCallback = async (req, res, next) => {
@@ -143,9 +145,9 @@ const handleGoogleAuthCallback = async (req, res, next) => {
   })(req, res, next);
 };
 
-router.get("/google/callback", handleGoogleAuthCallback, authController.googleCallback);
+router.get("/google/callback", authLimiter, handleGoogleAuthCallback, authController.googleCallback);
 
 // Hỗ trợ thêm alias route khớp với cấu hình redirect URI trên Google Console của bạn
-router.get("/callback/google", handleGoogleAuthCallback, authController.googleCallback);
+router.get("/callback/google", authLimiter, handleGoogleAuthCallback, authController.googleCallback);
 
 module.exports = router;

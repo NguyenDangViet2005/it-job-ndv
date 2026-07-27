@@ -27,6 +27,14 @@ export async function handleResponse<T>(response: Response): Promise<T> {
     const error = await response.json().catch(() => ({
       message: response.statusText,
     }));
+
+    if (response.status === 429) {
+      if (typeof window !== "undefined" && !window.location.pathname.startsWith("/security-blocked")) {
+        const msg = encodeURIComponent(error.message || "Bị hạn chế truy cập do vượt quá tần suất yêu cầu.");
+        window.location.href = `/security-blocked?message=${msg}`;
+      }
+    }
+
     throw new Error(error.message || `HTTP Error: ${response.status}`);
   }
 

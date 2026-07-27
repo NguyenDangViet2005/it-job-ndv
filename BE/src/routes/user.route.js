@@ -3,6 +3,7 @@ const router = express.Router();
 const userController = require("../controllers/user.controller");
 const upload = require("../middlewares/upload.middleware");
 const { verifyToken } = require("../middlewares/auth.middleware");
+const { authLimiter } = require("../middlewares/rate-limit.middleware");
 
 // Routes
 router.get("/", verifyToken, userController.getAll); // Admin?
@@ -28,7 +29,7 @@ router.put(
   userController.updateCV,
 );
 
-router.post("/:id/change-password", verifyToken, userController.changePassword);
+router.post("/:id/change-password", verifyToken, authLimiter, userController.changePassword);
 
 router.get("/:id/applications", userController.getUserApplications);
 router.get("/:id/posts", userController.getUserPosts);

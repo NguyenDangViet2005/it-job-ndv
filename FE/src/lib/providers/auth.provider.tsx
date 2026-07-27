@@ -19,7 +19,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Initialize Auth (Silent Refresh)
   useEffect(() => {
     const initAuth = async () => {
-      if (typeof window !== "undefined" && window.location.pathname.startsWith("/callback")) {
+      if (
+        typeof window !== "undefined" &&
+        (window.location.pathname.startsWith("/callback") ||
+          window.location.pathname.startsWith("/security-blocked"))
+      ) {
         setLoading(false);
         return;
       }
