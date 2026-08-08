@@ -35,7 +35,7 @@ export default function PostList({
     <>
       {posts.map((post, index) => (
         <PostCard
-          key={post.id}
+          key={post.id ? `post-${post.id}-${index}` : `post-idx-${index}`}
           post={post}
           index={index}
           currentUserAvatar={currentUserAvatar}
