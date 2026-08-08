@@ -10,53 +10,37 @@ import { ScrollReveal } from "@/components/ui/scroll-reveal";
 
 export default function HomePage() {
   return (
-    <div className="overflow-x-hidden pb-20 sm:pb-0">
-      <HeroSection height={500} />
+    <div className="overflow-x-hidden pb-20 sm:pb-12">
+      <HeroSection />
 
-      <div className="bg-background w-full rounded-t-3xl border-t border-border/50 -mt-20 relative z-10 shadow-2xl shadow-black/5">
-        <div className="w-[90%] max-w-[1400px] mx-auto lg:px-4">
-          <ScrollReveal direction="up" distance={30} duration={0.8}>
-            <div className="z-10 -translate-y-20">
-              <QuickFeatureSection />
-            </div>
-          </ScrollReveal>
-          
-          <ScrollReveal direction="up" distance={40} duration={0.8}>
-            <div className="-mt-8 lg:-mt-10">
-              <FeaturedCompanieSection />
-            </div>
-          </ScrollReveal>
+      <div className="w-[90%] max-w-[1400px] mx-auto lg:px-4 pt-10 space-y-12">
+        <ScrollReveal direction="up" distance={30} duration={0.8}>
+          <QuickFeatureSection />
+        </ScrollReveal>
+        
+        <ScrollReveal direction="up" distance={40} duration={0.8}>
+          <FeaturedCompanieSection />
+        </ScrollReveal>
 
-          <ScrollReveal direction="up" distance={40} duration={0.8}>
-            <div className="pt-4 lg:pt-0">
-              <TopHRSection />
-            </div>
-          </ScrollReveal>
+        <ScrollReveal direction="up" distance={40} duration={0.8}>
+          <TopHRSection />
+        </ScrollReveal>
 
-          <ScrollReveal direction="up" distance={40} duration={0.8}>
-            <div className="pt-6 lg:pt-10">
-              <JobTodaySection />
-            </div>
-          </ScrollReveal>
+        <ScrollReveal direction="up" distance={40} duration={0.8}>
+          <JobTodaySection />
+        </ScrollReveal>
 
-          <ScrollReveal direction="up" distance={40} duration={0.8}>
-            <div className="pt-6 lg:pt-10">
-              <NewestJobSection />
-            </div>
-          </ScrollReveal>
+        <ScrollReveal direction="up" distance={40} duration={0.8}>
+          <NewestJobSection />
+        </ScrollReveal>
 
-          <ScrollReveal direction="up" distance={40} duration={0.8}>
-            <div className="py-10 lg:py-20">
-              <QuickBlogSection />
-            </div>
-          </ScrollReveal>
+        <ScrollReveal direction="up" distance={40} duration={0.8}>
+          <QuickBlogSection />
+        </ScrollReveal>
 
-          <ScrollReveal direction="up" distance={30} duration={0.8}>
-            <div className="pb-6 sm:pb-6">
-              <SubscribeCTASection />
-            </div>
-          </ScrollReveal>
-        </div>
+        <ScrollReveal direction="up" distance={30} duration={0.8}>
+          <SubscribeCTASection />
+        </ScrollReveal>
       </div>
     </div>
   );

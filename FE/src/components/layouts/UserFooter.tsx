@@ -9,10 +9,8 @@ import {
   MapPin,
   Phone,
   Globe,
-  Heart,
   ArrowRight,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { AppLogo } from "@/components/common/app-logo";
 
@@ -39,7 +37,7 @@ const UserFooter = () => {
             >
               <Github className="cursor-target h-3 w-3 lg:h-4 lg:w-4 group-hover:text-white" />
             </Button>
-           <Button
+            <Button
               variant="outline"
               size="icon"
               className="cursor-pointer hover:bg-primary transition-colors group h-8 w-8 lg:h-10 lg:w-10"
@@ -231,49 +229,36 @@ const UserFooter = () => {
 
       {/* Bottom Section */}
       <div className="mt-8 lg:mt-12 pt-6 lg:pt-8 border-t border-border/50 px-4 lg:px-20">
-        <div className="flex flex-col lg:flex-row justify-between items-center gap-4 lg:gap-0">
-          {/* Copyright - Stack on mobile */}
-          <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 text-muted-foreground/70 text-center">
-            <div className="flex items-center gap-1">
-              <span className="text-xs lg:text-sm">© 2024 IT-Job Platform.</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <span className="text-xs lg:text-sm">Được phát triển với</span>
-              <Heart className="cursor-target h-3 w-3 lg:h-4 lg:w-4 text-destructive fill-current animate-pulse" />
-              <span className="text-xs lg:text-sm">tại Việt Nam</span>
-            </div>
-          </div>
 
-          {/* Links - Stack on mobile */}
-          <div className="flex flex-wrap justify-center gap-3 sm:gap-4 lg:gap-6 text-xs lg:text-sm">
-            <a
-              href="#"
-              className="cursor-target text-muted-foreground/70 hover:text-primary transition-colors whitespace-nowrap"
-            >
-              Điều khoản sử dụng
-            </a>
-            <a
-              href="#"
-              className="cursor-target text-muted-foreground/70 hover:text-primary transition-colors whitespace-nowrap"
-            >
-              Chính sách bảo mật
-            </a>
-            <a
-              href="#"
-              className="cursor-target text-muted-foreground/70 hover:text-primary transition-colors whitespace-nowrap"
-            >
-              Cookie
-            </a>
-            <a
-              href="#"
-              className="cursor-target text-muted-foreground/70 hover:text-primary transition-colors whitespace-nowrap"
-            >
-              Trợ giúp
-            </a>
-          </div>
+        {/* Links - Stack on mobile */}
+        <div className="flex flex-wrap justify-center gap-3 sm:gap-4 lg:gap-6 text-xs lg:text-sm">
+          <a
+            href="#"
+            className="cursor-target text-muted-foreground/70 hover:text-primary transition-colors whitespace-nowrap"
+          >
+            Điều khoản sử dụng
+          </a>
+          <a
+            href="#"
+            className="cursor-target text-muted-foreground/70 hover:text-primary transition-colors whitespace-nowrap"
+          >
+            Chính sách bảo mật
+          </a>
+          <a
+            href="#"
+            className="cursor-target text-muted-foreground/70 hover:text-primary transition-colors whitespace-nowrap"
+          >
+            Cookie
+          </a>
+          <a
+            href="#"
+            className="cursor-target text-muted-foreground/70 hover:text-primary transition-colors whitespace-nowrap"
+          >
+            Trợ giúp
+          </a>
         </div>
       </div>
-    </footer>
+    </footer >
   );
 };
 export default UserFooter;

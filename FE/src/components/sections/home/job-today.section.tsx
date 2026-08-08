@@ -7,6 +7,7 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import HotJob from "@/components/sections/jobs/hot-jobs.section";
 import SectionTitle from "@/components/features/section-title";
+import { ModernSectionHeader } from "@/components/ui/modern-section-header";
 import { jobApi } from "@/apis";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -50,6 +51,8 @@ export default function JobTodaySection() {
       <SectionTitle
         title="Công Việc Hôm Nay"
         subtitle="Cập nhật mới nhất các vị trí tuyển dụng hot trong ngày"
+        showViewAll
+        viewAllLink={ROUTES.JOBS}
       />
       <div className="relative w-full px-2 sm:px-4 lg:px-8">
         <Swiper

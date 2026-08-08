@@ -12,21 +12,18 @@ import {
 import { useState, useEffect, Fragment } from 'react'
 import Link from 'next/link'
 import { ModeToggle } from '@/components/features/toggle-theme'
-import { Input } from '@/components/ui/input'
 import { useAuth } from '@/lib/hooks/useAuth'
 import { AppLogo } from '@/components/common/app-logo'
 import { navigationItems } from '@/constants/navigation.config'
 import { NavigationLink } from '@/components/features/navigation/navigation-link'
 import { UserDropdown } from '@/components/features/navigation/user-dropdown'
 import { MobileMenu } from '@/components/features/navigation/mobile-menu'
-import Image from 'next/image'
 import { useTheme } from 'next-themes'
 import { ROUTES } from '@/constants'
 
 const UserHeader = () => {
   const [scrolled, setScrolled] = useState(false)
   const { user, isAuthenticated, logout } = useAuth()
-  const { theme, resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
 
   // Use isAuthenticated only after mount to prevent hydration mismatch
@@ -52,19 +49,14 @@ const UserHeader = () => {
   return (
     <header
       className={`
-        group/header
-        container fixed top-2 left-1/2 translate-x-[-50%] z-50 
-        w-[95%] md:w-full max-w-[1200px] px-4 rounded-2xl shadow-md border border-border/40 backdrop-blur-lg
-        transition-all duration-300
-        ${
-          scrolled
-            ? 'bg-white/80 dark:bg-black/60 shadow-lg backdrop-blur-md'
-            : 'bg-background/50'
+        fixed top-0 left-0 right-0 z-50 w-full border-b transition-all duration-300
+        ${scrolled
+          ? "bg-background/90 backdrop-blur-md shadow-sm border-border/60"
+          : "bg-background/60 backdrop-blur-sm border-border/30"
         }
-        hover:bg-white dark:hover:bg-card hover:shadow-xl
       `}
     >
-      <div className="flex h-14 items-center justify-between">
+      <div className="w-[92%] max-w-[1400px] mx-auto px-2 lg:px-4 flex h-16 items-center justify-between">
         {/* Logo */}
         <div className="pt-2 h-full flex items-center">
           <Link

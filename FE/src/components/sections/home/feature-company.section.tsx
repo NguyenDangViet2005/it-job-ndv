@@ -10,6 +10,7 @@ import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { Bookmark, Building2, MapPin, MoveLeft, MoveRight } from "lucide-react";
 import SectionTitle from "@/components/features/section-title";
+import { ModernSectionHeader } from "@/components/ui/modern-section-header";
 import { companyApi } from "@/apis";
 import { ROUTES } from "@/constants";
 import { Button } from "@/components/ui/button";
@@ -70,121 +71,74 @@ export default function FeaturedCompanieSection() {
     );
   }
   return (
-    <div className="w-full mx-auto py-6 lg:py-10 relative md:block hidden">
-      <SectionTitle title="Công Ty Nổi Bật" />
+    <div className="w-full mx-auto py-4 lg:py-6">
+      <SectionTitle
+        title="Công Ty Nổi Bật"
+        subtitle="Khám phá các doanh nghiệp IT hàng đầu đang chiêu mộ nhân tài"
+        showViewAll
+        viewAllLink={ROUTES.COMPANIES}
+      />
 
-      {/* Swiper */}
-      <Swiper
-        modules={[Navigation, Pagination, EffectCoverflow]}
-        effect="coverflow"
-        centeredSlides
-        grabCursor
-        loop
-        slidesPerView="auto"
-        spaceBetween={20}
-        navigation={{
-          nextEl: ".custom-next",
-          prevEl: ".custom-prev",
-        }}
-        pagination={{
-          el: ".custom-pagination",
-          clickable: true,
-        }}
-        coverflowEffect={{
-          rotate: 0,
-          stretch: 0,
-          depth: 100,
-          modifier: 2,
-          slideShadows: false,
-        }}
-      >
-        {companies.map((company: Company) => (
-          <SwiperSlide key={company.id} className="!w-[700px] lg:!w-[900px] !h-[350px] lg:!h-[450px]">
-            <Link href={ROUTES.COMPANY_DETAIL(company.id, company.name)} className="block group ">
-              <div className="shadow-lg bg-card transition-all duration-300 group-hover:scale-105 w-full mb-10 lg:mb-12 relative">
-                {/* Cover Image */}
-                <div className="relative w-full h-[250px] lg:h-[350px] overflow-hidden rounded-t-lg">
-                  <Image
-                    src={company.coverimage || "/cover.png"}
-                    alt={company.name}
-                    fill
-                    className="object-cover cursor-target"
-                    priority={false}
-                    sizes="900px"
-                    unoptimized={company.coverimage?.includes("picsum.photos")}
-                  />
-                </div>
-
-                <div className="p-3 lg:p-4 absolute rounded-2xl cursor-target -bottom-12 lg:-bottom-16 left-1/2 transform -translate-x-1/2 bg-card w-[640px] lg:w-[820px] shadow-xl cursor-pointer z-10 border group-hover:border-primary/50 transition-colors">
-                  <div className="flex items-center gap-2 lg:gap-3 mb-2 lg:mb-3">
-                    {/* Company Avatar */}
-                    <div className="relative w-10 h-10 lg:w-12 lg:h-12 rounded-full border overflow-hidden flex-shrink-0 bg-white">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
+        {companies.slice(0, 6).map((company: Company) => (
+          <Link
+            key={company.id}
+            href={ROUTES.COMPANY_DETAIL(company.id, company.name)}
+            className="block group"
+          >
+            <div className="relative overflow-hidden rounded-2xl border border-border/50 bg-card/80 backdrop-blur-md p-5 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-primary/10 hover:border-primary/40 flex flex-col justify-between h-full space-y-4">
+              <div className="space-y-3">
+                {/* Header: Logo & Title */}
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className="relative w-12 h-12 rounded-xl border border-border/60 overflow-hidden flex-shrink-0 bg-white p-1 shadow-sm">
                       <Image
                         src={company.avatar || "/logo/default-company.png"}
                         alt={`${company.name} logo`}
                         fill
                         className="object-contain p-1"
-                        priority={false}
                         sizes="48px"
                       />
                     </div>
-
-                    <h3 className="font-bold text-sm lg:text-base line-clamp-2 flex-1 group-hover:text-primary transition-colors">
-                      {company.name}
-                    </h3>
-
-                    <Button
-                      className="text-muted-foreground bg-background hover:text-primary hover:bg-background/90 transition-colors p-1.5 lg:p-2 h-auto"
-                      aria-label="Bookmark company"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                      }}
-                    >
-                      <Bookmark size={14} className="lg:w-[18px] lg:h-[18px]" />
-                    </Button>
-                  </div>
-
-                  <p className="text-xs lg:text-sm text-muted-foreground line-clamp-2 mb-2 lg:mb-3">
-                    {company.description || "Chưa có mô tả"}
-                  </p>
-
-                  <div className="flex items-center gap-3 lg:gap-4 text-xs lg:text-sm flex-wrap">
-                    {company.website && (
-                      <span className="text-primary font-semibold">
-                        Website →
-                      </span>
-                    )}
-                    {company.nationality && (
-                      <span className="text-muted-foreground flex gap-1">
-                        <MapPin size={15} /> <div>{company.nationality}</div>
-                      </span>
-                    )}
-                    {company.foundedyear && (
-                      <span className="text-muted-foreground flex gap-1">
-                        <Building2 size={15} />
-                        <div> {company.foundedyear}</div>
-                      </span>
-                    )}
+                    <div>
+                      <h3 className="font-bold text-base text-foreground group-hover:text-primary transition-colors line-clamp-1">
+                        {company.name}
+                      </h3>
+                      {company.nationality && (
+                        <span className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
+                          <MapPin size={12} className="text-primary/70" />
+                          <span>{company.nationality}</span>
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
+
+                {/* Description */}
+                <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+                  {company.description || "Chưa có mô tả chi tiết cho công ty."}
+                </p>
               </div>
-            </Link>
-          </SwiperSlide>
+
+              {/* Footer info */}
+              <div className="pt-3 border-t border-border/40 flex items-center justify-between text-xs text-muted-foreground">
+                {company.foundedyear ? (
+                  <span className="flex items-center gap-1">
+                    <Building2 size={13} className="text-primary/70" />
+                    <span>Thành lập {company.foundedyear}</span>
+                  </span>
+                ) : (
+                  <span>Doanh nghiệp IT</span>
+                )}
+                <span className="text-primary font-semibold group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
+                  Xem ngay →
+                </span>
+              </div>
+            </div>
+          </Link>
         ))}
-      </Swiper>
-
-      <div className="flex items-center justify-center gap-4 mt-2 w-fit mx-auto ">
-        <Button className=" cursor-target custom-prev bg-card  shadow p-2 rounded-full hover:scale-105 cursor-pointer text-primary">
-          <MoveLeft className="w-6 h-6" />
-        </Button>
-
-        <div className="custom-pagination cursor-target flex gap-2" />
-
-        <Button className=" cursor-target custom-next bg-card  shadow p-2 rounded-full hover:scale-105 cursor-pointer text-primary">
-          <MoveRight className="w-6 h-6" />
-        </Button>
       </div>
     </div>
   );
 }
+

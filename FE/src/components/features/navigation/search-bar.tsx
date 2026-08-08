@@ -18,24 +18,24 @@ export default function SearchBar() {
   };
 
   return (
-    <form onSubmit={handleSearch} className="w-full mx-auto px-2 lg:px-4">
-      <div className="flex flex-col sm:flex-row sm:items-center bg-card dark:bg-muted shadow-lg rounded-lg overflow-hidden gap-2 sm:gap-0 p-2 sm:p-0 border border-border/50">
-        {/* Ô input */}
-        <Input
-          type="text"
-          value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
-          placeholder="Tìm kiếm theo các Kỹ năng, Vị trí, Công ty..."
-          className="flex-1 h-9 sm:h-12 lg:h-14 text-sm sm:text-base lg:text-lg border-0 focus-visible:ring-0 focus-visible:ring-offset-0 px-3 sm:px-4 lg:px-6"
-        />
+    <form onSubmit={handleSearch} className="w-full">
+      <div className="flex flex-col sm:flex-row items-center bg-card/90 backdrop-blur-xl border border-border/60 shadow-xl shadow-primary/5 rounded-2xl p-2 sm:p-2.5 gap-2 transition-all hover:border-primary/40 focus-within:border-primary/60 focus-within:ring-2 focus-within:ring-primary/20">
+        <div className="flex items-center flex-1 w-full px-3 gap-2 text-muted-foreground">
+          <Search size={20} className="text-primary shrink-0" />
+          <Input
+            type="text"
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
+            placeholder="Kỹ năng, vị trí công việc, tên công ty..."
+            className="w-full h-11 text-sm sm:text-base border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 px-1 placeholder:text-muted-foreground/70"
+          />
+        </div>
 
-        {/* Nút tìm kiếm */}
         <Button
           type="submit"
           disabled={!keyword.trim()}
-          className="h-9 sm:h-12 lg:h-14 w-full sm:w-auto bg-red-600 hover:bg-red-700 text-primary-foreground font-semibold rounded-lg sm:rounded-none px-4 sm:px-8 lg:px-10 text-sm sm:text-base lg:text-lg flex items-center justify-center gap-2 disabled:bg-gray-500"
+          className="h-11 w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl px-6 lg:px-8 text-sm flex items-center justify-center gap-2 shadow-md shadow-primary/20 transition-all shrink-0"
         >
-          <Search size={14} className="sm:w-4 sm:h-4" />
           <span>Tìm kiếm</span>
         </Button>
       </div>

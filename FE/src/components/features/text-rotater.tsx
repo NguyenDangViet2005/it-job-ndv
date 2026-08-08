@@ -22,13 +22,12 @@ function TextRotator() {
   }, []);
 
   return (
-    <div className="text-3xl font-bold text-white cursor-target inline-block px-4">
-      Tìm kiếm{" "}
+    <span className="inline-block">
       <span
         ref={el}
-        className="bg-red-600 text-primary-foreground px-2 py-1 rounded cursor-target"
+        className="bg-gradient-to-r from-primary via-emerald-500 to-teal-500 bg-clip-text text-transparent font-black px-1"
       ></span>
-    </div>
+    </span>
   );
 }
 export default TextRotator;
