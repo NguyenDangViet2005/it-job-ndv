@@ -78,11 +78,11 @@ const CompanyInfo = ({
         </div>
         <h3 className="text-xl font-semibold mb-2">{company?.name}</h3>
         <div className="flex flex-wrap justify-center gap-2">
-          <Badge variant="secondary" className="text-xs">
+          <Badge variant="outline" className="text-xs  border-secondary">
             <Building2 className="h-3 w-3 mr-1" />
             Công nghệ
           </Badge>
-          <Badge variant="secondary" className="text-xs">
+          <Badge variant="outline" className="text-xs  border-secondary">
             <Users className="h-3 w-3 mr-1" />
             {company?.membersCount
               ? `${company.membersCount} nhân viên`

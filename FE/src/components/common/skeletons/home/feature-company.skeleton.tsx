@@ -4,7 +4,7 @@ import SectionTitle from "@/components/features/section-title";
 export default function FeatureCompanySkeleton() {
   return (
     <div className="w-full mx-auto py-10 md:block hidden">
-      <SectionTitle className="mt-10" title="Công Ty Nổi Bật" />
+      <SectionTitle title="Công Ty Nổi Bật" />
       <div className="relative w-full max-w-[900px] mx-auto mt-8">
         {/* Main skeleton card */}
         <div className="w-full h-[450px] mb-12">

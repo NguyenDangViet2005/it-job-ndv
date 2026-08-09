@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {  useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Company } from "@/types/models/company.type";
 import { companyApi } from "@/apis";
 import { Card, CardContent } from "@/components/ui/card";
@@ -31,9 +31,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ROUTES } from "@/constants";
 import Link from "next/link";
 
-const CompanyDetailPage = ({companyid}: {companyid: string}) => {
+const CompanyDetailPage = ({ companyid }: { companyid: string }) => {
   const router = useRouter();
-  
+
   const [company, setCompany] = useState<Company | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -83,9 +83,9 @@ const CompanyDetailPage = ({companyid}: {companyid: string}) => {
   }
 
   const openJobs = company.jobs?.filter(job => job.status === 'open') || [];
-  const totalMembers = company.membersCount ||  0;
+  const totalMembers = company.membersCount || 0;
   const totalFollowers = company.follows?.length || 0;
-  const averageRating = company.reviews?.length 
+  const averageRating = company.reviews?.length
     ? (company.reviews.reduce((sum, r) => sum + r.rating, 0) / company.reviews.length).toFixed(1)
     : null;
 
@@ -136,12 +136,12 @@ const CompanyDetailPage = ({companyid}: {companyid: string}) => {
                   <h1 className="text-xl md:text-2xl lg:text-4xl font-bold text-foreground">
                     {company.name}
                   </h1>
-                  <Badge variant="secondary" className="h-5 lg:h-6 text-xs">
+                  <Badge variant="outline" className="h-5 lg:h-6 text-xs border-primary">
                     <CheckCircle2 className="w-3 h-3 mr-1 text-blue-500" />
                     Đã xác thực
                   </Badge>
                 </div>
-                
+
                 <div className="flex flex-wrap items-center gap-2 lg:gap-3 text-muted-foreground text-xs lg:text-sm">
                   {company.address && (
                     <div className="flex items-center gap-1 lg:gap-1.5">
@@ -174,7 +174,7 @@ const CompanyDetailPage = ({companyid}: {companyid: string}) => {
                   Viết đánh giá
                 </Button>
                 {company.website && (
-                  <Button variant="secondary" asChild>
+                  <Button variant="outline" asChild className='border-secondary'>
                     <a
                       href={company.website}
                       target="_blank"
@@ -240,7 +240,7 @@ const CompanyDetailPage = ({companyid}: {companyid: string}) => {
                       </Button>
                     )}
                   </div>
-                  
+
                   {openJobs.length > 0 ? (
                     <div className="space-y-3">
                       {openJobs.slice(0, 5).map((job) => (
@@ -249,7 +249,7 @@ const CompanyDetailPage = ({companyid}: {companyid: string}) => {
                             <div className="flex-1">
                               <h4 className="font-semibold mb-2">{job.title}</h4>
                               <div className="flex flex-wrap gap-2 text-sm">
-                                <Badge variant="secondary" className="text-xs">
+                                <Badge variant="outline" className="text-xs border-secondary">
                                   {job.type === 'full-time' ? 'Toàn thời gian' : 'Bán thời gian'}
                                 </Badge>
                                 {job.salary && (
@@ -259,7 +259,7 @@ const CompanyDetailPage = ({companyid}: {companyid: string}) => {
                                 )}
                                 {job.deadline && (
                                   <span className="text-muted-foreground flex items-center gap-1">
-                                     Hạn nộp hồ sơ: {new Date(job.deadline).toLocaleDateString('vi-VN')}
+                                    Hạn nộp hồ sơ: {new Date(job.deadline).toLocaleDateString('vi-VN')}
                                   </span>
                                 )}
                               </div>
@@ -299,7 +299,7 @@ const CompanyDetailPage = ({companyid}: {companyid: string}) => {
                       Viết đánh giá
                     </Button>
                   </div>
-                  
+
                   {company.reviews && company.reviews.length > 0 ? (
                     <div className="space-y-4">
                       {company.reviews.map((review) => (
@@ -315,11 +315,10 @@ const CompanyDetailPage = ({companyid}: {companyid: string}) => {
                                   {[...Array(5)].map((_, i) => (
                                     <Star
                                       key={i}
-                                      className={`h-3 w-3 ${
-                                        i < review.rating
-                                          ? 'text-yellow-500 fill-yellow-500'
-                                          : 'text-gray-300'
-                                      }`}
+                                      className={`h-3 w-3 ${i < review.rating
+                                        ? 'text-yellow-500 fill-yellow-500'
+                                        : 'text-gray-300'
+                                        }`}
                                     />
                                   ))}
                                 </div>
@@ -351,7 +350,7 @@ const CompanyDetailPage = ({companyid}: {companyid: string}) => {
             <Card className="rounded-none sticky top-8">
               <CardContent className="p-6">
                 <h3 className="font-semibold mb-4 text-lg">Thông tin công ty</h3>
-                
+
                 <div className="space-y-4">
                   {company.hotline && (
                     <div className="flex items-start gap-3">
@@ -428,11 +427,10 @@ const CompanyDetailPage = ({companyid}: {companyid: string}) => {
                             {[...Array(5)].map((_, i) => (
                               <Star
                                 key={i}
-                                className={`h-3 w-3 ${
-                                  i < Math.round(parseFloat(averageRating))
-                                    ? 'text-yellow-500 fill-yellow-500'
-                                    : 'text-gray-300'
-                                }`}
+                                className={`h-3 w-3 ${i < Math.round(parseFloat(averageRating))
+                                  ? 'text-yellow-500 fill-yellow-500'
+                                  : 'text-gray-300'
+                                  }`}
                               />
                             ))}
                           </div>

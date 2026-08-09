@@ -87,8 +87,8 @@ const JobRequirements = ({ requirements }: JobRequirementsProps) => {
               {defaultRequirements.soft.map((skill, index) => (
                 <Badge
                   key={index}
-                  variant="secondary"
-                  className="text-xs"
+                  variant="outline"
+                  className="text-xs border-secondary"
                 >
                   {skill}
                 </Badge>

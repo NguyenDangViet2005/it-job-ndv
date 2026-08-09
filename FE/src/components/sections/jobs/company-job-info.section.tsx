@@ -86,29 +86,29 @@ export default function CompanyJobInfo({
               {/* Job Meta Information */}
               <div className="flex flex-wrap gap-3">
                 <Badge
-                  variant="secondary"
-                  className="cursor-target text-sm py-1 px-3"
+                  variant="outline"
+                  className="cursor-target text-sm py-1 px-3 border-secondary"
                 >
                   <MapPin className="h-4 w-4 mr-1" />
                   {job.company?.address}
                 </Badge>
                 <Badge
-                  variant="secondary"
-                  className="cursor-target text-sm py-1 px-3"
+                  variant="outline"
+                  className="cursor-target text-sm py-1 px-3 border-secondary"
                 >
                   <DollarSign className="h-4 w-4 mr-1" />
                   {job.salary}
                 </Badge>
                 <Badge
-                  variant="secondary"
-                  className="cursor-target text-sm py-1 px-3"
+                  variant="outline"
+                  className="cursor-target text-sm py-1 px-3 border-secondary"
                 >
                   <Clock className="h-4 w-4 mr-1" />
                   {job.type}
                 </Badge>
                 <Badge
-                  variant="secondary"
-                  className="cursor-target text-sm py-1 px-3"
+                  variant="outline"
+                  className="cursor-target text-sm py-1 px-3 border-secondary"
                 >
                   <Users className="h-4 w-4 mr-1" />
                   Số lượng tuyển dụng: {job.quantity}
@@ -155,7 +155,7 @@ export default function CompanyJobInfo({
           {/* Quick Highlights */}
           <div className="mt-6 pt-6 border-t border-border">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-               <div className="text-center">
+              <div className="text-center">
                 <div className="text-2xl font-bold text-primary">
                   {job.status == "open"
                     ? "Đang tuyển"
