@@ -23,7 +23,9 @@
     "strictPropertyInitialization": false,
     "types": [
       "vitest/globals",
-      "node"
+      "node",
+      "express",
+      "multer"
     ],
     "resolveJsonModule": true
   }
