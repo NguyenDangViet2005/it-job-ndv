@@ -1,0 +1,293 @@
+// use prisma-8
+// Contract inferred from the live database schema. Edit as needed, then run `prisma contract emit`.
+
+model User {
+  id                    Int              @id(map: "User_pkey") @default(autoincrement())
+  fullname              VarChar(100)
+  email                 VarChar(100)     @unique(map: "User_email_key")
+  password              VarChar(255)?
+  provider              VarChar(255)?
+  providerid            VarChar(255)?
+  phone                 VarChar(15)?
+  gender                VarChar(10)?
+  dateofbirth           Date?
+  avatar                VarChar(255)?
+  coverimage            VarChar(255)?
+  cvurl                 VarChar(255)?
+  role                  VarChar(20)?     @default("user")
+  refreshtoken          VarChar(500)?
+  createdat             Timestamp        @default(now())
+  updatedat             Timestamp        @default(now())
+  applications          Application[]
+  blogs                 Blog[]
+  companies             Company[]
+  companyMembers        CompanyMembers[]
+  follows               Follow[]
+  interactions          Interaction[]
+  posts                 Post[]
+  reviews               Review[]
+  sessionLogins         SessionLogins[]
+  skillUsers            SkillUser[]
+  connections           Connection[]     @relation(name: "fk_connection_connecteduser")
+  connectionsConnection Connection[]     @relation(name: "fk_connection_user")
+
+  @@check(expression: "((gender)::text = ANY ((ARRAY['male'::character varying, 'female'::character varying, 'other'::character varying])::text[]))", map: "User_gender_check")
+  @@check(expression: "((role)::text = ANY ((ARRAY['user'::character varying, 'employer'::character varying, 'admin'::character varying])::text[]))", map: "User_role_check")
+}
+
+model Provinces {
+  id    Int          @id(map: "Provinces_pkey") @default(autoincrement())
+  name  VarChar(100)
+  wards Wards[]
+}
+
+model Wards {
+  id         Int          @id(map: "Wards_pkey") @default(autoincrement())
+  provinceid Int
+  name       VarChar(100)
+  companies  Company[]
+  provinces  Provinces    @relation(fields: [provinceid], references: [id], map: "fk_wards_province", index: false)
+}
+
+model Company {
+  id              Int              @id(map: "Company_pkey") @default(autoincrement())
+  name            VarChar(150)
+  avatar          VarChar(255)?
+  coverimage      VarChar(255)?
+  nationality     VarChar(100)?
+  website         VarChar(255)?
+  description     String?
+  foundedyear     Int?
+  hotline         VarChar(20)?
+  companyemail    VarChar(100)?
+  address         VarChar(255)?
+  wardid          Int?
+  createdbyuserid Int?
+  createdat       Timestamp        @default(now())
+  updatedat       Timestamp        @default(now())
+  companyMembers  CompanyMembers[]
+  follows         Follow[]
+  jobs            Job[]
+  posts           Post[]
+  reviews         Review[]
+  user            User?            @relation(fields: [createdbyuserid], references: [id], map: "fk_companies_createdby", index: false)
+  wards           Wards?           @relation(fields: [wardid], references: [id], map: "fk_companies_location", index: false)
+}
+
+model Job {
+  id           Int           @id(map: "Job_pkey") @default(autoincrement())
+  companyid    Int
+  title        VarChar(150)
+  description  String?
+  _type        VarChar(20)?  @map("type")
+  quantity     Int?          @default(1)
+  deadline     Date?
+  salary       VarChar(100)?
+  status       VarChar(20)?  @default("open")
+  createdat    Timestamp?    @default(now())
+  updatedat    Timestamp?    @default(now())
+  applications Application[]
+  skillJobs    SkillJob[]
+  company      Company       @relation(fields: [companyid], references: [id], onDelete: Cascade, map: "fk_job_company")
+
+  @@index([companyid], map: "ix_job_companyid")
+  @@index([createdat], map: "ix_job_createdat")
+  @@index([status, deadline], map: "ix_job_status_deadline")
+  @@check(expression: "((status)::text = ANY ((ARRAY['open'::character varying, 'closed'::character varying])::text[]))", map: "Job_status_check")
+  @@check(expression: "((type)::text = ANY ((ARRAY['full-time'::character varying, 'part-time'::character varying])::text[]))", map: "Job_type_check")
+}
+
+model Application {
+  jobid       Int
+  userid      Int
+  cvurl       VarChar(255)?
+  coverletter String?
+  status      VarChar(20)?  @default("pending")
+  createdat   Timestamp?    @default(now())
+  updatedat   Timestamp?    @default(now())
+  job         Job           @relation(fields: [jobid], references: [id], onDelete: Cascade, map: "fk_application_job", index: false)
+  user        User          @relation(fields: [userid], references: [id], map: "fk_application_user")
+
+  @@id([jobid, userid], map: "Application_pkey")
+  @@index([jobid, status], map: "ix_application_jobid_status")
+  @@index([userid], map: "ix_application_userid")
+  @@check(expression: "((status)::text = ANY ((ARRAY['pending'::character varying, 'reviewed'::character varying, 'accepted'::character varying, 'rejected'::character varying])::text[]))", map: "Application_status_check")
+}
+
+model Post {
+  id           Int           @id(map: "Post_pkey") @default(autoincrement())
+  userid       Int
+  companyid    Int?
+  content      String?
+  createdat    Timestamp?    @default(now())
+  updatedat    Timestamp?    @default(now())
+  attachments  Attachment[]
+  interactions Interaction[]
+  company      Company?      @relation(fields: [companyid], references: [id], onDelete: SetNull, map: "fk_post_company", index: false)
+  user         User          @relation(fields: [userid], references: [id], onDelete: Cascade, map: "fk_post_user", index: false)
+
+  @@index([companyid, createdat], map: "ix_post_companyid_createdat")
+  @@index([createdat], map: "ix_post_createdat")
+  @@index([userid, createdat], map: "ix_post_userid_createdat")
+}
+
+model Interaction {
+  id          Int          @id(map: "Interaction_pkey") @default(autoincrement())
+  postid      Int
+  userid      Int
+  isliked     Boolean?     @default(false)
+  content     String?
+  createdat   Timestamp?   @default(now())
+  updatedat   Timestamp?   @default(now())
+  attachments Attachment[]
+  post        Post         @relation(fields: [postid], references: [id], onDelete: Cascade, map: "fk_interaction_post")
+  user        User         @relation(fields: [userid], references: [id], map: "fk_interaction_user", index: false)
+
+  @@index([postid], map: "ix_interaction_postid")
+  @@index([postid, userid, isliked], map: "ix_interaction_postid_userid_isliked")
+}
+
+model Attachment {
+  id            Int          @id(map: "Attachment_pkey") @default(autoincrement())
+  postid        Int?
+  interactionid Int?
+  filetype      VarChar(20)?
+  fileurl       VarChar(255)
+  interaction   Interaction? @relation(fields: [interactionid], references: [id], map: "fk_attachment_interaction")
+  post          Post?        @relation(fields: [postid], references: [id], onDelete: Cascade, map: "fk_attachment_post")
+
+  @@index([interactionid], map: "ix_attachment_interactionid")
+  @@index([postid], map: "ix_attachment_postid")
+  @@check(expression: "((filetype)::text = ANY ((ARRAY['image'::character varying, 'video'::character varying, 'audio'::character varying, 'file'::character varying])::text[]))", map: "Attachment_filetype_check")
+  @@check(expression: "(((postid IS NOT NULL) AND (interactionid IS NULL)) OR ((postid IS NULL) AND (interactionid IS NOT NULL)))", map: "ck_attachment_target")
+}
+
+model BlogCategory {
+  id        Int          @id(map: "BlogCategory_pkey") @default(autoincrement())
+  name      VarChar(100) @unique(map: "BlogCategory_name_key")
+  createdat Timestamp?   @default(now())
+  updatedat Timestamp?   @default(now())
+  blogs     Blog[]
+}
+
+model Blog {
+  id           Int           @id(map: "Blog_pkey") @default(autoincrement())
+  userid       Int
+  categoryid   Int
+  title        VarChar(255)
+  excerpt      VarChar(500)?
+  content      String
+  readtime     VarChar(20)?
+  image        VarChar(255)?
+  createdat    Timestamp?    @default(now())
+  updatedat    Timestamp?    @default(now())
+  blogCategory BlogCategory  @relation(fields: [categoryid], references: [id], onDelete: Cascade, map: "fk_blog_category", index: false)
+  user         User          @relation(fields: [userid], references: [id], onDelete: Cascade, map: "fk_blog_user", index: false)
+
+  @@index([categoryid, createdat], map: "ix_blog_categoryid_createdat")
+}
+
+model CompanyMembers {
+  companyid Int
+  userid    Int
+  status    VarChar(20) @default("active")
+  joinedat  Timestamp?
+  createdat Timestamp   @default(now())
+  company   Company     @relation(fields: [companyid], references: [id], map: "fk_companymembers_company", index: false)
+  user      User        @relation(fields: [userid], references: [id], map: "fk_companymembers_user", index: false)
+
+  @@id([companyid, userid], map: "CompanyMembers_pkey")
+  @@check(expression: "((status)::text = ANY ((ARRAY['pending'::character varying, 'active'::character varying, 'rejected'::character varying])::text[]))", map: "CompanyMembers_status_check")
+}
+
+model Connection {
+  id              Int          @id(map: "Connection_pkey") @default(autoincrement())
+  userid          Int
+  connecteduserid Int
+  status          VarChar(20)? @default("pending")
+  createdat       Timestamp    @default(now())
+  updatedat       Timestamp    @default(now())
+  user            User         @relation(name: "fk_connection_connecteduser", fields: [connecteduserid], references: [id], map: "fk_connection_connecteduser", index: false)
+  userUser        User         @relation(name: "fk_connection_user", fields: [userid], references: [id], onDelete: Cascade, map: "fk_connection_user", index: false)
+
+  @@unique([userid, connecteduserid], map: "uq_connection_pair")
+  @@index([connecteduserid, status], map: "ix_connection_connecteduserid_status")
+  @@index([createdat], map: "ix_connection_createdat")
+  @@index([status], map: "ix_connection_status")
+  @@index([userid, status], map: "ix_connection_userid_status")
+  @@check(expression: "((status)::text = ANY ((ARRAY['pending'::character varying, 'accepted'::character varying, 'rejected'::character varying])::text[]))", map: "Connection_status_check")
+}
+
+model Follow {
+  userid    Int
+  companyid Int
+  createdat Timestamp? @default(now())
+  updatedat Timestamp? @default(now())
+  company   Company    @relation(fields: [companyid], references: [id], map: "fk_follow_company", index: false)
+  user      User       @relation(fields: [userid], references: [id], map: "fk_follow_user", index: false)
+
+  @@id([userid, companyid], map: "Follow_pkey")
+}
+
+model Review {
+  id        Int        @id(map: "Review_pkey") @default(autoincrement())
+  userid    Int
+  companyid Int
+  rating    Int?
+  comment   String?
+  createdat Timestamp? @default(now())
+  updatedat Timestamp? @default(now())
+  company   Company    @relation(fields: [companyid], references: [id], map: "fk_review_company")
+  user      User       @relation(fields: [userid], references: [id], onDelete: Cascade, map: "fk_review_user", index: false)
+
+  @@index([companyid], map: "ix_review_companyid")
+  @@check(expression: "((rating >= 1) AND (rating <= 5))", map: "Review_rating_check")
+}
+
+model SessionLogins {
+  id           Int       @id(map: "SessionLogins_pkey") @default(autoincrement())
+  userid       Int
+  accesstoken  String
+  refreshtoken String
+  createdat    Timestamp @default(now())
+  updatedat    Timestamp @default(now())
+  user         User      @relation(fields: [userid], references: [id], onDelete: Cascade, map: "fk_sessionlogin_user")
+
+  @@index([userid], map: "ix_sessionlogin_refreshtoken")
+}
+
+model Skill {
+  id         Int          @id(map: "Skill_pkey") @default(autoincrement())
+  name       VarChar(100) @unique(map: "Skill_name_key")
+  createdat  Timestamp?   @default(now())
+  updatedat  Timestamp?   @default(now())
+  skillJobs  SkillJob[]
+  skillUsers SkillUser[]
+}
+
+model SkillJob {
+  skillid   Int
+  jobid     Int
+  createdat Timestamp? @default(now())
+  updatedat Timestamp? @default(now())
+  job       Job        @relation(fields: [jobid], references: [id], onDelete: Cascade, map: "fk_skilljob_job")
+  skill     Skill      @relation(fields: [skillid], references: [id], onDelete: Cascade, map: "fk_skilljob_skill")
+
+  @@id([skillid, jobid], map: "Skill_Job_pkey")
+  @@index([jobid], map: "ix_skilljob_jobid")
+  @@index([skillid], map: "ix_skilljob_skillid")
+  @@map("Skill_Job")
+}
+
+model SkillUser {
+  skillid   Int
+  userid    Int
+  createdat Timestamp? @default(now())
+  updatedat Timestamp? @default(now())
+  skill     Skill      @relation(fields: [skillid], references: [id], onDelete: Cascade, map: "fk_skilluser_skill", index: false)
+  user      User       @relation(fields: [userid], references: [id], onDelete: Cascade, map: "fk_skilluser_user")
+
+  @@id([skillid, userid], map: "Skill_User_pkey")
+  @@index([userid], map: "ix_skilluser_userid")
+  @@map("Skill_User")
+}
