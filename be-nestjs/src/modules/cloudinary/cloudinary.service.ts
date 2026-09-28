@@ -24,7 +24,7 @@ export class CloudinaryService implements OnModuleInit {
     customFolder?: string,
   ): Promise<UploadApiResponse> {
     if (!file || !file.buffer) {
-      throw new Error('File buffer is required');
+      throw new Error('Dữ liệu file không hợp lệ hoặc bị trống');
     }
 
     const targetFolder =
@@ -56,7 +56,7 @@ export class CloudinaryService implements OnModuleInit {
           result: UploadApiResponse | undefined,
         ) => {
           if (error) return reject(error);
-          if (!result) return reject(new Error('Cloudinary upload returned empty result'));
+          if (!result) return reject(new Error('Tải lên Cloudinary thất bại, không nhận được phản hồi'));
           resolve(result);
         },
       );
