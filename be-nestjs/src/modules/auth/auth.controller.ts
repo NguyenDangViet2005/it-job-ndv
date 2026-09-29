@@ -6,13 +6,12 @@ import {
   Req,
   Res,
   UseGuards,
-  HttpCode,
-  HttpStatus,
   UnauthorizedException,
 } from '@nestjs/common';
 import type { Request, Response } from 'express';
 import { AuthService } from './auth.service.js';
 import { RegisterDto } from './dto/register.dto.js';
+import { RegisterHRDto } from './dto/register-hr.dto.js';
 import { LoginDto } from './dto/login.dto.js';
 import { RefreshTokenDto } from './dto/refresh-token.dto.js';
 import { JwtAuthGuard } from '~/common/guards/jwt-auth.guard.js';
@@ -30,7 +29,6 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
-  @HttpCode(HttpStatus.CREATED)
   async register(@Body() dto: RegisterDto) {
     const user = await this.authService.register(dto);
     return {
@@ -40,8 +38,29 @@ export class AuthController {
     };
   }
 
+  @Post('register-hr')
+  async registerHR(
+    @Body() dto: RegisterHRDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const result = await this.authService.registerHR(dto);
+
+    res.cookie(COOKIE_NAME, result.refreshtoken, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
+      path: '/',
+      maxAge: COOKIE_MAX_AGE,
+    });
+
+    return {
+      success: true,
+      message: 'Đăng ký tài khoản nhà tuyển dụng thành công',
+      data: result,
+    };
+  }
+
   @Post('login')
-  @HttpCode(HttpStatus.OK)
   async login(
     @Body() dto: LoginDto,
     @Res({ passthrough: true }) res: Response,
@@ -67,7 +86,6 @@ export class AuthController {
   }
 
   @Post('refresh-token')
-  @HttpCode(HttpStatus.OK)
   async refreshToken(
     @Req() req: Request,
     @Body() body: RefreshTokenDto,
@@ -109,7 +127,6 @@ export class AuthController {
   }
 
   @Post('logout')
-  @HttpCode(HttpStatus.OK)
   async logout(
     @Req() req: Request,
     @Body() body: RefreshTokenDto,
@@ -136,7 +153,6 @@ export class AuthController {
 
   @Get('me')
   @UseGuards(JwtAuthGuard)
-  @HttpCode(HttpStatus.OK)
   async getMe(@CurrentUser('id') userId: number) {
     const user = await this.authService.getMe(userId);
     return {
@@ -147,7 +163,6 @@ export class AuthController {
   }
 
   @Post('set-cookie')
-  @HttpCode(HttpStatus.OK)
   async setCookie(
     @Body() body: RefreshTokenDto,
     @Res({ passthrough: true }) res: Response,

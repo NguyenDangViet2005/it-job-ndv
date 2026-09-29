@@ -20,7 +20,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { UserService } from './user.service.js';
 import { JwtAuthGuard } from '~/common/guards/jwt-auth.guard.js';
 import { RolesGuard } from '~/common/guards/roles.guard.js';
-import { Roles, Role } from '~/common/decorators/roles.decorator.js';
+import { Roles } from '~/common/decorators/roles.decorator.js';
 import { CurrentUser, type UserPayload } from '~/common/decorators/current-user.decorator.js';
 import { UpdateUserDto } from './dto/update-user.dto.js';
 import { ChangePasswordDto } from './dto/change-password.dto.js';
@@ -28,13 +28,11 @@ import { AddSkillDto } from './dto/add-skill.dto.js';
 import { UserPaginationDto } from './dto/user-pagination.dto.js';
 
 @Controller('user')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-
   @Get()
-  @UseGuards(RolesGuard)
   @Roles('admin')
   async getAll(@Query() query: UserPaginationDto) {
     return this.userService.getAllUsers(query.pageNumber, query.pageSize);
@@ -130,7 +128,6 @@ export class UserController {
   }
 
   @Post(':id/change-password')
-  @HttpCode(HttpStatus.OK)
   async changePassword(
     @Param('id', ParseIntPipe) id: number,
     @CurrentUser('id') currentUserId: number,
@@ -223,7 +220,6 @@ export class UserController {
   }
 
   @Delete(':id')
-  @UseGuards(RolesGuard)
   @Roles('admin')
   async deleteUser(
     @Param('id', ParseIntPipe) id: number,

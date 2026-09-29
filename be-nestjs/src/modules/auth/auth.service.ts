@@ -8,6 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import bcrypt from 'bcryptjs';
 import { db } from '~/prisma/db.js';
 import { RegisterDto } from './dto/register.dto.js';
+import { RegisterHRDto } from './dto/register-hr.dto.js';
 import { LoginDto } from './dto/login.dto.js';
 
 @Injectable()
@@ -55,6 +56,119 @@ export class AuthService {
       fullname: newUser.fullname,
       role: newUser.role,
     };
+  }
+
+  async registerHR(dto: RegisterHRDto) {
+    const email = dto.email.toLowerCase().trim();
+    const existingUser = await db.orm.public.User.where({ email: email as any }).first();
+    if (existingUser) {
+      throw new ConflictException('Email này đã được sử dụng');
+    }
+
+    // Kiểm tra tính hợp lệ của địa chỉ xã/phường & tỉnh/thành
+    const ward = await db.orm.public.Wards
+      .where({ id: dto.wardid })
+      .include('provinces')
+      .first();
+
+    if (!ward) {
+      throw new BadRequestException('Phường/Xã được chọn không tồn tại');
+    }
+
+    if (dto.provinceid && ward.provinceid !== dto.provinceid) {
+      throw new BadRequestException('Phường/Xã không thuộc Tỉnh/Thành phố đã chọn');
+    }
+
+    const hashedPassword = await bcrypt.hash(dto.password, 10);
+    let createdUserId: number | null = null;
+
+    try {
+      // 1. Tạo tài khoản người dùng với vai trò employer
+      const newUser = await db.orm.public.User.create({
+        email: email as any,
+        password: hashedPassword as any,
+        fullname: dto.fullname.trim() as any,
+        phone: (dto.phone?.trim() || null) as any,
+        gender: (dto.gender || null) as any,
+        dateofbirth: dto.dateofbirth ? new Date(dto.dateofbirth) : null,
+        avatar: (dto.avatar || null) as any,
+        coverimage: (dto.coverimage || null) as any,
+        role: 'employer' as any,
+      });
+      createdUserId = newUser.id;
+
+      // 2. Tạo công ty liên kết với nhà tuyển dụng
+      const newCompany = await db.orm.public.Company.create({
+        name: dto.companyName.trim() as any,
+        avatar: (dto.companyAvatar || null) as any,
+        coverimage: (dto.companyCoverImage || null) as any,
+        nationality: (dto.companyNationality || null) as any,
+        website: (dto.companyWebsite || null) as any,
+        hotline: (dto.companyHotline || null) as any,
+        companyemail: (dto.companyemail?.toLowerCase().trim() || null) as any,
+        description: (dto.companyDescription || null) as any,
+        foundedyear: (dto.companyFoundedYear || null) as any,
+        address: (dto.companyAddress || null) as any,
+        wardid: dto.wardid as any,
+        createdbyuserid: newUser.id as any,
+      });
+
+      // 3. Tạo thành viên công ty (CompanyMembers)
+      await db.orm.public.CompanyMembers.create({
+        companyid: newCompany.id as any,
+        userid: newUser.id as any,
+        status: 'active' as any,
+        joinedat: new Date() as any,
+      });
+
+      // 4. Tạo token và phiên đăng nhập
+      const { accesstoken, refreshtoken } = this.generateTokens(
+        newUser.id,
+        'employer',
+        newUser.email,
+      );
+
+      await db.orm.public.SessionLogins.create({
+        userid: newUser.id,
+        accesstoken,
+        refreshtoken,
+      });
+
+      const { password: _, refreshtoken: __, ...userWithoutPassword } = newUser as any;
+
+      const formattedCompany = {
+        id: newCompany.id,
+        name: newCompany.name,
+        avatar: newCompany.avatar,
+        coverimage: newCompany.coverimage,
+        nationality: newCompany.nationality,
+        website: newCompany.website,
+        description: newCompany.description,
+        foundedyear: newCompany.foundedyear,
+        address: newCompany.address,
+        hotline: newCompany.hotline,
+        companyemail: newCompany.companyemail,
+        wardid: newCompany.wardid,
+        wardname: ward.name,
+        provincename: (ward as any)?.provinces?.name || null,
+        createdbyuserid: newCompany.createdbyuserid,
+        createdat: newCompany.createdat,
+        updatedat: newCompany.updatedat,
+      };
+
+      return {
+        accesstoken,
+        refreshtoken,
+        user: userWithoutPassword,
+        company: formattedCompany,
+      };
+    } catch (error) {
+      // Rollback user nếu có lỗi xảy ra trong quá trình khởi tạo công ty
+      if (createdUserId) {
+        await db.orm.public.User.where({ id: createdUserId }).delete().catch(() => {});
+      }
+      throw error;
+    }
   }
 
   async login(dto: LoginDto) {
