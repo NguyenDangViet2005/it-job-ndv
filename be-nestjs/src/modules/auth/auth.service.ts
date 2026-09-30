@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import bcrypt from 'bcryptjs';
-import { db } from '~/prisma/db.js';
+import { orm } from '~/prisma/db.js';
 import { RegisterDto } from './dto/register.dto.js';
 import { RegisterHRDto } from './dto/register-hr.dto.js';
 import { LoginDto } from './dto/login.dto.js';
@@ -34,14 +34,14 @@ export class AuthService {
 
   async register(dto: RegisterDto) {
     const email = dto.email.toLowerCase().trim();
-    const existing = await db.orm.public.User.where({ email: email as any }).first();
+    const existing = await orm.User.where({ email: email as any }).first();
     if (existing) {
       throw new ConflictException('Email này đã được sử dụng');
     }
 
     const hashedPassword = await bcrypt.hash(dto.password, 10);
     const userEntity = AuthMapper.toCreateUserEntity(dto, hashedPassword);
-    const newUser = await db.orm.public.User.create(userEntity);
+    const newUser = await orm.User.create(userEntity);
 
     return {
       id: newUser.id,
@@ -53,13 +53,13 @@ export class AuthService {
 
   async registerHR(dto: RegisterHRDto) {
     const email = dto.email.toLowerCase().trim();
-    const existingUser = await db.orm.public.User.where({ email: email as any }).first();
+    const existingUser = await orm.User.where({ email: email as any }).first();
     if (existingUser) {
       throw new ConflictException('Email này đã được sử dụng');
     }
 
     // Kiểm tra tính hợp lệ của địa chỉ xã/phường & tỉnh/thành
-    const ward = await db.orm.public.Wards
+    const ward = await orm.Wards
       .where({ id: dto.wardid })
       .include('provinces')
       .first();
@@ -78,16 +78,16 @@ export class AuthService {
     try {
       // 1. Tạo tài khoản người dùng với vai trò employer
       const userPayload = AuthMapper.toCreateHREmployerEntity(dto, hashedPassword);
-      const newUser = await db.orm.public.User.create(userPayload);
+      const newUser = await orm.User.create(userPayload);
       createdUserId = newUser.id;
 
       // 2. Tạo công ty liên kết với nhà tuyển dụng
       const companyPayload = AuthMapper.toCreateHRCompanyEntity(dto, newUser.id);
-      const newCompany = await db.orm.public.Company.create(companyPayload);
+      const newCompany = await orm.Company.create(companyPayload);
 
       // 3. Tạo thành viên công ty (CompanyMembers)
       const memberPayload = AuthMapper.toCreateHRCompanyMemberEntity(newCompany.id, newUser.id);
-      await db.orm.public.CompanyMembers.create(memberPayload);
+      await orm.CompanyMembers.create(memberPayload);
 
       // 4. Tạo token và phiên đăng nhập
       const { accesstoken, refreshtoken } = this.generateTokens(
@@ -96,7 +96,7 @@ export class AuthService {
         newUser.email,
       );
 
-      await db.orm.public.SessionLogins.create({
+      await orm.SessionLogins.create({
         userid: newUser.id,
         accesstoken,
         refreshtoken,
@@ -114,7 +114,7 @@ export class AuthService {
     } catch (error) {
       // Rollback user nếu có lỗi xảy ra trong quá trình khởi tạo công ty
       if (createdUserId) {
-        await db.orm.public.User.where({ id: createdUserId }).delete().catch(() => {});
+        await orm.User.where({ id: createdUserId }).delete().catch(() => {});
       }
       throw error;
     }
@@ -122,7 +122,7 @@ export class AuthService {
 
   async login(dto: LoginDto) {
     const email = dto.email.toLowerCase().trim();
-    const user = await db.orm.public.User.where({ email: email as any }).first();
+    const user = await orm.User.where({ email: email as any }).first();
     if (!user || !user.password) {
       throw new UnauthorizedException('Email hoặc mật khẩu không chính xác');
     }
@@ -139,7 +139,7 @@ export class AuthService {
     );
 
     // Giới hạn tối đa 5 phiên đăng nhập đồng thời: Xóa các phiên cũ hơn nếu đã đủ 5
-    const existingSessions = await db.orm.public.SessionLogins
+    const existingSessions = await orm.SessionLogins
       .where({ userid: user.id })
       .orderBy((s: any) => s.id.desc())
       .all();
@@ -147,11 +147,11 @@ export class AuthService {
     if (existingSessions.length >= 5) {
       const oldSessions = existingSessions.slice(4);
       await Promise.all(
-        oldSessions.map((s) => db.orm.public.SessionLogins.where({ id: s.id }).delete()),
+        oldSessions.map((s) => orm.SessionLogins.where({ id: s.id }).delete()),
       );
     }
 
-    await db.orm.public.SessionLogins.create({
+    await orm.SessionLogins.create({
       userid: user.id,
       accesstoken,
       refreshtoken,
@@ -166,7 +166,6 @@ export class AuthService {
     };
   }
 
-
   async refreshToken(token: string) {
     if (!token) {
       throw new BadRequestException('Refresh token không được để trống');
@@ -177,7 +176,7 @@ export class AuthService {
         secret: process.env.JWT_REFRESH_SECRET,
       });
 
-      const session = await db.orm.public.SessionLogins.where({
+      const session = await orm.SessionLogins.where({
         refreshtoken: token,
       }).first();
 
@@ -185,7 +184,7 @@ export class AuthService {
         throw new UnauthorizedException('Phiên đăng nhập không hợp lệ hoặc đã bị hủy');
       }
 
-      const user = await db.orm.public.User.where({ id: decoded.id }).first();
+      const user = await orm.User.where({ id: decoded.id }).first();
       if (!user) {
         throw new UnauthorizedException('Người dùng không tồn tại');
       }
@@ -196,7 +195,7 @@ export class AuthService {
         user.email,
       );
 
-      await db.orm.public.SessionLogins.where({ id: session.id }).update({
+      await orm.SessionLogins.where({ id: session.id }).update({
         accesstoken: tokens.accesstoken,
         refreshtoken: tokens.refreshtoken,
       });
@@ -215,7 +214,7 @@ export class AuthService {
 
   async logout(refreshToken?: string) {
     try {
-      await db.orm.public.SessionLogins.where({
+      await orm.SessionLogins.where({
         refreshtoken: refreshToken,
       }).delete();
     } catch {
@@ -225,14 +224,13 @@ export class AuthService {
     return { success: true, message: 'Đăng xuất thành công' };
   }
 
-
   async logoutAll(userId: number) {
-    await db.orm.public.SessionLogins.where({ userid: userId }).delete();
+    await orm.SessionLogins.where({ userid: userId }).delete();
     return { success: true, message: 'Đã đăng xuất khỏi tất cả thiết bị' };
   }
 
   async getMe(userId: number) {
-    const user = await db.orm.public.User.where({ id: userId }).first();
+    const user = await orm.User.where({ id: userId }).first();
     if (!user) {
       throw new UnauthorizedException('Người dùng không tồn tại');
     }

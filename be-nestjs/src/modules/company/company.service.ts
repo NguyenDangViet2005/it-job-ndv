@@ -4,7 +4,7 @@ import {
   ForbiddenException,
   BadRequestException,
 } from '@nestjs/common';
-import { db } from '~/prisma/db.js';
+import { orm } from '~/prisma/db.js';
 import { CloudinaryService } from '~/modules/cloudinary/cloudinary.service.js';
 import { CreateCompanyDto } from './dto/create-company.dto.js';
 import { UpdateCompanyDto } from './dto/update-company.dto.js';
@@ -29,12 +29,12 @@ export class CompanyService {
     let rows: any[];
 
     if (keyword) {
-      const agg = await db.orm.public.Company
+      const agg = await orm.Company
         .where((c: any) => c.name.ilike(`%${keyword}%`))
         .aggregate((a) => ({ count: a.count() }));
       count = agg.count;
 
-      rows = await db.orm.public.Company
+      rows = await orm.Company
         .where((c: any) => c.name.ilike(`%${keyword}%`))
         .include('companyMembers')
         .include('jobs')
@@ -46,12 +46,12 @@ export class CompanyService {
         .limit(pageSize)
         .all();
     } else {
-      const agg = await db.orm.public.Company.aggregate((a) => ({
+      const agg = await orm.Company.aggregate((a) => ({
         count: a.count(),
       }));
       count = agg.count;
 
-      rows = await db.orm.public.Company
+      rows = await orm.Company
         .include('companyMembers')
         .include('jobs')
         .include('posts')
@@ -67,7 +67,7 @@ export class CompanyService {
     const wardIds = [...new Set(rows.map((c: any) => c.wardid).filter(Boolean))];
     let wardMap = new Map<number, any>();
     if (wardIds.length > 0) {
-      const wards = await db.orm.public.Wards
+      const wards = await orm.Wards
         .where((w: any) => w.id.in(wardIds))
         .include('provinces')
         .all();
@@ -95,11 +95,11 @@ export class CompanyService {
     const pageNumber = query.pageNumber && query.pageNumber > 0 ? query.pageNumber : 1;
     const pageSize = query.pageSize && query.pageSize > 0 ? query.pageSize : 10;
 
-    const { count } = await db.orm.public.Company.aggregate((a) => ({
+    const { count } = await orm.Company.aggregate((a) => ({
       count: a.count(),
     }));
 
-    const rows = await db.orm.public.Company
+    const rows = await orm.Company
       .orderBy((c: any) => c.id.desc())
       .offset((pageNumber - 1) * pageSize)
       .limit(pageSize)
@@ -121,7 +121,7 @@ export class CompanyService {
    * Lấy chi tiết công ty theo ID
    */
   async getCompanyById(id: number): Promise<FormattedCompany> {
-    const comp = await db.orm.public.Company
+    const comp = await orm.Company
       .where({ id })
       .include('companyMembers')
       .include('jobs')
@@ -136,7 +136,7 @@ export class CompanyService {
 
     let ward: any = null;
     if (comp.wardid) {
-      ward = await db.orm.public.Wards
+      ward = await orm.Wards
         .where({ id: comp.wardid })
         .include('provinces')
         .first();
@@ -150,14 +150,14 @@ export class CompanyService {
    */
   async getCompanyByUserId(userId: number): Promise<FormattedCompany> {
     // 1. Kiểm tra thành viên công ty đang hoạt động
-    const member = await db.orm.public.CompanyMembers
+    const member = await orm.CompanyMembers
       .where({ userid: userId, status: 'active' as any })
       .first();
 
     // 2. Nếu không tìm thấy trong thành viên, kiểm tra xem có phải người tạo công ty không
     let companyId = member?.companyid;
     if (!companyId) {
-      const createdCompany = await db.orm.public.Company
+      const createdCompany = await orm.Company
         .where({ createdbyuserid: userId })
         .first();
       companyId = createdCompany?.id;
@@ -175,16 +175,16 @@ export class CompanyService {
    */
   async createCompany(userId: number, dto: CreateCompanyDto): Promise<FormattedCompany> {
     if (dto.wardid) {
-      const ward = await db.orm.public.Wards.where({ id: dto.wardid }).first();
+      const ward = await orm.Wards.where({ id: dto.wardid }).first();
       if (!ward) {
         throw new BadRequestException('Phường/Xã không tồn tại');
       }
     }
 
     const companyEntity = CompanyMapper.toCreateCompanyEntity(dto, userId);
-    const newCompany = await db.orm.public.Company.create(companyEntity);
+    const newCompany = await orm.Company.create(companyEntity);
 
-    await db.orm.public.CompanyMembers.create({
+    await orm.CompanyMembers.create({
       companyid: newCompany.id as any,
       userid: userId as any,
       status: 'active' as any,
@@ -202,14 +202,14 @@ export class CompanyService {
     currentUser: { id: number; role: string },
     dto: UpdateCompanyDto,
   ): Promise<FormattedCompany> {
-    const company = await db.orm.public.Company.where({ id: companyId }).first();
+    const company = await orm.Company.where({ id: companyId }).first();
     if (!company) {
       throw new NotFoundException('Không tìm thấy thông tin công ty');
     }
 
     // Kiểm tra quyền: Admin hoặc thành viên/người tạo công ty
     if (currentUser.role !== 'admin' && company.createdbyuserid !== currentUser.id) {
-      const isMember = await db.orm.public.CompanyMembers
+      const isMember = await orm.CompanyMembers
         .where({ companyid: companyId, userid: currentUser.id, status: 'active' as any })
         .first();
       if (!isMember) {
@@ -218,14 +218,14 @@ export class CompanyService {
     }
 
     if (dto.wardid) {
-      const ward = await db.orm.public.Wards.where({ id: dto.wardid }).first();
+      const ward = await orm.Wards.where({ id: dto.wardid }).first();
       if (!ward) {
         throw new BadRequestException('Phường/Xã không tồn tại');
       }
     }
 
     const updateData = CompanyMapper.toUpdateCompanyEntity(dto);
-    await db.orm.public.Company.where({ id: companyId }).update(updateData);
+    await orm.Company.where({ id: companyId }).update(updateData);
 
     return this.getCompanyById(companyId);
   }
@@ -234,7 +234,7 @@ export class CompanyService {
    * Xóa công ty và toàn bộ dữ liệu liên quan (jobs, posts, attachments, reviews...)
    */
   async deleteCompany(companyId: number, currentUser: { id: number; role: string }) {
-    const company = await db.orm.public.Company.where({ id: companyId }).first();
+    const company = await orm.Company.where({ id: companyId }).first();
     if (!company) {
       throw new NotFoundException('Không tìm thấy thông tin công ty');
     }
@@ -252,21 +252,21 @@ export class CompanyService {
     }
 
     // 2. Dọn dẹp Jobs và Applications
-    const jobs = await db.orm.public.Job.where({ companyid: companyId }).all();
+    const jobs = await orm.Job.where({ companyid: companyId }).all();
     const jobIds = jobs.map((j: any) => j.id);
 
     if (jobIds.length > 0) {
-      await db.orm.public.Application.where((a: any) => a.jobid.in(jobIds)).delete();
-      await db.orm.public.SkillJob.where((sj: any) => sj.jobid.in(jobIds)).delete();
-      await db.orm.public.Job.where((j: any) => j.id.in(jobIds)).delete();
+      await orm.Application.where((a: any) => a.jobid.in(jobIds)).delete();
+      await orm.SkillJob.where((sj: any) => sj.jobid.in(jobIds)).delete();
+      await orm.Job.where((j: any) => j.id.in(jobIds)).delete();
     }
 
     // 3. Dọn dẹp Posts, Attachments (trên Cloudinary và DB), Interactions
-    const posts = await db.orm.public.Post.where({ companyid: companyId }).all();
+    const posts = await orm.Post.where({ companyid: companyId }).all();
     const postIds = posts.map((p: any) => p.id);
 
     if (postIds.length > 0) {
-      const attachments = await db.orm.public.Attachment
+      const attachments = await orm.Attachment
         .where((att: any) => att.postid.in(postIds))
         .all();
 
@@ -276,18 +276,18 @@ export class CompanyService {
         }
       }
 
-      await db.orm.public.Attachment.where((att: any) => att.postid.in(postIds)).delete();
-      await db.orm.public.Interaction.where((it: any) => it.postid.in(postIds)).delete();
-      await db.orm.public.Post.where((p: any) => p.id.in(postIds)).delete();
+      await orm.Attachment.where((att: any) => att.postid.in(postIds)).delete();
+      await orm.Interaction.where((it: any) => it.postid.in(postIds)).delete();
+      await orm.Post.where((p: any) => p.id.in(postIds)).delete();
     }
 
     // 4. Dọn dẹp Follows, Reviews, CompanyMembers
-    await db.orm.public.Follow.where({ companyid: companyId }).delete();
-    await db.orm.public.Review.where({ companyid: companyId }).delete();
-    await db.orm.public.CompanyMembers.where({ companyid: companyId }).delete();
+    await orm.Follow.where({ companyid: companyId }).delete();
+    await orm.Review.where({ companyid: companyId }).delete();
+    await orm.CompanyMembers.where({ companyid: companyId }).delete();
 
     // 5. Xóa Company
-    await db.orm.public.Company.where({ id: companyId }).delete();
+    await orm.Company.where({ id: companyId }).delete();
 
     return { success: true, message: 'Xóa công ty thành công' };
   }
@@ -296,7 +296,7 @@ export class CompanyService {
    * Upload ảnh đại diện công ty: Tải lên Cloudinary trước, cập nhật DB rồi mới xóa ảnh cũ
    */
   async uploadCompanyAvatar(companyId: number, file: Express.Multer.File) {
-    const company = await db.orm.public.Company.where({ id: companyId }).first();
+    const company = await orm.Company.where({ id: companyId }).first();
     if (!company) {
       throw new NotFoundException('Không tìm thấy thông tin công ty');
     }
@@ -304,7 +304,7 @@ export class CompanyService {
     const uploadRes = await this.cloudinaryService.uploadFile(file);
     const oldAvatar = company.avatar;
 
-    await db.orm.public.Company.where({ id: companyId }).update({
+    await orm.Company.where({ id: companyId }).update({
       avatar: uploadRes.secure_url as any,
       updatedat: new Date() as any,
     });
@@ -320,7 +320,7 @@ export class CompanyService {
    * Upload ảnh bìa công ty: Tải lên Cloudinary trước, cập nhật DB rồi mới xóa ảnh cũ
    */
   async uploadCompanyCover(companyId: number, file: Express.Multer.File) {
-    const company = await db.orm.public.Company.where({ id: companyId }).first();
+    const company = await orm.Company.where({ id: companyId }).first();
     if (!company) {
       throw new NotFoundException('Không tìm thấy thông tin công ty');
     }
@@ -328,7 +328,7 @@ export class CompanyService {
     const uploadRes = await this.cloudinaryService.uploadFile(file);
     const oldCover = company.coverimage;
 
-    await db.orm.public.Company.where({ id: companyId }).update({
+    await orm.Company.where({ id: companyId }).update({
       coverimage: uploadRes.secure_url as any,
       updatedat: new Date() as any,
     });

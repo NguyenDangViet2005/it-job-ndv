@@ -13,3 +13,10 @@ export const db = postgres<Contract>({
   contractJson,
   url: process.env.DATABASE_URL,
 });
+
+/**
+ * Shorthand alias để gọi trực tiếp các models ORM nhanh và gọn:
+ * Ví dụ: orm.User.where(...) thay vì db.orm.public.User.where(...)
+ */
+export const orm = db.orm.public;
+export const prisma = db.orm.public;

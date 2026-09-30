@@ -4,7 +4,7 @@ import {
   ConflictException,
   BadRequestException,
 } from '@nestjs/common';
-import { db } from '~/prisma/db.js';
+import { orm } from '~/prisma/db.js';
 import { CreateSkillDto } from './dto/create-skill.dto.js';
 import { UpdateSkillDto } from './dto/update-skill.dto.js';
 
@@ -13,8 +13,8 @@ export class SkillService {
   async getAllSkills(page: number = 1, pageSize: number = 20, keyword?: string) {
     const trimmed = keyword?.trim();
 
-    let countQuery = db.orm.public.Skill;
-    let dataQuery = db.orm.public.Skill;
+    let countQuery = orm.Skill;
+    let dataQuery = orm.Skill;
 
     if (trimmed) {
       countQuery = countQuery.where((s: any) => s.name.ilike(`%${trimmed}%`)) as any;
@@ -39,7 +39,7 @@ export class SkillService {
   }
 
   async getSkillById(id: number) {
-    const skill = await db.orm.public.Skill.where({ id }).first();
+    const skill = await orm.Skill.where({ id }).first();
     if (!skill) {
       throw new NotFoundException('Kỹ năng không tồn tại');
     }
@@ -49,7 +49,7 @@ export class SkillService {
   async createSkill(dto: CreateSkillDto) {
     const name = dto.name.trim();
 
-    const existing = await db.orm.public.Skill.where((s: any) =>
+    const existing = await orm.Skill.where((s: any) =>
       s.name.ilike(name),
     ).first();
 
@@ -57,7 +57,7 @@ export class SkillService {
       throw new ConflictException('Kỹ năng này đã tồn tại trong hệ thống');
     }
 
-    const newSkill = await db.orm.public.Skill.create({
+    const newSkill = await orm.Skill.create({
       name: name as any,
     });
 
@@ -65,14 +65,14 @@ export class SkillService {
   }
 
   async updateSkill(id: number, dto: UpdateSkillDto) {
-    const skill = await db.orm.public.Skill.where({ id }).first();
+    const skill = await orm.Skill.where({ id }).first();
     if (!skill) {
       throw new NotFoundException('Kỹ năng không tồn tại');
     }
 
     const name = dto.name.trim();
 
-    const existing = await db.orm.public.Skill.where((s: any) =>
+    const existing = await orm.Skill.where((s: any) =>
       s.name.ilike(name),
     ).first();
 
@@ -80,24 +80,24 @@ export class SkillService {
       throw new ConflictException('Tên kỹ năng này đã được sử dụng');
     }
 
-    await db.orm.public.Skill.where({ id }).update({
+    await orm.Skill.where({ id }).update({
       name: name as any,
       updatedat: new Date() as any,
     });
 
-    const updated = await db.orm.public.Skill.where({ id }).first();
+    const updated = await orm.Skill.where({ id }).first();
     return updated;
   }
 
   async deleteSkill(id: number) {
-    const skill = await db.orm.public.Skill.where({ id }).first();
+    const skill = await orm.Skill.where({ id }).first();
     if (!skill) {
       throw new NotFoundException('Kỹ năng không tồn tại');
     }
 
     // Kiểm tra xem kỹ năng có đang được ứng viên hoặc bài đăng tuyển dụng sử dụng không
-    const usedInUser = await db.orm.public.SkillUser.where({ skillid: id }).first();
-    const usedInJob = await db.orm.public.SkillJob.where({ skillid: id }).first();
+    const usedInUser = await orm.SkillUser.where({ skillid: id }).first();
+    const usedInJob = await orm.SkillJob.where({ skillid: id }).first();
 
     if (usedInUser || usedInJob) {
       throw new BadRequestException(
@@ -105,7 +105,7 @@ export class SkillService {
       );
     }
 
-    await db.orm.public.Skill.where({ id }).delete();
+    await orm.Skill.where({ id }).delete();
     return true;
   }
 }

@@ -5,7 +5,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import bcrypt from 'bcryptjs';
-import { db } from '~/prisma/db.js';
+import { orm } from '~/prisma/db.js';
 import { CloudinaryService } from '~/modules/cloudinary/cloudinary.service.js';
 import { UpdateUserDto } from './dto/update-user.dto.js';
 import { ChangePasswordDto } from './dto/change-password.dto.js';
@@ -16,11 +16,11 @@ export class UserService {
   constructor(private readonly cloudinaryService: CloudinaryService) {}
 
   async getAllUsers(page: number = 1, pageSize: number = 10) {
-    const { count } = await db.orm.public.User.aggregate((a) => ({
+    const { count } = await orm.User.aggregate((a) => ({
       count: a.count(),
     }));
 
-    const rows = await db.orm.public.User
+    const rows = await orm.User
       .orderBy((u: any) => u.id.desc())
       .offset((page - 1) * pageSize)
       .limit(pageSize)
@@ -38,7 +38,7 @@ export class UserService {
   }
 
   async getUserById(id: number) {
-    const user = await db.orm.public.User.where({ id }).first();
+    const user = await orm.User.where({ id }).first();
     if (!user) {
       throw new NotFoundException('Người dùng không tồn tại');
     }
@@ -55,15 +55,15 @@ export class UserService {
       throw new ForbiddenException('Bạn không có quyền chỉnh sửa thông tin này');
     }
 
-    const user = await db.orm.public.User.where({ id }).first();
+    const user = await orm.User.where({ id }).first();
     if (!user) {
       throw new NotFoundException('Người dùng không tồn tại');
     }
 
     const updateData = UserMapper.toUpdateUserEntity(dto);
-    await db.orm.public.User.where({ id }).update(updateData);
+    await orm.User.where({ id }).update(updateData);
 
-    const updated = await db.orm.public.User.where({ id }).first();
+    const updated = await orm.User.where({ id }).first();
     return UserMapper.toSafeUser(updated);
   }
 
@@ -77,7 +77,7 @@ export class UserService {
       throw new ForbiddenException('Bạn chỉ có thể cập nhật avatar của chính mình');
     }
 
-    const user = await db.orm.public.User.where({ id }).first();
+    const user = await orm.User.where({ id }).first();
     if (!user) {
       throw new NotFoundException('Người dùng không tồn tại');
     }
@@ -86,7 +86,7 @@ export class UserService {
     const result = await this.cloudinaryService.uploadFile(file, 'IT-JOB/avatars');
 
     // 2. Cập nhật database với URL mới
-    await db.orm.public.User.where({ id }).update({ avatar: result.secure_url as any });
+    await orm.User.where({ id }).update({ avatar: result.secure_url as any });
 
     // 3. Sau khi upload & update thành công, dọn dẹp file cũ trên Cloudinary
     if (user.avatar) {
@@ -95,7 +95,7 @@ export class UserService {
       });
     }
 
-    const updated = await db.orm.public.User.where({ id }).first();
+    const updated = await orm.User.where({ id }).first();
     return UserMapper.toSafeUser(updated);
   }
 
@@ -109,7 +109,7 @@ export class UserService {
       throw new ForbiddenException('Bạn chỉ có thể cập nhật ảnh bìa của chính mình');
     }
 
-    const user = await db.orm.public.User.where({ id }).first();
+    const user = await orm.User.where({ id }).first();
     if (!user) {
       throw new NotFoundException('Người dùng không tồn tại');
     }
@@ -118,7 +118,7 @@ export class UserService {
     const result = await this.cloudinaryService.uploadFile(file, 'IT-JOB/covers');
 
     // 2. Cập nhật database
-    await db.orm.public.User.where({ id }).update({ coverimage: result.secure_url as any });
+    await orm.User.where({ id }).update({ coverimage: result.secure_url as any });
 
     // 3. Dọn dẹp ảnh cũ
     if (user.coverimage) {
@@ -127,7 +127,7 @@ export class UserService {
       });
     }
 
-    const updated = await db.orm.public.User.where({ id }).first();
+    const updated = await orm.User.where({ id }).first();
     return UserMapper.toSafeUser(updated);
   }
 
@@ -141,7 +141,7 @@ export class UserService {
       throw new ForbiddenException('Bạn chỉ có thể cập nhật CV của chính mình');
     }
 
-    const user = await db.orm.public.User.where({ id }).first();
+    const user = await orm.User.where({ id }).first();
     if (!user) {
       throw new NotFoundException('Người dùng không tồn tại');
     }
@@ -150,7 +150,7 @@ export class UserService {
     const result = await this.cloudinaryService.uploadFile(file, 'IT-JOB/cvs');
 
     // 2. Cập nhật database
-    await db.orm.public.User.where({ id }).update({ cvurl: result.secure_url as any });
+    await orm.User.where({ id }).update({ cvurl: result.secure_url as any });
 
     // 3. Dọn dẹp CV cũ
     if (user.cvurl) {
@@ -159,7 +159,7 @@ export class UserService {
       });
     }
 
-    const updated = await db.orm.public.User.where({ id }).first();
+    const updated = await orm.User.where({ id }).first();
     return UserMapper.toSafeUser(updated);
   }
 
@@ -172,7 +172,7 @@ export class UserService {
       throw new ForbiddenException('Bạn chỉ có thể đổi mật khẩu của chính mình');
     }
 
-    const user = await db.orm.public.User.where({ id }).first();
+    const user = await orm.User.where({ id }).first();
     if (!user || !user.password) {
       throw new NotFoundException(
         'Người dùng không tồn tại hoặc sử dụng đăng nhập mạng xã hội',
@@ -185,16 +185,16 @@ export class UserService {
     }
 
     const hashedPassword = await bcrypt.hash(dto.newPassword, 10);
-    await db.orm.public.User.where({ id }).update({ password: hashedPassword as any });
+    await orm.User.where({ id }).update({ password: hashedPassword as any });
 
     // Hủy toàn bộ phiên đăng nhập cũ trên các thiết bị để đảm bảo an toàn tài khoản
-    await db.orm.public.SessionLogins.where({ userid: id }).delete();
+    await orm.SessionLogins.where({ userid: id }).delete();
 
     return true;
   }
 
   async getUserSkills(userId: number) {
-    const skillUsers = await db.orm.public.SkillUser.where({ userid: userId })
+    const skillUsers = await orm.SkillUser.where({ userid: userId })
       .include('skill')
       .all();
 
@@ -211,17 +211,17 @@ export class UserService {
       throw new ForbiddenException('Bạn không có quyền chỉnh sửa kỹ năng người dùng');
     }
 
-    const user = await db.orm.public.User.where({ id: userId }).first();
+    const user = await orm.User.where({ id: userId }).first();
     if (!user) {
       throw new NotFoundException('Người dùng không tồn tại');
     }
 
-    const skill = await db.orm.public.Skill.where({ id: skillId }).first();
+    const skill = await orm.Skill.where({ id: skillId }).first();
     if (!skill) {
       throw new NotFoundException('Kỹ năng không tồn tại');
     }
 
-    const existing = await db.orm.public.SkillUser.where({
+    const existing = await orm.SkillUser.where({
       userid: userId,
       skillid: skillId,
     }).first();
@@ -230,7 +230,7 @@ export class UserService {
       return skill;
     }
 
-    await db.orm.public.SkillUser.create({
+    await orm.SkillUser.create({
       userid: userId,
       skillid: skillId,
     });
@@ -248,7 +248,7 @@ export class UserService {
       throw new ForbiddenException('Bạn không có quyền xóa kỹ năng này');
     }
 
-    await db.orm.public.SkillUser.where({
+    await orm.SkillUser.where({
       userid: userId,
       skillid: skillId,
     }).delete();
@@ -260,11 +260,11 @@ export class UserService {
    * Lấy danh sách đơn ứng tuyển của người dùng
    */
   async getUserApplications(userId: number, page: number = 1, pageSize: number = 10) {
-    const { count } = await db.orm.public.Application.where({
+    const { count } = await orm.Application.where({
       userid: userId,
     }).aggregate((a) => ({ count: a.count() }));
 
-    const applications = await db.orm.public.Application.where({ userid: userId })
+    const applications = await orm.Application.where({ userid: userId })
       .include('job')
       .orderBy((a: any) => a.createdat.desc())
       .offset((page - 1) * pageSize)
@@ -278,7 +278,7 @@ export class UserService {
 
     let companiesMap = new Map<number, any>();
     if (companyIds.length > 0) {
-      const companies = await db.orm.public.Company
+      const companies = await orm.Company
         .where((c: any) => c.id.in(companyIds))
         .all();
       companiesMap = new Map(
@@ -293,7 +293,7 @@ export class UserService {
             ...app.job,
             company: companiesMap.get(app.job.companyid) || null,
           }
-         : null,
+        : null,
     }));
 
     return {
@@ -310,11 +310,11 @@ export class UserService {
    * Lấy danh sách bài viết của người dùng
    */
   async getUserPosts(userId: number, page: number = 1, pageSize: number = 10) {
-    const { count } = await db.orm.public.Post.where({
+    const { count } = await orm.Post.where({
       userid: userId,
     }).aggregate((a) => ({ count: a.count() }));
 
-    const posts = await db.orm.public.Post.where({ userid: userId })
+    const posts = await orm.Post.where({ userid: userId })
       .include('attachments')
       .include('company')
       .orderBy((p: any) => p.id.desc())
@@ -336,7 +336,7 @@ export class UserService {
    * Lấy danh sách ảnh/video bài viết của người dùng (phân trang trực tiếp tại database)
    */
   async getUserMedia(userId: number, page: number = 1, pageSize: number = 6) {
-    const userPosts = await db.orm.public.Post.where({ userid: userId }).all();
+    const userPosts = await orm.Post.where({ userid: userId }).all();
     const postIds = userPosts.map((p) => p.id);
 
     if (postIds.length === 0) {
@@ -348,12 +348,12 @@ export class UserService {
       };
     }
 
-    const { count } = await db.orm.public.Attachment
+    const { count } = await orm.Attachment
       .where((att: any) => att.postid.in(postIds))
       .where((att: any) => att.filetype.in(['image', 'video']))
       .aggregate((a) => ({ count: a.count() }));
 
-    const paginated = await db.orm.public.Attachment
+    const paginated = await orm.Attachment
       .where((att: any) => att.postid.in(postIds))
       .where((att: any) => att.filetype.in(['image', 'video']))
       .orderBy((att: any) => att.id.desc())
@@ -369,13 +369,12 @@ export class UserService {
     };
   }
 
-
   async deleteUser(id: number, currentUserRole: string) {
     if (currentUserRole !== 'admin') {
       throw new ForbiddenException('Chỉ quản trị viên mới có quyền xóa người dùng');
     }
 
-    const user = await db.orm.public.User.where({ id }).first();
+    const user = await orm.User.where({ id }).first();
     if (!user) {
       throw new NotFoundException('Người dùng không tồn tại');
     }
@@ -390,7 +389,7 @@ export class UserService {
       await this.cloudinaryService.deleteFile(user.cvurl);
     }
 
-    await db.orm.public.User.where({ id }).delete();
+    await orm.User.where({ id }).delete();
     return true;
   }
 }

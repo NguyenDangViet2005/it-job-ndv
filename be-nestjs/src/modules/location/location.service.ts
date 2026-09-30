@@ -1,10 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { db } from '~/prisma/db.js';
+import { orm } from '~/prisma/db.js';
 
 @Injectable()
 export class LocationService {
   async getAllProvinces() {
-    const provinces = await db.orm.public.Provinces
+    const provinces = await orm.Provinces
       .orderBy((p: any) => p.name.asc())
       .all();
 
@@ -12,12 +12,12 @@ export class LocationService {
   }
 
   async getWardsByProvinceId(provinceId: number) {
-    const province = await db.orm.public.Provinces.where({ id: provinceId }).first();
+    const province = await orm.Provinces.where({ id: provinceId }).first();
     if (!province) {
       throw new NotFoundException('Không tìm thấy tỉnh/thành phố tương ứng');
     }
 
-    const wards = await db.orm.public.Wards
+    const wards = await orm.Wards
       .where({ provinceid: provinceId })
       .orderBy((w: any) => w.name.asc())
       .all();

@@ -5,6 +5,8 @@ import { UserModule } from '~/modules/user/user.module.js';
 import { LocationModule } from '~/modules/location/location.module.js';
 import { SkillModule } from '~/modules/skill/skill.module.js';
 import { CompanyModule } from '~/modules/company/company.module.js';
+import { JobModule } from '~/modules/job/job.module.js';
+import { ApplicationModule } from '~/modules/application/application.module.js';
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 
@@ -16,6 +18,8 @@ import { AppService } from './app.service.js';
     LocationModule,
     SkillModule,
     CompanyModule,
+    JobModule,
+    ApplicationModule,
   ],
   controllers: [AppController],
   providers: [AppService],
