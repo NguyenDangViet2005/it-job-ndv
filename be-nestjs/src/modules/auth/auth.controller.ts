@@ -15,6 +15,8 @@ import { RegisterHRDto } from './dto/register-hr.dto.js';
 import { LoginDto } from './dto/login.dto.js';
 import { RefreshTokenDto } from './dto/refresh-token.dto.js';
 import { JwtAuthGuard } from '~/common/guards/jwt-auth.guard.js';
+import { GoogleAuthGuard } from '~/common/guards/google-auth.guard.js';
+import { FacebookAuthGuard } from '~/common/guards/facebook-auth.guard.js';
 import { CurrentUser } from '~/common/decorators/current-user.decorator.js';
 
 const isProduction =
@@ -183,5 +185,61 @@ export class AuthController {
       success: true,
       message: 'Thiết lập cookie thành công',
     };
+  }
+
+  @Get('google')
+  @UseGuards(GoogleAuthGuard)
+  async googleAuth() {
+    // Kích hoạt Passport Google OAuth flow
+  }
+
+  @Get('google/callback')
+  @UseGuards(GoogleAuthGuard)
+  async googleAuthCallback(@Req() req: Request, @Res() res: Response) {
+    return this.handleOAuthCallback((req as any).user, res);
+  }
+
+  @Get('callback/google')
+  @UseGuards(GoogleAuthGuard)
+  async googleAuthCallbackAlias(@Req() req: Request, @Res() res: Response) {
+    return this.handleOAuthCallback((req as any).user, res);
+  }
+
+  @Get('facebook')
+  @UseGuards(FacebookAuthGuard)
+  async facebookAuth() {
+    // Kích hoạt Passport Facebook OAuth flow
+  }
+
+  @Get('facebook/callback')
+  @UseGuards(FacebookAuthGuard)
+  async facebookAuthCallback(@Req() req: Request, @Res() res: Response) {
+    return this.handleOAuthCallback((req as any).user, res);
+  }
+
+  private async handleOAuthCallback(user: any, res: Response) {
+    const clientUrl = process.env.CLIENT_URL || 'http://localhost:3000';
+    if (!user) {
+      return res.redirect(`${clientUrl}/dang-nhap?error=oauth_failed`);
+    }
+
+    try {
+      const { accesstoken, refreshtoken } = await this.authService.loginWithOAuth(user);
+
+      res.cookie(COOKIE_NAME, refreshtoken, {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: isProduction ? 'none' : 'lax',
+        path: '/',
+        maxAge: COOKIE_MAX_AGE,
+      });
+
+      return res.redirect(
+        `${clientUrl}/callback?token=${accesstoken}&refreshtoken=${refreshtoken}`,
+      );
+    } catch (error) {
+      console.error('OAuth Callback Error:', error);
+      return res.redirect(`${clientUrl}/dang-nhap?error=oauth_error`);
+    }
   }
 }

@@ -14,11 +14,19 @@ import { ConnectionModule } from '~/modules/connection/connection.module.js';
 import { BlogCategoryModule } from '~/modules/blog-category/blog-category.module.js';
 import { BlogModule } from '~/modules/blog/blog.module.js';
 import { SearchModule } from '~/modules/search/search.module.js';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 
 @Module({
   imports: [
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 120,
+      },
+    ]),
     CloudinaryModule,
     AuthModule,
     UserModule,
@@ -36,6 +44,12 @@ import { AppService } from './app.service.js';
     SearchModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule { }

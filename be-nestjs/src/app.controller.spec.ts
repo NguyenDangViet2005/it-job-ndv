@@ -15,8 +15,9 @@ describe('AppController', () => {
   });
 
   describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe('Hello World!');
+    it('should return connection success message', async () => {
+      const res = await appController.getHello();
+      expect(res.message).toBe('Kết nối Prisma 8 thành công!');
     });
   });
 });

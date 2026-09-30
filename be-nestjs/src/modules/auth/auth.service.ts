@@ -236,4 +236,116 @@ export class AuthService {
     }
     return AuthMapper.toSafeUser(user);
   }
+
+  /**
+   * Xác thực hoặc tạo mới tài khoản đăng nhập từ Google / Facebook OAuth
+   */
+  async validateOAuthUser(profile: {
+    provider: 'google' | 'facebook';
+    providerId: string;
+    email: string | null;
+    fullname: string | null;
+    avatar: string | null;
+  }) {
+    const { provider, providerId, email, fullname, avatar } = profile;
+
+    // 1. Tìm user theo provider và providerid
+    let user = await orm.User.where({
+      provider: provider as any,
+      providerid: providerId as any,
+    }).first();
+
+    if (user) {
+      const updateData: any = {};
+      if (avatar && user.avatar !== avatar) {
+        updateData.avatar = avatar;
+      }
+      if (fullname && !user.fullname) {
+        updateData.fullname = fullname;
+      }
+      if (Object.keys(updateData).length > 0) {
+        await orm.User.where({ id: user.id }).update(updateData);
+        user = await orm.User.where({ id: user.id }).first();
+      }
+      return user;
+    }
+
+    // 2. Nếu chưa liên kết, tìm user theo email
+    if (email) {
+      user = await orm.User.where({ email: email.toLowerCase().trim() as any }).first();
+      if (user) {
+        const updateData: any = {
+          provider: provider as any,
+          providerid: providerId as any,
+        };
+        if (avatar && !user.avatar) {
+          updateData.avatar = avatar;
+        }
+        await orm.User.where({ id: user.id }).update(updateData);
+        user = await orm.User.where({ id: user.id }).first();
+        return user;
+      }
+    }
+
+    // 3. Nếu chưa có tài khoản, khởi tạo tài khoản mới
+    const defaultAvatar =
+      'https://res.cloudinary.com/duc6z828y/image/upload/c_crop,w_650,h_650,ar_1:1/v1768581047/avatar_nbspgd.avif';
+    const effectiveEmail = email
+      ? email.toLowerCase().trim()
+      : `${providerId}@${provider}.com`;
+    const effectiveFullname =
+      fullname || (provider === 'google' ? 'Google User' : 'Facebook User');
+
+    const newUser = await orm.User.create({
+      email: effectiveEmail as any,
+      fullname: effectiveFullname as any,
+      provider: provider as any,
+      providerid: providerId as any,
+      password: null as any,
+      avatar: (avatar || defaultAvatar) as any,
+      role: 'user' as any,
+      createdat: new Date() as any,
+      updatedat: new Date() as any,
+    });
+
+    return newUser;
+  }
+
+  /**
+   * Tạo JWT tokens và lưu phiên đăng nhập cho OAuth
+   */
+  async loginWithOAuth(user: any) {
+    const { accesstoken, refreshtoken } = this.generateTokens(
+      user.id,
+      user.role || 'user',
+      user.email,
+    );
+
+    // Giới hạn tối đa 5 phiên đăng nhập đồng thời
+    const existingSessions = await orm.SessionLogins
+      .where({ userid: user.id })
+      .orderBy((s: any) => s.id.desc())
+      .all();
+
+    if (existingSessions.length >= 5) {
+      const oldSessions = existingSessions.slice(4);
+      await Promise.all(
+        oldSessions.map((s) => orm.SessionLogins.where({ id: s.id }).delete()),
+      );
+    }
+
+    await orm.SessionLogins.create({
+      userid: user.id,
+      accesstoken,
+      refreshtoken,
+    });
+
+    const userWithoutPassword = AuthMapper.toSafeUser(user);
+
+    return {
+      accesstoken,
+      refreshtoken,
+      user: userWithoutPassword,
+    };
+  }
 }
