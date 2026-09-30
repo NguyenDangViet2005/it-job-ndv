@@ -9,67 +9,13 @@ import { CloudinaryService } from '~/modules/cloudinary/cloudinary.service.js';
 import { CreateCompanyDto } from './dto/create-company.dto.js';
 import { UpdateCompanyDto } from './dto/update-company.dto.js';
 import { CompanyQueryDto } from './dto/company-query.dto.js';
+import { CompanyMapper, type FormattedCompany } from './company.mapper.js';
 
-export interface FormattedCompany {
-  id: number;
-  name: string;
-  avatar: string | null;
-  coverimage: string | null;
-  nationality: string | null;
-  website: string | null;
-  description: string | null;
-  foundedyear: number | null;
-  address: string | null;
-  hotline: string | null;
-  companyemail: string | null;
-  wardid: number | null;
-  wardname: string | null;
-  provincename: string | null;
-  createdbyuserid: number | null;
-  createdat: Date | null;
-  updatedat: Date | null;
-  follows: any[];
-  members: any[];
-  membersCount: number;
-  jobs: any[];
-  posts: any[];
-  reviews: any[];
-}
+export type { FormattedCompany };
 
 @Injectable()
 export class CompanyService {
   constructor(private readonly cloudinaryService: CloudinaryService) {}
-
-  /**
-   * Định dạng dữ liệu công ty kèm theo thông tin địa phương (xã/phường, tỉnh/thành)
-   */
-  private formatCompany(comp: any, ward?: any): FormattedCompany {
-    return {
-      id: comp.id,
-      name: comp.name,
-      avatar: comp.avatar || null,
-      coverimage: comp.coverimage || null,
-      nationality: comp.nationality || null,
-      website: comp.website || null,
-      description: comp.description || null,
-      foundedyear: comp.foundedyear || null,
-      address: comp.address || null,
-      hotline: comp.hotline || null,
-      companyemail: comp.companyemail || null,
-      wardid: comp.wardid || null,
-      wardname: ward?.name || null,
-      provincename: ward?.provinces?.name || null,
-      createdbyuserid: comp.createdbyuserid || null,
-      createdat: comp.createdat || null,
-      updatedat: comp.updatedat || null,
-      follows: comp.follows || [],
-      members: comp.companyMembers || [],
-      membersCount: comp.companyMembers ? comp.companyMembers.length : 0,
-      jobs: comp.jobs || [],
-      posts: comp.posts || [],
-      reviews: comp.reviews || [],
-    };
-  }
 
   /**
    * Lấy danh sách công ty với phân trang và tìm kiếm theo tên
@@ -129,7 +75,7 @@ export class CompanyService {
     }
 
     const formatted = rows.map((c: any) =>
-      this.formatCompany(c, c.wardid ? wardMap.get(c.wardid) : null),
+      CompanyMapper.toCompanyResponse(c, c.wardid ? wardMap.get(c.wardid) : null),
     );
 
     return {
@@ -159,11 +105,7 @@ export class CompanyService {
       .limit(pageSize)
       .all();
 
-    const formatted = rows.map((c: any) => ({
-      id: c.id,
-      name: c.name,
-      avatar: c.avatar,
-    }));
+    const formatted = rows.map((c: any) => CompanyMapper.toCompanyLogoResponse(c));
 
     return {
       data: formatted,
@@ -200,7 +142,7 @@ export class CompanyService {
         .first();
     }
 
-    return this.formatCompany(comp, ward);
+    return CompanyMapper.toCompanyResponse(comp, ward);
   }
 
   /**
@@ -239,20 +181,8 @@ export class CompanyService {
       }
     }
 
-    const newCompany = await db.orm.public.Company.create({
-      name: dto.name.trim() as any,
-      avatar: (dto.avatar || null) as any,
-      coverimage: (dto.coverimage || null) as any,
-      nationality: (dto.nationality || null) as any,
-      website: (dto.website || null) as any,
-      hotline: (dto.hotline || null) as any,
-      companyemail: (dto.companyemail?.toLowerCase().trim() || null) as any,
-      description: (dto.description || null) as any,
-      foundedyear: (dto.foundedyear || null) as any,
-      address: (dto.address || null) as any,
-      wardid: (dto.wardid || null) as any,
-      createdbyuserid: userId as any,
-    });
+    const companyEntity = CompanyMapper.toCreateCompanyEntity(dto, userId);
+    const newCompany = await db.orm.public.Company.create(companyEntity);
 
     await db.orm.public.CompanyMembers.create({
       companyid: newCompany.id as any,
@@ -294,21 +224,9 @@ export class CompanyService {
       }
     }
 
-    const updateData: Record<string, any> = {};
-    if (dto.name !== undefined) updateData.name = dto.name.trim();
-    if (dto.avatar !== undefined) updateData.avatar = dto.avatar;
-    if (dto.coverimage !== undefined) updateData.coverimage = dto.coverimage;
-    if (dto.nationality !== undefined) updateData.nationality = dto.nationality;
-    if (dto.website !== undefined) updateData.website = dto.website;
-    if (dto.hotline !== undefined) updateData.hotline = dto.hotline;
-    if (dto.companyemail !== undefined) updateData.companyemail = dto.companyemail?.toLowerCase().trim();
-    if (dto.description !== undefined) updateData.description = dto.description;
-    if (dto.foundedyear !== undefined) updateData.foundedyear = dto.foundedyear;
-    if (dto.address !== undefined) updateData.address = dto.address;
-    if (dto.wardid !== undefined) updateData.wardid = dto.wardid;
-    updateData.updatedat = new Date();
-
+    const updateData = CompanyMapper.toUpdateCompanyEntity(dto);
     await db.orm.public.Company.where({ id: companyId }).update(updateData);
+
     return this.getCompanyById(companyId);
   }
 

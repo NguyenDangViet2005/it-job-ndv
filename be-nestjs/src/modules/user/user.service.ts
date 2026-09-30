@@ -9,20 +9,11 @@ import { db } from '~/prisma/db.js';
 import { CloudinaryService } from '~/modules/cloudinary/cloudinary.service.js';
 import { UpdateUserDto } from './dto/update-user.dto.js';
 import { ChangePasswordDto } from './dto/change-password.dto.js';
+import { UserMapper } from './user.mapper.js';
 
 @Injectable()
 export class UserService {
   constructor(private readonly cloudinaryService: CloudinaryService) {}
-
-  /**
-   * Loại bỏ các trường nhạy cảm khỏi user object trước khi trả về
-   */
-  private sanitizeUser(user: any) {
-    if (!user) return null;
-    const { password, refreshtoken, ...rest } = user;
-    return rest;
-  }
-
 
   async getAllUsers(page: number = 1, pageSize: number = 10) {
     const { count } = await db.orm.public.User.aggregate((a) => ({
@@ -35,7 +26,7 @@ export class UserService {
       .limit(pageSize)
       .all();
 
-    const sanitized = rows.map((u) => this.sanitizeUser(u));
+    const sanitized = rows.map((u) => UserMapper.toSafeUser(u));
     return {
       users: sanitized,
       data: sanitized,
@@ -51,18 +42,7 @@ export class UserService {
     if (!user) {
       throw new NotFoundException('Người dùng không tồn tại');
     }
-    const safe = this.sanitizeUser(user);
-    // Trả về thông tin profile (kèm cvurl để người xem có thể xem CV)
-    return {
-      id: safe.id,
-      fullname: safe.fullname,
-      avatar: safe.avatar,
-      coverimage: safe.coverimage,
-      role: safe.role,
-      gender: safe.gender,
-      cvurl: safe.cvurl,
-      createdat: safe.createdat,
-    };
+    return UserMapper.toUserProfileResponse(user);
   }
 
   async updateUser(
@@ -80,18 +60,11 @@ export class UserService {
       throw new NotFoundException('Người dùng không tồn tại');
     }
 
-    const updateData: any = {};
-    if (dto.fullname !== undefined) updateData.fullname = dto.fullname.trim();
-    if (dto.phone !== undefined) updateData.phone = dto.phone.trim();
-    if (dto.gender !== undefined) updateData.gender = dto.gender;
-    if (dto.dateofbirth !== undefined) {
-      updateData.dateofbirth = dto.dateofbirth ? new Date(dto.dateofbirth) : null;
-    }
-
+    const updateData = UserMapper.toUpdateUserEntity(dto);
     await db.orm.public.User.where({ id }).update(updateData);
 
     const updated = await db.orm.public.User.where({ id }).first();
-    return this.sanitizeUser(updated);
+    return UserMapper.toSafeUser(updated);
   }
 
   async updateAvatar(
@@ -123,7 +96,7 @@ export class UserService {
     }
 
     const updated = await db.orm.public.User.where({ id }).first();
-    return this.sanitizeUser(updated);
+    return UserMapper.toSafeUser(updated);
   }
 
   async updateCoverImage(
@@ -155,7 +128,7 @@ export class UserService {
     }
 
     const updated = await db.orm.public.User.where({ id }).first();
-    return this.sanitizeUser(updated);
+    return UserMapper.toSafeUser(updated);
   }
 
   async updateCV(
@@ -187,7 +160,7 @@ export class UserService {
     }
 
     const updated = await db.orm.public.User.where({ id }).first();
-    return this.sanitizeUser(updated);
+    return UserMapper.toSafeUser(updated);
   }
 
   async changePassword(

@@ -10,6 +10,7 @@ import { db } from '~/prisma/db.js';
 import { RegisterDto } from './dto/register.dto.js';
 import { RegisterHRDto } from './dto/register-hr.dto.js';
 import { LoginDto } from './dto/login.dto.js';
+import { AuthMapper } from './auth.mapper.js';
 
 @Injectable()
 export class AuthService {
@@ -39,16 +40,8 @@ export class AuthService {
     }
 
     const hashedPassword = await bcrypt.hash(dto.password, 10);
-
-    const newUser = await db.orm.public.User.create({
-      email: email as any,
-      password: hashedPassword as any,
-      fullname: dto.fullname.trim() as any,
-      phone: (dto.phone?.trim() || null) as any,
-      gender: (dto.gender || null) as any,
-      dateofbirth: dto.dateofbirth ? new Date(dto.dateofbirth) : null,
-      role: (dto.role || 'user') as any,
-    });
+    const userEntity = AuthMapper.toCreateUserEntity(dto, hashedPassword);
+    const newUser = await db.orm.public.User.create(userEntity);
 
     return {
       id: newUser.id,
@@ -84,42 +77,17 @@ export class AuthService {
 
     try {
       // 1. Tạo tài khoản người dùng với vai trò employer
-      const newUser = await db.orm.public.User.create({
-        email: email as any,
-        password: hashedPassword as any,
-        fullname: dto.fullname.trim() as any,
-        phone: (dto.phone?.trim() || null) as any,
-        gender: (dto.gender || null) as any,
-        dateofbirth: dto.dateofbirth ? new Date(dto.dateofbirth) : null,
-        avatar: (dto.avatar || null) as any,
-        coverimage: (dto.coverimage || null) as any,
-        role: 'employer' as any,
-      });
+      const userPayload = AuthMapper.toCreateHREmployerEntity(dto, hashedPassword);
+      const newUser = await db.orm.public.User.create(userPayload);
       createdUserId = newUser.id;
 
       // 2. Tạo công ty liên kết với nhà tuyển dụng
-      const newCompany = await db.orm.public.Company.create({
-        name: dto.companyName.trim() as any,
-        avatar: (dto.companyAvatar || null) as any,
-        coverimage: (dto.companyCoverImage || null) as any,
-        nationality: (dto.companyNationality || null) as any,
-        website: (dto.companyWebsite || null) as any,
-        hotline: (dto.companyHotline || null) as any,
-        companyemail: (dto.companyemail?.toLowerCase().trim() || null) as any,
-        description: (dto.companyDescription || null) as any,
-        foundedyear: (dto.companyFoundedYear || null) as any,
-        address: (dto.companyAddress || null) as any,
-        wardid: dto.wardid as any,
-        createdbyuserid: newUser.id as any,
-      });
+      const companyPayload = AuthMapper.toCreateHRCompanyEntity(dto, newUser.id);
+      const newCompany = await db.orm.public.Company.create(companyPayload);
 
       // 3. Tạo thành viên công ty (CompanyMembers)
-      await db.orm.public.CompanyMembers.create({
-        companyid: newCompany.id as any,
-        userid: newUser.id as any,
-        status: 'active' as any,
-        joinedat: new Date() as any,
-      });
+      const memberPayload = AuthMapper.toCreateHRCompanyMemberEntity(newCompany.id, newUser.id);
+      await db.orm.public.CompanyMembers.create(memberPayload);
 
       // 4. Tạo token và phiên đăng nhập
       const { accesstoken, refreshtoken } = this.generateTokens(
@@ -134,27 +102,8 @@ export class AuthService {
         refreshtoken,
       });
 
-      const { password: _, refreshtoken: __, ...userWithoutPassword } = newUser as any;
-
-      const formattedCompany = {
-        id: newCompany.id,
-        name: newCompany.name,
-        avatar: newCompany.avatar,
-        coverimage: newCompany.coverimage,
-        nationality: newCompany.nationality,
-        website: newCompany.website,
-        description: newCompany.description,
-        foundedyear: newCompany.foundedyear,
-        address: newCompany.address,
-        hotline: newCompany.hotline,
-        companyemail: newCompany.companyemail,
-        wardid: newCompany.wardid,
-        wardname: ward.name,
-        provincename: (ward as any)?.provinces?.name || null,
-        createdbyuserid: newCompany.createdbyuserid,
-        createdat: newCompany.createdat,
-        updatedat: newCompany.updatedat,
-      };
+      const userWithoutPassword = AuthMapper.toSafeUser(newUser);
+      const formattedCompany = AuthMapper.toHRCompanyResponse(newCompany, ward);
 
       return {
         accesstoken,
@@ -208,7 +157,7 @@ export class AuthService {
       refreshtoken,
     });
 
-    const { password: _, refreshtoken: __, ...userWithoutPassword } = user as any;
+    const userWithoutPassword = AuthMapper.toSafeUser(user);
 
     return {
       accesstoken,
@@ -252,7 +201,7 @@ export class AuthService {
         refreshtoken: tokens.refreshtoken,
       });
 
-      const { password: _, refreshtoken: __, ...userWithoutPassword } = user as any;
+      const userWithoutPassword = AuthMapper.toSafeUser(user);
 
       return {
         accesstoken: tokens.accesstoken,
@@ -287,7 +236,6 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException('Người dùng không tồn tại');
     }
-    const { password: _, refreshtoken: __, ...userWithoutPassword } = user as any;
-    return userWithoutPassword;
+    return AuthMapper.toSafeUser(user);
   }
 }
