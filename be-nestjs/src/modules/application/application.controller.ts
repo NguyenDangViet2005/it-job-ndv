@@ -20,7 +20,7 @@ import { Roles } from '~/common/decorators/roles.decorator.js';
 import { CurrentUser } from '~/common/decorators/current-user.decorator.js';
 import type { UserPayload } from '~/common/decorators/current-user.decorator.js';
 
-@Controller(['application'])
+@Controller('application')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class ApplicationController {
   constructor(private readonly applicationService: ApplicationService) {}

@@ -19,4 +19,3 @@ export const db = postgres<Contract>({
  * Ví dụ: orm.User.where(...) thay vì db.orm.public.User.where(...)
  */
 export const orm = db.orm.public;
-export const prisma = db.orm.public;

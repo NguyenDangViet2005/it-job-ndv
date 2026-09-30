@@ -21,7 +21,7 @@ import { Roles } from '~/common/decorators/roles.decorator.js';
 import { CurrentUser } from '~/common/decorators/current-user.decorator.js';
 import type { UserPayload } from '~/common/decorators/current-user.decorator.js';
 
-@Controller(['job'])
+@Controller('job')
 export class JobController {
   constructor(private readonly jobService: JobService) {}
 
@@ -56,7 +56,7 @@ export class JobController {
       query.companyid,
       query.pageNumber,
       query.pageSize,
-      true, // onlyActive
+      true,
     );
   }
 
@@ -68,7 +68,6 @@ export class JobController {
     @CurrentUser() currentUser: UserPayload,
     @Query() query: JobQueryDto,
   ) {
-    // Chỉ cho phép employer xem job của chính mình hoặc admin
     if (currentUser.role !== 'admin' && currentUser.id !== userid) {
       throw new BadRequestException('Bạn không có quyền xem danh sách việc làm này');
     }
@@ -77,7 +76,7 @@ export class JobController {
       userid,
       query.pageNumber,
       query.pageSize,
-      false, // xem toàn bộ (bao gồm cả open và closed) cho dashboard nhà tuyển dụng
+      false,
     );
   }
 

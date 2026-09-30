@@ -24,7 +24,7 @@ import { Roles } from '~/common/decorators/roles.decorator.js';
 import { CurrentUser } from '~/common/decorators/current-user.decorator.js';
 import type { UserPayload } from '~/common/decorators/current-user.decorator.js';
 
-@Controller(['company'])
+@Controller('company')
 export class CompanyController {
   constructor(private readonly companyService: CompanyService) {}
 

@@ -8,7 +8,7 @@ import {
 import { LocationService } from './location.service.js';
 import { GetWardsDto } from './dto/get-wards.dto.js';
 
-@Controller(['location'])
+@Controller('location')
 export class LocationController {
   constructor(private readonly locationService: LocationService) {}
 

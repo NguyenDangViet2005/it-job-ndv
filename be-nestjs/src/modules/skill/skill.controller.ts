@@ -18,7 +18,7 @@ import { JwtAuthGuard } from '~/common/guards/jwt-auth.guard.js';
 import { RolesGuard } from '~/common/guards/roles.guard.js';
 import { Roles } from '~/common/decorators/roles.decorator.js';
 
-@Controller(['skill'])
+@Controller('skill')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class SkillController {
   constructor(private readonly skillService: SkillService) {}
