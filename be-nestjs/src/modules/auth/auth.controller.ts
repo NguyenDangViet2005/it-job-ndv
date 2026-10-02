@@ -18,14 +18,12 @@ import { JwtAuthGuard } from '~/common/guards/jwt-auth.guard.js';
 import { GoogleAuthGuard } from '~/common/guards/google-auth.guard.js';
 import { FacebookAuthGuard } from '~/common/guards/facebook-auth.guard.js';
 import { CurrentUser } from '~/common/decorators/current-user.decorator.js';
+import {
+  COOKIE_NAME,
+  setRefreshTokenCookie,
+  clearRefreshTokenCookie,
+} from '~/common/utils/cookie.util.js';
 import { Throttle } from '@nestjs/throttler';
-
-const isProduction =
-  process.env.NODE_ENV === 'production' ||
-  (Boolean(process.env.CLIENT_URL) && !process.env.CLIENT_URL?.includes('localhost'));
-
-const COOKIE_NAME = 'refreshtoken';
-const COOKIE_MAX_AGE = 7 * 24 * 60 * 60 * 1000;
 
 @Controller('auth')
 export class AuthController {
@@ -49,14 +47,7 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     const result = await this.authService.registerHR(dto);
-
-    res.cookie(COOKIE_NAME, result.refreshtoken, {
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: isProduction ? 'none' : 'lax',
-      path: '/',
-      maxAge: COOKIE_MAX_AGE,
-    });
+    setRefreshTokenCookie(res, result.refreshtoken);
 
     return {
       success: true,
@@ -72,14 +63,7 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     const { accesstoken, refreshtoken, user } = await this.authService.login(dto);
-
-    res.cookie(COOKIE_NAME, refreshtoken, {
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: isProduction ? 'none' : 'lax',
-      path: '/',
-      maxAge: COOKIE_MAX_AGE,
-    });
+    setRefreshTokenCookie(res, refreshtoken);
 
     return {
       success: true,
@@ -104,14 +88,7 @@ export class AuthController {
 
     try {
       const result = await this.authService.refreshToken(token);
-
-      res.cookie(COOKIE_NAME, result.refreshtoken, {
-        httpOnly: true,
-        secure: isProduction,
-        sameSite: isProduction ? 'none' : 'lax',
-        path: '/',
-        maxAge: COOKIE_MAX_AGE,
-      });
+      setRefreshTokenCookie(res, result.refreshtoken);
 
       return {
         success: true,
@@ -122,12 +99,7 @@ export class AuthController {
         },
       };
     } catch (error: any) {
-      res.clearCookie(COOKIE_NAME, {
-        httpOnly: true,
-        secure: isProduction,
-        sameSite: isProduction ? 'none' : 'lax',
-        path: '/',
-      });
+      clearRefreshTokenCookie(res);
       throw error;
     }
   }
@@ -139,13 +111,7 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     const token = req.cookies?.[COOKIE_NAME] || body?.refreshtoken;
-
-    res.clearCookie(COOKIE_NAME, {
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: isProduction ? 'none' : 'lax',
-      path: '/',
-    });
+    clearRefreshTokenCookie(res);
 
     if (token) {
       await this.authService.logout(token);
@@ -177,13 +143,7 @@ export class AuthController {
       throw new UnauthorizedException('Refresh token không được để trống');
     }
 
-    res.cookie(COOKIE_NAME, body.refreshtoken, {
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: isProduction ? 'none' : 'lax',
-      path: '/',
-      maxAge: COOKIE_MAX_AGE,
-    });
+    setRefreshTokenCookie(res, body.refreshtoken);
 
     return {
       success: true,
@@ -199,14 +159,27 @@ export class AuthController {
 
   @Get('google/callback')
   @UseGuards(GoogleAuthGuard)
-  async googleAuthCallback(@Req() req: Request, @Res() res: Response) {
-    return this.handleOAuthCallback((req as any).user, res);
+  async googleAuthCallback(
+    @CurrentUser() user: any,
+    @Res() res: Response,
+  ) {
+    const { redirectUrl, refreshtoken } =
+      await this.authService.handleOAuthCallback(user);
+
+    if (refreshtoken) {
+      setRefreshTokenCookie(res, refreshtoken);
+    }
+
+    return res.redirect(redirectUrl);
   }
 
   @Get('callback/google')
   @UseGuards(GoogleAuthGuard)
-  async googleAuthCallbackAlias(@Req() req: Request, @Res() res: Response) {
-    return this.handleOAuthCallback((req as any).user, res);
+  async googleAuthCallbackAlias(
+    @CurrentUser() user: any,
+    @Res() res: Response,
+  ) {
+    return this.googleAuthCallback(user, res);
   }
 
   @Get('facebook')
@@ -217,35 +190,17 @@ export class AuthController {
 
   @Get('facebook/callback')
   @UseGuards(FacebookAuthGuard)
-  async facebookAuthCallback(@Req() req: Request, @Res() res: Response) {
-    return this.handleOAuthCallback((req as any).user, res);
-  }
+  async facebookAuthCallback(
+    @CurrentUser() user: any,
+    @Res() res: Response,
+  ) {
+    const { redirectUrl, refreshtoken } =
+      await this.authService.handleOAuthCallback(user);
 
-  private async handleOAuthCallback(user: any, res: Response) {
-    const clientUrl =
-      process.env.CLIENT_URL?.replace(/\/+$/, '') ||
-      (isProduction ? 'https://it-job-ndv.vercel.app' : 'http://localhost:3000');
-    if (!user) {
-      return res.redirect(`${clientUrl}/dang-nhap?error=oauth_failed`);
+    if (refreshtoken) {
+      setRefreshTokenCookie(res, refreshtoken);
     }
 
-    try {
-      const { accesstoken, refreshtoken } = await this.authService.loginWithOAuth(user);
-
-      res.cookie(COOKIE_NAME, refreshtoken, {
-        httpOnly: true,
-        secure: isProduction,
-        sameSite: isProduction ? 'none' : 'lax',
-        path: '/',
-        maxAge: COOKIE_MAX_AGE,
-      });
-
-      return res.redirect(
-        `${clientUrl}/callback?token=${accesstoken}&refreshtoken=${refreshtoken}`,
-      );
-    } catch (error) {
-      console.error('OAuth Callback Error:', error);
-      return res.redirect(`${clientUrl}/dang-nhap?error=oauth_error`);
-    }
+    return res.redirect(redirectUrl);
   }
 }

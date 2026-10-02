@@ -40,4 +40,8 @@ export class RegisterDto {
     message: 'Vai trò chỉ có thể là user hoặc employer',
   })
   role?: string;
+
+  @IsOptional()
+  @IsString()
+  avatar?: string;
 }

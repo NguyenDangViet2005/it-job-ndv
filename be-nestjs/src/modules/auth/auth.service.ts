@@ -8,6 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import bcrypt from 'bcryptjs';
 import { orm } from '~/prisma/db.js';
 import { nowPlainDateTime } from '~/common/utils/temporal.util.js';
+import { DEFAULT_USER_AVATAR } from '~/common/constants/index.js';
 import { RegisterDto } from './dto/register.dto.js';
 import { RegisterHRDto } from './dto/register-hr.dto.js';
 import { LoginDto } from './dto/login.dto.js';
@@ -49,6 +50,7 @@ export class AuthService {
       email: newUser.email,
       fullname: newUser.fullname,
       role: newUser.role,
+      avatar: newUser.avatar || DEFAULT_USER_AVATAR,
     };
   }
 
@@ -279,8 +281,8 @@ export class AuthService {
           provider: provider as any,
           providerid: providerId as any,
         };
-        if (avatar && !user.avatar) {
-          updateData.avatar = avatar;
+        if (!user.avatar) {
+          updateData.avatar = avatar || DEFAULT_USER_AVATAR;
         }
         await orm.User.where({ id: user.id }).update(updateData);
         user = await orm.User.where({ id: user.id }).first();
@@ -289,8 +291,6 @@ export class AuthService {
     }
 
     // 3. Nếu chưa có tài khoản, khởi tạo tài khoản mới
-    const defaultAvatar =
-      'https://res.cloudinary.com/duc6z828y/image/upload/c_crop,w_650,h_650,ar_1:1/v1768581047/avatar_nbspgd.avif';
     const effectiveEmail = email
       ? email.toLowerCase().trim()
       : `${providerId}@${provider}.com`;
@@ -303,7 +303,7 @@ export class AuthService {
       provider: provider as any,
       providerid: providerId as any,
       password: null as any,
-      avatar: (avatar || defaultAvatar) as any,
+      avatar: (avatar || DEFAULT_USER_AVATAR) as any,
       role: 'user' as any,
       createdat: nowPlainDateTime() as any,
       updatedat: nowPlainDateTime() as any,
@@ -348,5 +348,43 @@ export class AuthService {
       refreshtoken,
       user: userWithoutPassword,
     };
+  }
+
+  private getClientUrl(): string {
+    const isProduction =
+      process.env.NODE_ENV === 'production' ||
+      (Boolean(process.env.CLIENT_URL) && !process.env.CLIENT_URL?.includes('localhost'));
+
+    return (
+      process.env.CLIENT_URL?.replace(/\/+$/, '') ||
+      (isProduction ? 'https://it-job-ndv.vercel.app' : 'http://localhost:3000')
+    );
+  }
+
+  /**
+   * Xử lý callback OAuth: đăng nhập, tạo tokens và trả về redirect URL cho Frontend
+   */
+  async handleOAuthCallback(user: any): Promise<{ redirectUrl: string; refreshtoken?: string }> {
+    const clientUrl = this.getClientUrl();
+
+    if (!user) {
+      return {
+        redirectUrl: `${clientUrl}/dang-nhap?error=oauth_failed`,
+      };
+    }
+
+    try {
+      const { accesstoken, refreshtoken } = await this.loginWithOAuth(user);
+
+      return {
+        redirectUrl: `${clientUrl}/callback?token=${accesstoken}&refreshtoken=${refreshtoken}`,
+        refreshtoken,
+      };
+    } catch (error) {
+      console.error('OAuth Callback Error:', error);
+      return {
+        redirectUrl: `${clientUrl}/dang-nhap?error=oauth_error`,
+      };
+    }
   }
 }

@@ -5,6 +5,7 @@ import {
   formatDateString,
   nowPlainDateTime,
 } from '~/common/utils/temporal.util.js';
+import { DEFAULT_USER_AVATAR } from '~/common/constants/index.js';
 
 export class AuthMapper {
   /**
@@ -19,6 +20,7 @@ export class AuthMapper {
       gender: (dto.gender || null) as any,
       dateofbirth: toPlainDate(dto.dateofbirth) as any,
       role: (dto.role || 'user') as any,
+      avatar: (dto.avatar || DEFAULT_USER_AVATAR) as any,
     };
   }
 
@@ -33,7 +35,7 @@ export class AuthMapper {
       phone: (dto.phone?.trim() || null) as any,
       gender: (dto.gender || null) as any,
       dateofbirth: toPlainDate(dto.dateofbirth) as any,
-      avatar: (dto.avatar || null) as any,
+      avatar: (dto.avatar || DEFAULT_USER_AVATAR) as any,
       coverimage: (dto.coverimage || null) as any,
       role: 'employer' as any,
     };
@@ -80,6 +82,7 @@ export class AuthMapper {
     if (rest.dateofbirth) {
       rest.dateofbirth = formatDateString(rest.dateofbirth);
     }
+    rest.avatar = rest.avatar || DEFAULT_USER_AVATAR;
     return rest;
   }
 

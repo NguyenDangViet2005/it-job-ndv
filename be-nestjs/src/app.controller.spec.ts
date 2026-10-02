@@ -15,9 +15,10 @@ describe('AppController', () => {
   });
 
   describe('root', () => {
-    it('should return connection success message', async () => {
-      const res = await appController.getHello();
-      expect(res.message).toBe('Kết nối Prisma 8 thành công!');
+    it('should return operational message', () => {
+      const res = appController.getRoot();
+      expect(res.message).toBe('IT-JOB API is operational');
+      expect(res.status).toBe('ok');
     });
   });
 });

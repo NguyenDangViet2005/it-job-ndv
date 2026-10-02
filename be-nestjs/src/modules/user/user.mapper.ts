@@ -1,5 +1,6 @@
 import { UpdateUserDto } from './dto/update-user.dto.js';
 import { toPlainDate, formatDateString } from '~/common/utils/temporal.util.js';
+import { DEFAULT_USER_AVATAR } from '~/common/constants/index.js';
 
 export class UserMapper {
   /**
@@ -11,6 +12,7 @@ export class UserMapper {
     if (rest.dateofbirth) {
       rest.dateofbirth = formatDateString(rest.dateofbirth);
     }
+    rest.avatar = rest.avatar || DEFAULT_USER_AVATAR;
     return rest;
   }
 

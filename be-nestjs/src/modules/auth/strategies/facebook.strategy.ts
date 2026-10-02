@@ -7,11 +7,9 @@ import { AuthService } from '../auth.service.js';
 export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
   constructor(private readonly authService: AuthService) {
     const clientID =
-      process.env.FACEBOOK_APP_ID || process.env.APP_ID || '1484475452993679';
+      process.env.FACEBOOK_APP_ID || 'default_app_id';
     const clientSecret =
-      process.env.FACEBOOK_APP_SECRET ||
-      process.env.APP_SECRET ||
-      'e85a546a264105bcae6346fc7181914c';
+      process.env.FACEBOOK_APP_SECRET || 'default_app_secret';
 
     const rawBackendUrl =
       process.env.BACKEND_URL ||

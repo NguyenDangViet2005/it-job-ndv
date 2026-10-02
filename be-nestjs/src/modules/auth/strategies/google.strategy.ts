@@ -7,14 +7,9 @@ import { AuthService } from '../auth.service.js';
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
   constructor(private readonly authService: AuthService) {
     const clientID =
-      process.env.GOOGLE_CLIENT_ID ||
-      process.env.CUSTOMER_ID ||
-      '598416758150-6uvtssg87ei6c2asfpunqiq4p9eiubc1.apps.googleusercontent.com';
+      process.env.GOOGLE_CLIENT_ID || 'default_client_id';
     const clientSecret =
-      process.env.GOOGLE_CLIENT_SECRET ||
-      process.env.CUSTOMER_SECRET ||
-      process.env.CLIENT_SECRET ||
-      'dummy_secret_for_dev';
+      process.env.GOOGLE_CLIENT_SECRET || 'default_client_secret';
 
     const rawBackendUrl =
       process.env.BACKEND_URL ||
