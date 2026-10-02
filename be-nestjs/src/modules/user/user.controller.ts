@@ -11,12 +11,11 @@ import {
   UseInterceptors,
   UploadedFile,
   ParseIntPipe,
-  HttpCode,
-  HttpStatus,
   BadRequestException,
   ForbiddenException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { Throttle } from '@nestjs/throttler';
 import { UserService } from './user.service.js';
 import { JwtAuthGuard } from '~/common/guards/jwt-auth.guard.js';
 import { RolesGuard } from '~/common/guards/roles.guard.js';
@@ -71,6 +70,12 @@ export class UserController {
     if (!file) {
       throw new BadRequestException('Vui lòng chọn file ảnh đại diện');
     }
+    if (!file.mimetype.startsWith('image/')) {
+      throw new BadRequestException('Chỉ chấp nhận file định dạng hình ảnh');
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      throw new BadRequestException('Kích thước ảnh không được vượt quá 5MB');
+    }
     const updated = await this.userService.updateAvatar(
       id,
       currentUser.id,
@@ -92,6 +97,12 @@ export class UserController {
   ) {
     if (!file) {
       throw new BadRequestException('Vui lòng chọn file ảnh bìa');
+    }
+    if (!file.mimetype.startsWith('image/')) {
+      throw new BadRequestException('Chỉ chấp nhận file định dạng hình ảnh');
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      throw new BadRequestException('Kích thước ảnh không được vượt quá 5MB');
     }
     const updated = await this.userService.updateCoverImage(
       id,
@@ -115,6 +126,22 @@ export class UserController {
     if (!file) {
       throw new BadRequestException('Vui lòng chọn file CV');
     }
+    const allowedExts = ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png'];
+    const ext = file.originalname?.toLowerCase().split('.').pop() || '';
+    const allowedDocTypes = [
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'image/jpeg',
+      'image/png',
+      'application/octet-stream',
+    ];
+    if (!allowedDocTypes.includes(file.mimetype) && !allowedExts.includes(ext)) {
+      throw new BadRequestException('Chỉ chấp nhận file CV định dạng PDF, Word (doc, docx) hoặc hình ảnh');
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      throw new BadRequestException('Kích thước file CV không được vượt quá 10MB');
+    }
     const updated = await this.userService.updateCV(
       id,
       currentUser.id,
@@ -128,6 +155,7 @@ export class UserController {
   }
 
   @Post(':id/change-password')
+  @Throttle({ default: { limit: 5, ttl: 900000 } })
   async changePassword(
     @Param('id', ParseIntPipe) id: number,
     @CurrentUser('id') currentUserId: number,

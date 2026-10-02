@@ -37,7 +37,10 @@ export class AllExceptionsFilter implements ExceptionFilter {
         errorDetail = resObj.error || null;
       }
     } else if (exception instanceof Error) {
-      message = exception.message;
+      const isProduction = process.env.NODE_ENV === 'production';
+      message = isProduction
+        ? 'Lỗi hệ thống nội bộ. Vui lòng thử lại sau.'
+        : exception.message;
       this.logger.error(
         `Unhandled Exception at ${request.url}: ${exception.message}`,
         exception.stack,

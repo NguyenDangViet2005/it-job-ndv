@@ -18,6 +18,7 @@ import { JwtAuthGuard } from '~/common/guards/jwt-auth.guard.js';
 import { GoogleAuthGuard } from '~/common/guards/google-auth.guard.js';
 import { FacebookAuthGuard } from '~/common/guards/facebook-auth.guard.js';
 import { CurrentUser } from '~/common/decorators/current-user.decorator.js';
+import { Throttle } from '@nestjs/throttler';
 
 const isProduction =
   process.env.NODE_ENV === 'production' ||
@@ -31,6 +32,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
+  @Throttle({ default: { limit: 5, ttl: 900000 } })
   async register(@Body() dto: RegisterDto) {
     const user = await this.authService.register(dto);
     return {
@@ -41,6 +43,7 @@ export class AuthController {
   }
 
   @Post('register-hr')
+  @Throttle({ default: { limit: 5, ttl: 900000 } })
   async registerHR(
     @Body() dto: RegisterHRDto,
     @Res({ passthrough: true }) res: Response,
@@ -63,6 +66,7 @@ export class AuthController {
   }
 
   @Post('login')
+  @Throttle({ default: { limit: 5, ttl: 900000 } })
   async login(
     @Body() dto: LoginDto,
     @Res({ passthrough: true }) res: Response,

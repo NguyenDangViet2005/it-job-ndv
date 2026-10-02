@@ -20,7 +20,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       process.env.BACKEND_URL ||
       (process.env.NODE_ENV === 'production'
         ? 'https://it-job-ndv-express.onrender.com'
-        : `http://localhost:${process.env.PORT || 8000}`);
+        : `http://localhost:${process.env.PORT || 8081}`);
 
     const callbackURL =
       process.env.GOOGLE_CALLBACK_URL ||
