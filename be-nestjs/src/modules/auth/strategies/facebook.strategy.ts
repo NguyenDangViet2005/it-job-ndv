@@ -15,9 +15,8 @@ export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
 
     const backendUrl =
       process.env.BACKEND_URL ||
-      (process.env.NODE_ENV === 'production'
-        ? 'https://it-job-ndv-express.onrender.com'
-        : `http://localhost:${process.env.PORT || 8081}`);
+      process.env.RENDER_EXTERNAL_URL ||
+      `http://localhost:${process.env.PORT || 8081}`;
 
     const callbackURL =
       process.env.FACEBOOK_CALLBACK_URL ||

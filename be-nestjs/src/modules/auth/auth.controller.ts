@@ -32,7 +32,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
-  @Throttle({ default: { limit: 5, ttl: 900000 } })
+  @Throttle({ default: { limit: 15, ttl: 900000 } })
   async register(@Body() dto: RegisterDto) {
     const user = await this.authService.register(dto);
     return {
@@ -43,7 +43,7 @@ export class AuthController {
   }
 
   @Post('register-hr')
-  @Throttle({ default: { limit: 5, ttl: 900000 } })
+  @Throttle({ default: { limit: 15, ttl: 900000 } })
   async registerHR(
     @Body() dto: RegisterHRDto,
     @Res({ passthrough: true }) res: Response,
@@ -66,7 +66,7 @@ export class AuthController {
   }
 
   @Post('login')
-  @Throttle({ default: { limit: 5, ttl: 900000 } })
+  @Throttle({ default: { limit: 15, ttl: 900000 } })
   async login(
     @Body() dto: LoginDto,
     @Res({ passthrough: true }) res: Response,
@@ -222,7 +222,9 @@ export class AuthController {
   }
 
   private async handleOAuthCallback(user: any, res: Response) {
-    const clientUrl = process.env.CLIENT_URL || 'http://localhost:3000';
+    const clientUrl =
+      process.env.CLIENT_URL?.replace(/\/+$/, '') ||
+      (isProduction ? 'https://it-job-ndv.vercel.app' : 'http://localhost:3000');
     if (!user) {
       return res.redirect(`${clientUrl}/dang-nhap?error=oauth_failed`);
     }
