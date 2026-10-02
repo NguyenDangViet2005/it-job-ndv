@@ -5,6 +5,11 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { orm } from '~/prisma/db.js';
+import {
+  nowPlainDate,
+  startOfTodayPlainDateTime,
+  endOfTodayPlainDateTime,
+} from '~/common/utils/temporal.util.js';
 import { CreateJobDto } from './dto/create-job.dto.js';
 import { UpdateJobDto } from './dto/update-job.dto.js';
 import { JobQueryDto } from './dto/job-query.dto.js';
@@ -70,15 +75,15 @@ export class JobService {
     const pageSize = query.pageSize && query.pageSize > 0 ? query.pageSize : 10;
     const keyword = (query.keyword || '').trim();
 
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const now = nowPlainDate();
+    const today = now;
 
     let countQuery = orm.Job
-      .where((j: any) => j.status.ne('closed'))
+      .where((j: any) => j.status.neq('closed'))
       .where((j: any) => j.deadline.gte(today));
 
     let dataQuery = orm.Job
-      .where((j: any) => j.status.ne('closed'))
+      .where((j: any) => j.status.neq('closed'))
       .where((j: any) => j.deadline.gte(today));
 
     if (keyword) {
@@ -128,13 +133,15 @@ export class JobService {
    * Lấy các công việc được đăng trong ngày hôm nay
    */
   async getJobsToday(): Promise<JobResponseData[]> {
-    const now = new Date();
-    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const today = nowPlainDate();
+    const startOfToday = startOfTodayPlainDateTime();
+    const endOfToday = endOfTodayPlainDateTime();
 
     const jobs = await orm.Job
-      .where((j: any) => j.status.ne('closed'))
-      .where((j: any) => j.deadline.gte(startOfToday))
+      .where((j: any) => j.status.neq('closed'))
+      .where((j: any) => j.deadline.gte(today))
       .where((j: any) => j.createdat.gte(startOfToday))
+      .where((j: any) => j.createdat.lt(endOfToday))
       .include('company')
       .orderBy((j: any) => j.id.desc())
       .all();
@@ -163,18 +170,17 @@ export class JobService {
       };
     }
 
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const today = nowPlainDate();
 
     const { count } = await orm.Job
       .where((j: any) => j.id.in(jobIds))
-      .where((j: any) => j.status.ne('closed'))
+      .where((j: any) => j.status.neq('closed'))
       .where((j: any) => j.deadline.gte(today))
       .aggregate((a) => ({ count: a.count() }));
 
     const rows = await orm.Job
       .where((j: any) => j.id.in(jobIds))
-      .where((j: any) => j.status.ne('closed'))
+      .where((j: any) => j.status.neq('closed'))
       .where((j: any) => j.deadline.gte(today))
       .include('company')
       .orderBy((j: any) => j.id.desc())
@@ -209,10 +215,9 @@ export class JobService {
     let queryBuilder = orm.Job.where({ companyid: companyId });
 
     if (onlyActive) {
-      const now = new Date();
-      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const today = nowPlainDate();
       queryBuilder = queryBuilder
-        .where((j: any) => j.status.ne('closed'))
+        .where((j: any) => j.status.neq('closed'))
         .where((j: any) => j.deadline.gte(today)) as any;
     }
 

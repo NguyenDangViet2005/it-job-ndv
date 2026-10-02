@@ -82,7 +82,7 @@ export class PostService {
     const allComments = await orm.Interaction.where((i: any) =>
       i.postid.in(postIds),
     )
-      .where((i: any) => i.content.ne(null))
+      .where((i: any) => i.content.isNotNull())
       .orderBy((i: any) => i.id.desc())
       .all();
 
@@ -497,11 +497,11 @@ export class PostService {
     const pSize = pageSize > 0 ? pageSize : 10;
 
     const { count } = await orm.Interaction.where({ postid: postId })
-      .where((i: any) => i.content.ne(null))
+      .where((i: any) => i.content.isNotNull())
       .aggregate((a) => ({ count: a.count() }));
 
     const comments = await orm.Interaction.where({ postid: postId })
-      .where((i: any) => i.content.ne(null))
+      .where((i: any) => i.content.isNotNull())
       .include('user')
       .include('attachments')
       .orderBy((i: any) => i.id.desc())

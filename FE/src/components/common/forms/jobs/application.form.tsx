@@ -72,6 +72,8 @@ export default function ApplicationForm({
 
   // Handle upload CV
   const handleUploadCV = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
     const file = event.target.files?.[0];
     if (!file || !user?.id || !token) return;
 
@@ -153,6 +155,14 @@ export default function ApplicationForm({
           <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
             CV của bạn *
           </label>
+          <input
+            ref={cvInputRef}
+            type="file"
+            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.webp"
+            onChange={handleUploadCV}
+            className="hidden"
+            disabled={uploadingCV}
+          />
           {!(user as any)?.cvurl ? (
             <div className="border-2 border-dashed rounded-lg p-6 text-center">
               <FileText className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
@@ -162,8 +172,9 @@ export default function ApplicationForm({
               <Button
                 type="button"
                 variant="outline"
-                className="hover:bg-primary/10 hover:text-primary relative"
+                className="hover:bg-primary/10 hover:text-primary"
                 disabled={uploadingCV}
+                onClick={() => cvInputRef.current?.click()}
               >
                 {uploadingCV ? (
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -171,14 +182,6 @@ export default function ApplicationForm({
                   <Upload className="h-4 w-4 mr-2" />
                 )}
                 Tải CV lên
-                <input
-                  ref={cvInputRef}
-                  type="file"
-                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.webp"
-                  onChange={handleUploadCV}
-                  className="absolute inset-0 opacity-0 cursor-pointer"
-                  disabled={uploadingCV}
-                />
               </Button>
             </div>
           ) : (
@@ -204,8 +207,9 @@ export default function ApplicationForm({
                   type="button"
                   variant="outline"
                   size="sm"
-                  className="hover:bg-primary/10 hover:text-primary relative"
+                  className="hover:bg-primary/10 hover:text-primary"
                   disabled={uploadingCV}
+                  onClick={() => cvInputRef.current?.click()}
                 >
                   {uploadingCV ? (
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -213,14 +217,6 @@ export default function ApplicationForm({
                     <Upload className="h-4 w-4 mr-2" />
                   )}
                   Tải lại
-                  <input
-                    ref={cvInputRef}
-                    type="file"
-                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.webp"
-                    onChange={handleUploadCV}
-                    className="absolute inset-0 opacity-0 cursor-pointer"
-                    disabled={uploadingCV}
-                  />
                 </Button>
               </div>
             </div>

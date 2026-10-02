@@ -1,5 +1,6 @@
 import { CreateBlogDto } from './dto/create-blog.dto.js';
 import { UpdateBlogDto } from './dto/update-blog.dto.js';
+import { nowPlainDateTime } from '~/common/utils/temporal.util.js';
 
 export interface BlogResponseData {
   id: number;
@@ -46,8 +47,8 @@ export class BlogMapper {
       userid: userId,
       title: dto.title.trim() as any,
       content: dto.content.trim(),
-      createdat: new Date() as any,
-      updatedat: new Date() as any,
+      createdat: nowPlainDateTime() as any,
+      updatedat: nowPlainDateTime() as any,
     };
     if (dto.categoryid) {
       entity.categoryid = dto.categoryid;
@@ -66,7 +67,7 @@ export class BlogMapper {
 
   static toUpdateBlogEntity(dto: UpdateBlogDto, imageUrl?: string) {
     const data: Record<string, any> = {
-      updatedat: new Date() as any,
+      updatedat: nowPlainDateTime() as any,
     };
     if (dto.title !== undefined) {
       data.title = dto.title.trim() as any;

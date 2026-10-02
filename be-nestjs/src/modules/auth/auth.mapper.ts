@@ -1,5 +1,10 @@
 import { RegisterDto } from './dto/register.dto.js';
 import { RegisterHRDto } from './dto/register-hr.dto.js';
+import {
+  toPlainDate,
+  formatDateString,
+  nowPlainDateTime,
+} from '~/common/utils/temporal.util.js';
 
 export class AuthMapper {
   /**
@@ -12,7 +17,7 @@ export class AuthMapper {
       fullname: dto.fullname.trim() as any,
       phone: (dto.phone?.trim() || null) as any,
       gender: (dto.gender || null) as any,
-      dateofbirth: dto.dateofbirth ? new Date(dto.dateofbirth) : null,
+      dateofbirth: toPlainDate(dto.dateofbirth) as any,
       role: (dto.role || 'user') as any,
     };
   }
@@ -27,7 +32,7 @@ export class AuthMapper {
       fullname: dto.fullname.trim() as any,
       phone: (dto.phone?.trim() || null) as any,
       gender: (dto.gender || null) as any,
-      dateofbirth: dto.dateofbirth ? new Date(dto.dateofbirth) : null,
+      dateofbirth: toPlainDate(dto.dateofbirth) as any,
       avatar: (dto.avatar || null) as any,
       coverimage: (dto.coverimage || null) as any,
       role: 'employer' as any,
@@ -62,7 +67,7 @@ export class AuthMapper {
       companyid: companyId as any,
       userid: userId as any,
       status: 'active' as any,
-      joinedat: new Date() as any,
+      joinedat: nowPlainDateTime() as any,
     };
   }
 
@@ -72,6 +77,9 @@ export class AuthMapper {
   static toSafeUser(user: any) {
     if (!user) return null;
     const { password, refreshtoken, ...rest } = user;
+    if (rest.dateofbirth) {
+      rest.dateofbirth = formatDateString(rest.dateofbirth);
+    }
     return rest;
   }
 

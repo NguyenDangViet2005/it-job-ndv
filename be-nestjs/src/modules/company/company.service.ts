@@ -5,6 +5,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { orm } from '~/prisma/db.js';
+import { nowPlainDateTime } from '~/common/utils/temporal.util.js';
 import { CloudinaryService } from '~/modules/cloudinary/cloudinary.service.js';
 import { CreateCompanyDto } from './dto/create-company.dto.js';
 import { UpdateCompanyDto } from './dto/update-company.dto.js';
@@ -188,7 +189,7 @@ export class CompanyService {
       companyid: newCompany.id as any,
       userid: userId as any,
       status: 'active' as any,
-      joinedat: new Date() as any,
+      joinedat: nowPlainDateTime() as any,
     });
 
     return this.getCompanyById(newCompany.id);
@@ -306,7 +307,7 @@ export class CompanyService {
 
     await orm.Company.where({ id: companyId }).update({
       avatar: uploadRes.secure_url as any,
-      updatedat: new Date() as any,
+      updatedat: nowPlainDateTime() as any,
     });
 
     if (oldAvatar) {
@@ -330,7 +331,7 @@ export class CompanyService {
 
     await orm.Company.where({ id: companyId }).update({
       coverimage: uploadRes.secure_url as any,
-      updatedat: new Date() as any,
+      updatedat: nowPlainDateTime() as any,
     });
 
     if (oldCover) {

@@ -1,5 +1,6 @@
 import { CreateReviewDto } from './dto/create-review.dto.js';
 import { UpdateReviewDto } from './dto/update-review.dto.js';
+import { nowPlainDateTime } from '~/common/utils/temporal.util.js';
 
 export interface ReviewResponseData {
   id: number;
@@ -43,14 +44,14 @@ export class ReviewMapper {
       companyid: dto.companyid,
       rating: dto.rating,
       comment: dto.comment?.trim() || null,
-      createdat: new Date() as any,
-      updatedat: new Date() as any,
+      createdat: nowPlainDateTime() as any,
+      updatedat: nowPlainDateTime() as any,
     };
   }
 
   static toUpdateReviewEntity(dto: UpdateReviewDto) {
     const data: Record<string, any> = {
-      updatedat: new Date() as any,
+      updatedat: nowPlainDateTime() as any,
     };
     if (dto.rating !== undefined) {
       data.rating = dto.rating;

@@ -11,6 +11,9 @@ import {
 } from '@/components/ui/navigation-menu'
 import { useState, useEffect, Fragment } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { Lock } from 'lucide-react'
+import { toast } from 'sonner'
 import { ModeToggle } from '@/components/features/toggle-theme'
 import { useAuth } from '@/lib/hooks/useAuth'
 import { AppLogo } from '@/components/common/app-logo'
@@ -22,6 +25,7 @@ import { useTheme } from 'next-themes'
 import { ROUTES } from '@/constants'
 
 const UserHeader = () => {
+  const router = useRouter()
   const [scrolled, setScrolled] = useState(false)
   const { user, isAuthenticated, logout } = useAuth()
   const [mounted, setMounted] = useState(false)
@@ -87,23 +91,53 @@ const UserHeader = () => {
                     </NavigationMenuTrigger>
                     <NavigationMenuContent>
                       <div className="grid w-[300px] gap-1 p-4">
-                        {item.items.map((subItem) => (
-                          <NavigationMenuLink key={subItem.title} asChild>
-                            <Link
-                              href={subItem.href || ''}
-                              className="group block select-none space-y-1 cursor-target rounded-md p-3 leading-none no-underline outline-none transition-colors duration-200 hover:text-primary focus:text-primary"
-                            >
-                              <div className="text-sm font-medium">
-                                {subItem.title}
+                        {item.items.map((subItem) => {
+                          const isLocked = subItem.requiresAuth && !isLoggedIn;
+
+                          if (isLocked) {
+                            return (
+                              <div
+                                key={subItem.title}
+                                aria-disabled="true"
+                                title="Chỉ dành cho thành viên đã đăng nhập"
+                                className="block select-none space-y-1 rounded-md p-3 leading-none opacity-50 cursor-not-allowed bg-muted/20"
+                              >
+                                <div className="flex items-center justify-between text-sm font-medium text-muted-foreground">
+                                  <div className="flex items-center gap-1.5">
+                                    <span>{subItem.title}</span>
+                                    <Lock className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                                  </div>
+                                  <span className="inline-flex items-center text-[10px] font-normal text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
+                                    Khóa
+                                  </span>
+                                </div>
+                                {subItem.description && (
+                                  <p className="line-clamp-2 text-xs leading-snug text-muted-foreground/70">
+                                    {subItem.description}
+                                  </p>
+                                )}
                               </div>
-                              {subItem.description && (
-                                <p className="line-clamp-2 text-xs leading-snug text-muted-foreground">
-                                  {subItem.description}
-                                </p>
-                              )}
-                            </Link>
-                          </NavigationMenuLink>
-                        ))}
+                            );
+                          }
+
+                          return (
+                            <NavigationMenuLink key={subItem.title} asChild>
+                              <Link
+                                href={subItem.href || ''}
+                                className="group block select-none space-y-1 cursor-target rounded-md p-3 leading-none no-underline outline-none transition-colors duration-200 hover:text-primary focus:text-primary"
+                              >
+                                <div className="text-sm font-medium">
+                                  {subItem.title}
+                                </div>
+                                {subItem.description && (
+                                  <p className="line-clamp-2 text-xs leading-snug text-muted-foreground">
+                                    {subItem.description}
+                                  </p>
+                                )}
+                              </Link>
+                            </NavigationMenuLink>
+                          );
+                        })}
                       </div>
                     </NavigationMenuContent>
                   </NavigationMenuItem>

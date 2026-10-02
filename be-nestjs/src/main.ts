@@ -36,7 +36,7 @@ async function bootstrap() {
     credentials: true,
   });
 
-  const port = process.env.PORT ?? 8000;
+  const port = process.env.PORT ?? 8081;
   await app.listen(port);
   console.log(`🚀 NestJS Application is running on: http://localhost:${port}/api`);
 }

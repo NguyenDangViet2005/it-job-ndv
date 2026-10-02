@@ -23,6 +23,7 @@ export interface NavigationSubItem {
   title: string;
   href: string;
   description?: string;
+  requiresAuth?: boolean;
 }
 
 export interface NavigationItem {
@@ -42,12 +43,13 @@ export const navigationItems: NavigationItem[] = [
   },
   {
     title: "Cộng đồng",
-    href: ROUTES.QA, // Đổi từ "#" sang route thực
+    href: ROUTES.BLOGS,
     items: [
       {
         title: "Hỏi đáp",
         href: ROUTES.QA,
         description: "Đặt câu hỏi và nhận câu trả lời từ cộng đồng",
+        requiresAuth: true,
       },
       {
         title: "Chia sẻ kinh nghiệm",

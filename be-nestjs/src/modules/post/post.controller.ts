@@ -25,12 +25,12 @@ import { PostQueryDto } from './dto/post-query.dto.js';
 import { CreateCommentDto } from './dto/create-comment.dto.js';
 import { UpdateCommentDto } from './dto/update-comment.dto.js';
 
-@UseGuards(JwtAuthGuard)
 @Controller('post')
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
   @Get()
+  @UseGuards(JwtAuthGuard)
   async getAll(
     @Query() query: PostQueryDto,
     @CurrentUser() user: UserPayload,
@@ -39,6 +39,7 @@ export class PostController {
   }
 
   @Get('user/:userid')
+  @UseGuards(JwtAuthGuard)
   async getByUserId(
     @Param('userid', ParseIntPipe) userId: number,
     @Query() query: PostQueryDto,
@@ -51,12 +52,12 @@ export class PostController {
   async getByCompanyId(
     @Param('companyid', ParseIntPipe) companyId: number,
     @Query() query: PostQueryDto,
-    @CurrentUser() user: UserPayload,
   ) {
-    return this.postService.getPostsByCompanyId(companyId, query, user.id);
+    return this.postService.getPostsByCompanyId(companyId, query);
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   @UseInterceptors(AnyFilesInterceptor())
   async create(
     @CurrentUser() user: UserPayload,
@@ -81,6 +82,7 @@ export class PostController {
   }
 
   @Post(':id/like')
+  @UseGuards(JwtAuthGuard)
   async toggleLike(
     @Param('id', ParseIntPipe) id: number,
     @CurrentUser() user: UserPayload,
@@ -91,6 +93,7 @@ export class PostController {
   }
 
   @Post(':id/comment')
+  @UseGuards(JwtAuthGuard)
   @UseInterceptors(AnyFilesInterceptor())
   async addComment(
     @Param('id', ParseIntPipe) id: number,
@@ -103,6 +106,7 @@ export class PostController {
   }
 
   @Put(':id/comment/:commentId')
+  @UseGuards(JwtAuthGuard)
   @UseInterceptors(AnyFilesInterceptor())
   async updateComment(
     @Param('commentId', ParseIntPipe) commentId: number,
@@ -119,6 +123,7 @@ export class PostController {
   }
 
   @Delete(':id/comment/:commentId')
+  @UseGuards(JwtAuthGuard)
   async deleteComment(
     @Param('commentId', ParseIntPipe) commentId: number,
     @CurrentUser() user: UserPayload,
@@ -130,6 +135,7 @@ export class PostController {
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
   async getById(
     @Param('id', ParseIntPipe) id: number,
     @CurrentUser() user: UserPayload,
@@ -138,6 +144,7 @@ export class PostController {
   }
 
   @Put(':id')
+  @UseGuards(JwtAuthGuard)
   @UseInterceptors(AnyFilesInterceptor())
   async update(
     @Param('id', ParseIntPipe) id: number,
@@ -154,6 +161,7 @@ export class PostController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   async deletePost(
     @Param('id', ParseIntPipe) id: number,
     @CurrentUser() user: UserPayload,

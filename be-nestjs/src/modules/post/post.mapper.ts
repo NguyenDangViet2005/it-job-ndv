@@ -2,6 +2,7 @@ import { CreatePostDto } from './dto/create-post.dto.js';
 import { UpdatePostDto } from './dto/update-post.dto.js';
 import { CreateCommentDto } from './dto/create-comment.dto.js';
 import { UpdateCommentDto } from './dto/update-comment.dto.js';
+import { nowPlainDateTime } from '~/common/utils/temporal.util.js';
 
 export interface PostUserResponse {
   id: number;
@@ -154,14 +155,14 @@ export class PostMapper {
       content: dto.content?.trim() || null,
       userid: userId,
       companyid: dto.companyid || null,
-      createdat: new Date() as any,
-      updatedat: new Date() as any,
+      createdat: nowPlainDateTime() as any,
+      updatedat: nowPlainDateTime() as any,
     };
   }
 
   static toUpdatePostEntity(dto: UpdatePostDto) {
     const data: Record<string, any> = {
-      updatedat: new Date() as any,
+      updatedat: nowPlainDateTime() as any,
     };
     if (dto.content !== undefined) {
       data.content = dto.content.trim() || null;
@@ -178,14 +179,14 @@ export class PostMapper {
       userid: userId,
       content: dto.content.trim(),
       isliked: false,
-      createdat: new Date() as any,
-      updatedat: new Date() as any,
+      createdat: nowPlainDateTime() as any,
+      updatedat: nowPlainDateTime() as any,
     };
   }
 
   static toUpdateCommentEntity(dto: UpdateCommentDto) {
     const data: Record<string, any> = {
-      updatedat: new Date() as any,
+      updatedat: nowPlainDateTime() as any,
     };
     if (dto.content !== undefined) {
       data.content = dto.content.trim();

@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, useEffect, useRef } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import { authApi } from "@/apis/auth.api";
 import { companyApi } from "@/apis/company.api";
 import { AuthContext } from "@/lib/contexts/auth.context";
@@ -13,11 +13,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [company, setCompany] = useState<Company | null>(null);
   const [token, setToken] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const pathname = usePathname();
+  const isWelcomePage = pathname === "/" || pathname === ROUTES.WELCOME;
+
+  // Nếu đang ở welcome page thì không cần chờ loading auth
+  const [loading, setLoading] = useState(!isWelcomePage);
+  const hasInitialized = useRef(false);
   const router = useRouter();
 
   // Initialize Auth (Silent Refresh)
   useEffect(() => {
+    // Không check auth ở trang welcome để tối ưu trải nghiệm (UX) người dùng lần đầu
+    if (pathname === "/" || pathname === ROUTES.WELCOME) {
+      setLoading(false);
+      return;
+    }
+
+    // Nếu đã init rồi thì không gọi lại
+    if (hasInitialized.current) return;
+    hasInitialized.current = true;
+
     const initAuth = async () => {
       if (
         typeof window !== "undefined" &&
@@ -36,14 +51,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           const { accesstoken, user: userData } = response.data;
           handleSetAuth(userData, accesstoken);
         }
-      } catch (error) {
+      } catch {
       } finally {
         setLoading(false);
       }
     };
 
     initAuth();
-  }, []);
+  }, [pathname]);
 
   // Internal helper to set state and fetch extra data if needed
   const handleSetAuth = async (userData: User, accesstoken: string) => {

@@ -22,22 +22,13 @@ export default function JobDetailPage({ jobid }: {jobid : string}) {
   const [error, setError] = useState<string | null>(null);
   const [hasApplied, setHasApplied] = useState(false);
 
+  // 1. Fetch job details (only depends on jobid)
   useEffect(() => {
     async function fetchJobDetail() {
       try {
         setLoading(true);
         const response = await jobApi.getById(Number(jobid));
         setJobData(response as any);
-
-        if (user && token && user.role === "user") {
-          const appsResponse = await applicationApi.getByUser(user.id, 1, 100, token);
-          if (appsResponse && appsResponse.data) {
-            const applied = appsResponse.data.some(
-              (app: any) => app.jobid === Number(jobid)
-            );
-            setHasApplied(applied);
-          }
-        }
       } catch (err) {
         setError(
           err instanceof Error
@@ -49,8 +40,31 @@ export default function JobDetailPage({ jobid }: {jobid : string}) {
       }
     }
 
-    fetchJobDetail();
-  }, [jobid, user, token]);
+    if (jobid) {
+      fetchJobDetail();
+    }
+  }, [jobid]);
+
+  // 2. Check if current user has applied to this job (depends on user?.id, token, role)
+  useEffect(() => {
+    async function checkApplied() {
+      if (user?.id && token && user.role === "user" && jobid) {
+        try {
+          const appsResponse = await applicationApi.getByUser(user.id, 1, 100, token);
+          if (appsResponse && appsResponse.data) {
+            const applied = appsResponse.data.some(
+              (app: any) => app.jobid === Number(jobid)
+            );
+            setHasApplied(applied);
+          }
+        } catch (err) {
+          console.error("Failed to check applied status:", err);
+        }
+      }
+    }
+
+    checkApplied();
+  }, [jobid, user?.id, token, user?.role]);
 
   if (loading) {
     return <JobDetailSkeleton />;

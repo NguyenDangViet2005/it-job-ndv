@@ -213,11 +213,11 @@ const UserFooter = () => {
             </div>
             <div className="flex items-center space-x-2 lg:space-x-3 text-muted-foreground/80">
               <Phone className="cursor-target h-3 w-3 lg:h-4 lg:w-4 text-primary flex-shrink-0" />
-              <span className="text-xs lg:text-sm">+84 123 456 789</span>
+              <span className="text-xs lg:text-sm">(+84) 905 507 622</span>
             </div>
             <div className="flex items-center space-x-2 lg:space-x-3 text-muted-foreground/80">
               <MapPin className="cursor-target h-3 w-3 lg:h-4 lg:w-4 text-primary flex-shrink-0" />
-              <span className="text-xs lg:text-sm">Tp. Hồ Chí Minh, Việt Nam</span>
+              <span className="text-xs lg:text-sm">Tp. Đà Nẵng, Việt Nam</span>
             </div>
             <div className="flex items-center space-x-2 lg:space-x-3 text-muted-foreground/80">
               <Globe className="cursor-target h-3 w-3 lg:h-4 lg:w-4 text-primary flex-shrink-0" />

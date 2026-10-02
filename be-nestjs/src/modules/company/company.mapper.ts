@@ -1,5 +1,6 @@
 import { CreateCompanyDto } from './dto/create-company.dto.js';
 import { UpdateCompanyDto } from './dto/update-company.dto.js';
+import { nowPlainDateTime } from '~/common/utils/temporal.util.js';
 
 export interface FormattedCompany {
   id: number;
@@ -110,7 +111,7 @@ export class CompanyMapper {
     if (dto.address !== undefined) updateData.address = dto.address;
     if (dto.wardid !== undefined) updateData.wardid = dto.wardid;
 
-    updateData.updatedat = new Date();
+    updateData.updatedat = nowPlainDateTime();
     return updateData;
   }
 }

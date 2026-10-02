@@ -6,7 +6,6 @@ import Typed from 'typed.js'
 import { motion, AnimatePresence } from 'motion/react'
 import { Button } from '@/components/ui/button'
 import { ROUTES } from '@/constants'
-import { useAuth } from '@/lib/hooks/useAuth'
 import { ModeToggle } from '@/components/features/toggle-theme'
 import { LottieAnimation } from '@/components/common/lottie-animation'
 import { AppLogo } from '@/components/common/app-logo'
@@ -151,7 +150,6 @@ const SLIDES: SlideData[] = [
 
 const WelcomePage = () => {
   const el = useRef<HTMLParagraphElement>(null)
-  const { user } = useAuth()
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0)
 
   // Auto-slide every 5 seconds
@@ -300,32 +298,13 @@ const WelcomePage = () => {
 
             {/* Block 2: Buttons (Div riêng biệt bên dưới) */}
             <div className="pt-2 border-t border-gray-100 dark:border-gray-800/60">
-              <div className="flex flex-col sm:flex-row gap-3">
-                {user ? (
-                  <div className="flex-1 flex items-center justify-center h-12">
-                    <span className="text-base font-semibold text-gray-900 dark:text-white">
-                      Xin chào, {user.fullname}
-                    </span>
-                  </div>
-                ) : (
-                  <Link href={ROUTES.LOGIN} className="flex-1">
-                    <Button
-                      variant="outline"
-                      className="cursor-pointer w-full text-base font-semibold px-8 h-12 border-2 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-300 hover:scale-105"
-                    >
-                      Đăng nhập
-                    </Button>
-                  </Link>
-                )}
-                <Link href={ROUTES.HOME} className="flex-1">
-                  <Button
-                    variant="outline"
-                    className="cursor-pointer w-full text-primary font-semibold px-8 h-12 bg-white hover:bg-primary hover:text-white transition-all duration-300 hover:scale-105 border-primary"
-                  >
-                    Khám phá việc làm
-                  </Button>
-                </Link>
-              </div>
+              <Link href={ROUTES.HOME} className="block w-full">
+                <Button
+                  className="cursor-pointer w-full text-white bg-primary hover:bg-primary/90 font-semibold px-8 h-12 text-base transition-all duration-300 hover:scale-[1.02] shadow-sm"
+                >
+                  Khám phá việc làm
+                </Button>
+              </Link>
             </div>
           </div>
         </div>

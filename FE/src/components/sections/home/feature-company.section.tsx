@@ -3,17 +3,10 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { EffectCoverflow, Navigation, Pagination } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/pagination";
-import "swiper/css/navigation";
-import { Bookmark, Building2, MapPin, MoveLeft, MoveRight } from "lucide-react";
+import { Building2, MapPin } from "lucide-react";
 import SectionTitle from "@/components/features/section-title";
-import { ModernSectionHeader } from "@/components/ui/modern-section-header";
 import { companyApi } from "@/apis";
 import { ROUTES } from "@/constants";
-import { Button } from "@/components/ui/button";
 import { FeatureCompanySkeleton } from "@/components/common/skeletons";
 import { Company } from "@/types";
 

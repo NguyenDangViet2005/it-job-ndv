@@ -1,5 +1,6 @@
 import { CreateApplicationDto } from './dto/create-application.dto.js';
 import { UpdateApplicationStatusDto } from './dto/update-application-status.dto.js';
+import { nowPlainDateTime } from '~/common/utils/temporal.util.js';
 
 export interface ApplicationResponseData {
   jobid: number;
@@ -75,7 +76,7 @@ export class ApplicationMapper {
     if (dto.cvurl !== undefined) updateData.cvurl = dto.cvurl;
     if (dto.coverletter !== undefined) updateData.coverletter = dto.coverletter;
 
-    updateData.updatedat = new Date();
+    updateData.updatedat = nowPlainDateTime();
     return updateData;
   }
 }

@@ -21,8 +21,11 @@ import {
   Briefcase,
   Settings,
   LogOut,
+  Lock,
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { navigationItems } from "@/constants/navigation.config";
 import { ROUTES } from "@/constants";
 import { User as UserResponse } from "@/types";
@@ -37,6 +40,7 @@ interface MobileMenuProps {
 }
 
 export const MobileMenu = ({ isLoggedIn, user, onLogout }: MobileMenuProps) => {
+  const router = useRouter();
   const { isOpen, openMenu, closeMenu, toggleMenu } = useMobileMenu();
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -113,16 +117,38 @@ export const MobileMenu = ({ isLoggedIn, user, onLogout }: MobileMenuProps) => {
                 </Link>
                 {item.items && item.items.length > 0 && (
                   <div className="ml-4 mt-1 space-y-1">
-                    {item.items.map((subItem) => (
-                      <Link
-                        key={subItem.title}
-                        href={subItem.href}
-                        onClick={closeMenu}
-                        className="flex items-center px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-md transition-colors"
-                      >
-                        {subItem.title}
-                      </Link>
-                    ))}
+                    {item.items.map((subItem) => {
+                      const isLocked = subItem.requiresAuth && !isLoggedIn;
+
+                      if (isLocked) {
+                        return (
+                          <div
+                            key={subItem.title}
+                            aria-disabled="true"
+                            className="flex items-center justify-between px-3 py-2 text-sm text-muted-foreground/60 opacity-60 cursor-not-allowed select-none rounded-md"
+                          >
+                            <div className="flex items-center gap-1.5">
+                              <span>{subItem.title}</span>
+                              <Lock className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                            </div>
+                            <span className="text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
+                              Khóa
+                            </span>
+                          </div>
+                        );
+                      }
+
+                      return (
+                        <Link
+                          key={subItem.title}
+                          href={subItem.href}
+                          onClick={closeMenu}
+                          className="flex items-center px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-md transition-colors"
+                        >
+                          {subItem.title}
+                        </Link>
+                      );
+                    })}
                   </div>
                 )}
               </div>

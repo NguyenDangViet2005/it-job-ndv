@@ -246,7 +246,8 @@ function BlogDetailSection({ id }: BlogDetailSectionProps) {
               alt={post.author || "Author"}
               width={40}
               height={40}
-              className="rounded-full"
+              className="rounded-full object-cover"
+              unoptimized={Boolean(post.avatar && !post.avatar.includes("cloudinary"))}
             />
           </div>
           <div>

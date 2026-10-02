@@ -19,7 +19,6 @@ import { RolesGuard } from '~/common/guards/roles.guard.js';
 import { Roles } from '~/common/decorators/roles.decorator.js';
 
 @Controller('skill')
-@UseGuards(JwtAuthGuard, RolesGuard)
 export class SkillController {
   constructor(private readonly skillService: SkillService) {}
 
@@ -48,6 +47,7 @@ export class SkillController {
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   async create(@Body() dto: CreateSkillDto) {
     const skill = await this.skillService.createSkill(dto);
@@ -59,6 +59,7 @@ export class SkillController {
   }
 
   @Put(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   async update(
     @Param('id', ParseIntPipe) id: number,
@@ -73,6 +74,7 @@ export class SkillController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   async delete(@Param('id', ParseIntPipe) id: number) {
     await this.skillService.deleteSkill(id);

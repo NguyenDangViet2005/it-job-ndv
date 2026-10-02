@@ -5,6 +5,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { orm } from '~/prisma/db.js';
+import { isDeadlinePassed } from '~/common/utils/temporal.util.js';
 import { CreateApplicationDto } from './dto/create-application.dto.js';
 import { UpdateApplicationStatusDto } from './dto/update-application-status.dto.js';
 import { ApplicationQueryDto } from './dto/application-query.dto.js';
@@ -86,7 +87,7 @@ export class ApplicationService {
       throw new BadRequestException('Tin tuyển dụng này đã đóng, không thể nộp hồ sơ');
     }
 
-    if (job.deadline && new Date(job.deadline) < new Date()) {
+    if (job.deadline && isDeadlinePassed(job.deadline)) {
       throw new BadRequestException('Hạn nộp hồ sơ cho công việc này đã kết thúc');
     }
 

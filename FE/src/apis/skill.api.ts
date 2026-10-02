@@ -9,7 +9,7 @@ import {
 } from "./api";
 import type { ApiResponse } from "@/types/api.type";
 
-const ENDPOINT = "/skills";
+const ENDPOINT = "/skill";
 
 export const skillApi = {
   // Lấy danh sách skills

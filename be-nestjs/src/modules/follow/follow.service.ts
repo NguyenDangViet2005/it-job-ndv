@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { orm } from '~/prisma/db.js';
+import { nowPlainDateTime } from '~/common/utils/temporal.util.js';
 import { FollowMapper, type FollowResponseData } from './follow.mapper.js';
 
 export type { FollowResponseData };
@@ -31,8 +32,8 @@ export class FollowService {
     await orm.Follow.create({
       userid: userId,
       companyid: companyId,
-      createdat: new Date() as any,
-      updatedat: new Date() as any,
+      createdat: nowPlainDateTime() as any,
+      updatedat: nowPlainDateTime() as any,
     });
 
     return { followed: true };

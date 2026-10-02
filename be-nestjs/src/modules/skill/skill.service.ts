@@ -5,6 +5,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { orm } from '~/prisma/db.js';
+import { nowPlainDateTime } from '~/common/utils/temporal.util.js';
 import { CreateSkillDto } from './dto/create-skill.dto.js';
 import { UpdateSkillDto } from './dto/update-skill.dto.js';
 
@@ -82,7 +83,7 @@ export class SkillService {
 
     await orm.Skill.where({ id }).update({
       name: name as any,
-      updatedat: new Date() as any,
+      updatedat: nowPlainDateTime() as any,
     });
 
     const updated = await orm.Skill.where({ id }).first();

@@ -4,7 +4,7 @@ import type {
   ApiResponse,
 } from "@/types/api.type";
 
-const ENDPOINT = "/locations";
+const ENDPOINT = "/location";
 
 export const locationApi = {
   // Lấy danh sách tất cả tỉnh/thành phố

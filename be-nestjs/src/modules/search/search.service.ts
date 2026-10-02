@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { orm } from '~/prisma/db.js';
+import { nowPlainDate } from '~/common/utils/temporal.util.js';
 import { CompanyMapper } from '~/modules/company/company.mapper.js';
 import { JobMapper } from '~/modules/job/job.mapper.js';
 import { SearchQueryDto } from './dto/search-query.dto.js';
@@ -15,13 +16,12 @@ export class SearchService {
     const pageSize = query.pageSize && query.pageSize > 0 ? query.pageSize : 10;
     const offset = (page - 1) * pageSize;
 
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const today = nowPlainDate();
 
     // 1. Tìm kiếm Jobs
     const jobs = await orm.Job
       .where((j: any) => j.title.ilike(`%${keyword}%`))
-      .where((j: any) => j.status.ne('closed'))
+      .where((j: any) => j.status.neq('closed'))
       .where((j: any) => j.deadline.gte(today))
       .include('company')
       .orderBy((j: any) => j.id.desc())

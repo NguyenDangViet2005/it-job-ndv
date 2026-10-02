@@ -5,6 +5,8 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { orm } from '~/prisma/db.js';
+import { or, and } from '@prisma/orm-postgres/orm-client';
+import { nowPlainDateTime } from '~/common/utils/temporal.util.js';
 import {
   ConnectionMapper,
   type ConnectionResponseData,
@@ -32,9 +34,9 @@ export class ConnectionService {
 
     // Kiểm tra xem đã có kết nối hoặc lời mời giữa 2 người chưa
     const existing = await orm.Connection.where((c: any) =>
-      c.or(
-        c.and({ userid: userId, connecteduserid: connectedUserId }),
-        c.and({ userid: connectedUserId, connecteduserid: userId }),
+      or(
+        and(c.userid.eq(userId), c.connecteduserid.eq(connectedUserId)),
+        and(c.userid.eq(connectedUserId), c.connecteduserid.eq(userId)),
       ),
     ).first();
 
@@ -46,8 +48,8 @@ export class ConnectionService {
       userid: userId,
       connecteduserid: connectedUserId,
       status: 'pending' as any,
-      createdat: new Date() as any,
-      updatedat: new Date() as any,
+      createdat: nowPlainDateTime() as any,
+      updatedat: nowPlainDateTime() as any,
     });
 
     const user = await orm.User.where({ id: userId }).first();
@@ -76,7 +78,7 @@ export class ConnectionService {
 
     await orm.Connection.where({ id: connectionId }).update({
       status: 'accepted' as any,
-      updatedat: new Date() as any,
+      updatedat: nowPlainDateTime() as any,
     });
 
     const updated = await orm.Connection.where({ id: connectionId }).first();
@@ -104,7 +106,7 @@ export class ConnectionService {
 
     await orm.Connection.where({ id: connectionId }).update({
       status: 'rejected' as any,
-      updatedat: new Date() as any,
+      updatedat: nowPlainDateTime() as any,
     });
 
     const updated = await orm.Connection.where({ id: connectionId }).first();
@@ -147,9 +149,9 @@ export class ConnectionService {
     const pSize = pageSize > 0 ? pageSize : 10;
 
     const condition = (c: any) =>
-      c.and(
-        c.or({ userid: userId }, { connecteduserid: userId }),
-        { status: 'accepted' as any },
+      and(
+        or(c.userid.eq(userId), c.connecteduserid.eq(userId)),
+        c.status.eq('accepted'),
       );
 
     const { count } = await orm.Connection.where(condition).aggregate((a) => ({

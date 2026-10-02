@@ -1,5 +1,10 @@
 import { CreateJobDto } from './dto/create-job.dto.js';
 import { UpdateJobDto } from './dto/update-job.dto.js';
+import {
+  toPlainDate,
+  formatDateString,
+  nowPlainDateTime,
+} from '~/common/utils/temporal.util.js';
 
 export interface JobCompanyInfo {
   id: number;
@@ -28,8 +33,8 @@ export interface JobResponseData {
   quantity: number;
   deadline: string | null;
   salary: string | null;
-  createdat: Date | null;
-  updatedat: Date | null;
+  createdat: any | null;
+  updatedat: any | null;
   company: JobCompanyInfo | null;
   skills: JobSkillInfo[];
   applicationCount: number;
@@ -75,7 +80,7 @@ export class JobMapper {
       type: job._type || job.type || 'full-time',
       status: job.status || 'open',
       quantity: job.quantity || 1,
-      deadline: job.deadline ? new Date(job.deadline).toISOString().split('T')[0] : null,
+      deadline: formatDateString(job.deadline),
       salary: job.salary || null,
       createdat: job.createdat || null,
       updatedat: job.updatedat || null,
@@ -95,7 +100,7 @@ export class JobMapper {
       description: (dto.description || null) as any,
       _type: (dto.type || 'full-time') as any,
       quantity: (dto.quantity || 1) as any,
-      deadline: dto.deadline ? new Date(dto.deadline) : null,
+      deadline: toPlainDate(dto.deadline) as any,
       salary: (dto.salary || null) as any,
       status: (dto.status || 'open') as any,
     };
@@ -112,12 +117,12 @@ export class JobMapper {
     if (dto.type !== undefined) updateData._type = dto.type;
     if (dto.quantity !== undefined) updateData.quantity = dto.quantity;
     if (dto.deadline !== undefined) {
-      updateData.deadline = dto.deadline ? new Date(dto.deadline) : null;
+      updateData.deadline = toPlainDate(dto.deadline);
     }
     if (dto.salary !== undefined) updateData.salary = dto.salary;
     if (dto.status !== undefined) updateData.status = dto.status;
 
-    updateData.updatedat = new Date();
+    updateData.updatedat = nowPlainDateTime();
     return updateData;
   }
 }

@@ -7,6 +7,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import bcrypt from 'bcryptjs';
 import { orm } from '~/prisma/db.js';
+import { nowPlainDateTime } from '~/common/utils/temporal.util.js';
 import { RegisterDto } from './dto/register.dto.js';
 import { RegisterHRDto } from './dto/register-hr.dto.js';
 import { LoginDto } from './dto/login.dto.js';
@@ -304,8 +305,8 @@ export class AuthService {
       password: null as any,
       avatar: (avatar || defaultAvatar) as any,
       role: 'user' as any,
-      createdat: new Date() as any,
-      updatedat: new Date() as any,
+      createdat: nowPlainDateTime() as any,
+      updatedat: nowPlainDateTime() as any,
     });
 
     return newUser;

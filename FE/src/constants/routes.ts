@@ -101,7 +101,6 @@ export const ROUTE_GROUPS = {
     ROUTES.JOBS,
     ROUTES.COMPANIES,
     ROUTES.BLOGS,
-    ROUTES.QA,
   ],
 
   USER: [
@@ -116,6 +115,7 @@ export const ROUTE_GROUPS = {
     ROUTES.USER_MY_BLOGS,
     ROUTES.SOCIAL,
     ROUTES.NOTIFICATIONS,
+    ROUTES.QA,
   ],
 
   HR: [

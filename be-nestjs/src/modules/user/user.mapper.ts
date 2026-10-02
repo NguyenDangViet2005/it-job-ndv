@@ -1,4 +1,5 @@
 import { UpdateUserDto } from './dto/update-user.dto.js';
+import { toPlainDate, formatDateString } from '~/common/utils/temporal.util.js';
 
 export class UserMapper {
   /**
@@ -7,6 +8,9 @@ export class UserMapper {
   static toSafeUser(user: any) {
     if (!user) return null;
     const { password, refreshtoken, ...rest } = user;
+    if (rest.dateofbirth) {
+      rest.dateofbirth = formatDateString(rest.dateofbirth);
+    }
     return rest;
   }
 
@@ -39,7 +43,7 @@ export class UserMapper {
     if (dto.phone !== undefined) updateData.phone = dto.phone.trim();
     if (dto.gender !== undefined) updateData.gender = dto.gender;
     if (dto.dateofbirth !== undefined) {
-      updateData.dateofbirth = dto.dateofbirth ? new Date(dto.dateofbirth) : null;
+      updateData.dateofbirth = toPlainDate(dto.dateofbirth);
     }
 
     return updateData;
