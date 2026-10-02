@@ -16,10 +16,11 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       process.env.CLIENT_SECRET ||
       'dummy_secret_for_dev';
 
-    const backendUrl =
+    const rawBackendUrl =
       process.env.BACKEND_URL ||
       process.env.RENDER_EXTERNAL_URL ||
       `http://localhost:${process.env.PORT || 8081}`;
+    const backendUrl = rawBackendUrl.replace(/\/+$/, '');
 
     const callbackURL =
       process.env.GOOGLE_CALLBACK_URL ||

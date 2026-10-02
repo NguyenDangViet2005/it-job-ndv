@@ -13,10 +13,11 @@ export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
       process.env.APP_SECRET ||
       'e85a546a264105bcae6346fc7181914c';
 
-    const backendUrl =
+    const rawBackendUrl =
       process.env.BACKEND_URL ||
       process.env.RENDER_EXTERNAL_URL ||
       `http://localhost:${process.env.PORT || 8081}`;
+    const backendUrl = rawBackendUrl.replace(/\/+$/, '');
 
     const callbackURL =
       process.env.FACEBOOK_CALLBACK_URL ||
