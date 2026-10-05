@@ -4,21 +4,18 @@ import {
   ForbiddenException,
   BadRequestException,
 } from '@nestjs/common';
-import { orm } from '~/prisma/db.js';
-import {
-  nowPlainDate,
-  startOfTodayPlainDateTime,
-  endOfTodayPlainDateTime,
-} from '~/common/utils/temporal.util.js';
 import { CreateJobDto } from './dto/create-job.dto.js';
 import { UpdateJobDto } from './dto/update-job.dto.js';
 import { JobQueryDto } from './dto/job-query.dto.js';
 import { JobMapper, type JobResponseData } from './job.mapper.js';
+import { JobRepository } from './job.repository.js';
 
 export type { JobResponseData };
 
 @Injectable()
 export class JobService {
+  constructor(private readonly jobRepo: JobRepository) {}
+
   /**
    * Tối ưu hóa tải kèm thông tin công ty, kỹ năng và số lượng ứng tuyển trong 3 truy vấn gộp (tránh N+1)
    */
@@ -27,10 +24,7 @@ export class JobService {
     const jobIds = jobs.map((j) => j.id);
 
     // 1. Tải danh sách kỹ năng liên quan
-    const skillJobs = await orm.SkillJob
-      .where((sj: any) => sj.jobid.in(jobIds))
-      .include('skill')
-      .all();
+    const skillJobs = await this.jobRepo.findSkillJobsByJobIds(jobIds);
 
     const skillMap = new Map<number, any[]>();
     for (const sj of skillJobs) {
@@ -39,9 +33,7 @@ export class JobService {
     }
 
     // 2. Tải số lượng đơn ứng tuyển cho mỗi công việc
-    const applications = await orm.Application
-      .where((a: any) => a.jobid.in(jobIds))
-      .all();
+    const applications = await this.jobRepo.findApplicationsByJobIds(jobIds);
 
     const appCountMap = new Map<number, number>();
     for (const a of applications) {
@@ -49,14 +41,11 @@ export class JobService {
     }
 
     // 3. Tải thông tin công ty nếu chưa được nạp sẵn
-    const companyIds = [...new Set(jobs.map((j) => j.companyid).filter(Boolean))];
+    const companyIds = [...new Set(jobs.map((j) => j.companyid).filter(Boolean))] as number[];
     let companyMap = new Map<number, any>();
     if (companyIds.length > 0) {
-      const companies = await orm.Company
-        .where((c: any) => c.id.in(companyIds))
-        .include('companyMembers')
-        .all();
-      companyMap = new Map(companies.map((c: any) => [c.id, c]));
+      const companies = await this.jobRepo.findCompaniesByIds(companyIds);
+      companyMap = new Map(companies.map((c) => [c.id, c]));
     }
 
     return jobs.map((job) => {
@@ -74,31 +63,10 @@ export class JobService {
     const pageNumber = query.pageNumber && query.pageNumber > 0 ? query.pageNumber : 1;
     const pageSize = query.pageSize && query.pageSize > 0 ? query.pageSize : 10;
     const keyword = (query.keyword || '').trim();
+    const offset = (pageNumber - 1) * pageSize;
 
-    const now = nowPlainDate();
-    const today = now;
-
-    let countQuery = orm.Job
-      .where((j: any) => j.status.neq('closed'))
-      .where((j: any) => j.deadline.gte(today));
-
-    let dataQuery = orm.Job
-      .where((j: any) => j.status.neq('closed'))
-      .where((j: any) => j.deadline.gte(today));
-
-    if (keyword) {
-      countQuery = countQuery.where((j: any) => j.title.ilike(`%${keyword}%`)) as any;
-      dataQuery = dataQuery.where((j: any) => j.title.ilike(`%${keyword}%`)) as any;
-    }
-
-    const { count } = await countQuery.aggregate((a) => ({ count: a.count() }));
-
-    const rows = await dataQuery
-      .include('company')
-      .orderBy((j: any) => j.id.desc())
-      .offset((pageNumber - 1) * pageSize)
-      .limit(pageSize)
-      .all();
+    const count = await this.jobRepo.countOpenJobs(keyword);
+    const rows = await this.jobRepo.findOpenJobs(keyword, offset, pageSize);
 
     const formatted = await this.enrichJobs(rows);
 
@@ -116,10 +84,7 @@ export class JobService {
    * Lấy chi tiết công việc theo ID
    */
   async getById(id: number): Promise<JobResponseData> {
-    const job = await orm.Job
-      .where({ id })
-      .include('company')
-      .first();
+    const job = await this.jobRepo.findById(id);
 
     if (!job) {
       throw new NotFoundException('Không tìm thấy tin tuyển dụng');
@@ -133,19 +98,7 @@ export class JobService {
    * Lấy các công việc được đăng trong ngày hôm nay
    */
   async getJobsToday(): Promise<JobResponseData[]> {
-    const today = nowPlainDate();
-    const startOfToday = startOfTodayPlainDateTime();
-    const endOfToday = endOfTodayPlainDateTime();
-
-    const jobs = await orm.Job
-      .where((j: any) => j.status.neq('closed'))
-      .where((j: any) => j.deadline.gte(today))
-      .where((j: any) => j.createdat.gte(startOfToday))
-      .where((j: any) => j.createdat.lt(endOfToday))
-      .include('company')
-      .orderBy((j: any) => j.id.desc())
-      .all();
-
+    const jobs = await this.jobRepo.findJobsToday();
     return this.enrichJobs(jobs);
   }
 
@@ -155,8 +108,9 @@ export class JobService {
   async getJobsBySkill(skillId: number, pageNumber: number = 1, pageSize: number = 10) {
     const pNumber = pageNumber > 0 ? pageNumber : 1;
     const pSize = pageSize > 0 ? pageSize : 10;
+    const offset = (pNumber - 1) * pSize;
 
-    const skillJobs = await orm.SkillJob.where({ skillid: skillId }).all();
+    const skillJobs = await this.jobRepo.findSkillJobsBySkillId(skillId);
     const jobIds = skillJobs.map((sj: any) => sj.jobid);
 
     if (jobIds.length === 0) {
@@ -170,23 +124,8 @@ export class JobService {
       };
     }
 
-    const today = nowPlainDate();
-
-    const { count } = await orm.Job
-      .where((j: any) => j.id.in(jobIds))
-      .where((j: any) => j.status.neq('closed'))
-      .where((j: any) => j.deadline.gte(today))
-      .aggregate((a) => ({ count: a.count() }));
-
-    const rows = await orm.Job
-      .where((j: any) => j.id.in(jobIds))
-      .where((j: any) => j.status.neq('closed'))
-      .where((j: any) => j.deadline.gte(today))
-      .include('company')
-      .orderBy((j: any) => j.id.desc())
-      .offset((pNumber - 1) * pSize)
-      .limit(pSize)
-      .all();
+    const count = await this.jobRepo.countJobsByIds(jobIds);
+    const rows = await this.jobRepo.findJobsByIds(jobIds, offset, pSize);
 
     const formatted = await this.enrichJobs(rows);
 
@@ -195,7 +134,7 @@ export class JobService {
       totalItems: count,
       pageNumber,
       page: pNumber,
-      pageSize: pSize,
+      pageSize,
       totalPages: Math.ceil(count / pSize),
     };
   }
@@ -211,33 +150,19 @@ export class JobService {
   ) {
     const pNumber = pageNumber > 0 ? pageNumber : 1;
     const pSize = pageSize > 0 ? pageSize : 10;
+    const offset = (pNumber - 1) * pSize;
 
-    let queryBuilder = orm.Job.where({ companyid: companyId });
-
-    if (onlyActive) {
-      const today = nowPlainDate();
-      queryBuilder = queryBuilder
-        .where((j: any) => j.status.neq('closed'))
-        .where((j: any) => j.deadline.gte(today)) as any;
-    }
-
-    const { count } = await queryBuilder.aggregate((a) => ({ count: a.count() }));
-
-    const rows = await queryBuilder
-      .include('company')
-      .orderBy((j: any) => j.id.desc())
-      .offset((pNumber - 1) * pSize)
-      .limit(pSize)
-      .all();
+    const count = await this.jobRepo.countJobsByCompanyId(companyId, onlyActive);
+    const rows = await this.jobRepo.findJobsByCompanyId(companyId, offset, pSize, onlyActive);
 
     const formatted = await this.enrichJobs(rows);
 
     return {
       data: formatted,
       totalItems: count,
-      pageNumber: pNumber,
+      pageNumber,
       page: pNumber,
-      pageSize: pSize,
+      pageSize,
       totalPages: Math.ceil(count / pSize),
     };
   }
@@ -251,15 +176,11 @@ export class JobService {
     pageSize: number = 10,
     onlyActive: boolean = false,
   ) {
-    const member = await orm.CompanyMembers
-      .where({ userid: userId, status: 'active' as any })
-      .first();
+    const member = await this.jobRepo.findCompanyMemberByUserId(userId);
 
     let companyId = member?.companyid;
     if (!companyId) {
-      const createdCompany = await orm.Company
-        .where({ createdbyuserid: userId })
-        .first();
+      const createdCompany = await this.jobRepo.findCompanyByCreatorId(userId);
       companyId = createdCompany?.id;
     }
 
@@ -274,15 +195,11 @@ export class JobService {
    * Tạo tin tuyển dụng mới
    */
   async create(userId: number, dto: CreateJobDto): Promise<JobResponseData> {
-    const member = await orm.CompanyMembers
-      .where({ userid: userId, status: 'active' as any })
-      .first();
+    const member = await this.jobRepo.findCompanyMemberByUserId(userId);
 
     let companyId = member?.companyid;
     if (!companyId) {
-      const createdCompany = await orm.Company
-        .where({ createdbyuserid: userId })
-        .first();
+      const createdCompany = await this.jobRepo.findCompanyByCreatorId(userId);
       companyId = createdCompany?.id;
     }
 
@@ -291,14 +208,11 @@ export class JobService {
     }
 
     const jobEntity = JobMapper.toCreateJobEntity(dto, companyId);
-    const newJob = await orm.Job.create(jobEntity);
+    const newJob = await this.jobRepo.create(jobEntity);
 
     if (dto.skillids && dto.skillids.length > 0) {
       for (const skillid of dto.skillids) {
-        await orm.SkillJob.create({
-          jobid: newJob.id as any,
-          skillid: skillid as any,
-        });
+        await this.jobRepo.addSkillJob(newJob.id, skillid);
       }
     }
 
@@ -313,19 +227,15 @@ export class JobService {
     currentUser: { id: number; role: string },
     dto: UpdateJobDto,
   ): Promise<JobResponseData> {
-    const job = await orm.Job.where({ id: jobId }).first();
+    const job = await this.jobRepo.findById(jobId);
     if (!job) {
       throw new NotFoundException('Không tìm thấy tin tuyển dụng');
     }
 
     // Kiểm tra quyền hạn
     if (currentUser.role !== 'admin') {
-      const member = await orm.CompanyMembers
-        .where({ companyid: job.companyid, userid: currentUser.id, status: 'active' as any })
-        .first();
-      const isCreator = await orm.Company
-        .where({ id: job.companyid, createdbyuserid: currentUser.id })
-        .first();
+      const member = await this.jobRepo.findCompanyMember(job.companyid, currentUser.id);
+      const isCreator = (await this.jobRepo.findCompanyById(job.companyid))?.createdbyuserid === currentUser.id;
 
       if (!member && !isCreator) {
         throw new ForbiddenException('Bạn không có quyền chỉnh sửa tin tuyển dụng của công ty này');
@@ -333,15 +243,12 @@ export class JobService {
     }
 
     const updatePayload = JobMapper.toUpdateJobEntity(dto);
-    await orm.Job.where({ id: jobId }).update(updatePayload);
+    await this.jobRepo.update(jobId, updatePayload);
 
     if (dto.skillids !== undefined) {
-      await orm.SkillJob.where({ jobid: jobId }).delete();
+      await this.jobRepo.deleteSkillJobsByJobId(jobId);
       for (const skillid of dto.skillids) {
-        await orm.SkillJob.create({
-          jobid: jobId as any,
-          skillid: skillid as any,
-        });
+        await this.jobRepo.addSkillJob(jobId, skillid);
       }
     }
 
@@ -352,28 +259,21 @@ export class JobService {
    * Xóa tin tuyển dụng
    */
   async deleteJob(jobId: number, currentUser: { id: number; role: string }) {
-    const job = await orm.Job.where({ id: jobId }).first();
+    const job = await this.jobRepo.findById(jobId);
     if (!job) {
       throw new NotFoundException('Không tìm thấy tin tuyển dụng');
     }
 
     if (currentUser.role !== 'admin') {
-      const member = await orm.CompanyMembers
-        .where({ companyid: job.companyid, userid: currentUser.id, status: 'active' as any })
-        .first();
-      const isCreator = await orm.Company
-        .where({ id: job.companyid, createdbyuserid: currentUser.id })
-        .first();
+      const member = await this.jobRepo.findCompanyMember(job.companyid, currentUser.id);
+      const isCreator = (await this.jobRepo.findCompanyById(job.companyid))?.createdbyuserid === currentUser.id;
 
       if (!member && !isCreator) {
         throw new ForbiddenException('Bạn không có quyền xóa tin tuyển dụng của công ty này');
       }
     }
 
-    // Xóa liên kết SkillJob và Application trước khi xóa Job
-    await orm.SkillJob.where({ jobid: jobId }).delete();
-    await orm.Application.where({ jobid: jobId }).delete();
-    await orm.Job.where({ id: jobId }).delete();
+    await this.jobRepo.delete(jobId);
 
     return {
       success: true,

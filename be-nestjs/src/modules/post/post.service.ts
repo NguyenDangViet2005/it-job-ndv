@@ -2,9 +2,7 @@ import {
   Injectable,
   NotFoundException,
   ForbiddenException,
-  BadRequestException,
 } from '@nestjs/common';
-import { orm } from '~/prisma/db.js';
 import { CloudinaryService } from '~/modules/cloudinary/cloudinary.service.js';
 import { CreatePostDto } from './dto/create-post.dto.js';
 import { UpdatePostDto } from './dto/update-post.dto.js';
@@ -16,10 +14,14 @@ import {
   type PostResponseData,
   type CommentResponse,
 } from './post.mapper.js';
+import { PostRepository } from './post.repository.js';
 
 @Injectable()
 export class PostService {
-  constructor(private readonly cloudinaryService: CloudinaryService) {}
+  constructor(
+    private readonly postRepo: PostRepository,
+    private readonly cloudinaryService: CloudinaryService,
+  ) {}
 
   /**
    * Tối ưu hóa tải thông tin tác giả, công ty, tệp đính kèm và thống kê tương tác theo lô (tránh N+1)
@@ -30,28 +32,26 @@ export class PostService {
   ): Promise<PostResponseData[]> {
     if (posts.length === 0) return [];
     const postIds = posts.map((p) => p.id);
-    const userIds = [...new Set(posts.map((p) => p.userid).filter(Boolean))];
+    const userIds = [
+      ...new Set(posts.map((p) => p.userid).filter(Boolean)),
+    ] as number[];
     const companyIds = [
       ...new Set(posts.map((p) => p.companyid).filter(Boolean)),
-    ];
+    ] as number[];
 
     // 1. Tải danh sách tác giả bài viết
-    const users = await orm.User.where((u: any) => u.id.in(userIds)).all();
+    const users = await this.postRepo.findUsersByIds(userIds);
     const userMap = new Map(users.map((u) => [u.id, u]));
 
     // 2. Tải danh sách công ty liên quan
     let companyMap = new Map<number, any>();
     if (companyIds.length > 0) {
-      const companies = await orm.Company.where((c: any) =>
-        c.id.in(companyIds),
-      ).all();
+      const companies = await this.postRepo.findCompaniesByIds(companyIds);
       companyMap = new Map(companies.map((c) => [c.id, c]));
     }
 
     // 3. Tải attachments của các bài viết
-    const attachments = await orm.Attachment.where((a: any) =>
-      a.postid.in(postIds),
-    ).all();
+    const attachments = await this.postRepo.findAttachmentsByPostIds(postIds);
     const attachmentMap = new Map<number, any[]>();
     for (const att of attachments) {
       if (att.postid) {
@@ -61,11 +61,7 @@ export class PostService {
     }
 
     // 4. Thống kê likes
-    const allLikes = await orm.Interaction.where((i: any) =>
-      i.postid.in(postIds),
-    )
-      .where({ isliked: true })
-      .all();
+    const allLikes = await this.postRepo.findLikesByPostIds(postIds);
     const likesCountMap = new Map<number, number>();
     const userLikesSet = new Set<number>();
     for (const like of allLikes) {
@@ -79,12 +75,7 @@ export class PostService {
     }
 
     // 5. Thống kê và tải bình luận gần đây
-    const allComments = await orm.Interaction.where((i: any) =>
-      i.postid.in(postIds),
-    )
-      .where((i: any) => i.content.isNotNull())
-      .orderBy((i: any) => i.id.desc())
-      .all();
+    const allComments = await this.postRepo.findCommentsByPostIds(postIds);
 
     const commentsCountMap = new Map<number, number>();
     const recentCommentsMap = new Map<number, any[]>();
@@ -110,19 +101,13 @@ export class PostService {
     // Tải thông tin người bình luận & tệp đính kèm bình luận
     let commentUsersMap = new Map<number, any>();
     if (commentUserIds.size > 0) {
-      const cUsers = await orm.User.where((u: any) =>
-        u.id.in([...commentUserIds]),
-      )
-        .include('companyMembers')
-        .all();
+      const cUsers = await this.postRepo.findUsersWithCompanyMembersByIds([...commentUserIds]);
       commentUsersMap = new Map(cUsers.map((u) => [u.id, u]));
     }
 
     let commentAttachmentsMap = new Map<number, any[]>();
     if (commentIds.length > 0) {
-      const cAtts = await orm.Attachment.where((a: any) =>
-        a.interactionid.in(commentIds),
-      ).all();
+      const cAtts = await this.postRepo.findAttachmentsByInteractionIds(commentIds);
       for (const a of cAtts) {
         if (a.interactionid) {
           if (!commentAttachmentsMap.has(a.interactionid)) {
@@ -172,26 +157,10 @@ export class PostService {
     const pageSize =
       query.pageSize && query.pageSize > 0 ? query.pageSize : 10;
     const keyword = (query.keyword || '').trim();
+    const offset = (pageNumber - 1) * pageSize;
 
-    let countQuery = orm.Post;
-    let dataQuery = orm.Post;
-
-    if (keyword) {
-      countQuery = countQuery.where((p: any) =>
-        p.content.ilike(`%${keyword}%`),
-      ) as any;
-      dataQuery = dataQuery.where((p: any) =>
-        p.content.ilike(`%${keyword}%`),
-      ) as any;
-    }
-
-    const { count } = await countQuery.aggregate((a) => ({ count: a.count() }));
-
-    const rows = await dataQuery
-      .orderBy((p: any) => p.id.desc())
-      .offset((pageNumber - 1) * pageSize)
-      .limit(pageSize)
-      .all();
+    const count = await this.postRepo.countPosts(keyword);
+    const rows = await this.postRepo.findPosts(keyword, offset, pageSize);
 
     const formatted = await this.enrichPosts(rows, currentUserId);
 
@@ -212,7 +181,7 @@ export class PostService {
     id: number,
     currentUserId?: number,
   ): Promise<PostResponseData> {
-    const post = await orm.Post.where({ id }).first();
+    const post = await this.postRepo.findPostById(id);
     if (!post) {
       throw new NotFoundException('Không tìm thấy bài viết');
     }
@@ -233,16 +202,10 @@ export class PostService {
       query.pageNumber && query.pageNumber > 0 ? query.pageNumber : 1;
     const pageSize =
       query.pageSize && query.pageSize > 0 ? query.pageSize : 10;
+    const offset = (pageNumber - 1) * pageSize;
 
-    const { count } = await orm.Post.where({ userid: userId }).aggregate(
-      (a) => ({ count: a.count() }),
-    );
-
-    const rows = await orm.Post.where({ userid: userId })
-      .orderBy((p: any) => p.id.desc())
-      .offset((pageNumber - 1) * pageSize)
-      .limit(pageSize)
-      .all();
+    const count = await this.postRepo.countPostsByUserId(userId);
+    const rows = await this.postRepo.findPostsByUserId(userId, offset, pageSize);
 
     const formatted = await this.enrichPosts(rows, currentUserId);
 
@@ -268,16 +231,10 @@ export class PostService {
       query.pageNumber && query.pageNumber > 0 ? query.pageNumber : 1;
     const pageSize =
       query.pageSize && query.pageSize > 0 ? query.pageSize : 10;
+    const offset = (pageNumber - 1) * pageSize;
 
-    const { count } = await orm.Post.where({ companyid: companyId }).aggregate(
-      (a) => ({ count: a.count() }),
-    );
-
-    const rows = await orm.Post.where({ companyid: companyId })
-      .orderBy((p: any) => p.id.desc())
-      .offset((pageNumber - 1) * pageSize)
-      .limit(pageSize)
-      .all();
+    const count = await this.postRepo.countPostsByCompanyId(companyId);
+    const rows = await this.postRepo.findPostsByCompanyId(companyId, offset, pageSize);
 
     const formatted = await this.enrichPosts(rows, currentUserId);
 
@@ -300,16 +257,12 @@ export class PostService {
     files?: Express.Multer.File[],
   ): Promise<PostResponseData> {
     if (dto.companyid) {
-      const company = await orm.Company.where({ id: dto.companyid }).first();
+      const company = await this.postRepo.findCompanyById(dto.companyid);
       if (!company) {
         throw new NotFoundException('Công ty không tồn tại');
       }
 
-      const isMember = await orm.CompanyMembers.where({
-        companyid: dto.companyid,
-        userid: userId,
-        status: 'active' as any,
-      }).first();
+      const isMember = await this.postRepo.findCompanyMember(dto.companyid, userId);
 
       if (!isMember && company.createdbyuserid !== userId) {
         throw new ForbiddenException(
@@ -319,7 +272,7 @@ export class PostService {
     }
 
     const postEntity = PostMapper.toCreatePostEntity(dto, userId);
-    const newPost = await orm.Post.create(postEntity);
+    const newPost = await this.postRepo.createPost(postEntity);
 
     // Upload các tệp đính kèm lên Cloudinary
     if (files && files.length > 0) {
@@ -330,7 +283,7 @@ export class PostService {
         const folder = filetype === 'video' ? 'IT-JOB/posts/videos' : 'IT-JOB/posts/images';
         const uploadRes = await this.cloudinaryService.uploadFile(file, folder);
 
-        await orm.Attachment.create({
+        await this.postRepo.createAttachment({
           postid: newPost.id as any,
           fileurl: uploadRes.secure_url as any,
           filetype: filetype as any,
@@ -350,7 +303,7 @@ export class PostService {
     dto: UpdatePostDto,
     files?: Express.Multer.File[],
   ): Promise<PostResponseData> {
-    const post = await orm.Post.where({ id }).first();
+    const post = await this.postRepo.findPostById(id);
     if (!post) {
       throw new NotFoundException('Không tìm thấy bài viết');
     }
@@ -359,15 +312,8 @@ export class PostService {
     if (currentUser.role !== 'admin' && post.userid !== currentUser.id) {
       let isAllowed = false;
       if (post.companyid) {
-        const isMember = await orm.CompanyMembers.where({
-          companyid: post.companyid,
-          userid: currentUser.id,
-          status: 'active' as any,
-        }).first();
-        const isCreator = await orm.Company.where({
-          id: post.companyid,
-          createdbyuserid: currentUser.id,
-        }).first();
+        const isMember = await this.postRepo.findCompanyMember(post.companyid, currentUser.id);
+        const isCreator = (await this.postRepo.findCompanyById(post.companyid))?.createdbyuserid === currentUser.id;
         isAllowed = Boolean(isMember || isCreator);
       }
 
@@ -378,12 +324,10 @@ export class PostService {
 
     // Cập nhật thông tin bài viết
     const updatePayload = PostMapper.toUpdatePostEntity(dto);
-    await orm.Post.where({ id }).update(updatePayload);
+    await this.postRepo.updatePost(id, updatePayload);
 
     // Xử lý giữ lại ảnh cũ (keepImageUrls)
-    const existingAttachments = await orm.Attachment.where({
-      postid: id,
-    }).all();
+    const existingAttachments = await this.postRepo.findAttachmentsByPostId(id);
     let keepUrls: string[] = [];
     if (dto.keepImageUrls) {
       keepUrls = Array.isArray(dto.keepImageUrls)
@@ -396,7 +340,7 @@ export class PostService {
         if (att.fileurl) {
           await this.cloudinaryService.deleteFile(att.fileurl).catch(() => {});
         }
-        await orm.Attachment.where({ id: att.id }).delete();
+        await this.postRepo.deleteAttachmentById(att.id);
       }
     }
 
@@ -409,7 +353,7 @@ export class PostService {
         const folder = filetype === 'video' ? 'IT-JOB/posts/videos' : 'IT-JOB/posts/images';
         const uploadRes = await this.cloudinaryService.uploadFile(file, folder);
 
-        await orm.Attachment.create({
+        await this.postRepo.createAttachment({
           postid: id as any,
           fileurl: uploadRes.secure_url as any,
           filetype: filetype as any,
@@ -424,7 +368,7 @@ export class PostService {
    * Xóa bài viết và toàn bộ tệp đính kèm, tương tác liên quan
    */
   async deletePost(id: number, currentUser: { id: number; role: string }) {
-    const post = await orm.Post.where({ id }).first();
+    const post = await this.postRepo.findPostById(id);
     if (!post) {
       throw new NotFoundException('Không tìm thấy bài viết');
     }
@@ -432,15 +376,8 @@ export class PostService {
     if (currentUser.role !== 'admin' && post.userid !== currentUser.id) {
       let isAllowed = false;
       if (post.companyid) {
-        const isMember = await orm.CompanyMembers.where({
-          companyid: post.companyid,
-          userid: currentUser.id,
-          status: 'active' as any,
-        }).first();
-        const isCreator = await orm.Company.where({
-          id: post.companyid,
-          createdbyuserid: currentUser.id,
-        }).first();
+        const isMember = await this.postRepo.findCompanyMember(post.companyid, currentUser.id);
+        const isCreator = (await this.postRepo.findCompanyById(post.companyid))?.createdbyuserid === currentUser.id;
         isAllowed = Boolean(isMember || isCreator);
       }
 
@@ -450,7 +387,7 @@ export class PostService {
     }
 
     // 1. Dọn dẹp attachments của post trên Cloudinary
-    const postAttachments = await orm.Attachment.where({ postid: id }).all();
+    const postAttachments = await this.postRepo.findAttachmentsByPostId(id);
     for (const att of postAttachments) {
       if (att.fileurl) {
         await this.cloudinaryService.deleteFile(att.fileurl).catch(() => {});
@@ -458,26 +395,22 @@ export class PostService {
     }
 
     // 2. Dọn dẹp attachments của comments trên Cloudinary
-    const postComments = await orm.Interaction.where({ postid: id }).all();
+    const postComments = await this.postRepo.findInteractionsByPostId(id);
     const commentIds = postComments.map((c) => c.id);
     if (commentIds.length > 0) {
-      const commentAttachments = await orm.Attachment.where((a: any) =>
-        a.interactionid.in(commentIds),
-      ).all();
+      const commentAttachments = await this.postRepo.findAttachmentsByInteractionIds(commentIds);
       for (const att of commentAttachments) {
         if (att.fileurl) {
           await this.cloudinaryService.deleteFile(att.fileurl).catch(() => {});
         }
       }
-      await orm.Attachment.where((a: any) =>
-        a.interactionid.in(commentIds),
-      ).delete();
+      await this.postRepo.deleteAttachmentsByInteractionIds(commentIds);
     }
 
     // 3. Xóa dữ liệu DB
-    await orm.Attachment.where({ postid: id }).delete();
-    await orm.Interaction.where({ postid: id }).delete();
-    await orm.Post.where({ id }).delete();
+    await this.postRepo.deleteAttachmentsByPostId(id);
+    await this.postRepo.deleteInteractionsByPostId(id);
+    await this.postRepo.deletePost(id);
 
     return {
       success: true,
@@ -495,31 +428,17 @@ export class PostService {
   ) {
     const pNumber = pageNumber > 0 ? pageNumber : 1;
     const pSize = pageSize > 0 ? pageSize : 10;
+    const offset = (pNumber - 1) * pSize;
 
-    const { count } = await orm.Interaction.where({ postid: postId })
-      .where((i: any) => i.content.isNotNull())
-      .aggregate((a) => ({ count: a.count() }));
-
-    const comments = await orm.Interaction.where({ postid: postId })
-      .where((i: any) => i.content.isNotNull())
-      .include('user')
-      .include('attachments')
-      .orderBy((i: any) => i.id.desc())
-      .offset((pNumber - 1) * pSize)
-      .limit(pSize)
-      .all();
+    const count = await this.postRepo.countCommentsByPostId(postId);
+    const comments = await this.postRepo.findCommentsByPostId(postId, offset, pSize);
 
     // Nạp thêm thông tin công ty của tác giả bình luận nếu có
-    const userIds = [...new Set(comments.map((c) => c.userid))];
+    const userIds = [...new Set(comments.map((c: any) => c.userid))] as number[];
     let memberMap = new Map<number, any>();
     if (userIds.length > 0) {
-      const members = await orm.CompanyMembers.where((m: any) =>
-        m.userid.in(userIds),
-      )
-        .where({ status: 'active' as any })
-        .include('company')
-        .all();
-      memberMap = new Map(members.map((m) => [m.userid, m]));
+      const members = await this.postRepo.findActiveCompanyMembersByUserIds(userIds);
+      memberMap = new Map(members.map((m: any) => [m.userid, m]));
     }
 
     const formatted = comments.map((c: any) => {
@@ -551,35 +470,23 @@ export class PostService {
    * Toggle Like cho bài viết
    */
   async toggleLike(postId: number, userId: number) {
-    const post = await orm.Post.where({ id: postId }).first();
+    const post = await this.postRepo.findPostById(postId);
     if (!post) {
       throw new NotFoundException('Không tìm thấy bài viết');
     }
 
-    const existingLike = await orm.Interaction.where({
-      postid: postId,
-      userid: userId,
-      isliked: true,
-    }).first();
+    const existingLike = await this.postRepo.findLike(postId, userId);
 
     let isliked = false;
     if (existingLike) {
-      await orm.Interaction.where({ id: existingLike.id }).delete();
+      await this.postRepo.deleteInteractionById(existingLike.id);
       isliked = false;
     } else {
-      await orm.Interaction.create({
-        postid: postId,
-        userid: userId,
-        isliked: true,
-        content: null,
-      });
+      await this.postRepo.createLike(postId, userId);
       isliked = true;
     }
 
-    const { count } = await orm.Interaction.where({
-      postid: postId,
-      isliked: true,
-    }).aggregate((a) => ({ count: a.count() }));
+    const count = await this.postRepo.countLikesByPostId(postId);
 
     return {
       postid: postId,
@@ -598,7 +505,7 @@ export class PostService {
     dto: CreateCommentDto,
     files?: Express.Multer.File[],
   ): Promise<CommentResponse> {
-    const post = await orm.Post.where({ id: postId }).first();
+    const post = await this.postRepo.findPostById(postId);
     if (!post) {
       throw new NotFoundException('Không tìm thấy bài viết');
     }
@@ -608,7 +515,7 @@ export class PostService {
       postId,
       userId,
     );
-    const newComment = await orm.Interaction.create(commentEntity);
+    const newComment = await this.postRepo.createComment(commentEntity);
 
     // Upload tệp đính kèm bình luận
     if (files && files.length > 0) {
@@ -619,7 +526,7 @@ export class PostService {
         const folder = filetype === 'video' ? 'IT-JOB/comments/videos' : 'IT-JOB/comments/images';
         const uploadRes = await this.cloudinaryService.uploadFile(file, folder);
 
-        await orm.Attachment.create({
+        await this.postRepo.createAttachment({
           interactionid: newComment.id as any,
           fileurl: uploadRes.secure_url as any,
           filetype: filetype as any,
@@ -627,10 +534,7 @@ export class PostService {
       }
     }
 
-    const created = await orm.Interaction.where({ id: newComment.id })
-      .include('user')
-      .include('attachments')
-      .first();
+    const created = await this.postRepo.findInteractionWithDetails(newComment.id);
 
     return PostMapper.toCommentResponse(created);
   }
@@ -644,7 +548,7 @@ export class PostService {
     dto: UpdateCommentDto,
     files?: Express.Multer.File[],
   ): Promise<CommentResponse> {
-    const comment = await orm.Interaction.where({ id: commentId }).first();
+    const comment = await this.postRepo.findInteractionById(commentId);
     if (!comment) {
       throw new NotFoundException('Không tìm thấy bình luận');
     }
@@ -654,12 +558,10 @@ export class PostService {
     }
 
     const updatePayload = PostMapper.toUpdateCommentEntity(dto);
-    await orm.Interaction.where({ id: commentId }).update(updatePayload);
+    await this.postRepo.updateInteraction(commentId, updatePayload);
 
     // Xử lý giữ lại ảnh cũ
-    const existingAttachments = await orm.Attachment.where({
-      interactionid: commentId,
-    }).all();
+    const existingAttachments = await this.postRepo.findAttachmentsByInteractionIds([commentId]);
     let keepUrls: string[] = [];
     if (dto.keepImageUrls) {
       keepUrls = Array.isArray(dto.keepImageUrls)
@@ -672,7 +574,7 @@ export class PostService {
         if (att.fileurl) {
           await this.cloudinaryService.deleteFile(att.fileurl).catch(() => {});
         }
-        await orm.Attachment.where({ id: att.id }).delete();
+        await this.postRepo.deleteAttachmentById(att.id);
       }
     }
 
@@ -685,7 +587,7 @@ export class PostService {
         const folder = filetype === 'video' ? 'IT-JOB/comments/videos' : 'IT-JOB/comments/images';
         const uploadRes = await this.cloudinaryService.uploadFile(file, folder);
 
-        await orm.Attachment.create({
+        await this.postRepo.createAttachment({
           interactionid: commentId as any,
           fileurl: uploadRes.secure_url as any,
           filetype: filetype as any,
@@ -693,10 +595,7 @@ export class PostService {
       }
     }
 
-    const updated = await orm.Interaction.where({ id: commentId })
-      .include('user')
-      .include('attachments')
-      .first();
+    const updated = await this.postRepo.findInteractionWithDetails(commentId);
 
     return PostMapper.toCommentResponse(updated);
   }
@@ -708,7 +607,7 @@ export class PostService {
     commentId: number,
     currentUser: { id: number; role: string },
   ) {
-    const comment = await orm.Interaction.where({ id: commentId }).first();
+    const comment = await this.postRepo.findInteractionById(commentId);
     if (!comment) {
       throw new NotFoundException('Không tìm thấy bình luận');
     }
@@ -718,17 +617,15 @@ export class PostService {
     }
 
     // Xóa tệp đính kèm trên Cloudinary và DB
-    const attachments = await orm.Attachment.where({
-      interactionid: commentId,
-    }).all();
+    const attachments = await this.postRepo.findAttachmentsByInteractionIds([commentId]);
     for (const att of attachments) {
       if (att.fileurl) {
         await this.cloudinaryService.deleteFile(att.fileurl).catch(() => {});
       }
     }
 
-    await orm.Attachment.where({ interactionid: commentId }).delete();
-    await orm.Interaction.where({ id: commentId }).delete();
+    await this.postRepo.deleteAttachmentsByInteractionId(commentId);
+    await this.postRepo.deleteInteractionById(commentId);
 
     return {
       success: true,

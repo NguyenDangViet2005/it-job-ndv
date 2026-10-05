@@ -4,43 +4,29 @@ import {
   ConflictException,
   BadRequestException,
 } from '@nestjs/common';
-import { orm } from '~/prisma/db.js';
-import { nowPlainDateTime } from '~/common/utils/temporal.util.js';
 import { CreateSkillDto } from './dto/create-skill.dto.js';
 import { UpdateSkillDto } from './dto/update-skill.dto.js';
+import { SkillRepository } from './skill.repository.js';
 
 @Injectable()
 export class SkillService {
+  constructor(private readonly skillRepo: SkillRepository) {}
+
   async getAllSkills(page: number = 1, pageSize: number = 20, keyword?: string) {
-    const trimmed = keyword?.trim();
-
-    let countQuery = orm.Skill;
-    let dataQuery = orm.Skill;
-
-    if (trimmed) {
-      countQuery = countQuery.where((s: any) => s.name.ilike(`%${trimmed}%`)) as any;
-      dataQuery = dataQuery.where((s: any) => s.name.ilike(`%${trimmed}%`)) as any;
-    }
-
-    const { count } = await countQuery.aggregate((a) => ({ count: a.count() }));
-
-    const rows = await dataQuery
-      .orderBy((s: any) => s.name.asc())
-      .offset((page - 1) * pageSize)
-      .limit(pageSize)
-      .all();
+    const totalItems = await this.skillRepo.countByKeyword(keyword);
+    const rows = await this.skillRepo.findByKeyword(page, pageSize, keyword);
 
     return {
       data: rows,
-      totalItems: count,
+      totalItems,
       page,
       pageSize,
-      totalPages: Math.ceil(count / pageSize),
+      totalPages: Math.ceil(totalItems / pageSize),
     };
   }
 
   async getSkillById(id: number) {
-    const skill = await orm.Skill.where({ id }).first();
+    const skill = await this.skillRepo.findById(id);
     if (!skill) {
       throw new NotFoundException('Kỹ năng không tồn tại');
     }
@@ -49,64 +35,45 @@ export class SkillService {
 
   async createSkill(dto: CreateSkillDto) {
     const name = dto.name.trim();
-
-    const existing = await orm.Skill.where((s: any) =>
-      s.name.ilike(name),
-    ).first();
+    const existing = await this.skillRepo.findByNameCaseInsensitive(name);
 
     if (existing) {
       throw new ConflictException('Kỹ năng này đã tồn tại trong hệ thống');
     }
 
-    const newSkill = await orm.Skill.create({
-      name: name as any,
-    });
-
-    return newSkill;
+    return this.skillRepo.create(name);
   }
 
   async updateSkill(id: number, dto: UpdateSkillDto) {
-    const skill = await orm.Skill.where({ id }).first();
+    const skill = await this.skillRepo.findById(id);
     if (!skill) {
       throw new NotFoundException('Kỹ năng không tồn tại');
     }
 
     const name = dto.name.trim();
-
-    const existing = await orm.Skill.where((s: any) =>
-      s.name.ilike(name),
-    ).first();
+    const existing = await this.skillRepo.findByNameCaseInsensitive(name);
 
     if (existing && existing.id !== id) {
       throw new ConflictException('Tên kỹ năng này đã được sử dụng');
     }
 
-    await orm.Skill.where({ id }).update({
-      name: name as any,
-      updatedat: nowPlainDateTime() as any,
-    });
-
-    const updated = await orm.Skill.where({ id }).first();
-    return updated;
+    return this.skillRepo.update(id, name);
   }
 
   async deleteSkill(id: number) {
-    const skill = await orm.Skill.where({ id }).first();
+    const skill = await this.skillRepo.findById(id);
     if (!skill) {
       throw new NotFoundException('Kỹ năng không tồn tại');
     }
 
-    // Kiểm tra xem kỹ năng có đang được ứng viên hoặc bài đăng tuyển dụng sử dụng không
-    const usedInUser = await orm.SkillUser.where({ skillid: id }).first();
-    const usedInJob = await orm.SkillJob.where({ skillid: id }).first();
-
-    if (usedInUser || usedInJob) {
+    const isUsed = await this.skillRepo.isUsed(id);
+    if (isUsed) {
       throw new BadRequestException(
         'Không thể xóa kỹ năng này vì đang có ứng viên hoặc tin tuyển dụng sử dụng',
       );
     }
 
-    await orm.Skill.where({ id }).delete();
+    await this.skillRepo.delete(id);
     return true;
   }
 }

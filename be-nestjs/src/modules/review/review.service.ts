@@ -3,26 +3,28 @@ import {
   NotFoundException,
   ForbiddenException,
 } from '@nestjs/common';
-import { orm } from '~/prisma/db.js';
 import { CreateReviewDto } from './dto/create-review.dto.js';
 import { UpdateReviewDto } from './dto/update-review.dto.js';
 import { ReviewMapper, type ReviewResponseData } from './review.mapper.js';
+import { ReviewRepository } from './review.repository.js';
 
 export type { ReviewResponseData };
 
 @Injectable()
 export class ReviewService {
+  constructor(private readonly reviewRepo: ReviewRepository) {}
+
   /**
    * Lấy chi tiết đánh giá theo ID
    */
   async getReviewById(id: number): Promise<ReviewResponseData> {
-    const review = await orm.Review.where({ id }).first();
+    const review = await this.reviewRepo.findById(id);
     if (!review) {
       throw new NotFoundException('Không tìm thấy đánh giá');
     }
 
-    const user = await orm.User.where({ id: review.userid }).first();
-    const company = await orm.Company.where({ id: review.companyid }).first();
+    const user = await this.reviewRepo.findUserById(review.userid);
+    const company = await this.reviewRepo.findCompanyById(review.companyid);
 
     return ReviewMapper.toReviewResponse(review, user, company);
   }
@@ -37,26 +39,20 @@ export class ReviewService {
   ) {
     const pNumber = pageNumber > 0 ? pageNumber : 1;
     const pSize = pageSize > 0 ? pageSize : 10;
+    const offset = (pNumber - 1) * pSize;
 
-    const { count } = await orm.Review.where({ companyid: companyId }).aggregate(
-      (a) => ({ count: a.count() }),
-    );
-
-    const rows = await orm.Review.where({ companyid: companyId })
-      .orderBy((r: any) => r.createdat.desc())
-      .offset((pNumber - 1) * pSize)
-      .limit(pSize)
-      .all();
+    const count = await this.reviewRepo.countByCompanyId(companyId);
+    const rows = await this.reviewRepo.findByCompanyId(companyId, offset, pSize);
 
     // Tối ưu truy vấn tác giả theo lô (tránh N+1)
-    const userIds = [...new Set(rows.map((r: any) => r.userid))];
+    const userIds = [...new Set(rows.map((r: any) => r.userid))] as number[];
     let userMap = new Map<number, any>();
     if (userIds.length > 0) {
-      const users = await orm.User.where((u: any) => u.id.in(userIds)).all();
+      const users = await this.reviewRepo.findUsersByIds(userIds);
       userMap = new Map(users.map((u) => [u.id, u]));
     }
 
-    const company = await orm.Company.where({ id: companyId }).first();
+    const company = await this.reviewRepo.findCompanyById(companyId);
 
     const formatted = rows.map((r: any) =>
       ReviewMapper.toReviewResponse(r, userMap.get(r.userid), company),
@@ -83,26 +79,20 @@ export class ReviewService {
   ) {
     const pNumber = pageNumber > 0 ? pageNumber : 1;
     const pSize = pageSize > 0 ? pageSize : 10;
+    const offset = (pNumber - 1) * pSize;
 
-    const { count } = await orm.Review.where({ userid: userId }).aggregate(
-      (a) => ({ count: a.count() }),
-    );
-
-    const rows = await orm.Review.where({ userid: userId })
-      .orderBy((r: any) => r.createdat.desc())
-      .offset((pNumber - 1) * pSize)
-      .limit(pSize)
-      .all();
+    const count = await this.reviewRepo.countByUserId(userId);
+    const rows = await this.reviewRepo.findByUserId(userId, offset, pSize);
 
     // Tối ưu truy vấn công ty theo lô (tránh N+1)
-    const companyIds = [...new Set(rows.map((r: any) => r.companyid))];
+    const companyIds = [...new Set(rows.map((r: any) => r.companyid))] as number[];
     let compMap = new Map<number, any>();
     if (companyIds.length > 0) {
-      const comps = await orm.Company.where((c: any) => c.id.in(companyIds)).all();
+      const comps = await this.reviewRepo.findCompaniesByIds(companyIds);
       compMap = new Map(comps.map((c) => [c.id, c]));
     }
 
-    const user = await orm.User.where({ id: userId }).first();
+    const user = await this.reviewRepo.findUserById(userId);
 
     const formatted = rows.map((r: any) =>
       ReviewMapper.toReviewResponse(r, user, compMap.get(r.companyid)),
@@ -123,13 +113,13 @@ export class ReviewService {
    * Tạo đánh giá công ty mới
    */
   async createReview(userId: number, dto: CreateReviewDto): Promise<ReviewResponseData> {
-    const company = await orm.Company.where({ id: dto.companyid }).first();
+    const company = await this.reviewRepo.findCompanyById(dto.companyid);
     if (!company) {
       throw new NotFoundException('Công ty không tồn tại');
     }
 
     const reviewEntity = ReviewMapper.toCreateReviewEntity(dto, userId);
-    const newReview = await orm.Review.create(reviewEntity);
+    const newReview = await this.reviewRepo.create(reviewEntity);
 
     return this.getReviewById(newReview.id);
   }
@@ -142,7 +132,7 @@ export class ReviewService {
     currentUser: { id: number; role: string },
     dto: UpdateReviewDto,
   ): Promise<ReviewResponseData> {
-    const review = await orm.Review.where({ id }).first();
+    const review = await this.reviewRepo.findById(id);
     if (!review) {
       throw new NotFoundException('Không tìm thấy đánh giá');
     }
@@ -152,7 +142,7 @@ export class ReviewService {
     }
 
     const updatePayload = ReviewMapper.toUpdateReviewEntity(dto);
-    await orm.Review.where({ id }).update(updatePayload);
+    await this.reviewRepo.update(id, updatePayload);
 
     return this.getReviewById(id);
   }
@@ -161,7 +151,7 @@ export class ReviewService {
    * Xóa đánh giá
    */
   async deleteReview(id: number, currentUser: { id: number; role: string }) {
-    const review = await orm.Review.where({ id }).first();
+    const review = await this.reviewRepo.findById(id);
     if (!review) {
       throw new NotFoundException('Không tìm thấy đánh giá');
     }
@@ -170,7 +160,7 @@ export class ReviewService {
       throw new ForbiddenException('Bạn không có quyền xóa đánh giá này');
     }
 
-    await orm.Review.where({ id }).delete();
+    await this.reviewRepo.delete(id);
 
     return {
       success: true,

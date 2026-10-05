@@ -4,18 +4,18 @@ import {
   ForbiddenException,
   BadRequestException,
 } from '@nestjs/common';
-import { orm } from '~/prisma/db.js';
-import { or, and } from '@prisma/orm-postgres/orm-client';
-import { nowPlainDateTime } from '~/common/utils/temporal.util.js';
 import {
   ConnectionMapper,
   type ConnectionResponseData,
 } from './connection.mapper.js';
+import { ConnectionRepository } from './connection.repository.js';
 
 export type { ConnectionResponseData };
 
 @Injectable()
 export class ConnectionService {
+  constructor(private readonly connectionRepo: ConnectionRepository) {}
+
   /**
    * Gửi lời mời kết nối
    */
@@ -27,32 +27,23 @@ export class ConnectionService {
       throw new BadRequestException('Không thể gửi lời mời kết nối cho chính mình');
     }
 
-    const targetUser = await orm.User.where({ id: connectedUserId }).first();
+    const targetUser = await this.connectionRepo.findUserById(connectedUserId);
     if (!targetUser) {
       throw new NotFoundException('Người dùng cần kết nối không tồn tại');
     }
 
     // Kiểm tra xem đã có kết nối hoặc lời mời giữa 2 người chưa
-    const existing = await orm.Connection.where((c: any) =>
-      or(
-        and(c.userid.eq(userId), c.connecteduserid.eq(connectedUserId)),
-        and(c.userid.eq(connectedUserId), c.connecteduserid.eq(userId)),
-      ),
-    ).first();
+    const existing = await this.connectionRepo.findExistingConnectionBetween(
+      userId,
+      connectedUserId,
+    );
 
     if (existing) {
       throw new BadRequestException('Lời mời kết nối hoặc mối quan hệ đã tồn tại');
     }
 
-    const created = await orm.Connection.create({
-      userid: userId,
-      connecteduserid: connectedUserId,
-      status: 'pending' as any,
-      createdat: nowPlainDateTime() as any,
-      updatedat: nowPlainDateTime() as any,
-    });
-
-    const user = await orm.User.where({ id: userId }).first();
+    const created = await this.connectionRepo.createConnection(userId, connectedUserId);
+    const user = await this.connectionRepo.findUserById(userId);
     return ConnectionMapper.toConnectionResponse(created, user, targetUser);
   }
 
@@ -63,7 +54,7 @@ export class ConnectionService {
     connectionId: number,
     userId: number,
   ): Promise<ConnectionResponseData> {
-    const connection = await orm.Connection.where({ id: connectionId }).first();
+    const connection = await this.connectionRepo.findById(connectionId);
     if (!connection) {
       throw new NotFoundException('Không tìm thấy lời mời kết nối');
     }
@@ -76,14 +67,9 @@ export class ConnectionService {
       throw new BadRequestException('Lời mời kết nối không ở trạng thái chờ duyệt');
     }
 
-    await orm.Connection.where({ id: connectionId }).update({
-      status: 'accepted' as any,
-      updatedat: nowPlainDateTime() as any,
-    });
-
-    const updated = await orm.Connection.where({ id: connectionId }).first();
-    const user = await orm.User.where({ id: connection.userid }).first();
-    const connectedUser = await orm.User.where({ id: connection.connecteduserid }).first();
+    const updated = await this.connectionRepo.updateStatus(connectionId, 'accepted');
+    const user = await this.connectionRepo.findUserById(connection.userid);
+    const connectedUser = await this.connectionRepo.findUserById(connection.connecteduserid);
 
     return ConnectionMapper.toConnectionResponse(updated, user, connectedUser);
   }
@@ -95,7 +81,7 @@ export class ConnectionService {
     connectionId: number,
     userId: number,
   ): Promise<ConnectionResponseData> {
-    const connection = await orm.Connection.where({ id: connectionId }).first();
+    const connection = await this.connectionRepo.findById(connectionId);
     if (!connection) {
       throw new NotFoundException('Không tìm thấy lời mời kết nối');
     }
@@ -104,14 +90,9 @@ export class ConnectionService {
       throw new ForbiddenException('Bạn không có quyền từ chối lời mời kết nối này');
     }
 
-    await orm.Connection.where({ id: connectionId }).update({
-      status: 'rejected' as any,
-      updatedat: nowPlainDateTime() as any,
-    });
-
-    const updated = await orm.Connection.where({ id: connectionId }).first();
-    const user = await orm.User.where({ id: connection.userid }).first();
-    const connectedUser = await orm.User.where({ id: connection.connecteduserid }).first();
+    const updated = await this.connectionRepo.updateStatus(connectionId, 'rejected');
+    const user = await this.connectionRepo.findUserById(connection.userid);
+    const connectedUser = await this.connectionRepo.findUserById(connection.connecteduserid);
 
     return ConnectionMapper.toConnectionResponse(updated, user, connectedUser);
   }
@@ -120,7 +101,7 @@ export class ConnectionService {
    * Xóa kết nối giữa 2 người dùng
    */
   async removeConnection(connectionId: number, userId: number) {
-    const connection = await orm.Connection.where({ id: connectionId }).first();
+    const connection = await this.connectionRepo.findById(connectionId);
     if (!connection) {
       throw new NotFoundException('Không tìm thấy kết nối');
     }
@@ -129,7 +110,7 @@ export class ConnectionService {
       throw new ForbiddenException('Bạn không có quyền xóa kết nối này');
     }
 
-    await orm.Connection.where({ id: connectionId }).delete();
+    await this.connectionRepo.delete(connectionId);
 
     return {
       success: true,
@@ -147,30 +128,18 @@ export class ConnectionService {
   ) {
     const pNumber = pageNumber > 0 ? pageNumber : 1;
     const pSize = pageSize > 0 ? pageSize : 10;
+    const offset = (pNumber - 1) * pSize;
 
-    const condition = (c: any) =>
-      and(
-        or(c.userid.eq(userId), c.connecteduserid.eq(userId)),
-        c.status.eq('accepted'),
-      );
-
-    const { count } = await orm.Connection.where(condition).aggregate((a) => ({
-      count: a.count(),
-    }));
-
-    const rows = await orm.Connection.where(condition)
-      .orderBy((c: any) => c.updatedat.desc())
-      .offset((pNumber - 1) * pSize)
-      .limit(pSize)
-      .all();
+    const count = await this.connectionRepo.countUserAcceptedConnections(userId);
+    const rows = await this.connectionRepo.findUserAcceptedConnections(userId, offset, pSize);
 
     // Nạp thông tin người dùng theo lô (tránh N+1)
     const allUserIds = [
       ...new Set(rows.flatMap((r: any) => [r.userid, r.connecteduserid])),
-    ];
+    ] as number[];
     let userMap = new Map<number, any>();
     if (allUserIds.length > 0) {
-      const users = await orm.User.where((u: any) => u.id.in(allUserIds)).all();
+      const users = await this.connectionRepo.findUsersByIds(allUserIds);
       userMap = new Map(users.map((u) => [u.id, u]));
     }
 
@@ -202,27 +171,16 @@ export class ConnectionService {
   ) {
     const pNumber = pageNumber > 0 ? pageNumber : 1;
     const pSize = pageSize > 0 ? pageSize : 10;
+    const offset = (pNumber - 1) * pSize;
 
-    const condition = {
-      connecteduserid: userId,
-      status: 'pending' as any,
-    };
-
-    const { count } = await orm.Connection.where(condition).aggregate((a) => ({
-      count: a.count(),
-    }));
-
-    const rows = await orm.Connection.where(condition)
-      .orderBy((c: any) => c.createdat.desc())
-      .offset((pNumber - 1) * pSize)
-      .limit(pSize)
-      .all();
+    const count = await this.connectionRepo.countPendingRequests(userId);
+    const rows = await this.connectionRepo.findPendingRequests(userId, offset, pSize);
 
     // Nạp thông tin người gửi lời mời
-    const senderIds = [...new Set(rows.map((r: any) => r.userid))];
+    const senderIds = [...new Set(rows.map((r: any) => r.userid))] as number[];
     let userMap = new Map<number, any>();
     if (senderIds.length > 0) {
-      const users = await orm.User.where((u: any) => u.id.in(senderIds)).all();
+      const users = await this.connectionRepo.findUsersByIds(senderIds);
       userMap = new Map(users.map((u) => [u.id, u]));
     }
 
@@ -250,27 +208,16 @@ export class ConnectionService {
   ) {
     const pNumber = pageNumber > 0 ? pageNumber : 1;
     const pSize = pageSize > 0 ? pageSize : 10;
+    const offset = (pNumber - 1) * pSize;
 
-    const condition = {
-      userid: userId,
-      status: 'pending' as any,
-    };
-
-    const { count } = await orm.Connection.where(condition).aggregate((a) => ({
-      count: a.count(),
-    }));
-
-    const rows = await orm.Connection.where(condition)
-      .orderBy((c: any) => c.createdat.desc())
-      .offset((pNumber - 1) * pSize)
-      .limit(pSize)
-      .all();
+    const count = await this.connectionRepo.countSentRequests(userId);
+    const rows = await this.connectionRepo.findSentRequests(userId, offset, pSize);
 
     // Nạp thông tin người nhận lời mời
-    const receiverIds = [...new Set(rows.map((r: any) => r.connecteduserid))];
+    const receiverIds = [...new Set(rows.map((r: any) => r.connecteduserid))] as number[];
     let userMap = new Map<number, any>();
     if (receiverIds.length > 0) {
-      const users = await orm.User.where((u: any) => u.id.in(receiverIds)).all();
+      const users = await this.connectionRepo.findUsersByIds(receiverIds);
       userMap = new Map(users.map((u) => [u.id, u]));
     }
 

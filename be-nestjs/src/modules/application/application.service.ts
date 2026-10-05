@@ -4,34 +4,30 @@ import {
   ForbiddenException,
   BadRequestException,
 } from '@nestjs/common';
-import { orm } from '~/prisma/db.js';
 import { isDeadlinePassed } from '~/common/utils/temporal.util.js';
 import { CreateApplicationDto } from './dto/create-application.dto.js';
 import { UpdateApplicationStatusDto } from './dto/update-application-status.dto.js';
 import { ApplicationQueryDto } from './dto/application-query.dto.js';
 import { ApplicationMapper, type ApplicationResponseData } from './application.mapper.js';
+import { ApplicationRepository } from './application.repository.js';
 
 export type { ApplicationResponseData };
 
 @Injectable()
 export class ApplicationService {
+  constructor(private readonly appRepo: ApplicationRepository) {}
+
   /**
    * Tối ưu hóa tải thông tin công việc, công ty và ứng viên trong 2 truy vấn gộp (tránh N+1)
    */
   private async enrichApplications(apps: any[]): Promise<ApplicationResponseData[]> {
     if (apps.length === 0) return [];
 
-    const jobIds = [...new Set(apps.map((a) => a.jobid))];
-    const userIds = [...new Set(apps.map((a) => a.userid))];
+    const jobIds = [...new Set(apps.map((a) => a.jobid))] as number[];
+    const userIds = [...new Set(apps.map((a) => a.userid))] as number[];
 
-    const jobs = await orm.Job
-      .where((j: any) => j.id.in(jobIds))
-      .include('company')
-      .all();
-
-    const users = await orm.User
-      .where((u: any) => u.id.in(userIds))
-      .all();
+    const jobs = await this.appRepo.findJobsWithCompanyByIds(jobIds);
+    const users = await this.appRepo.findUsersByIds(userIds);
 
     const jobMap = new Map(jobs.map((j) => [j.id, j]));
     const userMap = new Map(users.map((u) => [u.id, u]));
@@ -51,16 +47,10 @@ export class ApplicationService {
   async getAll(query: ApplicationQueryDto) {
     const pageNumber = query.pageNumber && query.pageNumber > 0 ? query.pageNumber : 1;
     const pageSize = query.pageSize && query.pageSize > 0 ? query.pageSize : 10;
+    const offset = (pageNumber - 1) * pageSize;
 
-    const { count } = await orm.Application.aggregate((a) => ({
-      count: a.count(),
-    }));
-
-    const rows = await orm.Application
-      .orderBy((a: any) => a.createdat.desc())
-      .offset((pageNumber - 1) * pageSize)
-      .limit(pageSize)
-      .all();
+    const count = await this.appRepo.countAll();
+    const rows = await this.appRepo.findAll(offset, pageSize);
 
     const formatted = await this.enrichApplications(rows);
 
@@ -78,7 +68,7 @@ export class ApplicationService {
    * Ứng viên nộp hồ sơ ứng tuyển vào công việc
    */
   async create(userId: number, dto: CreateApplicationDto): Promise<ApplicationResponseData> {
-    const job = await orm.Job.where({ id: dto.jobid }).first();
+    const job = await this.appRepo.findJobById(dto.jobid);
     if (!job) {
       throw new NotFoundException('Không tìm thấy tin tuyển dụng');
     }
@@ -92,9 +82,7 @@ export class ApplicationService {
     }
 
     // Kiểm tra đơn ứng tuyển trùng lặp
-    const existing = await orm.Application
-      .where({ jobid: dto.jobid, userid: userId })
-      .first();
+    const existing = await this.appRepo.findByJobAndUser(dto.jobid, userId);
 
     if (existing) {
       throw new BadRequestException('Bạn đã ứng tuyển vào công việc này rồi');
@@ -103,7 +91,7 @@ export class ApplicationService {
     // Kiểm tra link CV: Nếu client không truyền thì lấy CV đã lưu trong hồ sơ ứng viên
     let finalCvUrl = dto.cvurl;
     if (!finalCvUrl) {
-      const user = await orm.User.where({ id: userId }).first();
+      const user = await this.appRepo.findUserById(userId);
       finalCvUrl = user?.cvurl || undefined;
     }
 
@@ -112,7 +100,7 @@ export class ApplicationService {
     }
 
     const payload = ApplicationMapper.toCreateApplicationEntity(dto, userId, finalCvUrl);
-    await orm.Application.create(payload);
+    await this.appRepo.create(payload);
 
     return this.getById(dto.jobid, userId, { id: userId, role: 'user' });
   }
@@ -132,17 +120,10 @@ export class ApplicationService {
 
     const pNumber = pageNumber > 0 ? pageNumber : 1;
     const pSize = pageSize > 0 ? pageSize : 10;
+    const offset = (pNumber - 1) * pSize;
 
-    const { count } = await orm.Application
-      .where({ userid: targetUserId })
-      .aggregate((a) => ({ count: a.count() }));
-
-    const rows = await orm.Application
-      .where({ userid: targetUserId })
-      .orderBy((a: any) => a.createdat.desc())
-      .offset((pNumber - 1) * pSize)
-      .limit(pSize)
-      .all();
+    const count = await this.appRepo.countByUserId(targetUserId);
+    const rows = await this.appRepo.findByUserId(targetUserId, offset, pSize);
 
     const formatted = await this.enrichApplications(rows);
 
@@ -151,7 +132,7 @@ export class ApplicationService {
       totalItems: count,
       pageNumber: pNumber,
       page: pNumber,
-      pageSize,
+      pageSize: pSize,
       totalPages: Math.ceil(count / pSize),
     };
   }
@@ -165,19 +146,15 @@ export class ApplicationService {
     pageNumber: number = 1,
     pageSize: number = 10,
   ) {
-    const job = await orm.Job.where({ id: jobId }).first();
+    const job = await this.appRepo.findJobById(jobId);
     if (!job) {
       throw new NotFoundException('Không tìm thấy tin tuyển dụng');
     }
 
     // Kiểm tra quyền hạn
     if (currentUser.role !== 'admin') {
-      const isMember = await orm.CompanyMembers
-        .where({ companyid: job.companyid, userid: currentUser.id, status: 'active' as any })
-        .first();
-      const isCreator = await orm.Company
-        .where({ id: job.companyid, createdbyuserid: currentUser.id })
-        .first();
+      const isMember = await this.appRepo.findCompanyMember(job.companyid, currentUser.id);
+      const isCreator = (await this.appRepo.findCompanyById(job.companyid))?.createdbyuserid === currentUser.id;
 
       if (!isMember && !isCreator) {
         throw new ForbiddenException('Bạn không có quyền xem đơn ứng tuyển của công việc này');
@@ -186,17 +163,10 @@ export class ApplicationService {
 
     const pNumber = pageNumber > 0 ? pageNumber : 1;
     const pSize = pageSize > 0 ? pageSize : 10;
+    const offset = (pNumber - 1) * pSize;
 
-    const { count } = await orm.Application
-      .where({ jobid: jobId })
-      .aggregate((a) => ({ count: a.count() }));
-
-    const rows = await orm.Application
-      .where({ jobid: jobId })
-      .orderBy((a: any) => a.createdat.desc())
-      .offset((pNumber - 1) * pSize)
-      .limit(pSize)
-      .all();
+    const count = await this.appRepo.countByJobId(jobId);
+    const rows = await this.appRepo.findByJobId(jobId, offset, pSize);
 
     const formatted = await this.enrichApplications(rows);
 
@@ -205,7 +175,7 @@ export class ApplicationService {
       totalItems: count,
       pageNumber: pNumber,
       page: pNumber,
-      pageSize,
+      pageSize: pSize,
       totalPages: Math.ceil(count / pSize),
     };
   }
@@ -220,23 +190,20 @@ export class ApplicationService {
     pageSize: number = 10,
   ) {
     if (currentUser.role !== 'admin') {
-      const isMember = await orm.CompanyMembers
-        .where({ companyid: companyId, userid: currentUser.id, status: 'active' as any })
-        .first();
-      const isCreator = await orm.Company
-        .where({ id: companyId, createdbyuserid: currentUser.id })
-        .first();
+      const isMember = await this.appRepo.findCompanyMember(companyId, currentUser.id);
+      const isCreator = (await this.appRepo.findCompanyById(companyId))?.createdbyuserid === currentUser.id;
 
       if (!isMember && !isCreator) {
         throw new ForbiddenException('Bạn không có quyền xem đơn ứng tuyển của công ty này');
       }
     }
 
-    const jobs = await orm.Job.where({ companyid: companyId }).all();
+    const jobs = await this.appRepo.findJobsByCompanyId(companyId);
     const jobIds = jobs.map((j) => j.id);
 
     const pNumber = pageNumber > 0 ? pageNumber : 1;
     const pSize = pageSize > 0 ? pageSize : 10;
+    const offset = (pNumber - 1) * pSize;
 
     if (jobIds.length === 0) {
       return {
@@ -249,16 +216,8 @@ export class ApplicationService {
       };
     }
 
-    const { count } = await orm.Application
-      .where((a: any) => a.jobid.in(jobIds))
-      .aggregate((a) => ({ count: a.count() }));
-
-    const rows = await orm.Application
-      .where((a: any) => a.jobid.in(jobIds))
-      .orderBy((a: any) => a.createdat.desc())
-      .offset((pNumber - 1) * pSize)
-      .limit(pSize)
-      .all();
+    const count = await this.appRepo.countByJobIds(jobIds);
+    const rows = await this.appRepo.findByJobIds(jobIds, offset, pSize);
 
     const formatted = await this.enrichApplications(rows);
 
@@ -267,7 +226,7 @@ export class ApplicationService {
       totalItems: count,
       pageNumber: pNumber,
       page: pNumber,
-      pageSize,
+      pageSize: pSize,
       totalPages: Math.ceil(count / pSize),
     };
   }
@@ -280,26 +239,20 @@ export class ApplicationService {
     targetUserId: number,
     currentUser: { id: number; role: string },
   ): Promise<ApplicationResponseData> {
-    const app = await orm.Application
-      .where({ jobid: jobId, userid: targetUserId })
-      .first();
+    const app = await this.appRepo.findByJobAndUser(jobId, targetUserId);
 
     if (!app) {
       throw new NotFoundException('Không tìm thấy đơn ứng tuyển');
     }
 
-    const job = await orm.Job.where({ id: jobId }).first();
+    const job = await this.appRepo.findJobById(jobId);
 
     // Kiểm tra quyền: Bản thân người nộp, hoặc Nhà tuyển dụng của công ty, hoặc Admin
     if (currentUser.role !== 'admin' && currentUser.id !== targetUserId) {
       let hasEmployerPermission = false;
       if (job) {
-        const isMember = await orm.CompanyMembers
-          .where({ companyid: job.companyid, userid: currentUser.id, status: 'active' as any })
-          .first();
-        const isCreator = await orm.Company
-          .where({ id: job.companyid, createdbyuserid: currentUser.id })
-          .first();
+        const isMember = await this.appRepo.findCompanyMember(job.companyid, currentUser.id);
+        const isCreator = (await this.appRepo.findCompanyById(job.companyid))?.createdbyuserid === currentUser.id;
         hasEmployerPermission = Boolean(isMember || isCreator);
       }
 
@@ -321,27 +274,21 @@ export class ApplicationService {
     currentUser: { id: number; role: string },
     dto: UpdateApplicationStatusDto,
   ): Promise<ApplicationResponseData> {
-    const app = await orm.Application
-      .where({ jobid: jobId, userid: targetUserId })
-      .first();
+    const app = await this.appRepo.findByJobAndUser(jobId, targetUserId);
 
     if (!app) {
       throw new NotFoundException('Không tìm thấy đơn ứng tuyển');
     }
 
-    const job = await orm.Job.where({ id: jobId }).first();
+    const job = await this.appRepo.findJobById(jobId);
     if (!job) {
       throw new NotFoundException('Không tìm thấy tin tuyển dụng tương ứng');
     }
 
     // Chỉ nhà tuyển dụng của công ty hoặc admin mới được duyệt trạng thái
     if (currentUser.role !== 'admin') {
-      const isMember = await orm.CompanyMembers
-        .where({ companyid: job.companyid, userid: currentUser.id, status: 'active' as any })
-        .first();
-      const isCreator = await orm.Company
-        .where({ id: job.companyid, createdbyuserid: currentUser.id })
-        .first();
+      const isMember = await this.appRepo.findCompanyMember(job.companyid, currentUser.id);
+      const isCreator = (await this.appRepo.findCompanyById(job.companyid))?.createdbyuserid === currentUser.id;
 
       if (!isMember && !isCreator) {
         throw new ForbiddenException('Bạn không có quyền cập nhật trạng thái đơn ứng tuyển này');
@@ -349,9 +296,7 @@ export class ApplicationService {
     }
 
     const updatePayload = ApplicationMapper.toUpdateApplicationEntity(dto);
-    await orm.Application
-      .where({ jobid: jobId, userid: targetUserId })
-      .update(updatePayload);
+    await this.appRepo.updateStatus(jobId, targetUserId, updatePayload);
 
     return this.getById(jobId, targetUserId, currentUser);
   }
@@ -364,9 +309,7 @@ export class ApplicationService {
     targetUserId: number,
     currentUser: { id: number; role: string },
   ) {
-    const app = await orm.Application
-      .where({ jobid: jobId, userid: targetUserId })
-      .first();
+    const app = await this.appRepo.findByJobAndUser(jobId, targetUserId);
 
     if (!app) {
       throw new NotFoundException('Không tìm thấy đơn ứng tuyển');
@@ -377,7 +320,7 @@ export class ApplicationService {
       throw new ForbiddenException('Bạn chỉ có thể xóa đơn ứng tuyển của chính mình');
     }
 
-    await orm.Application.where({ jobid: jobId, userid: targetUserId }).delete();
+    await this.appRepo.delete(jobId, targetUserId);
 
     return {
       success: true,

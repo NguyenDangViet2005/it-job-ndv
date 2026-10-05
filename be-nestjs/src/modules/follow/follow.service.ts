@@ -1,40 +1,30 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { orm } from '~/prisma/db.js';
-import { nowPlainDateTime } from '~/common/utils/temporal.util.js';
 import { FollowMapper, type FollowResponseData } from './follow.mapper.js';
+import { FollowRepository } from './follow.repository.js';
 
 export type { FollowResponseData };
 
 @Injectable()
 export class FollowService {
+  constructor(private readonly followRepo: FollowRepository) {}
+
   /**
    * Theo dõi hoặc hủy theo dõi công ty
    */
   async toggleFollow(userId: number, companyId: number): Promise<{ followed: boolean }> {
-    const company = await orm.Company.where({ id: companyId }).first();
+    const company = await this.followRepo.findCompanyById(companyId);
     if (!company) {
       throw new NotFoundException('Công ty không tồn tại');
     }
 
-    const existing = await orm.Follow.where({
-      userid: userId,
-      companyid: companyId,
-    }).first();
+    const existing = await this.followRepo.findFollow(userId, companyId);
 
     if (existing) {
-      await orm.Follow.where({
-        userid: userId,
-        companyid: companyId,
-      }).delete();
+      await this.followRepo.deleteFollow(userId, companyId);
       return { followed: false };
     }
 
-    await orm.Follow.create({
-      userid: userId,
-      companyid: companyId,
-      createdat: nowPlainDateTime() as any,
-      updatedat: nowPlainDateTime() as any,
-    });
+    await this.followRepo.createFollow(userId, companyId);
 
     return { followed: true };
   }
@@ -49,22 +39,16 @@ export class FollowService {
   ) {
     const pNumber = pageNumber > 0 ? pageNumber : 1;
     const pSize = pageSize > 0 ? pageSize : 10;
+    const offset = (pNumber - 1) * pSize;
 
-    const { count } = await orm.Follow.where({ companyid: companyId }).aggregate(
-      (a) => ({ count: a.count() }),
-    );
-
-    const rows = await orm.Follow.where({ companyid: companyId })
-      .orderBy((f: any) => f.createdat.desc())
-      .offset((pNumber - 1) * pSize)
-      .limit(pSize)
-      .all();
+    const count = await this.followRepo.countByCompanyId(companyId);
+    const rows = await this.followRepo.findByCompanyId(companyId, offset, pSize);
 
     // Tối ưu truy vấn người dùng theo lô (tránh N+1)
-    const userIds = [...new Set(rows.map((r: any) => r.userid))];
+    const userIds = [...new Set(rows.map((r: any) => r.userid))] as number[];
     let userMap = new Map<number, any>();
     if (userIds.length > 0) {
-      const users = await orm.User.where((u: any) => u.id.in(userIds)).all();
+      const users = await this.followRepo.findUsersByIds(userIds);
       userMap = new Map(users.map((u) => [u.id, u]));
     }
 

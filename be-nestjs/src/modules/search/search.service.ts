@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { orm } from '~/prisma/db.js';
-import { nowPlainDate } from '~/common/utils/temporal.util.js';
 import { CompanyMapper } from '~/modules/company/company.mapper.js';
 import { JobMapper } from '~/modules/job/job.mapper.js';
 import { SearchQueryDto } from './dto/search-query.dto.js';
+import { SearchRepository } from './search.repository.js';
 
 @Injectable()
 export class SearchService {
+  constructor(private readonly searchRepo: SearchRepository) {}
+
   /**
    * Tìm kiếm tổng hợp theo từ khóa: Công việc, Công ty, Kỹ năng
    */
@@ -16,27 +17,14 @@ export class SearchService {
     const pageSize = query.pageSize && query.pageSize > 0 ? query.pageSize : 10;
     const offset = (page - 1) * pageSize;
 
-    const today = nowPlainDate();
-
     // 1. Tìm kiếm Jobs
-    const jobs = await orm.Job
-      .where((j: any) => j.title.ilike(`%${keyword}%`))
-      .where((j: any) => j.status.neq('closed'))
-      .where((j: any) => j.deadline.gte(today))
-      .include('company')
-      .orderBy((j: any) => j.id.desc())
-      .offset(offset)
-      .limit(pageSize)
-      .all();
+    const jobs = await this.searchRepo.searchJobs(keyword, offset, pageSize);
 
     // Lấy skills của các jobs tìm được
     const jobIds = jobs.map((j: any) => j.id);
     let skillMap = new Map<number, any[]>();
     if (jobIds.length > 0) {
-      const skillJobs = await orm.SkillJob
-        .where((sj: any) => sj.jobid.in(jobIds))
-        .include('skill')
-        .all();
+      const skillJobs = await this.searchRepo.findSkillsByJobIds(jobIds);
       for (const sj of skillJobs) {
         if (!skillMap.has(sj.jobid)) skillMap.set(sj.jobid, []);
         skillMap.get(sj.jobid)!.push((sj as any).skill);
@@ -48,20 +36,12 @@ export class SearchService {
     );
 
     // 2. Tìm kiếm Companies
-    const companies = await orm.Company
-      .where((c: any) => c.name.ilike(`%${keyword}%`))
-      .orderBy((c: any) => c.name.asc())
-      .offset(offset)
-      .limit(pageSize)
-      .all();
+    const companies = await this.searchRepo.searchCompanies(keyword, offset, pageSize);
 
-    const wardIds = [...new Set(companies.map((c: any) => c.wardid).filter(Boolean))];
+    const wardIds = [...new Set(companies.map((c: any) => c.wardid).filter(Boolean))] as number[];
     let wardMap = new Map<number, any>();
     if (wardIds.length > 0) {
-      const wards = await orm.Wards
-        .where((w: any) => w.id.in(wardIds))
-        .include('provinces')
-        .all();
+      const wards = await this.searchRepo.findWardsWithProvinces(wardIds);
       wardMap = new Map(wards.map((w: any) => [w.id, w]));
     }
 
@@ -70,12 +50,7 @@ export class SearchService {
     );
 
     // 3. Tìm kiếm Skills
-    const skills = await orm.Skill
-      .where((s: any) => s.name.ilike(`%${keyword}%`))
-      .orderBy((s: any) => s.name.asc())
-      .offset(offset)
-      .limit(pageSize)
-      .all();
+    const skills = await this.searchRepo.searchSkills(keyword, offset, pageSize);
 
     return {
       jobs: formattedJobs,

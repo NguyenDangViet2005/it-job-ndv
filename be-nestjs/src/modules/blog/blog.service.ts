@@ -3,18 +3,21 @@ import {
   NotFoundException,
   ForbiddenException,
 } from '@nestjs/common';
-import { orm } from '~/prisma/db.js';
 import { CloudinaryService } from '~/modules/cloudinary/cloudinary.service.js';
 import { CreateBlogDto } from './dto/create-blog.dto.js';
 import { UpdateBlogDto } from './dto/update-blog.dto.js';
 import { BlogQueryDto } from './dto/blog-query.dto.js';
 import { BlogMapper, type BlogResponseData } from './blog.mapper.js';
+import { BlogRepository } from './blog.repository.js';
 
 export type { BlogResponseData };
 
 @Injectable()
 export class BlogService {
-  constructor(private readonly cloudinaryService: CloudinaryService) {}
+  constructor(
+    private readonly blogRepo: BlogRepository,
+    private readonly cloudinaryService: CloudinaryService,
+  ) {}
 
   /**
    * Lấy danh sách bài viết blog có phân trang và lọc theo danh mục
@@ -25,49 +28,26 @@ export class BlogService {
     const pageSize =
       query.pageSize && query.pageSize > 0 ? query.pageSize : 10;
     const keyword = (query.keyword || '').trim();
+    const offset = (pageNumber - 1) * pageSize;
 
-    let countQuery = orm.Blog;
-    let dataQuery = orm.Blog;
-
-    if (query.categoryid) {
-      countQuery = countQuery.where({ categoryid: query.categoryid }) as any;
-      dataQuery = dataQuery.where({ categoryid: query.categoryid }) as any;
-    }
-
-    if (keyword) {
-      countQuery = countQuery.where((b: any) =>
-        b.title.ilike(`%${keyword}%`),
-      ) as any;
-      dataQuery = dataQuery.where((b: any) =>
-        b.title.ilike(`%${keyword}%`),
-      ) as any;
-    }
-
-    const { count } = await countQuery.aggregate((a) => ({ count: a.count() }));
-
-    const rows = await dataQuery
-      .orderBy((b: any) => b.id.desc())
-      .offset((pageNumber - 1) * pageSize)
-      .limit(pageSize)
-      .all();
+    const count = await this.blogRepo.count(query.categoryid, keyword);
+    const rows = await this.blogRepo.findMany(query.categoryid, keyword, offset, pageSize);
 
     // Tối ưu hóa truy vấn tác giả và danh mục theo lô (tránh N+1)
-    const userIds = [...new Set(rows.map((r: any) => r.userid))];
+    const userIds = [...new Set(rows.map((r: any) => r.userid))] as number[];
     const categoryIds = [
       ...new Set(rows.map((r: any) => r.categoryid).filter(Boolean)),
-    ];
+    ] as number[];
 
     let userMap = new Map<number, any>();
     if (userIds.length > 0) {
-      const users = await orm.User.where((u: any) => u.id.in(userIds)).all();
+      const users = await this.blogRepo.findUsersByIds(userIds);
       userMap = new Map(users.map((u) => [u.id, u]));
     }
 
     let categoryMap = new Map<number, any>();
     if (categoryIds.length > 0) {
-      const categories = await orm.BlogCategory.where((c: any) =>
-        c.id.in(categoryIds),
-      ).all();
+      const categories = await this.blogRepo.findCategoriesByIds(categoryIds);
       categoryMap = new Map(categories.map((c) => [c.id, c]));
     }
 
@@ -93,14 +73,14 @@ export class BlogService {
    * Lấy chi tiết bài viết blog theo ID
    */
   async getBlogById(id: number): Promise<BlogResponseData> {
-    const blog = await orm.Blog.where({ id }).first();
+    const blog = await this.blogRepo.findById(id);
     if (!blog) {
       throw new NotFoundException('Không tìm thấy bài viết');
     }
 
-    const user = await orm.User.where({ id: blog.userid }).first();
+    const user = await this.blogRepo.findUserById(blog.userid);
     const category = blog.categoryid
-      ? await orm.BlogCategory.where({ id: blog.categoryid }).first()
+      ? await this.blogRepo.findCategoryById(blog.categoryid)
       : null;
 
     return BlogMapper.toBlogResponse(blog, user, category);
@@ -114,29 +94,21 @@ export class BlogService {
       query.pageNumber && query.pageNumber > 0 ? query.pageNumber : 1;
     const pageSize =
       query.pageSize && query.pageSize > 0 ? query.pageSize : 10;
+    const offset = (pageNumber - 1) * pageSize;
 
-    const { count } = await orm.Blog.where({ userid: userId }).aggregate(
-      (a) => ({ count: a.count() }),
-    );
-
-    const rows = await orm.Blog.where({ userid: userId })
-      .orderBy((b: any) => b.id.desc())
-      .offset((pageNumber - 1) * pageSize)
-      .limit(pageSize)
-      .all();
+    const count = await this.blogRepo.countByUserId(userId);
+    const rows = await this.blogRepo.findManyByUserId(userId, offset, pageSize);
 
     const categoryIds = [
       ...new Set(rows.map((r: any) => r.categoryid).filter(Boolean)),
-    ];
+    ] as number[];
     let categoryMap = new Map<number, any>();
     if (categoryIds.length > 0) {
-      const categories = await orm.BlogCategory.where((c: any) =>
-        c.id.in(categoryIds),
-      ).all();
+      const categories = await this.blogRepo.findCategoriesByIds(categoryIds);
       categoryMap = new Map(categories.map((c) => [c.id, c]));
     }
 
-    const user = await orm.User.where({ id: userId }).first();
+    const user = await this.blogRepo.findUserById(userId);
 
     const formatted = rows.map((b: any) =>
       BlogMapper.toBlogResponse(b, user, categoryMap.get(b.categoryid)),
@@ -170,7 +142,7 @@ export class BlogService {
     }
 
     const blogEntity = BlogMapper.toCreateBlogEntity(dto, userId, imageUrl);
-    const newBlog = await orm.Blog.create(blogEntity as any);
+    const newBlog = await this.blogRepo.create(blogEntity);
 
     return this.getBlogById(newBlog.id);
   }
@@ -184,7 +156,7 @@ export class BlogService {
     dto: UpdateBlogDto,
     file?: Express.Multer.File,
   ): Promise<BlogResponseData> {
-    const blog = await orm.Blog.where({ id }).first();
+    const blog = await this.blogRepo.findById(id);
     if (!blog) {
       throw new NotFoundException('Không tìm thấy bài viết');
     }
@@ -207,7 +179,7 @@ export class BlogService {
     }
 
     const updatePayload = BlogMapper.toUpdateBlogEntity(dto, imageUrl);
-    await orm.Blog.where({ id }).update(updatePayload);
+    await this.blogRepo.update(id, updatePayload);
 
     return this.getBlogById(id);
   }
@@ -216,7 +188,7 @@ export class BlogService {
    * Xóa bài viết blog
    */
   async deleteBlog(id: number, currentUser: { id: number; role: string }) {
-    const blog = await orm.Blog.where({ id }).first();
+    const blog = await this.blogRepo.findById(id);
     if (!blog) {
       throw new NotFoundException('Không tìm thấy bài viết');
     }
@@ -229,7 +201,7 @@ export class BlogService {
       await this.cloudinaryService.deleteFile(blog.image).catch(() => {});
     }
 
-    await orm.Blog.where({ id }).delete();
+    await this.blogRepo.delete(id);
 
     return {
       success: true,
