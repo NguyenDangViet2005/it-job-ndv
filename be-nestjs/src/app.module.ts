@@ -1,5 +1,12 @@
-import { Module } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+
+// Core & Infrastructure Modules
+import { PrismaModule } from '~/prisma/prisma.module.js';
 import { CloudinaryModule } from '~/modules/cloudinary/cloudinary.module.js';
+
+// Feature Modules
 import { AuthModule } from '~/modules/auth/auth.module.js';
 import { UserModule } from '~/modules/user/user.module.js';
 import { LocationModule } from '~/modules/location/location.module.js';
@@ -14,8 +21,11 @@ import { ConnectionModule } from '~/modules/connection/connection.module.js';
 import { BlogCategoryModule } from '~/modules/blog-category/blog-category.module.js';
 import { BlogModule } from '~/modules/blog/blog.module.js';
 import { SearchModule } from '~/modules/search/search.module.js';
-import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
-import { APP_GUARD } from '@nestjs/core';
+
+// Common Pipeline: Middlewares & Interceptors
+import { RequestIdMiddleware, RequestLoggerMiddleware } from '~/common/middlewares/index.js';
+import { SecurityInterceptor, TransformInterceptor } from '~/common/interceptors/index.js';
+
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 
@@ -27,6 +37,7 @@ import { AppService } from './app.service.js';
         limit: 120,
       },
     ]),
+    PrismaModule,
     CloudinaryModule,
     AuthModule,
     UserModule,
@@ -46,10 +57,28 @@ import { AppService } from './app.service.js';
   controllers: [AppController],
   providers: [
     AppService,
+    // Step 2 in Pipeline: Guard
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
     },
+    // Step 3 in Pipeline: Pre-controller Interceptor (Security / Check)
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: SecurityInterceptor,
+    },
+    // Step 6 in Pipeline: Post-controller Interceptor (Response standardizer)
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: TransformInterceptor,
+    },
   ],
 })
-export class AppModule { }
+export class AppModule implements NestModule {
+  // Step 1 in Pipeline: Middlewares
+  configure(consumer: MiddlewareConsumer): void {
+    consumer
+      .apply(RequestIdMiddleware, RequestLoggerMiddleware)
+      .forRoutes('*');
+  }
+}
