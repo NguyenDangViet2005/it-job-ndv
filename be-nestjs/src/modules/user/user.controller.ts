@@ -25,6 +25,7 @@ import { UpdateUserDto } from './dto/update-user.dto.js';
 import { ChangePasswordDto } from './dto/change-password.dto.js';
 import { AddSkillDto } from './dto/add-skill.dto.js';
 import { UserPaginationDto } from './dto/user-pagination.dto.js';
+import { RateLimit } from '~/common/decorators/rate-limit.decorator.js';
 
 @Controller('user')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -155,6 +156,7 @@ export class UserController {
   }
 
   @Post(':id/change-password')
+  @RateLimit({ sensitive: true })
   @Throttle({ default: { limit: 5, ttl: 900000 } })
   async changePassword(
     @Param('id', ParseIntPipe) id: number,

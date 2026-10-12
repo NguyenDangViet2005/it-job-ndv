@@ -69,9 +69,8 @@ export class ConnectionController {
     @CurrentUser() user: UserPayload,
     @Body() dto: SendConnectionDto,
   ) {
-    const effectiveUserId = dto.userid || user.id;
     return this.connectionService.sendConnectionRequest(
-      effectiveUserId,
+      user.id,
       dto.connecteduserid,
     );
   }

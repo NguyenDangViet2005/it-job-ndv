@@ -364,7 +364,7 @@ export class AuthService {
       const { accesstoken, refreshtoken } = await this.loginWithOAuth(user);
 
       return {
-        redirectUrl: `${clientUrl}/callback?token=${accesstoken}&refreshtoken=${refreshtoken}`,
+        redirectUrl: `${clientUrl}/callback?token=${accesstoken}`,
         refreshtoken,
       };
     } catch (error) {

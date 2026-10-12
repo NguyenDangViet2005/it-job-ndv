@@ -24,6 +24,7 @@ import { UpdatePostDto } from './dto/update-post.dto.js';
 import { PostQueryDto } from './dto/post-query.dto.js';
 import { CreateCommentDto } from './dto/create-comment.dto.js';
 import { UpdateCommentDto } from './dto/update-comment.dto.js';
+import { BurstLimit } from '~/common/decorators/rate-limit.decorator.js';
 
 @Controller('post')
 export class PostController {
@@ -64,8 +65,7 @@ export class PostController {
     @Body() dto: CreatePostDto,
     @UploadedFiles() files?: Express.Multer.File[],
   ) {
-    const effectiveUserId = dto.userid || user.id;
-    return this.postService.createPost(effectiveUserId, dto, files);
+    return this.postService.createPost(user.id, dto, files);
   }
 
   @Get(':id/comments')
@@ -83,17 +83,17 @@ export class PostController {
 
   @Post(':id/like')
   @UseGuards(JwtAuthGuard)
+  @BurstLimit({ capacity: 5, refillRate: 1 }) // Cho phép tối đa 5 like liên tục, sau đó nạp lại 1 like / giây
   async toggleLike(
     @Param('id', ParseIntPipe) id: number,
     @CurrentUser() user: UserPayload,
-    @Body('userid') bodyUserId?: number,
   ) {
-    const effectiveUserId = bodyUserId || user.id;
-    return this.postService.toggleLike(id, effectiveUserId);
+    return this.postService.toggleLike(id, user.id);
   }
 
   @Post(':id/comment')
   @UseGuards(JwtAuthGuard)
+  @BurstLimit({ capacity: 3, refillRate: 0.5 }) // Tối đa 3 bình luận nhanh, nạp lại 1 token mỗi 2 giây
   @UseInterceptors(AnyFilesInterceptor())
   async addComment(
     @Param('id', ParseIntPipe) id: number,
@@ -101,8 +101,7 @@ export class PostController {
     @Body() dto: CreateCommentDto,
     @UploadedFiles() files?: Express.Multer.File[],
   ) {
-    const effectiveUserId = dto.userid || user.id;
-    return this.postService.addComment(id, effectiveUserId, dto, files);
+    return this.postService.addComment(id, user.id, dto, files);
   }
 
   @Put(':id/comment/:commentId')

@@ -6,10 +6,15 @@ import { UserPayload } from '~/common/decorators/current-user.decorator.js';
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor() {
+    const secret = process.env.JWT_ACCESS_SECRET;
+    if (!secret && process.env.NODE_ENV === 'production') {
+      throw new Error('FATAL SECURITY ERROR: JWT_ACCESS_SECRET is not configured in production environment!');
+    }
+
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: process.env.JWT_ACCESS_SECRET || 'default_token_secret',
+      secretOrKey: secret || 'dev_jwt_access_secret_do_not_use_in_prod',
     });
   }
 

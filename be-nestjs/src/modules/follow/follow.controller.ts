@@ -26,8 +26,7 @@ export class FollowController {
     @CurrentUser() user: UserPayload,
     @Body() dto: ToggleFollowDto,
   ) {
-    const effectiveUserId = dto.userid || user.id;
-    return this.followService.toggleFollow(effectiveUserId, dto.companyid);
+    return this.followService.toggleFollow(user.id, dto.companyid);
   }
 
   @Get('company/:companyid')
