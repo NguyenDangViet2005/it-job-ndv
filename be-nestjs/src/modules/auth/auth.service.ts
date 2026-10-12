@@ -8,6 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import bcrypt from 'bcryptjs';
 import { nowPlainDateTime } from '~/common/utils/temporal.util.js';
 import { DEFAULT_USER_AVATAR } from '~/common/constants/index.js';
+import crypto from 'node:crypto';
 import { RegisterDto } from './dto/register.dto.js';
 import { RegisterHRDto } from './dto/register-hr.dto.js';
 import { LoginDto } from './dto/login.dto.js';
@@ -16,10 +17,25 @@ import { AuthRepository } from './auth.repository.js';
 
 @Injectable()
 export class AuthService {
+  private readonly oauthExchangeCodes = new Map<
+    string,
+    { userId: number; expiresAt: number }
+  >();
+
   constructor(
     private readonly authRepo: AuthRepository,
     private readonly jwtService: JwtService,
-  ) {}
+  ) {
+    const cleanupInterval = setInterval(() => {
+      const now = Date.now();
+      for (const [code, entry] of this.oauthExchangeCodes.entries()) {
+        if (now > entry.expiresAt) {
+          this.oauthExchangeCodes.delete(code);
+        }
+      }
+    }, 60 * 1000);
+    cleanupInterval.unref?.();
+  }
 
   private generateTokens(userid: number, role: string, email: string) {
     const payload = { id: userid, role, email };
@@ -349,7 +365,47 @@ export class AuthService {
   }
 
   /**
-   * Xử lý callback OAuth: đăng nhập, tạo tokens và trả về redirect URL cho Frontend
+   * Tạo mã One-Time Exchange Code tạm thời (hạn 60s, chỉ dùng 1 lần) để FE đổi token
+   */
+  createOAuthExchangeCode(userId: number): string {
+    const code = crypto.randomBytes(32).toString('hex');
+    this.oauthExchangeCodes.set(code, {
+      userId,
+      expiresAt: Date.now() + 60 * 1000,
+    });
+    return code;
+  }
+
+  /**
+   * Xác thực và đổi mã One-Time Code lấy JWT Tokens (Flow OAuth an toàn)
+   */
+  async exchangeOAuthCode(code: string) {
+    if (!code) {
+      throw new BadRequestException('Mã xác thực không được để trống');
+    }
+
+    const entry = this.oauthExchangeCodes.get(code);
+    if (!entry) {
+      throw new UnauthorizedException('Mã xác thực không hợp lệ hoặc đã được sử dụng');
+    }
+
+    // Xóa ngay lập tức khỏi bộ nhớ để chống Replay Attack (chỉ dùng đúng 1 lần)
+    this.oauthExchangeCodes.delete(code);
+
+    if (Date.now() > entry.expiresAt) {
+      throw new UnauthorizedException('Mã xác thực đã hết hạn (chỉ có hiệu lực trong 60 giây)');
+    }
+
+    const user = await this.authRepo.findUserById(entry.userId);
+    if (!user) {
+      throw new UnauthorizedException('Tài khoản người dùng không tồn tại');
+    }
+
+    return this.loginWithOAuth(user);
+  }
+
+  /**
+   * Xử lý callback OAuth: tạo One-Time Exchange Code và redirect về Frontend an toàn
    */
   async handleOAuthCallback(user: any): Promise<{ redirectUrl: string; refreshtoken?: string }> {
     const clientUrl = this.getClientUrl();
@@ -361,11 +417,11 @@ export class AuthService {
     }
 
     try {
-      const { accesstoken, refreshtoken } = await this.loginWithOAuth(user);
+      // Tạo mã code ngẫu nhiên an toàn, tuyệt đối không truyền JWT token qua URL query
+      const code = this.createOAuthExchangeCode(user.id);
 
       return {
-        redirectUrl: `${clientUrl}/callback?token=${accesstoken}`,
-        refreshtoken,
+        redirectUrl: `${clientUrl}/callback?code=${code}`,
       };
     } catch (error) {
       console.error('OAuth Callback Error:', error);

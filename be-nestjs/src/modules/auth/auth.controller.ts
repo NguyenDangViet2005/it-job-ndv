@@ -14,6 +14,7 @@ import { RegisterDto } from './dto/register.dto.js';
 import { RegisterHRDto } from './dto/register-hr.dto.js';
 import { LoginDto } from './dto/login.dto.js';
 import { RefreshTokenDto } from './dto/refresh-token.dto.js';
+import { ExchangeCodeDto } from './dto/exchange-code.dto.js';
 import { JwtAuthGuard } from '~/common/guards/jwt-auth.guard.js';
 import { GoogleAuthGuard } from '~/common/guards/google-auth.guard.js';
 import { FacebookAuthGuard } from '~/common/guards/facebook-auth.guard.js';
@@ -125,6 +126,28 @@ export class AuthController {
     return {
       success: true,
       message: 'Đăng xuất thành công',
+    };
+  }
+
+  @Post('exchange-code')
+  @RateLimit({ strategy: 'ip' })
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
+  async exchangeCode(
+    @Body() dto: ExchangeCodeDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const { accesstoken, refreshtoken, user } =
+      await this.authService.exchangeOAuthCode(dto.code);
+
+    setRefreshTokenCookie(res, refreshtoken);
+
+    return {
+      success: true,
+      message: 'Đăng nhập thành công',
+      data: {
+        accesstoken,
+        user,
+      },
     };
   }
 

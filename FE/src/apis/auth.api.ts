@@ -71,4 +71,13 @@ export const authApi = {
       { credentials: "include" }
     );
   },
+
+  // Đổi mã One-Time Code lấy Token (Chuẩn bảo mật OAuth2)
+  exchangeCode: async (code: string) => {
+    return await apiPost<ApiResponse<{ accesstoken: string; user: User }>>(
+      `${ENDPOINT}/exchange-code`,
+      { code },
+      { credentials: "include" }
+    );
+  },
 };
