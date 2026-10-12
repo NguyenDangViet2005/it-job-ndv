@@ -16,6 +16,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
+    const path = request.originalUrl || request.url;
+    const reqId = request.requestId || (request.headers['x-request-id'] as string);
 
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
     let message = 'Lỗi hệ thống nội bộ. Vui lòng thử lại sau.';
@@ -42,11 +44,11 @@ export class AllExceptionsFilter implements ExceptionFilter {
         ? 'Lỗi hệ thống nội bộ. Vui lòng thử lại sau.'
         : exception.message;
       this.logger.error(
-        `Unhandled Exception at ${request.url}: ${exception.message}`,
+        `[${reqId || 'NO-ID'}] Unhandled Exception at ${path}: ${exception.message}`,
         exception.stack,
       );
     } else {
-      this.logger.error(`Unknown Exception at ${request.url}:`, exception);
+      this.logger.error(`[${reqId || 'NO-ID'}] Unknown Exception at ${path}:`, exception);
     }
 
     // Nếu response headers đã gửi (ví dụ redirect OAuth), không can thiệp tiếp
@@ -59,8 +61,9 @@ export class AllExceptionsFilter implements ExceptionFilter {
       statusCode: status,
       message,
       ...(errorDetail ? { error: errorDetail } : {}),
+      ...(reqId ? { requestId: reqId } : {}),
       timestamp: new Date().toISOString(),
-      path: request.url,
+      path,
     });
   }
 }
