@@ -4,3 +4,4 @@ export * from './public.decorator.js';
 export * from './response-message.decorator.js';
 export * from './skip-transform.decorator.js';
 export * from './security-check.decorator.js';
+export * from './rate-limit.decorator.js';

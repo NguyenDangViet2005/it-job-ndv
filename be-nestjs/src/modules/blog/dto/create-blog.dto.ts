@@ -23,9 +23,4 @@ export class CreateBlogDto {
   @Type(() => Number)
   @IsInt({ message: 'Thời gian đọc phải là số phút' })
   readtime?: number;
-
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt({ message: 'Mã tác giả phải là số nguyên' })
-  userid?: number;
 }

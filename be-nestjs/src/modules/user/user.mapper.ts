@@ -8,7 +8,7 @@ export class UserMapper {
    */
   static toSafeUser(user: any) {
     if (!user) return null;
-    const { password, refreshtoken, ...rest } = user;
+    const { password, refreshtoken, providerid, ...rest } = user;
     if (rest.dateofbirth) {
       rest.dateofbirth = formatDateString(rest.dateofbirth);
     }

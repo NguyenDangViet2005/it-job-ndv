@@ -1,6 +1,7 @@
 import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
-import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { SecurityThrottlerGuard } from '~/common/guards/security-throttler.guard.js';
 
 // Core & Infrastructure Modules
 import { PrismaModule } from '~/prisma/prisma.module.js';
@@ -57,10 +58,10 @@ import { AppService } from './app.service.js';
   controllers: [AppController],
   providers: [
     AppService,
-    // Step 2 in Pipeline: Guard
+    // Step 2 in Pipeline: Guard (Security & Context-Aware Rate Limiting)
     {
       provide: APP_GUARD,
-      useClass: ThrottlerGuard,
+      useClass: SecurityThrottlerGuard,
     },
     // Step 3 in Pipeline: Pre-controller Interceptor (Security / Check)
     {

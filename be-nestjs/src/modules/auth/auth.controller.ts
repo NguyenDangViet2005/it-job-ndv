@@ -25,11 +25,14 @@ import {
 } from '~/common/utils/cookie.util.js';
 import { Throttle } from '@nestjs/throttler';
 
+import { RateLimit } from '~/common/decorators/rate-limit.decorator.js';
+
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
+  @RateLimit({ strategy: 'ip' })
   @Throttle({ default: { limit: 15, ttl: 900000 } })
   async register(@Body() dto: RegisterDto) {
     const user = await this.authService.register(dto);
@@ -41,6 +44,7 @@ export class AuthController {
   }
 
   @Post('register-hr')
+  @RateLimit({ strategy: 'ip' })
   @Throttle({ default: { limit: 15, ttl: 900000 } })
   async registerHR(
     @Body() dto: RegisterHRDto,
@@ -57,6 +61,7 @@ export class AuthController {
   }
 
   @Post('login')
+  @RateLimit({ strategy: 'ip' })
   @Throttle({ default: { limit: 15, ttl: 900000 } })
   async login(
     @Body() dto: LoginDto,

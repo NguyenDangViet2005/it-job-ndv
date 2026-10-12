@@ -6,9 +6,4 @@ export class SendConnectionDto {
   @Type(() => Number)
   @IsInt({ message: 'Mã người dùng cần kết nối phải là số nguyên' })
   connecteduserid: number;
-
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt({ message: 'Mã người dùng gửi lời mời phải là số nguyên' })
-  userid?: number;
 }

@@ -53,8 +53,7 @@ export class BlogController {
     @Body() dto: CreateBlogDto,
     @UploadedFile() file?: Express.Multer.File,
   ) {
-    const effectiveUserId = dto.userid || user.id;
-    return this.blogService.createBlog(effectiveUserId, dto, file);
+    return this.blogService.createBlog(user.id, dto, file);
   }
 
   @Put(':id')
