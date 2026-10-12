@@ -40,7 +40,8 @@ const CompanyDetailPage = ({ companyid }: { companyid: string }) => {
 
   useEffect(() => {
     const fetchCompany = async () => {
-      if (!companyid) {
+      const idNum = Number(companyid);
+      if (!companyid || isNaN(idNum) || idNum <= 0) {
         setError("ID công ty không hợp lệ");
         setLoading(false);
         return;
@@ -48,7 +49,8 @@ const CompanyDetailPage = ({ companyid }: { companyid: string }) => {
 
       try {
         setLoading(true);
-        const data = await companyApi.getById(Number(companyid));
+        const res: any = await companyApi.getById(idNum);
+        const data = res?.data ?? res;
         setCompany(data);
       } catch (err) {
         console.error("Error fetching company:", err);

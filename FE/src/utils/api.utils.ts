@@ -4,7 +4,7 @@
 export function buildURL(
   baseUrl: string,
   endpoint: string,
-  params?: Record<string, string | number | boolean>
+  params?: Record<string, string | number | boolean | null | undefined>
 ): string {
   const base = baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`;
   const cleanEndpoint = endpoint.startsWith("/") ? endpoint.slice(1) : endpoint;
@@ -12,7 +12,9 @@ export function buildURL(
 
   if (params) {
     Object.entries(params).forEach(([key, value]) => {
-      url.searchParams.append(key, String(value));
+      if (value !== undefined && value !== null && value !== "") {
+        url.searchParams.set(key, String(value));
+      }
     });
   }
 

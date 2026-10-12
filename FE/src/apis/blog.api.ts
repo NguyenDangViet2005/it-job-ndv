@@ -113,9 +113,14 @@ export const blogApi = {
   },
 
   // Lấy danh sách categories
-  getCategories: (token?: string) => {
-    return apiGet<Array<{ id: number; name: string }>>("/blogcategory", {
+  getCategories: async (token?: string) => {
+    const res = await apiGet<any>("/blogcategory", {
       token,
     });
+    return (Array.isArray(res?.data)
+      ? res.data
+      : Array.isArray(res)
+      ? res
+      : []) as Array<{ id: number; name: string }>;
   },
 };

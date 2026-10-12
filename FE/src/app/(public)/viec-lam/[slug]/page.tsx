@@ -16,9 +16,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const jobId = extractIdFromSlug(slug);
 
+  if (!jobId || jobId <= 0) {
+    return getMetadata({
+      title: "Không tìm thấy công việc | IT Job",
+      noIndex: true,
+    });
+  }
+
   try {
-    const job = await jobApi.getById(jobId);
-    if (!job) {
+    const rawJob: any = await jobApi.getById(jobId);
+    const job = rawJob?.data ?? rawJob;
+    if (!job || !job.id) {
       return getMetadata({
         title: "Không tìm thấy công việc | IT Job",
         noIndex: true,
@@ -56,15 +64,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function Page({ params }: Props) {
   const { slug } = await params;
   const jobId = extractIdFromSlug(slug);
-  let jobData = null;
+
+  if (!jobId || jobId <= 0) {
+    return <JobDetailPage jobid="0" />;
+  }
+
+  let jobData: any = null;
 
   try {
-    jobData = await jobApi.getById(jobId);
+    const rawData: any = await jobApi.getById(jobId);
+    jobData = rawData?.data ?? rawData;
   } catch (e) {
     // Error handled in JobDetailPage
   }
 
-  if (jobData) {
+  if (jobData && jobData.id && jobData.title) {
     const expectedSlug = createSlugWithId(jobData.title, jobData.id);
     if (slug !== expectedSlug) {
       redirect(`/viec-lam/${expectedSlug}`);

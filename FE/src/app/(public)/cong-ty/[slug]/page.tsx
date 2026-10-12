@@ -16,9 +16,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const companyId = extractIdFromSlug(slug);
 
+  if (!companyId || companyId <= 0) {
+    return getMetadata({
+      title: "Không tìm thấy công ty | IT Job",
+      noIndex: true,
+    });
+  }
+
   try {
-    const company = await companyApi.getById(companyId);
-    if (!company) {
+    const rawCompany: any = await companyApi.getById(companyId);
+    const company = rawCompany?.data ?? rawCompany;
+    if (!company || !company.id) {
       return getMetadata({
         title: "Không tìm thấy công ty | IT Job",
         noIndex: true,
@@ -46,15 +54,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function Page({ params }: Props) {
   const { slug } = await params;
   const companyId = extractIdFromSlug(slug);
-  let companyData = null;
+
+  if (!companyId || companyId <= 0) {
+    return <CompanyDetailPage companyid="0" />;
+  }
+
+  let companyData: any = null;
 
   try {
-    companyData = await companyApi.getById(companyId);
+    const rawData: any = await companyApi.getById(companyId);
+    companyData = rawData?.data ?? rawData;
   } catch (e) {
     // Error handled inside CompanyDetailPage
   }
 
-  if (companyData) {
+  if (companyData && companyData.id && companyData.name) {
     const expectedSlug = createSlugWithId(companyData.name, companyData.id);
     if (slug !== expectedSlug) {
       redirect(`/cong-ty/${expectedSlug}`);

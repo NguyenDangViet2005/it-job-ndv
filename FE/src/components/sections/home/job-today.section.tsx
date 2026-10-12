@@ -16,7 +16,7 @@ import { JobTodaySkeleton } from "@/components/common/skeletons";
 import { Job } from "@/types";
 
 export default function JobTodaySection() {
-  const [jobs, setJobs] = useState<Job[] | null>(null);
+  const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -25,7 +25,12 @@ export default function JobTodaySection() {
       try {
         setLoading(true);
         const response = await jobApi.getToday();
-        setJobs(response);
+        const jobList = Array.isArray(response)
+          ? response
+          : Array.isArray((response as any)?.data)
+          ? (response as any).data
+          : [];
+        setJobs(jobList);
       } catch (err) {
         setError(
           err instanceof Error ? err.message : "Không thể tải công việc",
@@ -38,12 +43,12 @@ export default function JobTodaySection() {
     fetchTodayJobs();
   }, []);
 
-  if (error || (!loading && (!jobs || jobs.length === 0))) {
-    return null;
-  }
-
   if (loading) {
     return <JobTodaySkeleton />;
+  }
+
+  if (error || !jobs || jobs.length === 0) {
+    return null;
   }
 
   return (
@@ -57,7 +62,7 @@ export default function JobTodaySection() {
       <div className="relative w-full px-2 sm:px-4 lg:px-8">
         <Swiper
           modules={[Navigation, Autoplay]}
-          loop={(jobs || []).length > 4}
+          loop={jobs.length > 4}
           spaceBetween={16}
           autoplay={{
             delay: 2500,
@@ -74,9 +79,9 @@ export default function JobTodaySection() {
             1280: { slidesPerView: 4 }, 
           }}
         >
-          {jobs?.map((job) => (
-            <SwiperSlide>
-              <Link href={ROUTES.JOB_DETAIL(job.id, job.title)} key={job.id}>
+          {jobs.map((job) => (
+            <SwiperSlide key={job.id}>
+              <Link href={ROUTES.JOB_DETAIL(job.id, job.title)}>
                 <HotJob props={job} />
               </Link>
             </SwiperSlide>
@@ -84,7 +89,7 @@ export default function JobTodaySection() {
         </Swiper>
 
         {/* custom prev/next */}
-        {(jobs || []).length > 4 && (
+        {jobs.length > 4 && (
           <>
             <button
               className="job-today-prev absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-10 

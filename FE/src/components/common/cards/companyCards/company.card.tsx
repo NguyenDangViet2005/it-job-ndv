@@ -5,12 +5,16 @@ import { Briefcase, Building2, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Company } from "@/types";
+import { ROUTES } from "@/constants";
 
 export const CompanyCard = ({ company }: { company: Company }) => {
   const location = company.city || company.address || "Chưa cập nhật";
 
   return (
-    <Link href={`/companies/${company.id}`} className="block group">
+    <Link
+      href={ROUTES.COMPANY_DETAIL(company.id, company.name)}
+      className="block group"
+    >
       <Card className="h-full hover:shadow-lg transition-all duration-300 cursor-target hover:border-primary/50 overflow-hidden">
         {/* Cover Image */}
         <div className="relative w-full h-34 -mt-6">

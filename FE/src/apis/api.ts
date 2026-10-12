@@ -5,8 +5,40 @@ const BE_ENDPOINT =
   process.env.NEXT_PUBLIC_BE_ENDPOINT || "http://localhost:8081/api";
 
 interface ApiConfig extends RequestInit {
-  params?: Record<string, string | number | boolean>;
+  params?: Record<string, string | number | boolean | undefined | null>;
   token?: string;
+}
+
+function createHeaders(
+  customHeaders?: HeadersInit,
+  token?: string,
+  contentType: string | null = "application/json"
+): Record<string, string> {
+  const headers: Record<string, string> = {};
+
+  if (contentType) {
+    headers["Content-Type"] = contentType;
+  }
+
+  if (customHeaders) {
+    if (customHeaders instanceof Headers) {
+      customHeaders.forEach((value, key) => {
+        headers[key] = value;
+      });
+    } else if (Array.isArray(customHeaders)) {
+      customHeaders.forEach(([key, value]) => {
+        headers[key] = value;
+      });
+    } else {
+      Object.assign(headers, customHeaders);
+    }
+  }
+
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  return headers;
 }
 
 // GET request
@@ -14,33 +46,21 @@ export async function apiGet<T>(
   endpoint: string,
   config?: ApiConfig,
 ): Promise<T> {
-  const url = buildURL(BE_ENDPOINT, endpoint, config?.params);
-
-  const headers: HeadersInit = {
-    "Content-Type": "application/json",
-    ...config?.headers,
-  };
-
-  if (config?.token) {
-    (headers as Record<string, string>)["Authorization"] =
-      `Bearer ${config.token}`;
-  }
+  const { params, token, headers: customHeaders, ...restConfig } = config || {};
+  const url = buildURL(BE_ENDPOINT, endpoint, params);
+  const headers = createHeaders(customHeaders, token);
 
   try {
     const response = await fetch(url, {
+      ...restConfig,
       method: "GET",
       headers,
-      ...config,
     });
 
     return await handleResponse<T>(response);
   } catch (error) {
     console.error("❌ API GET Error:", error);
-    throw new Error(
-      `Failed to fetch: ${
-        error instanceof Error ? error.message : "Network error"
-      }`,
-    );
+    throw error;
   }
 }
 
@@ -50,23 +70,15 @@ export async function apiPost<T>(
   data?: unknown,
   config?: ApiConfig,
 ): Promise<T> {
-  const url = buildURL(BE_ENDPOINT, endpoint, config?.params);
-
-  const headers: HeadersInit = {
-    "Content-Type": "application/json",
-    ...config?.headers,
-  };
-
-  if (config?.token) {
-    (headers as Record<string, string>)["Authorization"] =
-      `Bearer ${config.token}`;
-  }
+  const { params, token, headers: customHeaders, ...restConfig } = config || {};
+  const url = buildURL(BE_ENDPOINT, endpoint, params);
+  const headers = createHeaders(customHeaders, token);
 
   const response = await fetch(url, {
+    ...restConfig,
     method: "POST",
     headers,
-    body: data ? JSON.stringify(data) : undefined,
-    ...config,
+    body: data !== undefined ? JSON.stringify(data) : undefined,
   });
 
   return handleResponse<T>(response);
@@ -78,23 +90,15 @@ export async function apiPut<T>(
   data?: unknown,
   config?: ApiConfig,
 ): Promise<T> {
-  const url = buildURL(BE_ENDPOINT, endpoint, config?.params);
-
-  const headers: HeadersInit = {
-    "Content-Type": "application/json",
-    ...config?.headers,
-  };
-
-  if (config?.token) {
-    (headers as Record<string, string>)["Authorization"] =
-      `Bearer ${config.token}`;
-  }
+  const { params, token, headers: customHeaders, ...restConfig } = config || {};
+  const url = buildURL(BE_ENDPOINT, endpoint, params);
+  const headers = createHeaders(customHeaders, token);
 
   const response = await fetch(url, {
+    ...restConfig,
     method: "PUT",
     headers,
-    body: data ? JSON.stringify(data) : undefined,
-    ...config,
+    body: data !== undefined ? JSON.stringify(data) : undefined,
   });
 
   return handleResponse<T>(response);
@@ -105,22 +109,14 @@ export async function apiDelete<T>(
   endpoint: string,
   config?: ApiConfig,
 ): Promise<T> {
-  const url = buildURL(BE_ENDPOINT, endpoint, config?.params);
-
-  const headers: HeadersInit = {
-    "Content-Type": "application/json",
-    ...config?.headers,
-  };
-
-  if (config?.token) {
-    (headers as Record<string, string>)["Authorization"] =
-      `Bearer ${config.token}`;
-  }
+  const { params, token, headers: customHeaders, ...restConfig } = config || {};
+  const url = buildURL(BE_ENDPOINT, endpoint, params);
+  const headers = createHeaders(customHeaders, token);
 
   const response = await fetch(url, {
+    ...restConfig,
     method: "DELETE",
     headers,
-    ...config,
   });
 
   return handleResponse<T>(response);
@@ -132,23 +128,15 @@ export async function apiPatch<T>(
   data?: unknown,
   config?: ApiConfig,
 ): Promise<T> {
-  const url = buildURL(BE_ENDPOINT, endpoint, config?.params);
-
-  const headers: HeadersInit = {
-    "Content-Type": "application/json",
-    ...config?.headers,
-  };
-
-  if (config?.token) {
-    (headers as Record<string, string>)["Authorization"] =
-      `Bearer ${config.token}`;
-  }
+  const { params, token, headers: customHeaders, ...restConfig } = config || {};
+  const url = buildURL(BE_ENDPOINT, endpoint, params);
+  const headers = createHeaders(customHeaders, token);
 
   const response = await fetch(url, {
+    ...restConfig,
     method: "PATCH",
     headers,
-    body: data ? JSON.stringify(data) : undefined,
-    ...config,
+    body: data !== undefined ? JSON.stringify(data) : undefined,
   });
 
   return handleResponse<T>(response);
@@ -161,17 +149,15 @@ export async function apiUploadFile<T>(
   fieldName: string = "file",
   config?: ApiConfig,
 ): Promise<T> {
-  const url = buildURL(BE_ENDPOINT, endpoint, config?.params);
+  const { params, token, headers: customHeaders, ...restConfig } = config || {};
+  const url = buildURL(BE_ENDPOINT, endpoint, params);
+  const headers = createHeaders(customHeaders, token, null);
 
   const formData = new FormData();
   formData.append(fieldName, file);
 
-  const headers: Record<string, string> = {};
-  if (config?.token) {
-    headers["Authorization"] = `Bearer ${config.token}`;
-  }
-
   const response = await fetch(url, {
+    ...restConfig,
     method: "POST",
     headers,
     body: formData,
@@ -187,7 +173,7 @@ export async function apiGetPaginated<T>(
   pageSize: number = 10,
   config?: ApiConfig,
 ): Promise<ResponseData<T>> {
-  return apiGet<ResponseData<T>>(endpoint, {
+  const res = await apiGet<any>(endpoint, {
     ...config,
     params: {
       pageNumber: pageNumber,
@@ -195,6 +181,44 @@ export async function apiGetPaginated<T>(
       ...config?.params,
     },
   });
+
+  const rawData = res?.data !== undefined ? res.data : res;
+
+  const dataList: T[] = Array.isArray(rawData)
+    ? rawData
+    : Array.isArray(rawData?.data)
+    ? rawData.data
+    : Array.isArray(rawData?.items)
+    ? rawData.items
+    : [];
+
+  const totalItems =
+    res?.pagination?.totalItems ??
+    res?.totalItems ??
+    rawData?.totalItems ??
+    rawData?.total ??
+    dataList.length;
+
+  const totalPages =
+    res?.pagination?.totalPages ??
+    res?.totalPages ??
+    rawData?.totalPages ??
+    (totalItems > 0 && pageSize > 0 ? Math.ceil(totalItems / pageSize) : 1);
+
+  const page =
+    res?.pagination?.page ??
+    res?.page ??
+    res?.pageNumber ??
+    rawData?.page ??
+    pageNumber;
+
+  return {
+    data: dataList,
+    totalItems,
+    totalPages: Math.max(totalPages, 1),
+    page,
+    pageSize: res?.pagination?.pageSize ?? res?.pageSize ?? pageSize,
+  };
 }
 
 // Helper: GET by ID
@@ -203,5 +227,8 @@ export async function apiGetById<T>(
   id: number,
   config?: ApiConfig,
 ): Promise<T> {
-  return apiGet<T>(`${endpoint}/${id}`, config);
+  const res = await apiGet<any>(`${endpoint}/${id}`, config);
+  return (res && typeof res === "object" && "data" in res && res.data !== undefined
+    ? res.data
+    : res) as T;
 }
