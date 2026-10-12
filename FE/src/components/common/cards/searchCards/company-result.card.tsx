@@ -3,10 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Briefcase, MapPin } from "lucide-react";
 import { SearchCompany } from "@/apis/search.api";
 import { Card } from "@/components/ui/card";
+import { ROUTES } from "@/constants";
 
 export default function CompanyCard({ company }: { company: SearchCompany }) {
   return (
-    <Link href={`/companies/${company.id}`}>
+    <Link href={ROUTES.COMPANY_DETAIL(company.id, company.name)}>
       <Card className="rounded-lg transition-all p-5 border hover:border-primary/50 h-full">
         <div className="flex gap-4">
           {/* Company Logo */}

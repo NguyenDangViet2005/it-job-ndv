@@ -35,7 +35,12 @@ function BlogListSection() {
     async function fetchCategories() {
       try {
         const response = await blogApi.getCategories();
-        setCategories(response);
+        const catList = Array.isArray(response)
+          ? response
+          : Array.isArray((response as any)?.data)
+          ? (response as any).data
+          : [];
+        setCategories(catList);
       } catch (err) {
         console.error("❌ Error:", err);
       }
@@ -134,7 +139,7 @@ function BlogListSection() {
           >
             MỚI NHẤT
           </button>
-          {categories.map((cat) => (
+          {(categories || []).map((cat) => (
             <button
               key={cat.id}
               onClick={() => setSelectedCategoryId(cat.id)}

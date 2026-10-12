@@ -93,7 +93,7 @@ export const jobApi = {
 
   // Lấy công việc hôm nay
   getToday: (token?: string) => {
-    return apiGet<Job[]>(`${ENDPOINT}/today`, { token });
+    return apiGet<ApiResponse<Job[]> | Job[]>(`${ENDPOINT}/today`, { token });
   },
 
   // Lấy công việc theo skill

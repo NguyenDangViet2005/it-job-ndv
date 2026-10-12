@@ -32,8 +32,8 @@ export default function NewestJobSection() {
     try {
       setLoading(true);
       const response = await jobApi.getAll(page, pageSize);
-      setJobs(response.data);
-      setTotalPages(response.totalPages);
+      setJobs(response.data || []);
+      setTotalPages(response.totalPages || 1);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Không thể tải công việc");
     } finally {
@@ -182,7 +182,7 @@ export default function NewestJobSection() {
 
         <div className="flex gap-2 items-center">
           <span className="text-sm text-muted-foreground">
-            Trang {currentPage} / {totalPages}
+            Trang {currentPage} / {totalPages || 1}
           </span>
         </div>
 

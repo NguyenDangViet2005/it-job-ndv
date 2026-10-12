@@ -53,9 +53,9 @@ const CompaniesPage = () => {
       try {
         setLoading(true);
         const response = await companyApi.getAll(currentPage, pageSize);
-        setCompanies(response.data);
-        setTotalPages(response.totalPages);
-        setTotalItems(response.totalItems);
+        setCompanies(response.data || []);
+        setTotalPages(response.totalPages || 1);
+        setTotalItems(response.totalItems || 0);
       } catch (err) {
         console.error("❌ Error fetching companies:", err);
       } finally {
@@ -285,7 +285,9 @@ const CompaniesPage = () => {
         {/* Results Count */}
         <div className="mb-4 text-sm text-muted-foreground">
           Tìm thấy{" "}
-          <span className="font-semibold">{filteredCompanies.length}</span> công
+          <span className="font-semibold">
+            {hasActiveFilters ? filteredCompanies.length : (totalItems || filteredCompanies.length)}
+          </span> công
           ty
           {hasActiveFilters && " phù hợp với bộ lọc"}
         </div>
@@ -376,7 +378,7 @@ const CompaniesPage = () => {
 
             {/* Results Info */}
             <div className="text-center mt-6 text-sm text-muted-foreground">
-              Trang {currentPage} / {totalPages} - Tổng số {totalItems} công ty
+              Trang {currentPage} / {totalPages || 1} - Tổng số {totalItems || filteredCompanies.length} công ty
             </div>
           </>
         ) : !loading ? (
