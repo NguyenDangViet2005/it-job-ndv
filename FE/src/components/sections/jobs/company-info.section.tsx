@@ -23,6 +23,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { toast } from "sonner";
+import { safeExternalUrl } from "@/utils/string";
 import ApplicationModal from "@/components/common/modals/jobs/application.modal";
 import { ROUTES } from "@/constants";
 import { Company } from "@/types";
@@ -106,7 +107,7 @@ const CompanyInfo = ({
           <div className="flex items-center gap-2 text-sm">
             <Globe className="h-4 w-4 text-muted-foreground" />
             <a
-              href={company?.website}
+              href={safeExternalUrl(company?.website)}
               target="_blank"
               rel="noopener noreferrer"
               className="text-primary hover:underline"

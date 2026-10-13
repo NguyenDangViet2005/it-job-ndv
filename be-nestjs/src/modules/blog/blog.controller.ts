@@ -11,6 +11,7 @@ import {
   UseGuards,
   UseInterceptors,
   UploadedFile,
+  BadRequestException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '~/common/guards/jwt-auth.guard.js';
@@ -22,6 +23,26 @@ import { BlogService } from './blog.service.js';
 import { CreateBlogDto } from './dto/create-blog.dto.js';
 import { UpdateBlogDto } from './dto/update-blog.dto.js';
 import { BlogQueryDto } from './dto/blog-query.dto.js';
+
+const blogImageUploadOptions = {
+  limits: {
+    fileSize: 5 * 1024 * 1024,
+  },
+  fileFilter: (
+    _req: any,
+    file: Express.Multer.File,
+    cb: (error: Error | null, acceptFile: boolean) => void,
+  ) => {
+    const isImage = file.mimetype.startsWith('image/') && !file.mimetype.includes('svg');
+    if (!isImage) {
+      return cb(
+        new BadRequestException('Ảnh đại diện bài viết phải là hình ảnh hợp lệ (không hỗ trợ SVG)'),
+        false,
+      );
+    }
+    cb(null, true);
+  },
+};
 
 @Controller('blog')
 export class BlogController {
@@ -47,7 +68,7 @@ export class BlogController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  @UseInterceptors(FileInterceptor('image'))
+  @UseInterceptors(FileInterceptor('image', blogImageUploadOptions))
   async create(
     @CurrentUser() user: UserPayload,
     @Body() dto: CreateBlogDto,
@@ -58,7 +79,7 @@ export class BlogController {
 
   @Put(':id')
   @UseGuards(JwtAuthGuard)
-  @UseInterceptors(FileInterceptor('image'))
+  @UseInterceptors(FileInterceptor('image', blogImageUploadOptions))
   async update(
     @Param('id', ParseIntPipe) id: number,
     @CurrentUser() user: UserPayload,

@@ -28,6 +28,7 @@ import {
 import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
+import { safeExternalUrl } from "@/utils/string";
 import { ROUTES } from "@/constants";
 import Link from "next/link";
 
@@ -178,7 +179,7 @@ const CompanyDetailPage = ({ companyid }: { companyid: string }) => {
                 {company.website && (
                   <Button variant="outline" asChild className='border-secondary'>
                     <a
-                      href={company.website}
+                      href={safeExternalUrl(company.website)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-2"

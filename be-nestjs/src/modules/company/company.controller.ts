@@ -63,7 +63,11 @@ export class CompanyController {
   @Post('upload-avatar')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('employer', 'admin')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(
+    FileInterceptor('file', {
+      limits: { fileSize: 5 * 1024 * 1024 },
+    }),
+  )
   async uploadAvatar(
     @CurrentUser() currentUser: UserPayload,
     @UploadedFile() file: Express.Multer.File,
@@ -71,8 +75,8 @@ export class CompanyController {
     if (!file) {
       throw new BadRequestException('Vui lòng chọn file ảnh');
     }
-    if (!file.mimetype.startsWith('image/')) {
-      throw new BadRequestException('Chỉ chấp nhận file định dạng hình ảnh');
+    if (!file.mimetype.startsWith('image/') || file.mimetype.includes('svg')) {
+      throw new BadRequestException('Chỉ chấp nhận file định dạng hình ảnh hợp lệ (không hỗ trợ SVG)');
     }
     if (file.size > 5 * 1024 * 1024) {
       throw new BadRequestException('Kích thước ảnh không được vượt quá 5MB');
@@ -90,7 +94,11 @@ export class CompanyController {
   @Post('upload-cover')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('employer', 'admin')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(
+    FileInterceptor('file', {
+      limits: { fileSize: 5 * 1024 * 1024 },
+    }),
+  )
   async uploadCover(
     @CurrentUser() currentUser: UserPayload,
     @UploadedFile() file: Express.Multer.File,
@@ -98,8 +106,8 @@ export class CompanyController {
     if (!file) {
       throw new BadRequestException('Vui lòng chọn file ảnh');
     }
-    if (!file.mimetype.startsWith('image/')) {
-      throw new BadRequestException('Chỉ chấp nhận file định dạng hình ảnh');
+    if (!file.mimetype.startsWith('image/') || file.mimetype.includes('svg')) {
+      throw new BadRequestException('Chỉ chấp nhận file định dạng hình ảnh hợp lệ (không hỗ trợ SVG)');
     }
     if (file.size > 5 * 1024 * 1024) {
       throw new BadRequestException('Kích thước ảnh không được vượt quá 5MB');

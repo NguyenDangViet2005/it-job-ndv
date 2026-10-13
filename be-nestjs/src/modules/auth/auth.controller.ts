@@ -163,12 +163,19 @@ export class AuthController {
   }
 
   @Post('set-cookie')
+  @RateLimit({ strategy: 'ip' })
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   async setCookie(
     @Body() body: RefreshTokenDto,
     @Res({ passthrough: true }) res: Response,
   ) {
     if (!body?.refreshtoken) {
       throw new UnauthorizedException('Refresh token không được để trống');
+    }
+
+    const isValid = await this.authService.validateRefreshTokenSession(body.refreshtoken);
+    if (!isValid) {
+      throw new UnauthorizedException('Refresh token không hợp lệ hoặc không tồn tại trên hệ thống');
     }
 
     setRefreshTokenCookie(res, body.refreshtoken);

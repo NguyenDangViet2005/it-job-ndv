@@ -15,16 +15,12 @@ export const configureCloudinary = () => {
 export const getResourceTypeFromFile = (
   file: Express.Multer.File,
 ): CloudinaryResourceType => {
-  const mimetype = file.mimetype || '';
-
-  if (mimetype.startsWith('video/')) return 'video';
-  if (mimetype.startsWith('image/')) return 'image';
-
+  const mimetype = (file.mimetype || '').toLowerCase();
   const filename = file.originalname || '';
   const ext = filename.toLowerCase().split('.').pop() || '';
 
   const videoExtensions = ['mp4', 'avi', 'mov', 'mkv', 'webm', 'flv'];
-  if (videoExtensions.includes(ext)) return 'video';
+  if (mimetype.startsWith('video/') || videoExtensions.includes(ext)) return 'video';
 
   const documentExtensions = [
     'pdf',
@@ -35,10 +31,14 @@ export const getResourceTypeFromFile = (
     'ppt',
     'pptx',
     'txt',
+    'svg',
   ];
-  if (documentExtensions.includes(ext)) return 'raw';
+  if (documentExtensions.includes(ext) || mimetype === 'image/svg+xml') return 'raw';
 
-  return 'image';
+  const imageExtensions = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp', 'avif'];
+  if (mimetype.startsWith('image/') || imageExtensions.includes(ext)) return 'image';
+
+  return 'raw';
 };
 
 // 3. Xác định Resource Type từ URL đã upload
@@ -59,6 +59,7 @@ export const getResourceTypeFromUrl = (url: string): CloudinaryResourceType => {
     'ppt',
     'pptx',
     'txt',
+    'svg',
   ];
   if (documentExtensions.includes(ext)) return 'raw';
 

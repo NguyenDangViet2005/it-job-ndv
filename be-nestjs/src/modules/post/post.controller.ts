@@ -11,6 +11,7 @@ import {
   UseGuards,
   UseInterceptors,
   UploadedFiles,
+  BadRequestException,
 } from '@nestjs/common';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '~/common/guards/jwt-auth.guard.js';
@@ -25,6 +26,53 @@ import { PostQueryDto } from './dto/post-query.dto.js';
 import { CreateCommentDto } from './dto/create-comment.dto.js';
 import { UpdateCommentDto } from './dto/update-comment.dto.js';
 import { BurstLimit } from '~/common/decorators/rate-limit.decorator.js';
+
+const postMediaUploadOptions = {
+  limits: {
+    fileSize: 15 * 1024 * 1024,
+    files: 5,
+  },
+  fileFilter: (
+    _req: any,
+    file: Express.Multer.File,
+    cb: (error: Error | null, acceptFile: boolean) => void,
+  ) => {
+    const isImage = file.mimetype.startsWith('image/') && !file.mimetype.includes('svg');
+    const isVideo = file.mimetype.startsWith('video/');
+    if (!isImage && !isVideo) {
+      return cb(
+        new BadRequestException(
+          'Chỉ chấp nhận tệp đính kèm là hình ảnh (jpg, png, webp...) hoặc video (không hỗ trợ SVG)',
+        ),
+        false,
+      );
+    }
+    cb(null, true);
+  },
+};
+
+const commentMediaUploadOptions = {
+  limits: {
+    fileSize: 5 * 1024 * 1024,
+    files: 2,
+  },
+  fileFilter: (
+    _req: any,
+    file: Express.Multer.File,
+    cb: (error: Error | null, acceptFile: boolean) => void,
+  ) => {
+    const isImage = file.mimetype.startsWith('image/') && !file.mimetype.includes('svg');
+    if (!isImage) {
+      return cb(
+        new BadRequestException(
+          'Bình luận chỉ hỗ trợ đính kèm hình ảnh hợp lệ (không hỗ trợ SVG)',
+        ),
+        false,
+      );
+    }
+    cb(null, true);
+  },
+};
 
 @Controller('post')
 export class PostController {
@@ -59,7 +107,7 @@ export class PostController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  @UseInterceptors(AnyFilesInterceptor())
+  @UseInterceptors(AnyFilesInterceptor(postMediaUploadOptions))
   async create(
     @CurrentUser() user: UserPayload,
     @Body() dto: CreatePostDto,
@@ -94,7 +142,7 @@ export class PostController {
   @Post(':id/comment')
   @UseGuards(JwtAuthGuard)
   @BurstLimit({ capacity: 3, refillRate: 0.5 }) // Tối đa 3 bình luận nhanh, nạp lại 1 token mỗi 2 giây
-  @UseInterceptors(AnyFilesInterceptor())
+  @UseInterceptors(AnyFilesInterceptor(commentMediaUploadOptions))
   async addComment(
     @Param('id', ParseIntPipe) id: number,
     @CurrentUser() user: UserPayload,
@@ -106,7 +154,7 @@ export class PostController {
 
   @Put(':id/comment/:commentId')
   @UseGuards(JwtAuthGuard)
-  @UseInterceptors(AnyFilesInterceptor())
+  @UseInterceptors(AnyFilesInterceptor(commentMediaUploadOptions))
   async updateComment(
     @Param('commentId', ParseIntPipe) commentId: number,
     @CurrentUser() user: UserPayload,
@@ -144,7 +192,7 @@ export class PostController {
 
   @Put(':id')
   @UseGuards(JwtAuthGuard)
-  @UseInterceptors(AnyFilesInterceptor())
+  @UseInterceptors(AnyFilesInterceptor(postMediaUploadOptions))
   async update(
     @Param('id', ParseIntPipe) id: number,
     @CurrentUser() user: UserPayload,

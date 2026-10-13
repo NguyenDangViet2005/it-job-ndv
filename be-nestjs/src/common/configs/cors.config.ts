@@ -23,7 +23,7 @@ export const getCorsOptions = (): CorsOptions => {
       // Cho phép nếu nằm trong allowedOrigins hoặc là subdomain preview vercel
       if (
         origins.includes(origin) ||
-        /^https:\/\/it-job-ndv.*\.vercel\.app$/.test(origin) ||
+        /^https:\/\/it-job-ndv(-[a-zA-Z0-9_-]+)?\.vercel\.app$/i.test(origin) ||
         (process.env.NODE_ENV !== 'production' &&
           /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin))
       ) {

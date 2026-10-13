@@ -122,13 +122,22 @@ const HRCompanyInfo = () => {
   const handleSave = async () => {
     if (!companyData) return;
 
+    if (
+      formData.website &&
+      formData.website.trim() !== "" &&
+      !/^https?:\/\//i.test(formData.website.trim())
+    ) {
+      toast.error("Website công ty phải là đường dẫn hợp lệ (bắt đầu bằng http:// hoặc https://)");
+      return;
+    }
+
     try {
       setSaving(true);
 
       const updateData: CompanyUpdateRequest = {
         name: formData.name,
         nationality: formData.nationality || undefined,
-        website: formData.website || undefined,
+        website: formData.website ? formData.website.trim() : undefined,
         description: formData.description || undefined,
         foundedyear: formData.foundedyear
           ? parseInt(formData.foundedyear)
