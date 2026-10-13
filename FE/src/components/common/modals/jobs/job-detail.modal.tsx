@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { MapPin, Globe, Building2 } from "lucide-react";
+import { safeExternalUrl } from "@/utils/string";
 
 interface JobData {
   id: number;
@@ -140,7 +141,7 @@ export function JobDetailModal({
                     <div className="flex items-center gap-1.5 text-xs sm:text-sm">
                       <Globe className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 text-blue-500" />
                       <a
-                        href={job.company.website}
+                        href={safeExternalUrl(job.company.website)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-600 hover:underline truncate"
@@ -270,7 +271,7 @@ export function JobDetailModal({
                     )}
                     {job.company.website && (
                       <a
-                        href={job.company.website}
+                        href={safeExternalUrl(job.company.website)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-xs sm:text-sm text-blue-600 hover:underline inline-block mt-1 truncate max-w-full"

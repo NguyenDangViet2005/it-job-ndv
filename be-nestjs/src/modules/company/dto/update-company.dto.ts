@@ -6,6 +6,7 @@ import {
   Min,
   Max,
   IsEmail,
+  IsUrl,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -28,7 +29,10 @@ export class UpdateCompanyDto {
   nationality?: string;
 
   @IsOptional()
-  @IsString()
+  @IsUrl(
+    { protocols: ['http', 'https'], require_protocol: true },
+    { message: 'Website công ty phải là URL hợp lệ bắt đầu bằng http:// hoặc https://' },
+  )
   website?: string;
 
   @IsOptional()

@@ -62,7 +62,11 @@ export class UserController {
   }
 
   @Put(':id/avatar')
-  @UseInterceptors(FileInterceptor('avatar'))
+  @UseInterceptors(
+    FileInterceptor('avatar', {
+      limits: { fileSize: 5 * 1024 * 1024 },
+    }),
+  )
   async updateAvatar(
     @Param('id', ParseIntPipe) id: number,
     @CurrentUser() currentUser: UserPayload,
@@ -71,8 +75,8 @@ export class UserController {
     if (!file) {
       throw new BadRequestException('Vui lòng chọn file ảnh đại diện');
     }
-    if (!file.mimetype.startsWith('image/')) {
-      throw new BadRequestException('Chỉ chấp nhận file định dạng hình ảnh');
+    if (!file.mimetype.startsWith('image/') || file.mimetype.includes('svg')) {
+      throw new BadRequestException('Chỉ chấp nhận file định dạng hình ảnh hợp lệ (không hỗ trợ SVG)');
     }
     if (file.size > 5 * 1024 * 1024) {
       throw new BadRequestException('Kích thước ảnh không được vượt quá 5MB');
@@ -90,7 +94,11 @@ export class UserController {
   }
 
   @Put(':id/cover-image')
-  @UseInterceptors(FileInterceptor('coverimage'))
+  @UseInterceptors(
+    FileInterceptor('coverimage', {
+      limits: { fileSize: 5 * 1024 * 1024 },
+    }),
+  )
   async updateCover(
     @Param('id', ParseIntPipe) id: number,
     @CurrentUser() currentUser: UserPayload,
@@ -99,8 +107,8 @@ export class UserController {
     if (!file) {
       throw new BadRequestException('Vui lòng chọn file ảnh bìa');
     }
-    if (!file.mimetype.startsWith('image/')) {
-      throw new BadRequestException('Chỉ chấp nhận file định dạng hình ảnh');
+    if (!file.mimetype.startsWith('image/') || file.mimetype.includes('svg')) {
+      throw new BadRequestException('Chỉ chấp nhận file định dạng hình ảnh hợp lệ (không hỗ trợ SVG)');
     }
     if (file.size > 5 * 1024 * 1024) {
       throw new BadRequestException('Kích thước ảnh không được vượt quá 5MB');
@@ -118,7 +126,11 @@ export class UserController {
   }
 
   @Put(':id/cv')
-  @UseInterceptors(FileInterceptor('cv'))
+  @UseInterceptors(
+    FileInterceptor('cv', {
+      limits: { fileSize: 10 * 1024 * 1024 },
+    }),
+  )
   async updateCV(
     @Param('id', ParseIntPipe) id: number,
     @CurrentUser() currentUser: UserPayload,
@@ -135,10 +147,9 @@ export class UserController {
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
       'image/jpeg',
       'image/png',
-      'application/octet-stream',
     ];
-    if (!allowedDocTypes.includes(file.mimetype) && !allowedExts.includes(ext)) {
-      throw new BadRequestException('Chỉ chấp nhận file CV định dạng PDF, Word (doc, docx) hoặc hình ảnh');
+    if (!allowedDocTypes.includes(file.mimetype) || !allowedExts.includes(ext)) {
+      throw new BadRequestException('Chỉ chấp nhận file CV định dạng PDF, Word (doc, docx) hoặc hình ảnh (jpg, png)');
     }
     if (file.size > 10 * 1024 * 1024) {
       throw new BadRequestException('Kích thước file CV không được vượt quá 10MB');

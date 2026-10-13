@@ -58,3 +58,15 @@ export const extractIdFromSlug = (slug: string): number => {
   const parsedId = parseInt(lastPart, 10);
   return isNaN(parsedId) ? 0 : parsedId;
 };
+
+/**
+ * Safely sanitizes external URLs to prevent javascript: or data: XSS attacks
+ */
+export const safeExternalUrl = (url?: string | null): string => {
+  if (!url) return "#";
+  const trimmed = url.trim();
+  if (/^https?:\/\//i.test(trimmed)) {
+    return trimmed;
+  }
+  return "#";
+};

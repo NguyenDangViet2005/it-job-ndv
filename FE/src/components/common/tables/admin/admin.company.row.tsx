@@ -18,6 +18,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { safeExternalUrl } from "@/utils/string";
 
 // Company interface matching backend response
 export interface AdminCompany {
@@ -102,7 +103,7 @@ export function AdminCompanyRow({ company, onEdit, onDelete }: CompanyRowProps) 
       <td className="p-4 cursor-target">
         {company.website ? (
           <a
-            href={company.website}
+            href={safeExternalUrl(company.website)}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1 text-sm text-blue-600 hover:underline"

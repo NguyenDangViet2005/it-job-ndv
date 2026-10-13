@@ -430,4 +430,19 @@ export class AuthService {
       };
     }
   }
+
+  /**
+   * Xác thực Refresh Token hợp lệ và có phiên hoạt động trong CSDL
+   */
+  async validateRefreshTokenSession(token: string): Promise<boolean> {
+    try {
+      this.jwtService.verify(token, {
+        secret: process.env.JWT_REFRESH_SECRET,
+      });
+      const session = await this.authRepo.findSessionByRefreshToken(token);
+      return Boolean(session);
+    } catch {
+      return false;
+    }
+  }
 }
