@@ -247,13 +247,19 @@ model Review {
 model SessionLogins {
   id           Int       @id(map: "SessionLogins_pkey") @default(autoincrement())
   userid       Int
-  accesstoken  String
   refreshtoken String
+  accesstoken  String?
+  family       String    @default("")
+  isused       Boolean   @default(false)
+  isrevoked    Boolean   @default(false)
+  expiresat    Timestamp?
   createdat    Timestamp @default(now())
   updatedat    Timestamp @default(now())
   user         User      @relation(fields: [userid], references: [id], onDelete: Cascade, map: "fk_sessionlogin_user")
 
   @@index([userid], map: "ix_sessionlogin_refreshtoken")
+  @@index([family], map: "ix_sessionlogin_family")
+  @@index([refreshtoken], map: "ix_sessionlogin_token")
 }
 
 model Skill {

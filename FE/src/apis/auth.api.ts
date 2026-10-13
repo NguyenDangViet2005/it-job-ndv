@@ -11,6 +11,8 @@ import type {
 
 const ENDPOINT = "/auth";
 
+let inFlightRefreshPromise: Promise<ApiResponse<LoginResponse>> | null = null;
+
 export const authApi = {
   // Đăng ký ứng viên (role = user)
   registerUser: async (data: RegisterRequest) => {
@@ -39,13 +41,21 @@ export const authApi = {
     );
   },
 
-  // Refresh Token (Uses HttpOnly Cookie)
+  // Refresh Token (Uses HttpOnly Cookie with in-flight request deduplication)
   refreshtoken: async () => {
-    return await apiPost<ApiResponse<LoginResponse>>(
+    if (inFlightRefreshPromise) {
+      return inFlightRefreshPromise;
+    }
+
+    inFlightRefreshPromise = apiPost<ApiResponse<LoginResponse>>(
       `${ENDPOINT}/refresh-token`,
       undefined,
       { credentials: "include" }, // Send cookies only
-    );
+    ).finally(() => {
+      inFlightRefreshPromise = null;
+    });
+
+    return inFlightRefreshPromise;
   },
 
   // Logout

@@ -9,6 +9,8 @@ import { AuthGuard } from "../guards/auth.guard";
 import { ROUTES } from "@/constants";
 import { Company, User } from "@/types";
 
+let isGlobalAuthInitStarted = false;
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [company, setCompany] = useState<Company | null>(null);
@@ -18,10 +20,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Nếu đang ở welcome page thì không cần chờ loading auth
   const [loading, setLoading] = useState(!isWelcomePage);
-  const hasInitialized = useRef(false);
   const router = useRouter();
 
-  // Initialize Auth (Silent Refresh)
+  // Initialize Auth (Silent Refresh) - Đảm bảo chạy đúng 1 lần duy nhất khi reload/mount trang
   useEffect(() => {
     // Không check auth ở trang welcome để tối ưu trải nghiệm (UX) người dùng lần đầu
     if (pathname === "/" || pathname === ROUTES.WELCOME) {
@@ -29,9 +30,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    // Nếu đã init rồi thì không gọi lại
-    if (hasInitialized.current) return;
-    hasInitialized.current = true;
+    // Module-level guard: Chống chạy lặp do React StrictMode hoặc re-mount component
+    if (isGlobalAuthInitStarted) return;
+    isGlobalAuthInitStarted = true;
 
     const initAuth = async () => {
       if (
@@ -52,6 +53,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           handleSetAuth(userData, accesstoken);
         }
       } catch {
+        // Token không tồn tại hoặc hết hạn, tiếp tục với quyền khách
       } finally {
         setLoading(false);
       }
@@ -59,6 +61,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     initAuth();
   }, [pathname]);
+
+  // Tự động làm mới access token định kỳ (mỗi 10 phút, trước khi token 15 phút hết hạn)
+  useEffect(() => {
+    if (!token) return;
+
+    const refreshInterval = setInterval(async () => {
+      try {
+        const response = await authApi.refreshtoken();
+        if (response.success && response.data) {
+          setToken(response.data.accesstoken);
+          if (response.data.user) {
+            setUser(response.data.user);
+          }
+        }
+      } catch (err) {
+        console.warn("Silent token refresh failed:", err);
+      }
+    }, 10 * 60 * 1000);
+
+    return () => clearInterval(refreshInterval);
+  }, [token]);
 
   // Internal helper to set state and fetch extra data if needed
   const handleSetAuth = async (userData: User, accesstoken: string) => {
@@ -106,6 +129,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
     setCompany(null);
     setToken(null);
+    isGlobalAuthInitStarted = false;
 
     router.push(ROUTES.HOME);
   };
