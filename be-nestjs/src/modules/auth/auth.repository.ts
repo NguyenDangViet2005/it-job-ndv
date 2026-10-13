@@ -46,36 +46,63 @@ export class AuthRepository {
     return orm.CompanyMembers.create(data);
   }
 
-  // Session logins
+  // Session logins with Token Family & Rotation
   async findSessionByRefreshToken(refreshToken: string) {
     return orm.SessionLogins.where({
       refreshtoken: refreshToken,
     }).first();
   }
 
-  async findSessionsByUserId(userId: number) {
+  async findActiveSessionsByUserId(userId: number) {
     return orm.SessionLogins
-      .where({ userid: userId })
+      .where({ userid: userId, isrevoked: false })
       .orderBy((s: any) => s.id.desc())
       .all();
   }
 
-  async createSession(data: { userid: number; accesstoken: string; refreshtoken: string }) {
-    return orm.SessionLogins.create(data);
+  async createSession(data: {
+    userid: number;
+    refreshtoken: string;
+    family: string;
+    isused?: boolean;
+    isrevoked?: boolean;
+    expiresat?: Date;
+  }) {
+    return orm.SessionLogins.create({
+      userid: data.userid,
+      refreshtoken: data.refreshtoken,
+      family: data.family,
+      isused: data.isused ?? false,
+      isrevoked: data.isrevoked ?? false,
+      expiresat: data.expiresat as any,
+    });
   }
 
-  async updateSession(id: number, data: { accesstoken: string; refreshtoken: string }) {
-    return orm.SessionLogins.where({ id }).update(data);
+  async markTokenUsed(id: number) {
+    return orm.SessionLogins.where({ id }).update({
+      isused: true,
+      updatedat: new Date() as any,
+    });
+  }
+
+  async revokeFamily(family: string) {
+    return orm.SessionLogins.where({ family }).update({
+      isrevoked: true,
+      updatedat: new Date() as any,
+    });
   }
 
   async deleteSessionById(id: number) {
     return orm.SessionLogins.where({ id }).delete();
   }
 
-  async deleteSessionByRefreshToken(refreshToken: string) {
+  async revokeSessionByRefreshToken(refreshToken: string) {
     return orm.SessionLogins.where({
       refreshtoken: refreshToken,
-    }).delete();
+    }).update({
+      isrevoked: true,
+      updatedat: new Date() as any,
+    });
   }
 
   async deleteSessionsByUserId(userId: number) {

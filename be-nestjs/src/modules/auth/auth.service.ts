@@ -53,6 +53,13 @@ export class AuthService {
     return { accesstoken, refreshtoken };
   }
 
+  /**
+   * Băm một chiều Refresh Token bằng SHA-256 trước khi lưu vào Database
+   */
+  private hashToken(token: string): string {
+    return crypto.createHash('sha256').update(token).digest('hex');
+  }
+
   async register(dto: RegisterDto) {
     const email = dto.email.toLowerCase().trim();
     const existing = await this.authRepo.findUserByEmail(email);
@@ -115,10 +122,11 @@ export class AuthService {
         newUser.email,
       );
 
+      const family = crypto.randomUUID();
       await this.authRepo.createSession({
         userid: newUser.id,
-        accesstoken,
-        refreshtoken,
+        refreshtoken: this.hashToken(refreshtoken),
+        family,
       });
 
       const userWithoutPassword = AuthMapper.toSafeUser(newUser);
@@ -157,20 +165,22 @@ export class AuthService {
       user.email,
     );
 
-    // Giới hạn tối đa 5 phiên đăng nhập đồng thời: Xóa các phiên cũ hơn nếu đã đủ 5
-    const existingSessions = await this.authRepo.findSessionsByUserId(user.id);
+    // Giới hạn tối đa 5 phiên đăng nhập hoạt động đồng thời: Thu hồi các phiên cũ hơn nếu đã đủ 5
+    const activeSessions = await this.authRepo.findActiveSessionsByUserId(user.id);
 
-    if (existingSessions.length >= 5) {
-      const oldSessions = existingSessions.slice(4);
+    if (activeSessions.length >= 5) {
+      const oldSessions = activeSessions.slice(4);
       await Promise.all(
-        oldSessions.map((s) => this.authRepo.deleteSessionById(s.id)),
+        oldSessions.map((s) => this.authRepo.revokeFamily(s.family)),
       );
     }
 
+    // Khởi tạo một Token Family mới cho phiên đăng nhập này
+    const family = crypto.randomUUID();
     await this.authRepo.createSession({
       userid: user.id,
-      accesstoken,
-      refreshtoken,
+      refreshtoken: this.hashToken(refreshtoken),
+      family,
     });
 
     const userWithoutPassword = AuthMapper.toSafeUser(user);
@@ -182,54 +192,109 @@ export class AuthService {
     };
   }
 
+  /**
+   * Làm mới token theo cơ chế Token Rotation & Token Family Reuse Detection:
+   * 1. Xác thực chữ ký JWT của Refresh Token.
+   * 2. Băm SHA-256 token và tìm trong cơ sở dữ liệu:
+   *    - Nếu token đã được đánh dấu isused = true: PHÁT HIỆN REUSE (Token bị đánh cắp).
+   *      Khóa ngay lập tức TOÀN BỘ family token của chuỗi phiên đó.
+   *    - Nếu token hợp lệ: Đánh dấu isused = true, tạo cặp Access/Refresh Token mới
+   *      kế thừa cùng family và lưu vào CSDL (băm SHA-256).
+   */
   async refreshToken(token: string) {
     if (!token) {
       throw new BadRequestException('Refresh token không được để trống');
     }
 
+    let decoded: any;
     try {
-      const decoded = this.jwtService.verify(token, {
+      decoded = this.jwtService.verify(token, {
         secret: process.env.JWT_REFRESH_SECRET,
       });
-
-      const session = await this.authRepo.findSessionByRefreshToken(token);
-
-      if (!session) {
-        throw new UnauthorizedException('Phiên đăng nhập không hợp lệ hoặc đã bị hủy');
-      }
-
-      const user = await this.authRepo.findUserById(decoded.id);
-      if (!user) {
-        throw new UnauthorizedException('Người dùng không tồn tại');
-      }
-
-      const tokens = this.generateTokens(
-        user.id,
-        user.role || 'user',
-        user.email,
-      );
-
-      await this.authRepo.updateSession(session.id, {
-        accesstoken: tokens.accesstoken,
-        refreshtoken: tokens.refreshtoken,
-      });
-
-      const userWithoutPassword = AuthMapper.toSafeUser(user);
-
-      return {
-        accesstoken: tokens.accesstoken,
-        refreshtoken: tokens.refreshtoken,
-        user: userWithoutPassword,
-      };
     } catch {
       throw new UnauthorizedException('Refresh token không hợp lệ hoặc đã hết hạn');
     }
+
+    const hashedToken = this.hashToken(token);
+    const session = await this.authRepo.findSessionByRefreshToken(hashedToken);
+
+    if (!session) {
+      throw new UnauthorizedException('Phiên đăng nhập không tồn tại hoặc đã hết hạn');
+    }
+
+    if (session.isrevoked) {
+      throw new UnauthorizedException('Phiên đăng nhập này đã bị thu hồi do lý do an ninh');
+    }
+
+    // Phát hiện tái sử dụng token (Reuse Detection)
+    if (session.isused) {
+      // Grace Period (15 giây) theo khuyến nghị OAuth 2.0 Security BCP:
+      // Xử lý race-condition khi người dùng mở nhiều tab cùng lúc hoặc reload nhanh
+      const updatedTime = session.updatedat ? new Date(session.updatedat).getTime() : 0;
+      const isWithinGracePeriod = Date.now() - updatedTime < 15000;
+
+      if (isWithinGracePeriod) {
+        const user = await this.authRepo.findUserById(decoded.id);
+        if (user) {
+          const userWithoutPassword = AuthMapper.toSafeUser(user);
+          const tokens = this.generateTokens(user.id, user.role || 'user', user.email);
+          return {
+            accesstoken: tokens.accesstoken,
+            refreshtoken: token,
+            user: userWithoutPassword,
+          };
+        }
+      }
+
+      // Vượt quá Grace Period -> Thật sự bị lộ token cũ -> Khóa ngay lập tức toàn bộ family
+      await this.authRepo.revokeFamily(session.family);
+      throw new UnauthorizedException(
+        'Cảnh báo an ninh: Phát hiện sử dụng lại Refresh Token cũ (Token Reuse Detected). Toàn bộ phiên làm việc của thiết bị này đã bị hủy bỏ để bảo vệ tài khoản!',
+      );
+    }
+
+    const user = await this.authRepo.findUserById(decoded.id);
+    if (!user) {
+      throw new UnauthorizedException('Người dùng không tồn tại');
+    }
+
+    // Đánh dấu token hiện tại đã sử dụng
+    await this.authRepo.markTokenUsed(session.id);
+
+    // Tạo cặp token mới (Rotation)
+    const tokens = this.generateTokens(
+      user.id,
+      user.role || 'user',
+      user.email,
+    );
+
+    // Lưu token mới kế thừa cùng family (được băm SHA-256)
+    await this.authRepo.createSession({
+      userid: user.id,
+      refreshtoken: this.hashToken(tokens.refreshtoken),
+      family: session.family,
+      isused: false,
+      isrevoked: false,
+    });
+
+    const userWithoutPassword = AuthMapper.toSafeUser(user);
+
+    return {
+      accesstoken: tokens.accesstoken,
+      refreshtoken: tokens.refreshtoken,
+      user: userWithoutPassword,
+    };
   }
 
   async logout(refreshToken?: string) {
     if (refreshToken) {
       try {
-        await this.authRepo.deleteSessionByRefreshToken(refreshToken);
+        const hashedToken = this.hashToken(refreshToken);
+        const session = await this.authRepo.findSessionByRefreshToken(hashedToken);
+        if (session) {
+          // Thu hồi toàn bộ token family của phiên đăng xuất này
+          await this.authRepo.revokeFamily(session.family);
+        }
       } catch {
         // Bỏ qua lỗi DB nếu có để đảm bảo phía client luôn đăng xuất thành công
       }
@@ -328,20 +393,21 @@ export class AuthService {
       user.email,
     );
 
-    // Giới hạn tối đa 5 phiên đăng nhập đồng thời
-    const existingSessions = await this.authRepo.findSessionsByUserId(user.id);
+    // Giới hạn tối đa 5 phiên đăng nhập hoạt động đồng thời
+    const activeSessions = await this.authRepo.findActiveSessionsByUserId(user.id);
 
-    if (existingSessions.length >= 5) {
-      const oldSessions = existingSessions.slice(4);
+    if (activeSessions.length >= 5) {
+      const oldSessions = activeSessions.slice(4);
       await Promise.all(
-        oldSessions.map((s) => this.authRepo.deleteSessionById(s.id)),
+        oldSessions.map((s) => this.authRepo.revokeFamily(s.family)),
       );
     }
 
+    const family = crypto.randomUUID();
     await this.authRepo.createSession({
       userid: user.id,
-      accesstoken,
-      refreshtoken,
+      refreshtoken: this.hashToken(refreshtoken),
+      family,
     });
 
     const userWithoutPassword = AuthMapper.toSafeUser(user);
@@ -439,8 +505,9 @@ export class AuthService {
       this.jwtService.verify(token, {
         secret: process.env.JWT_REFRESH_SECRET,
       });
-      const session = await this.authRepo.findSessionByRefreshToken(token);
-      return Boolean(session);
+      const hashedToken = this.hashToken(token);
+      const session = await this.authRepo.findSessionByRefreshToken(hashedToken);
+      return Boolean(session && !session.isrevoked && !session.isused);
     } catch {
       return false;
     }

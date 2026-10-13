@@ -1722,7 +1722,7 @@
           "SessionLogins": {
             "fields": {
               "accesstoken": {
-                "nullable": false,
+                "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
@@ -1735,10 +1735,38 @@
                   "kind": "scalar"
                 }
               },
+              "expiresat": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamp-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "family": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "id": {
                 "nullable": false,
                 "type": {
                   "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "isrevoked": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "isused": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
                   "kind": "scalar"
                 }
               },
@@ -1790,8 +1818,20 @@
                 "createdat": {
                   "column": "createdat"
                 },
+                "expiresat": {
+                  "column": "expiresat"
+                },
+                "family": {
+                  "column": "family"
+                },
                 "id": {
                   "column": "id"
+                },
+                "isrevoked": {
+                  "column": "isrevoked"
+                },
+                "isused": {
+                  "column": "isused"
                 },
                 "refreshtoken": {
                   "column": "refreshtoken"
@@ -3955,7 +3995,7 @@
                 "accesstoken": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
-                  "nullable": false
+                  "nullable": true
                 },
                 "createdat": {
                   "codecId": "pg/timestamp-temporal@1",
@@ -3966,6 +4006,20 @@
                   "nativeType": "timestamp",
                   "nullable": false
                 },
+                "expiresat": {
+                  "codecId": "pg/timestamp-temporal@1",
+                  "nativeType": "timestamp",
+                  "nullable": true
+                },
+                "family": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": ""
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
                 "id": {
                   "codecId": "pg/int4@1",
                   "default": {
@@ -3973,6 +4027,24 @@
                     "kind": "function"
                   },
                   "nativeType": "int4",
+                  "nullable": false
+                },
+                "isrevoked": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": false
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "isused": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": false
+                  },
+                  "nativeType": "bool",
                   "nullable": false
                 },
                 "refreshtoken": {
@@ -4018,9 +4090,23 @@
               "indexes": [
                 {
                   "columns": [
+                    "family"
+                  ],
+                  "name": "ix_sessionlogin_family",
+                  "unique": false
+                },
+                {
+                  "columns": [
                     "userid"
                   ],
                   "name": "ix_sessionlogin_refreshtoken",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "refreshtoken"
+                  ],
+                  "name": "ix_sessionlogin_token",
                   "unique": false
                 }
               ],
@@ -4489,7 +4575,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "53d30f04e9a60da90baed7bc36fa9fc4faef66b29c8cd3e32ace5650e75c008f"
+    "storageHash": "d8c6591419fc988084cd85e2037ed92f8aea99b38ca8ebff990ceb6d63443a13"
   },
   "capabilities": {
     "postgres": {

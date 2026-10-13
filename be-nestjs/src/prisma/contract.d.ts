@@ -34,7 +34,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'53d30f04e9a60da90baed7bc36fa9fc4faef66b29c8cd3e32ace5650e75c008f'>;
+  StorageHashBase<'d8c6591419fc988084cd85e2037ed92f8aea99b38ca8ebff990ceb6d63443a13'>;
 export type ExecutionHash = ExecutionHashBase<string>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
@@ -365,9 +365,13 @@ export type FieldOutputTypes = {
       readonly userid: CodecTypes['pg/int4@1']['output'];
     };
     readonly SessionLogins: {
-      readonly accesstoken: CodecTypes['pg/text@1']['output'];
+      readonly accesstoken: CodecTypes['pg/text@1']['output'] | null;
       readonly createdat: CodecTypes['pg/timestamp-temporal@1']['output'];
+      readonly expiresat: CodecTypes['pg/timestamp-temporal@1']['output'] | null;
+      readonly family: CodecTypes['pg/text@1']['output'];
       readonly id: CodecTypes['pg/int4@1']['output'];
+      readonly isrevoked: CodecTypes['pg/bool@1']['output'];
+      readonly isused: CodecTypes['pg/bool@1']['output'];
       readonly refreshtoken: CodecTypes['pg/text@1']['output'];
       readonly updatedat: CodecTypes['pg/timestamp-temporal@1']['output'];
       readonly userid: CodecTypes['pg/int4@1']['output'];
@@ -533,9 +537,13 @@ export type FieldInputTypes = {
       readonly userid: CodecTypes['pg/int4@1']['input'];
     };
     readonly SessionLogins: {
-      readonly accesstoken: CodecTypes['pg/text@1']['input'];
+      readonly accesstoken: CodecTypes['pg/text@1']['input'] | null;
       readonly createdat: CodecTypes['pg/timestamp-temporal@1']['input'];
+      readonly expiresat: CodecTypes['pg/timestamp-temporal@1']['input'] | null;
+      readonly family: CodecTypes['pg/text@1']['input'];
       readonly id: CodecTypes['pg/int4@1']['input'];
+      readonly isrevoked: CodecTypes['pg/bool@1']['input'];
+      readonly isused: CodecTypes['pg/bool@1']['input'];
       readonly refreshtoken: CodecTypes['pg/text@1']['input'];
       readonly updatedat: CodecTypes['pg/timestamp-temporal@1']['input'];
       readonly userid: CodecTypes['pg/int4@1']['input'];
@@ -701,9 +709,13 @@ export type StorageColumnTypes = {
       readonly userid: CodecTypes['pg/int4@1']['output'];
     };
     readonly SessionLogins: {
-      readonly accesstoken: CodecTypes['pg/text@1']['output'];
+      readonly accesstoken: CodecTypes['pg/text@1']['output'] | null;
       readonly createdat: CodecTypes['pg/timestamp-temporal@1']['output'];
+      readonly expiresat: CodecTypes['pg/timestamp-temporal@1']['output'] | null;
+      readonly family: CodecTypes['pg/text@1']['output'];
       readonly id: CodecTypes['pg/int4@1']['output'];
+      readonly isrevoked: CodecTypes['pg/bool@1']['output'];
+      readonly isused: CodecTypes['pg/bool@1']['output'];
       readonly refreshtoken: CodecTypes['pg/text@1']['output'];
       readonly updatedat: CodecTypes['pg/timestamp-temporal@1']['output'];
       readonly userid: CodecTypes['pg/int4@1']['output'];
@@ -869,9 +881,13 @@ export type StorageColumnInputTypes = {
       readonly userid: CodecTypes['pg/int4@1']['input'];
     };
     readonly SessionLogins: {
-      readonly accesstoken: CodecTypes['pg/text@1']['input'];
+      readonly accesstoken: CodecTypes['pg/text@1']['input'] | null;
       readonly createdat: CodecTypes['pg/timestamp-temporal@1']['input'];
+      readonly expiresat: CodecTypes['pg/timestamp-temporal@1']['input'] | null;
+      readonly family: CodecTypes['pg/text@1']['input'];
       readonly id: CodecTypes['pg/int4@1']['input'];
+      readonly isrevoked: CodecTypes['pg/bool@1']['input'];
+      readonly isused: CodecTypes['pg/bool@1']['input'];
       readonly refreshtoken: CodecTypes['pg/text@1']['input'];
       readonly updatedat: CodecTypes['pg/timestamp-temporal@1']['input'];
       readonly userid: CodecTypes['pg/int4@1']['input'];
@@ -1084,9 +1100,13 @@ export namespace Models {
     readonly [RelationKeys]?: 'company' | 'user';
   };
   export type public_SessionLogins = {
-    accesstoken: CodecTypes['pg/text@1']['output'];
+    accesstoken: CodecTypes['pg/text@1']['output'] | null;
     createdat: CodecTypes['pg/timestamp-temporal@1']['output'];
+    expiresat: CodecTypes['pg/timestamp-temporal@1']['output'] | null;
+    family: CodecTypes['pg/text@1']['output'];
     id: CodecTypes['pg/int4@1']['output'];
+    isrevoked: CodecTypes['pg/bool@1']['output'];
+    isused: CodecTypes['pg/bool@1']['output'];
     refreshtoken: CodecTypes['pg/text@1']['output'];
     updatedat: CodecTypes['pg/timestamp-temporal@1']['output'];
     userid: CodecTypes['pg/int4@1']['output'];
@@ -2276,13 +2296,27 @@ type ContractBase = Omit<
                 readonly accesstoken: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
-                  readonly nullable: false;
+                  readonly nullable: true;
                 };
                 readonly createdat: {
                   readonly nativeType: 'timestamp';
                   readonly codecId: 'pg/timestamp-temporal@1';
                   readonly nullable: false;
                   readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly expiresat: {
+                  readonly nativeType: 'timestamp';
+                  readonly codecId: 'pg/timestamp-temporal@1';
+                  readonly nullable: true;
+                };
+                readonly family: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', ''>;
+                  };
                 };
                 readonly id: {
                   readonly nativeType: 'int4';
@@ -2291,6 +2325,24 @@ type ContractBase = Omit<
                   readonly default: {
                     readonly kind: 'function';
                     readonly expression: 'autoincrement()';
+                  };
+                };
+                readonly isrevoked: {
+                  readonly nativeType: 'bool';
+                  readonly codecId: 'pg/bool@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/bool@1', false>;
+                  };
+                };
+                readonly isused: {
+                  readonly nativeType: 'bool';
+                  readonly codecId: 'pg/bool@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/bool@1', false>;
                   };
                 };
                 readonly refreshtoken: {
@@ -2317,8 +2369,18 @@ type ContractBase = Omit<
               uniques: readonly [];
               indexes: readonly [
                 {
+                  readonly name: 'ix_sessionlogin_family';
+                  readonly columns: readonly ['family'];
+                  readonly unique: false;
+                },
+                {
                   readonly name: 'ix_sessionlogin_refreshtoken';
                   readonly columns: readonly ['userid'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'ix_sessionlogin_token';
+                  readonly columns: readonly ['refreshtoken'];
                   readonly unique: false;
                 },
               ];
@@ -3827,7 +3889,7 @@ type ContractBase = Omit<
           readonly SessionLogins: {
             readonly fields: {
               readonly accesstoken: {
-                readonly nullable: false;
+                readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly createdat: {
@@ -3837,9 +3899,28 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/timestamp-temporal@1';
                 };
               };
+              readonly expiresat: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamp-temporal@1';
+                };
+              };
+              readonly family: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
               readonly id: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly isrevoked: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
+              };
+              readonly isused: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
               };
               readonly refreshtoken: {
                 readonly nullable: false;
@@ -3874,7 +3955,11 @@ type ContractBase = Omit<
               readonly fields: {
                 readonly accesstoken: { readonly column: 'accesstoken' };
                 readonly createdat: { readonly column: 'createdat' };
+                readonly expiresat: { readonly column: 'expiresat' };
+                readonly family: { readonly column: 'family' };
                 readonly id: { readonly column: 'id' };
+                readonly isrevoked: { readonly column: 'isrevoked' };
+                readonly isused: { readonly column: 'isused' };
                 readonly refreshtoken: { readonly column: 'refreshtoken' };
                 readonly updatedat: { readonly column: 'updatedat' };
                 readonly userid: { readonly column: 'userid' };
