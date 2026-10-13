@@ -5,6 +5,8 @@ export const COOKIE_MAX_AGE = 7 * 24 * 60 * 60 * 1000;
 
 export const isProductionEnv = (): boolean =>
   process.env.NODE_ENV === 'production' ||
+  process.env.RENDER === 'true' ||
+  Boolean(process.env.VERCEL) ||
   (Boolean(process.env.CLIENT_URL) && !process.env.CLIENT_URL?.includes('localhost'));
 
 /**

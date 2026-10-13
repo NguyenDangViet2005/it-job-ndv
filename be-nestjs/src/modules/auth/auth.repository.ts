@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { orm } from '~/prisma/db.js';
+import { nowPlainDateTime } from '~/common/utils/temporal.util.js';
 
 @Injectable()
 export class AuthRepository {
@@ -66,7 +67,7 @@ export class AuthRepository {
     family: string;
     isused?: boolean;
     isrevoked?: boolean;
-    expiresat?: Date;
+    expiresat?: any;
   }) {
     return orm.SessionLogins.create({
       userid: data.userid,
@@ -81,14 +82,14 @@ export class AuthRepository {
   async markTokenUsed(id: number) {
     return orm.SessionLogins.where({ id }).update({
       isused: true,
-      updatedat: new Date() as any,
+      updatedat: nowPlainDateTime() as any,
     });
   }
 
   async revokeFamily(family: string) {
     return orm.SessionLogins.where({ family }).update({
       isrevoked: true,
-      updatedat: new Date() as any,
+      updatedat: nowPlainDateTime() as any,
     });
   }
 
@@ -101,7 +102,7 @@ export class AuthRepository {
       refreshtoken: refreshToken,
     }).update({
       isrevoked: true,
-      updatedat: new Date() as any,
+      updatedat: nowPlainDateTime() as any,
     });
   }
 

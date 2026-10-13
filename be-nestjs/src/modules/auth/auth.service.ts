@@ -230,7 +230,9 @@ export class AuthService {
     if (session.isused) {
       // Grace Period (15 giây) theo khuyến nghị OAuth 2.0 Security BCP:
       // Xử lý race-condition khi người dùng mở nhiều tab cùng lúc hoặc reload nhanh
-      const updatedTime = session.updatedat ? new Date(session.updatedat).getTime() : 0;
+      const updatedTime = session.updatedat
+        ? new Date(session.updatedat.toString()).getTime()
+        : 0;
       const isWithinGracePeriod = Date.now() - updatedTime < 15000;
 
       if (isWithinGracePeriod) {
