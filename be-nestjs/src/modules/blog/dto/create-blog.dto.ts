@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsOptional, IsString, IsInt } from 'class-validator';
+import {
+  Allow,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsInt,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateBlogDto {
@@ -19,8 +25,7 @@ export class CreateBlogDto {
   @IsInt({ message: 'Mã danh mục phải là số nguyên' })
   categoryid?: number;
 
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt({ message: 'Thời gian đọc phải là số phút' })
-  readtime?: number;
+  /** Deprecated compatibility input; ignored and never persisted. */
+  @Allow()
+  readtime?: unknown;
 }

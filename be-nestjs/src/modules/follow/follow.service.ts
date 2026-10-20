@@ -1,3 +1,4 @@
+import { withTransaction } from '~/prisma/db.js';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { FollowMapper, type FollowResponseData } from './follow.mapper.js';
 import { FollowRepository } from './follow.repository.js';
@@ -11,22 +12,27 @@ export class FollowService {
   /**
    * Theo dõi hoặc hủy theo dõi công ty
    */
-  async toggleFollow(userId: number, companyId: number): Promise<{ followed: boolean }> {
-    const company = await this.followRepo.findCompanyById(companyId);
-    if (!company) {
-      throw new NotFoundException('Công ty không tồn tại');
-    }
+  async toggleFollow(
+    userId: number,
+    companyId: number,
+  ): Promise<{ followed: boolean }> {
+    return withTransaction(async () => {
+      const company = await this.followRepo.findCompanyById(companyId);
+      if (!company) {
+        throw new NotFoundException('Công ty không tồn tại');
+      }
 
-    const existing = await this.followRepo.findFollow(userId, companyId);
+      const existing = await this.followRepo.findFollow(userId, companyId);
 
-    if (existing) {
-      await this.followRepo.deleteFollow(userId, companyId);
-      return { followed: false };
-    }
+      if (existing) {
+        await this.followRepo.deleteFollow(userId, companyId);
+        return { followed: false };
+      }
 
-    await this.followRepo.createFollow(userId, companyId);
+      await this.followRepo.createFollow(userId, companyId);
 
-    return { followed: true };
+      return { followed: true };
+    }, true);
   }
 
   /**
@@ -42,7 +48,11 @@ export class FollowService {
     const offset = (pNumber - 1) * pSize;
 
     const count = await this.followRepo.countByCompanyId(companyId);
-    const rows = await this.followRepo.findByCompanyId(companyId, offset, pSize);
+    const rows = await this.followRepo.findByCompanyId(
+      companyId,
+      offset,
+      pSize,
+    );
 
     // Tối ưu truy vấn người dùng theo lô (tránh N+1)
     const userIds = [...new Set(rows.map((r: any) => r.userid))] as number[];

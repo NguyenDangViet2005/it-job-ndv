@@ -1,3 +1,4 @@
+import { withTransaction } from '~/prisma/db.js';
 import {
   Injectable,
   NotFoundException,
@@ -26,6 +27,42 @@ export class PostService {
   /**
    * Tối ưu hóa tải thông tin tác giả, công ty, tệp đính kèm và thống kê tương tác theo lô (tránh N+1)
    */
+  private async cleanupFiles(urls: string[]) {
+    for (const url of urls) {
+      await this.cloudinaryService.deleteFile(url).catch((error) => {
+        console.warn(
+          'Cloudinary cleanup failed; retry deletion for:',
+          url,
+          error?.message,
+        );
+      });
+    }
+  }
+
+  private async uploadAttachments<T>(
+    files: Express.Multer.File[] | undefined,
+    folder: string,
+    persist: (
+      attachments: { fileurl: string; filetype: string }[],
+    ) => Promise<T>,
+  ): Promise<T> {
+    const uploaded: { fileurl: string; filetype: string }[] = [];
+    try {
+      for (const file of files ?? []) {
+        const filetype = file.mimetype.startsWith('video/') ? 'video' : 'image';
+        const result = await this.cloudinaryService.uploadFile(
+          file,
+          `${folder}/${filetype}s`,
+        );
+        uploaded.push({ fileurl: result.secure_url, filetype });
+      }
+      return await persist(uploaded);
+    } catch (error) {
+      await this.cleanupFiles(uploaded.map((a) => a.fileurl));
+      throw error;
+    }
+  }
+
   private async enrichPosts(
     posts: any[],
     currentUserId?: number,
@@ -65,10 +102,7 @@ export class PostService {
     const likesCountMap = new Map<number, number>();
     const userLikesSet = new Set<number>();
     for (const like of allLikes) {
-      likesCountMap.set(
-        like.postid,
-        (likesCountMap.get(like.postid) || 0) + 1,
-      );
+      likesCountMap.set(like.postid, (likesCountMap.get(like.postid) || 0) + 1);
       if (currentUserId && like.userid === currentUserId) {
         userLikesSet.add(like.postid);
       }
@@ -101,13 +135,16 @@ export class PostService {
     // Tải thông tin người bình luận & tệp đính kèm bình luận
     let commentUsersMap = new Map<number, any>();
     if (commentUserIds.size > 0) {
-      const cUsers = await this.postRepo.findUsersWithCompanyMembersByIds([...commentUserIds]);
+      const cUsers = await this.postRepo.findUsersWithCompanyMembersByIds([
+        ...commentUserIds,
+      ]);
       commentUsersMap = new Map(cUsers.map((u) => [u.id, u]));
     }
 
     let commentAttachmentsMap = new Map<number, any[]>();
     if (commentIds.length > 0) {
-      const cAtts = await this.postRepo.findAttachmentsByInteractionIds(commentIds);
+      const cAtts =
+        await this.postRepo.findAttachmentsByInteractionIds(commentIds);
       for (const a of cAtts) {
         if (a.interactionid) {
           if (!commentAttachmentsMap.has(a.interactionid)) {
@@ -133,18 +170,12 @@ export class PostService {
         attachments: commentAttachmentsMap.get(c.id) || [],
       }));
 
-      return PostMapper.toPostResponse(
-        post,
-        user,
-        company,
-        postAttachments,
-        {
-          totalLikes,
-          totalComments,
-          islikedByCurrentUser,
-          comments: recentComments,
-        },
-      );
+      return PostMapper.toPostResponse(post, user, company, postAttachments, {
+        totalLikes,
+        totalComments,
+        islikedByCurrentUser,
+        comments: recentComments,
+      });
     });
   }
 
@@ -154,8 +185,7 @@ export class PostService {
   async getAllPosts(query: PostQueryDto, currentUserId?: number) {
     const pageNumber =
       query.pageNumber && query.pageNumber > 0 ? query.pageNumber : 1;
-    const pageSize =
-      query.pageSize && query.pageSize > 0 ? query.pageSize : 10;
+    const pageSize = query.pageSize && query.pageSize > 0 ? query.pageSize : 10;
     const keyword = (query.keyword || '').trim();
     const offset = (pageNumber - 1) * pageSize;
 
@@ -200,12 +230,15 @@ export class PostService {
   ) {
     const pageNumber =
       query.pageNumber && query.pageNumber > 0 ? query.pageNumber : 1;
-    const pageSize =
-      query.pageSize && query.pageSize > 0 ? query.pageSize : 10;
+    const pageSize = query.pageSize && query.pageSize > 0 ? query.pageSize : 10;
     const offset = (pageNumber - 1) * pageSize;
 
     const count = await this.postRepo.countPostsByUserId(userId);
-    const rows = await this.postRepo.findPostsByUserId(userId, offset, pageSize);
+    const rows = await this.postRepo.findPostsByUserId(
+      userId,
+      offset,
+      pageSize,
+    );
 
     const formatted = await this.enrichPosts(rows, currentUserId);
 
@@ -229,12 +262,15 @@ export class PostService {
   ) {
     const pageNumber =
       query.pageNumber && query.pageNumber > 0 ? query.pageNumber : 1;
-    const pageSize =
-      query.pageSize && query.pageSize > 0 ? query.pageSize : 10;
+    const pageSize = query.pageSize && query.pageSize > 0 ? query.pageSize : 10;
     const offset = (pageNumber - 1) * pageSize;
 
     const count = await this.postRepo.countPostsByCompanyId(companyId);
-    const rows = await this.postRepo.findPostsByCompanyId(companyId, offset, pageSize);
+    const rows = await this.postRepo.findPostsByCompanyId(
+      companyId,
+      offset,
+      pageSize,
+    );
 
     const formatted = await this.enrichPosts(rows, currentUserId);
 
@@ -262,7 +298,10 @@ export class PostService {
         throw new NotFoundException('Công ty không tồn tại');
       }
 
-      const isMember = await this.postRepo.findCompanyMember(dto.companyid, userId);
+      const isMember = await this.postRepo.findCompanyMember(
+        dto.companyid,
+        userId,
+      );
 
       if (!isMember && company.createdbyuserid !== userId) {
         throw new ForbiddenException(
@@ -271,26 +310,23 @@ export class PostService {
       }
     }
 
-    const postEntity = PostMapper.toCreatePostEntity(dto, userId);
-    const newPost = await this.postRepo.createPost(postEntity);
-
-    // Upload các tệp đính kèm lên Cloudinary
-    if (files && files.length > 0) {
-      for (const file of files) {
-        const filetype = file.mimetype.startsWith('video/')
-          ? 'video'
-          : 'image';
-        const folder = filetype === 'video' ? 'IT-JOB/posts/videos' : 'IT-JOB/posts/images';
-        const uploadRes = await this.cloudinaryService.uploadFile(file, folder);
-
-        await this.postRepo.createAttachment({
-          postid: newPost.id as any,
-          fileurl: uploadRes.secure_url as any,
-          filetype: filetype as any,
-        });
-      }
-    }
-
+    const newPost = await this.uploadAttachments(
+      files,
+      'IT-JOB/posts',
+      (attachments) =>
+        withTransaction(async () => {
+          const post = await this.postRepo.createPost(
+            PostMapper.toCreatePostEntity(dto, userId),
+          );
+          for (const attachment of attachments) {
+            await this.postRepo.createAttachment({
+              ...attachment,
+              postid: post.id,
+            });
+          }
+          return post;
+        }),
+    );
     return this.getPostById(newPost.id, userId);
   }
 
@@ -312,55 +348,47 @@ export class PostService {
     if (currentUser.role !== 'admin' && post.userid !== currentUser.id) {
       let isAllowed = false;
       if (post.companyid) {
-        const isMember = await this.postRepo.findCompanyMember(post.companyid, currentUser.id);
-        const isCreator = (await this.postRepo.findCompanyById(post.companyid))?.createdbyuserid === currentUser.id;
+        const isMember = await this.postRepo.findCompanyMember(
+          post.companyid,
+          currentUser.id,
+        );
+        const isCreator =
+          (await this.postRepo.findCompanyById(post.companyid))
+            ?.createdbyuserid === currentUser.id;
         isAllowed = Boolean(isMember || isCreator);
       }
 
       if (!isAllowed) {
-        throw new ForbiddenException('Bạn không có quyền chỉnh sửa bài viết này');
+        throw new ForbiddenException(
+          'Bạn không có quyền chỉnh sửa bài viết này',
+        );
       }
     }
 
-    // Cập nhật thông tin bài viết
-    const updatePayload = PostMapper.toUpdatePostEntity(dto);
-    await this.postRepo.updatePost(id, updatePayload);
-
-    // Xử lý giữ lại ảnh cũ (keepImageUrls)
-    const existingAttachments = await this.postRepo.findAttachmentsByPostId(id);
-    let keepUrls: string[] = [];
-    if (dto.keepImageUrls) {
-      keepUrls = Array.isArray(dto.keepImageUrls)
-        ? dto.keepImageUrls
-        : [dto.keepImageUrls];
-    }
-
-    for (const att of existingAttachments) {
-      if (!keepUrls.includes(att.fileurl)) {
-        if (att.fileurl) {
-          await this.cloudinaryService.deleteFile(att.fileurl).catch(() => {});
-        }
-        await this.postRepo.deleteAttachmentById(att.id);
-      }
-    }
-
-    // Upload các tệp mới nếu có
-    if (files && files.length > 0) {
-      for (const file of files) {
-        const filetype = file.mimetype.startsWith('video/')
-          ? 'video'
-          : 'image';
-        const folder = filetype === 'video' ? 'IT-JOB/posts/videos' : 'IT-JOB/posts/images';
-        const uploadRes = await this.cloudinaryService.uploadFile(file, folder);
-
-        await this.postRepo.createAttachment({
-          postid: id as any,
-          fileurl: uploadRes.secure_url as any,
-          filetype: filetype as any,
-        });
-      }
-    }
-
+    const removedUrls = await this.uploadAttachments(
+      files,
+      'IT-JOB/posts',
+      (attachments) =>
+        withTransaction(async () => {
+          await this.postRepo.updatePost(
+            id,
+            PostMapper.toUpdatePostEntity(dto),
+          );
+          const existing = await this.postRepo.findAttachmentsByPostId(id);
+          const keep = dto.keepImageUrls
+            ? Array.isArray(dto.keepImageUrls)
+              ? dto.keepImageUrls
+              : [dto.keepImageUrls]
+            : [];
+          const removed = existing.filter((att) => !keep.includes(att.fileurl));
+          for (const att of removed)
+            await this.postRepo.deleteAttachmentById(att.id);
+          for (const attachment of attachments)
+            await this.postRepo.createAttachment({ ...attachment, postid: id });
+          return removed.map((att) => att.fileurl);
+        }, true),
+    );
+    await this.cleanupFiles(removedUrls);
     return this.getPostById(id, currentUser.id);
   }
 
@@ -376,8 +404,13 @@ export class PostService {
     if (currentUser.role !== 'admin' && post.userid !== currentUser.id) {
       let isAllowed = false;
       if (post.companyid) {
-        const isMember = await this.postRepo.findCompanyMember(post.companyid, currentUser.id);
-        const isCreator = (await this.postRepo.findCompanyById(post.companyid))?.createdbyuserid === currentUser.id;
+        const isMember = await this.postRepo.findCompanyMember(
+          post.companyid,
+          currentUser.id,
+        );
+        const isCreator =
+          (await this.postRepo.findCompanyById(post.companyid))
+            ?.createdbyuserid === currentUser.id;
         isAllowed = Boolean(isMember || isCreator);
       }
 
@@ -386,36 +419,18 @@ export class PostService {
       }
     }
 
-    // 1. Dọn dẹp attachments của post trên Cloudinary
-    const postAttachments = await this.postRepo.findAttachmentsByPostId(id);
-    for (const att of postAttachments) {
-      if (att.fileurl) {
-        await this.cloudinaryService.deleteFile(att.fileurl).catch(() => {});
-      }
-    }
-
-    // 2. Dọn dẹp attachments của comments trên Cloudinary
-    const postComments = await this.postRepo.findInteractionsByPostId(id);
-    const commentIds = postComments.map((c) => c.id);
-    if (commentIds.length > 0) {
-      const commentAttachments = await this.postRepo.findAttachmentsByInteractionIds(commentIds);
-      for (const att of commentAttachments) {
-        if (att.fileurl) {
-          await this.cloudinaryService.deleteFile(att.fileurl).catch(() => {});
-        }
-      }
-      await this.postRepo.deleteAttachmentsByInteractionIds(commentIds);
-    }
-
-    // 3. Xóa dữ liệu DB
-    await this.postRepo.deleteAttachmentsByPostId(id);
-    await this.postRepo.deleteInteractionsByPostId(id);
-    await this.postRepo.deletePost(id);
-
-    return {
-      success: true,
-      message: 'Xóa bài viết thành công',
-    };
+    const urls = await withTransaction(async () => {
+      const direct = await this.postRepo.findAttachmentsByPostId(id);
+      const comments = await this.postRepo.findInteractionsByPostId(id);
+      const attachments = await this.postRepo.findAttachmentsByInteractionIds(
+        comments.map((c) => c.id),
+      );
+      // FK cascades remove post -> interactions -> attachments atomically.
+      await this.postRepo.deletePost(id);
+      return [...direct, ...attachments].map((a) => a.fileurl);
+    }, true);
+    await this.cleanupFiles(urls);
+    return { success: true, message: 'Xóa bài viết thành công' };
   }
 
   /**
@@ -431,13 +446,20 @@ export class PostService {
     const offset = (pNumber - 1) * pSize;
 
     const count = await this.postRepo.countCommentsByPostId(postId);
-    const comments = await this.postRepo.findCommentsByPostId(postId, offset, pSize);
+    const comments = await this.postRepo.findCommentsByPostId(
+      postId,
+      offset,
+      pSize,
+    );
 
     // Nạp thêm thông tin công ty của tác giả bình luận nếu có
-    const userIds = [...new Set(comments.map((c: any) => c.userid))] as number[];
+    const userIds = [
+      ...new Set(comments.map((c: any) => c.userid)),
+    ] as number[];
     let memberMap = new Map<number, any>();
     if (userIds.length > 0) {
-      const members = await this.postRepo.findActiveCompanyMembersByUserIds(userIds);
+      const members =
+        await this.postRepo.findActiveCompanyMembersByUserIds(userIds);
       memberMap = new Map(members.map((m: any) => [m.userid, m]));
     }
 
@@ -470,30 +492,32 @@ export class PostService {
    * Toggle Like cho bài viết
    */
   async toggleLike(postId: number, userId: number) {
-    const post = await this.postRepo.findPostById(postId);
-    if (!post) {
-      throw new NotFoundException('Không tìm thấy bài viết');
-    }
+    return withTransaction(async () => {
+      const post = await this.postRepo.findPostById(postId);
+      if (!post) {
+        throw new NotFoundException('Không tìm thấy bài viết');
+      }
 
-    const existingLike = await this.postRepo.findLike(postId, userId);
+      const existingLike = await this.postRepo.findLike(postId, userId);
 
-    let isliked = false;
-    if (existingLike) {
-      await this.postRepo.deleteInteractionById(existingLike.id);
-      isliked = false;
-    } else {
-      await this.postRepo.createLike(postId, userId);
-      isliked = true;
-    }
+      let isliked = false;
+      if (existingLike) {
+        await this.postRepo.deleteInteractionById(existingLike.id);
+        isliked = false;
+      } else {
+        await this.postRepo.createLike(postId, userId);
+        isliked = true;
+      }
 
-    const count = await this.postRepo.countLikesByPostId(postId);
+      const count = await this.postRepo.countLikesByPostId(postId);
 
-    return {
-      postid: postId,
-      userid: userId,
-      isliked,
-      totalLikes: count,
-    };
+      return {
+        postid: postId,
+        userid: userId,
+        isliked,
+        totalLikes: count,
+      };
+    }, true);
   }
 
   /**
@@ -510,32 +534,25 @@ export class PostService {
       throw new NotFoundException('Không tìm thấy bài viết');
     }
 
-    const commentEntity = PostMapper.toCreateCommentEntity(
-      dto,
-      postId,
-      userId,
+    const newComment = await this.uploadAttachments(
+      files,
+      'IT-JOB/comments',
+      (attachments) =>
+        withTransaction(async () => {
+          const comment = await this.postRepo.createComment(
+            PostMapper.toCreateCommentEntity(dto, postId, userId),
+          );
+          for (const attachment of attachments)
+            await this.postRepo.createAttachment({
+              ...attachment,
+              interactionid: comment.id,
+            });
+          return comment;
+        }),
     );
-    const newComment = await this.postRepo.createComment(commentEntity);
-
-    // Upload tệp đính kèm bình luận
-    if (files && files.length > 0) {
-      for (const file of files) {
-        const filetype = file.mimetype.startsWith('video/')
-          ? 'video'
-          : 'image';
-        const folder = filetype === 'video' ? 'IT-JOB/comments/videos' : 'IT-JOB/comments/images';
-        const uploadRes = await this.cloudinaryService.uploadFile(file, folder);
-
-        await this.postRepo.createAttachment({
-          interactionid: newComment.id as any,
-          fileurl: uploadRes.secure_url as any,
-          filetype: filetype as any,
-        });
-      }
-    }
-
-    const created = await this.postRepo.findInteractionWithDetails(newComment.id);
-
+    const created = await this.postRepo.findInteractionWithDetails(
+      newComment.id,
+    );
     return PostMapper.toCommentResponse(created);
   }
 
@@ -554,49 +571,41 @@ export class PostService {
     }
 
     if (currentUser.role !== 'admin' && comment.userid !== currentUser.id) {
-      throw new ForbiddenException('Bạn không có quyền chỉnh sửa bình luận này');
+      throw new ForbiddenException(
+        'Bạn không có quyền chỉnh sửa bình luận này',
+      );
     }
 
-    const updatePayload = PostMapper.toUpdateCommentEntity(dto);
-    await this.postRepo.updateInteraction(commentId, updatePayload);
-
-    // Xử lý giữ lại ảnh cũ
-    const existingAttachments = await this.postRepo.findAttachmentsByInteractionIds([commentId]);
-    let keepUrls: string[] = [];
-    if (dto.keepImageUrls) {
-      keepUrls = Array.isArray(dto.keepImageUrls)
-        ? dto.keepImageUrls
-        : [dto.keepImageUrls];
-    }
-
-    for (const att of existingAttachments) {
-      if (!keepUrls.includes(att.fileurl)) {
-        if (att.fileurl) {
-          await this.cloudinaryService.deleteFile(att.fileurl).catch(() => {});
-        }
-        await this.postRepo.deleteAttachmentById(att.id);
-      }
-    }
-
-    // Upload tệp mới
-    if (files && files.length > 0) {
-      for (const file of files) {
-        const filetype = file.mimetype.startsWith('video/')
-          ? 'video'
-          : 'image';
-        const folder = filetype === 'video' ? 'IT-JOB/comments/videos' : 'IT-JOB/comments/images';
-        const uploadRes = await this.cloudinaryService.uploadFile(file, folder);
-
-        await this.postRepo.createAttachment({
-          interactionid: commentId as any,
-          fileurl: uploadRes.secure_url as any,
-          filetype: filetype as any,
-        });
-      }
-    }
-
+    const removedUrls = await this.uploadAttachments(
+      files,
+      'IT-JOB/comments',
+      (attachments) =>
+        withTransaction(async () => {
+          await this.postRepo.updateInteraction(
+            commentId,
+            PostMapper.toUpdateCommentEntity(dto),
+          );
+          const existing = await this.postRepo.findAttachmentsByInteractionIds([
+            commentId,
+          ]);
+          const keep = dto.keepImageUrls
+            ? Array.isArray(dto.keepImageUrls)
+              ? dto.keepImageUrls
+              : [dto.keepImageUrls]
+            : [];
+          const removed = existing.filter((att) => !keep.includes(att.fileurl));
+          for (const att of removed)
+            await this.postRepo.deleteAttachmentById(att.id);
+          for (const attachment of attachments)
+            await this.postRepo.createAttachment({
+              ...attachment,
+              interactionid: commentId,
+            });
+          return removed.map((att) => att.fileurl);
+        }, true),
+    );
+    await this.cleanupFiles(removedUrls);
     const updated = await this.postRepo.findInteractionWithDetails(commentId);
-
     return PostMapper.toCommentResponse(updated);
   }
 
@@ -616,20 +625,14 @@ export class PostService {
       throw new ForbiddenException('Bạn không có quyền xóa bình luận này');
     }
 
-    // Xóa tệp đính kèm trên Cloudinary và DB
-    const attachments = await this.postRepo.findAttachmentsByInteractionIds([commentId]);
-    for (const att of attachments) {
-      if (att.fileurl) {
-        await this.cloudinaryService.deleteFile(att.fileurl).catch(() => {});
-      }
-    }
-
-    await this.postRepo.deleteAttachmentsByInteractionId(commentId);
-    await this.postRepo.deleteInteractionById(commentId);
-
-    return {
-      success: true,
-      message: 'Xóa bình luận thành công',
-    };
+    const urls = await withTransaction(async () => {
+      const attachments = await this.postRepo.findAttachmentsByInteractionIds([
+        commentId,
+      ]);
+      await this.postRepo.deleteInteractionById(commentId);
+      return attachments.map((a) => a.fileurl);
+    }, true);
+    await this.cleanupFiles(urls);
+    return { success: true, message: 'Xóa bình luận thành công' };
   }
 }

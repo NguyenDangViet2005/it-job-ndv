@@ -39,7 +39,11 @@ export class PostRepository {
     return count;
   }
 
-  async findPostsByUserId(userId: number, offset: number = 0, limit: number = 10) {
+  async findPostsByUserId(
+    userId: number,
+    offset: number = 0,
+    limit: number = 10,
+  ) {
     return orm.Post.where({ userid: userId })
       .orderBy((p: any) => p.id.desc())
       .offset(offset)
@@ -54,7 +58,11 @@ export class PostRepository {
     return count;
   }
 
-  async findPostsByCompanyId(companyId: number, offset: number = 0, limit: number = 10) {
+  async findPostsByCompanyId(
+    companyId: number,
+    offset: number = 0,
+    limit: number = 10,
+  ) {
     return orm.Post.where({ companyid: companyId })
       .orderBy((p: any) => p.id.desc())
       .offset(offset)
@@ -138,18 +146,20 @@ export class PostRepository {
   }
 
   async deleteAttachmentsByPostId(postId: number) {
-    return orm.Attachment.where({ postid: postId }).delete();
+    return orm.Attachment.where({ postid: postId }).deleteAndCount();
   }
 
   async deleteAttachmentsByInteractionIds(interactionIds: number[]) {
     if (interactionIds.length === 0) return;
     return orm.Attachment.where((a: any) =>
       a.interactionid.in(interactionIds),
-    ).delete();
+    ).deleteAndCount();
   }
 
   async deleteAttachmentsByInteractionId(interactionId: number) {
-    return orm.Attachment.where({ interactionid: interactionId }).delete();
+    return orm.Attachment.where({
+      interactionid: interactionId,
+    }).deleteAndCount();
   }
 
   // Interactions (Likes & Comments)
@@ -198,7 +208,7 @@ export class PostRepository {
   }
 
   async deleteInteractionsByPostId(postId: number) {
-    return orm.Interaction.where({ postid: postId }).delete();
+    return orm.Interaction.where({ postid: postId }).deleteAndCount();
   }
 
   async countCommentsByPostId(postId: number): Promise<number> {
@@ -208,7 +218,11 @@ export class PostRepository {
     return count;
   }
 
-  async findCommentsByPostId(postId: number, offset: number = 0, limit: number = 10) {
+  async findCommentsByPostId(
+    postId: number,
+    offset: number = 0,
+    limit: number = 10,
+  ) {
     return orm.Interaction.where({ postid: postId })
       .where((i: any) => i.content.isNotNull())
       .include('user')

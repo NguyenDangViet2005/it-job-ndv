@@ -9,7 +9,6 @@ export interface BlogResponseData {
   title: string;
   excerpt: string | null;
   content: string;
-  readtime: number | null;
   image: string | null;
   author: string | null;
   avatar: string | null;
@@ -20,9 +19,14 @@ export interface BlogResponseData {
 }
 
 export class BlogMapper {
-  static toBlogResponse(blog: any, user?: any, category?: any): BlogResponseData {
+  static toBlogResponse(
+    blog: any,
+    user?: any,
+    category?: any,
+  ): BlogResponseData {
     const finalUser = user || blog.user || blog.User || null;
-    const finalCategory = category || blog.blogCategory || blog.BlogCategory || null;
+    const finalCategory =
+      category || blog.blogCategory || blog.BlogCategory || null;
 
     return {
       id: blog.id,
@@ -31,7 +35,6 @@ export class BlogMapper {
       title: blog.title,
       excerpt: blog.excerpt || null,
       content: blog.content,
-      readtime: blog.readtime || null,
       image: blog.image || null,
       author: finalUser ? finalUser.fullname || null : null,
       avatar: finalUser ? finalUser.avatar || null : null,
@@ -42,7 +45,11 @@ export class BlogMapper {
     };
   }
 
-  static toCreateBlogEntity(dto: CreateBlogDto, userId: number, imageUrl?: string) {
+  static toCreateBlogEntity(
+    dto: CreateBlogDto,
+    userId: number,
+    imageUrl?: string,
+  ) {
     const entity: Record<string, any> = {
       userid: userId,
       title: dto.title.trim() as any,
@@ -55,9 +62,6 @@ export class BlogMapper {
     }
     if (dto.excerpt) {
       entity.excerpt = dto.excerpt.trim();
-    }
-    if (dto.readtime) {
-      entity.readtime = dto.readtime;
     }
     if (imageUrl) {
       entity.image = imageUrl as any;
@@ -80,9 +84,6 @@ export class BlogMapper {
     }
     if (dto.categoryid !== undefined) {
       data.categoryid = dto.categoryid;
-    }
-    if (dto.readtime !== undefined) {
-      data.readtime = dto.readtime;
     }
     if (imageUrl !== undefined) {
       data.image = imageUrl as any;

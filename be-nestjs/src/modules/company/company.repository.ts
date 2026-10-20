@@ -6,9 +6,9 @@ import { nowPlainDateTime } from '~/common/utils/temporal.util.js';
 export class CompanyRepository {
   async count(keyword?: string): Promise<number> {
     if (keyword) {
-      const agg = await orm.Company
-        .where((c: any) => c.name.ilike(`%${keyword}%`))
-        .aggregate((a) => ({ count: a.count() }));
+      const agg = await orm.Company.where((c: any) =>
+        c.name.ilike(`%${keyword}%`),
+      ).aggregate((a) => ({ count: a.count() }));
       return agg.count;
     }
     const agg = await orm.Company.aggregate((a) => ({
@@ -17,7 +17,11 @@ export class CompanyRepository {
     return agg.count;
   }
 
-  async findCompanies(keyword?: string, offset: number = 0, limit: number = 10) {
+  async findCompanies(
+    keyword?: string,
+    offset: number = 0,
+    limit: number = 10,
+  ) {
     let query = orm.Company;
     if (keyword) {
       query = query.where((c: any) => c.name.ilike(`%${keyword}%`)) as any;
@@ -35,21 +39,21 @@ export class CompanyRepository {
   }
 
   async countLogos(): Promise<number> {
-    const { count } = await orm.Company.aggregate((a) => ({ count: a.count() }));
+    const { count } = await orm.Company.aggregate((a) => ({
+      count: a.count(),
+    }));
     return count;
   }
 
   async findCompanyLogos(offset: number = 0, limit: number = 10) {
-    return orm.Company
-      .orderBy((c: any) => c.id.desc())
+    return orm.Company.orderBy((c: any) => c.id.desc())
       .offset(offset)
       .limit(limit)
       .all();
   }
 
   async findById(id: number) {
-    return orm.Company
-      .where({ id })
+    return orm.Company.where({ id })
       .include('companyMembers')
       .include('jobs')
       .include('posts')
@@ -63,34 +67,31 @@ export class CompanyRepository {
   }
 
   async findMemberByUserId(userId: number) {
-    return orm.CompanyMembers
-      .where({ userid: userId, status: 'active' as any })
-      .first();
+    return orm.CompanyMembers.where({
+      userid: userId,
+      status: 'active' as any,
+    }).first();
   }
 
   async findMember(companyId: number, userId: number) {
-    return orm.CompanyMembers
-      .where({ companyid: companyId, userid: userId, status: 'active' as any })
-      .first();
+    return orm.CompanyMembers.where({
+      companyid: companyId,
+      userid: userId,
+      status: 'active' as any,
+    }).first();
   }
 
   async findByCreatorId(userId: number) {
-    return orm.Company
-      .where({ createdbyuserid: userId })
-      .first();
+    return orm.Company.where({ createdbyuserid: userId }).first();
   }
 
   async findWardById(wardId: number) {
-    return orm.Wards
-      .where({ id: wardId })
-      .include('provinces')
-      .first();
+    return orm.Wards.where({ id: wardId }).include('provinces').first();
   }
 
   async findWardsByIds(wardIds: number[]) {
     if (wardIds.length === 0) return [];
-    return orm.Wards
-      .where((w: any) => w.id.in(wardIds))
+    return orm.Wards.where((w: any) => w.id.in(wardIds))
       .include('provinces')
       .all();
   }
@@ -99,7 +100,11 @@ export class CompanyRepository {
     return orm.Company.create(data);
   }
 
-  async addMember(companyId: number, userId: number, status: string = 'active') {
+  async addMember(
+    companyId: number,
+    userId: number,
+    status: string = 'active',
+  ) {
     return orm.CompanyMembers.create({
       companyid: companyId as any,
       userid: userId as any,
@@ -133,9 +138,11 @@ export class CompanyRepository {
 
   async deleteJobsAndApplications(jobIds: number[]) {
     if (jobIds.length === 0) return;
-    await orm.Application.where((a: any) => a.jobid.in(jobIds)).delete();
-    await orm.SkillJob.where((sj: any) => sj.jobid.in(jobIds)).delete();
-    await orm.Job.where((j: any) => j.id.in(jobIds)).delete();
+    await orm.Application.where((a: any) =>
+      a.jobid.in(jobIds),
+    ).deleteAndCount();
+    await orm.SkillJob.where((sj: any) => sj.jobid.in(jobIds)).deleteAndCount();
+    await orm.Job.where((j: any) => j.id.in(jobIds)).deleteAndCount();
   }
 
   async findPostsByCompanyId(companyId: number) {
@@ -147,17 +154,35 @@ export class CompanyRepository {
     return orm.Attachment.where((att: any) => att.postid.in(postIds)).all();
   }
 
+  async findAllPostAttachments(postIds: number[]) {
+    if (postIds.length === 0) return [];
+    const direct = await this.findAttachmentsByPostIds(postIds);
+    const interactions = await orm.Interaction.where((i: any) =>
+      i.postid.in(postIds),
+    ).all();
+    if (interactions.length === 0) return direct;
+    const ids = interactions.map((i) => i.id);
+    const nested = await orm.Attachment.where((a: any) =>
+      a.interactionid.in(ids),
+    ).all();
+    return [...direct, ...nested];
+  }
+
   async deletePostsAndRelations(postIds: number[]) {
     if (postIds.length === 0) return;
-    await orm.Attachment.where((att: any) => att.postid.in(postIds)).delete();
-    await orm.Interaction.where((it: any) => it.postid.in(postIds)).delete();
-    await orm.Post.where((p: any) => p.id.in(postIds)).delete();
+    await orm.Attachment.where((att: any) =>
+      att.postid.in(postIds),
+    ).deleteAndCount();
+    await orm.Interaction.where((it: any) =>
+      it.postid.in(postIds),
+    ).deleteAndCount();
+    await orm.Post.where((p: any) => p.id.in(postIds)).deleteAndCount();
   }
 
   async deleteFollowsReviewsMembersAndCompany(companyId: number) {
-    await orm.Follow.where({ companyid: companyId }).delete();
-    await orm.Review.where({ companyid: companyId }).delete();
-    await orm.CompanyMembers.where({ companyid: companyId }).delete();
-    await orm.Company.where({ id: companyId }).delete();
+    await orm.Follow.where({ companyid: companyId }).deleteAndCount();
+    await orm.Review.where({ companyid: companyId }).deleteAndCount();
+    await orm.CompanyMembers.where({ companyid: companyId }).deleteAndCount();
+    await orm.Company.where({ id: companyId }).deleteAndCount();
   }
 }

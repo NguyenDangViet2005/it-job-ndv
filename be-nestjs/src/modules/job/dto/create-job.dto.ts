@@ -7,8 +7,11 @@ import {
   Min,
   IsIn,
   IsArray,
+  IsNumber,
+  IsBoolean,
+  Max,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 
 export class CreateJobDto {
   @IsString({ message: 'Tiêu đề công việc phải là chuỗi ký tự' })
@@ -35,6 +38,35 @@ export class CreateJobDto {
   @IsNotEmpty({ message: 'Hạn nộp hồ sơ không được để trống' })
   @IsString({ message: 'Hạn nộp hồ sơ phải là chuỗi ngày hợp lệ (YYYY-MM-DD)' })
   deadline!: string;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @Min(0)
+  @Max(999999999999.99)
+  salarymin?: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @Min(0)
+  @Max(999999999999.99)
+  salarymax?: number;
+
+  @IsOptional()
+  @IsIn(['VND', 'USD', 'EUR'])
+  currency?: string;
+
+  @IsOptional()
+  @IsIn(['hour', 'month', 'year'])
+  salaryperiod?: string;
+
+  @IsOptional()
+  @Transform(({ obj, key }) =>
+    obj[key] === 'true' ? true : obj[key] === 'false' ? false : obj[key],
+  )
+  @IsBoolean()
+  isnegotiable?: boolean;
 
   @IsOptional()
   @IsString({ message: 'Mức lương phải là chuỗi ký tự' })

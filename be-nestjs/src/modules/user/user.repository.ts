@@ -11,8 +11,7 @@ export class UserRepository {
   }
 
   async findAll(offset: number = 0, limit: number = 10) {
-    return orm.User
-      .orderBy((u: any) => u.id.desc())
+    return orm.User.orderBy((u: any) => u.id.desc())
       .offset(offset)
       .limit(limit)
       .all();
@@ -36,14 +35,12 @@ export class UserRepository {
   }
 
   async deleteSessionsByUserId(userId: number) {
-    return orm.SessionLogins.where({ userid: userId }).delete();
+    return orm.SessionLogins.where({ userid: userId }).deleteAndCount();
   }
 
   // Skills
   async findUserSkills(userId: number) {
-    return orm.SkillUser.where({ userid: userId })
-      .include('skill')
-      .all();
+    return orm.SkillUser.where({ userid: userId }).include('skill').all();
   }
 
   async findSkillById(skillId: number) {
@@ -79,7 +76,11 @@ export class UserRepository {
     return count;
   }
 
-  async findUserApplications(userId: number, offset: number = 0, limit: number = 10) {
+  async findUserApplications(
+    userId: number,
+    offset: number = 0,
+    limit: number = 10,
+  ) {
     return orm.Application.where({ userid: userId })
       .include('job')
       .orderBy((a: any) => a.createdat.desc())
@@ -90,9 +91,7 @@ export class UserRepository {
 
   async findCompaniesByIds(companyIds: number[]) {
     if (companyIds.length === 0) return [];
-    return orm.Company
-      .where((c: any) => c.id.in(companyIds))
-      .all();
+    return orm.Company.where((c: any) => c.id.in(companyIds)).all();
   }
 
   // Posts
@@ -120,17 +119,21 @@ export class UserRepository {
 
   async countUserMedia(postIds: number[]): Promise<number> {
     if (postIds.length === 0) return 0;
-    const { count } = await orm.Attachment
-      .where((att: any) => att.postid.in(postIds))
+    const { count } = await orm.Attachment.where((att: any) =>
+      att.postid.in(postIds),
+    )
       .where((att: any) => att.filetype.in(['image', 'video']))
       .aggregate((a) => ({ count: a.count() }));
     return count;
   }
 
-  async findUserMedia(postIds: number[], offset: number = 0, limit: number = 6) {
+  async findUserMedia(
+    postIds: number[],
+    offset: number = 0,
+    limit: number = 6,
+  ) {
     if (postIds.length === 0) return [];
-    return orm.Attachment
-      .where((att: any) => att.postid.in(postIds))
+    return orm.Attachment.where((att: any) => att.postid.in(postIds))
       .where((att: any) => att.filetype.in(['image', 'video']))
       .orderBy((att: any) => att.id.desc())
       .offset(offset)

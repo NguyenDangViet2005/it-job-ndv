@@ -1,3 +1,4 @@
+import { withTransaction } from '~/prisma/db.js';
 import {
   Injectable,
   ConflictException,
@@ -47,6 +48,7 @@ export class AuthService {
 
     const refreshtoken = this.jwtService.sign(payload, {
       secret: process.env.JWT_REFRESH_SECRET,
+      jwtid: crypto.randomUUID(),
       expiresIn: (process.env.JWT_REFRESH_EXPIRES_IN || '7d') as any,
     });
 
@@ -95,24 +97,32 @@ export class AuthService {
     }
 
     if (dto.provinceid && ward.provinceid !== dto.provinceid) {
-      throw new BadRequestException('Phường/Xã không thuộc Tỉnh/Thành phố đã chọn');
+      throw new BadRequestException(
+        'Phường/Xã không thuộc Tỉnh/Thành phố đã chọn',
+      );
     }
 
     const hashedPassword = await bcrypt.hash(dto.password, 10);
-    let createdUserId: number | null = null;
-
-    try {
+    return withTransaction(async () => {
       // 1. Tạo tài khoản người dùng với vai trò employer
-      const userPayload = AuthMapper.toCreateHREmployerEntity(dto, hashedPassword);
+      const userPayload = AuthMapper.toCreateHREmployerEntity(
+        dto,
+        hashedPassword,
+      );
       const newUser = await this.authRepo.createUser(userPayload);
-      createdUserId = newUser.id;
 
       // 2. Tạo công ty liên kết với nhà tuyển dụng
-      const companyPayload = AuthMapper.toCreateHRCompanyEntity(dto, newUser.id);
+      const companyPayload = AuthMapper.toCreateHRCompanyEntity(
+        dto,
+        newUser.id,
+      );
       const newCompany = await this.authRepo.createCompany(companyPayload);
 
       // 3. Tạo thành viên công ty (CompanyMembers)
-      const memberPayload = AuthMapper.toCreateHRCompanyMemberEntity(newCompany.id, newUser.id);
+      const memberPayload = AuthMapper.toCreateHRCompanyMemberEntity(
+        newCompany.id,
+        newUser.id,
+      );
       await this.authRepo.createCompanyMember(memberPayload);
 
       // 4. Tạo token và phiên đăng nhập
@@ -138,13 +148,7 @@ export class AuthService {
         user: userWithoutPassword,
         company: formattedCompany,
       };
-    } catch (error) {
-      // Rollback user nếu có lỗi xảy ra trong quá trình khởi tạo công ty
-      if (createdUserId) {
-        await this.authRepo.deleteUser(createdUserId).catch(() => {});
-      }
-      throw error;
-    }
+    });
   }
 
   async login(dto: LoginDto) {
@@ -165,23 +169,7 @@ export class AuthService {
       user.email,
     );
 
-    // Giới hạn tối đa 5 phiên đăng nhập hoạt động đồng thời: Thu hồi các phiên cũ hơn nếu đã đủ 5
-    const activeSessions = await this.authRepo.findActiveSessionsByUserId(user.id);
-
-    if (activeSessions.length >= 5) {
-      const oldSessions = activeSessions.slice(4);
-      await Promise.all(
-        oldSessions.map((s) => this.authRepo.revokeFamily(s.family)),
-      );
-    }
-
-    // Khởi tạo một Token Family mới cho phiên đăng nhập này
-    const family = crypto.randomUUID();
-    await this.authRepo.createSession({
-      userid: user.id,
-      refreshtoken: this.hashToken(refreshtoken),
-      family,
-    });
+    await this.createLoginSession(user.id, refreshtoken);
 
     const userWithoutPassword = AuthMapper.toSafeUser(user);
 
@@ -212,18 +200,24 @@ export class AuthService {
         secret: process.env.JWT_REFRESH_SECRET,
       });
     } catch {
-      throw new UnauthorizedException('Refresh token không hợp lệ hoặc đã hết hạn');
+      throw new UnauthorizedException(
+        'Refresh token không hợp lệ hoặc đã hết hạn',
+      );
     }
 
     const hashedToken = this.hashToken(token);
     const session = await this.authRepo.findSessionByRefreshToken(hashedToken);
 
     if (!session) {
-      throw new UnauthorizedException('Phiên đăng nhập không tồn tại hoặc đã hết hạn');
+      throw new UnauthorizedException(
+        'Phiên đăng nhập không tồn tại hoặc đã hết hạn',
+      );
     }
 
     if (session.isrevoked) {
-      throw new UnauthorizedException('Phiên đăng nhập này đã bị thu hồi do lý do an ninh');
+      throw new UnauthorizedException(
+        'Phiên đăng nhập này đã bị thu hồi do lý do an ninh',
+      );
     }
 
     // Phát hiện tái sử dụng token (Reuse Detection)
@@ -239,7 +233,11 @@ export class AuthService {
         const user = await this.authRepo.findUserById(decoded.id);
         if (user) {
           const userWithoutPassword = AuthMapper.toSafeUser(user);
-          const tokens = this.generateTokens(user.id, user.role || 'user', user.email);
+          const tokens = this.generateTokens(
+            user.id,
+            user.role || 'user',
+            user.email,
+          );
           return {
             accesstoken: tokens.accesstoken,
             refreshtoken: token,
@@ -260,24 +258,26 @@ export class AuthService {
       throw new UnauthorizedException('Người dùng không tồn tại');
     }
 
-    // Đánh dấu token hiện tại đã sử dụng
-    await this.authRepo.markTokenUsed(session.id);
-
-    // Tạo cặp token mới (Rotation)
     const tokens = this.generateTokens(
       user.id,
       user.role || 'user',
       user.email,
     );
-
-    // Lưu token mới kế thừa cùng family (được băm SHA-256)
-    await this.authRepo.createSession({
-      userid: user.id,
-      refreshtoken: this.hashToken(tokens.refreshtoken),
-      family: session.family,
-      isused: false,
-      isrevoked: false,
+    const rotated = await withTransaction(async () => {
+      const claimed = await this.authRepo.markTokenUsed(session.id);
+      if (claimed !== 1) return false;
+      await this.authRepo.createSession({
+        userid: user.id,
+        refreshtoken: this.hashToken(tokens.refreshtoken),
+        family: session.family,
+      });
+      return true;
     });
+    if (!rotated) {
+      throw new UnauthorizedException(
+        'Refresh token đã được sử dụng hoặc thu hồi',
+      );
+    }
 
     const userWithoutPassword = AuthMapper.toSafeUser(user);
 
@@ -292,7 +292,8 @@ export class AuthService {
     if (refreshToken) {
       try {
         const hashedToken = this.hashToken(refreshToken);
-        const session = await this.authRepo.findSessionByRefreshToken(hashedToken);
+        const session =
+          await this.authRepo.findSessionByRefreshToken(hashedToken);
         if (session) {
           // Thu hồi toàn bộ token family của phiên đăng xuất này
           await this.authRepo.revokeFamily(session.family);
@@ -395,22 +396,7 @@ export class AuthService {
       user.email,
     );
 
-    // Giới hạn tối đa 5 phiên đăng nhập hoạt động đồng thời
-    const activeSessions = await this.authRepo.findActiveSessionsByUserId(user.id);
-
-    if (activeSessions.length >= 5) {
-      const oldSessions = activeSessions.slice(4);
-      await Promise.all(
-        oldSessions.map((s) => this.authRepo.revokeFamily(s.family)),
-      );
-    }
-
-    const family = crypto.randomUUID();
-    await this.authRepo.createSession({
-      userid: user.id,
-      refreshtoken: this.hashToken(refreshtoken),
-      family,
-    });
+    await this.createLoginSession(user.id, refreshtoken);
 
     const userWithoutPassword = AuthMapper.toSafeUser(user);
 
@@ -421,10 +407,25 @@ export class AuthService {
     };
   }
 
+  private async createLoginSession(userId: number, refreshToken: string) {
+    return withTransaction(async () => {
+      const sessions = await this.authRepo.findActiveSessionsByUserId(userId);
+      const families = [...new Set(sessions.map((s) => s.family))];
+      for (const family of families.slice(4))
+        await this.authRepo.revokeFamily(family);
+      await this.authRepo.createSession({
+        userid: userId,
+        refreshtoken: this.hashToken(refreshToken),
+        family: crypto.randomUUID(),
+      });
+    }, true);
+  }
+
   private getClientUrl(): string {
     const isProduction =
       process.env.NODE_ENV === 'production' ||
-      (Boolean(process.env.CLIENT_URL) && !process.env.CLIENT_URL?.includes('localhost'));
+      (Boolean(process.env.CLIENT_URL) &&
+        !process.env.CLIENT_URL?.includes('localhost'));
 
     return (
       process.env.CLIENT_URL?.replace(/\/+$/, '') ||
@@ -454,14 +455,18 @@ export class AuthService {
 
     const entry = this.oauthExchangeCodes.get(code);
     if (!entry) {
-      throw new UnauthorizedException('Mã xác thực không hợp lệ hoặc đã được sử dụng');
+      throw new UnauthorizedException(
+        'Mã xác thực không hợp lệ hoặc đã được sử dụng',
+      );
     }
 
     // Xóa ngay lập tức khỏi bộ nhớ để chống Replay Attack (chỉ dùng đúng 1 lần)
     this.oauthExchangeCodes.delete(code);
 
     if (Date.now() > entry.expiresAt) {
-      throw new UnauthorizedException('Mã xác thực đã hết hạn (chỉ có hiệu lực trong 60 giây)');
+      throw new UnauthorizedException(
+        'Mã xác thực đã hết hạn (chỉ có hiệu lực trong 60 giây)',
+      );
     }
 
     const user = await this.authRepo.findUserById(entry.userId);
@@ -475,7 +480,9 @@ export class AuthService {
   /**
    * Xử lý callback OAuth: tạo One-Time Exchange Code và redirect về Frontend an toàn
    */
-  async handleOAuthCallback(user: any): Promise<{ redirectUrl: string; refreshtoken?: string }> {
+  async handleOAuthCallback(
+    user: any,
+  ): Promise<{ redirectUrl: string; refreshtoken?: string }> {
     const clientUrl = this.getClientUrl();
 
     if (!user) {
@@ -508,7 +515,8 @@ export class AuthService {
         secret: process.env.JWT_REFRESH_SECRET,
       });
       const hashedToken = this.hashToken(token);
-      const session = await this.authRepo.findSessionByRefreshToken(hashedToken);
+      const session =
+        await this.authRepo.findSessionByRefreshToken(hashedToken);
       return Boolean(session && !session.isrevoked && !session.isused);
     } catch {
       return false;

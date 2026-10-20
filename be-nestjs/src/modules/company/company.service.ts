@@ -1,3 +1,4 @@
+import { withTransaction } from '~/prisma/db.js';
 import {
   Injectable,
   NotFoundException,
@@ -24,16 +25,23 @@ export class CompanyService {
    * Lấy danh sách công ty với phân trang và tìm kiếm theo tên
    */
   async getCompanies(query: CompanyQueryDto) {
-    const pageNumber = query.pageNumber && query.pageNumber > 0 ? query.pageNumber : 1;
+    const pageNumber =
+      query.pageNumber && query.pageNumber > 0 ? query.pageNumber : 1;
     const pageSize = query.pageSize && query.pageSize > 0 ? query.pageSize : 10;
     const keyword = (query.keyword || query.search || '').trim();
     const offset = (pageNumber - 1) * pageSize;
 
     const count = await this.companyRepo.count(keyword);
-    const rows = await this.companyRepo.findCompanies(keyword, offset, pageSize);
+    const rows = await this.companyRepo.findCompanies(
+      keyword,
+      offset,
+      pageSize,
+    );
 
     // Tối ưu hóa truy vấn thông tin địa lý gộp trong 1 query (tránh N+1)
-    const wardIds = [...new Set(rows.map((c: any) => c.wardid).filter(Boolean))] as number[];
+    const wardIds = [
+      ...new Set(rows.map((c: any) => c.wardid).filter(Boolean)),
+    ] as number[];
     let wardMap = new Map<number, any>();
     if (wardIds.length > 0) {
       const wards = await this.companyRepo.findWardsByIds(wardIds);
@@ -41,7 +49,10 @@ export class CompanyService {
     }
 
     const formatted = rows.map((c: any) =>
-      CompanyMapper.toCompanyResponse(c, c.wardid ? wardMap.get(c.wardid) : null),
+      CompanyMapper.toCompanyResponse(
+        c,
+        c.wardid ? wardMap.get(c.wardid) : null,
+      ),
     );
 
     return {
@@ -58,14 +69,17 @@ export class CompanyService {
    * Lấy danh sách logo các công ty
    */
   async getCompanyLogos(query: CompanyQueryDto) {
-    const pageNumber = query.pageNumber && query.pageNumber > 0 ? query.pageNumber : 1;
+    const pageNumber =
+      query.pageNumber && query.pageNumber > 0 ? query.pageNumber : 1;
     const pageSize = query.pageSize && query.pageSize > 0 ? query.pageSize : 10;
     const offset = (pageNumber - 1) * pageSize;
 
     const count = await this.companyRepo.countLogos();
     const rows = await this.companyRepo.findCompanyLogos(offset, pageSize);
 
-    const formatted = rows.map((c: any) => CompanyMapper.toCompanyLogoResponse(c));
+    const formatted = rows.map((c: any) =>
+      CompanyMapper.toCompanyLogoResponse(c),
+    );
 
     return {
       data: formatted,
@@ -119,19 +133,24 @@ export class CompanyService {
   /**
    * Tạo mới công ty và gắn người dùng làm thành viên quản trị
    */
-  async createCompany(userId: number, dto: CreateCompanyDto): Promise<FormattedCompany> {
-    if (dto.wardid) {
-      const ward = await this.companyRepo.findWardById(dto.wardid);
-      if (!ward) {
-        throw new BadRequestException('Phường/Xã không tồn tại');
+  async createCompany(
+    userId: number,
+    dto: CreateCompanyDto,
+  ): Promise<FormattedCompany> {
+    return withTransaction(async () => {
+      if (dto.wardid) {
+        const ward = await this.companyRepo.findWardById(dto.wardid);
+        if (!ward) {
+          throw new BadRequestException('Phường/Xã không tồn tại');
+        }
       }
-    }
 
-    const companyEntity = CompanyMapper.toCreateCompanyEntity(dto, userId);
-    const newCompany = await this.companyRepo.create(companyEntity);
-    await this.companyRepo.addMember(newCompany.id, userId, 'active');
+      const companyEntity = CompanyMapper.toCreateCompanyEntity(dto, userId);
+      const newCompany = await this.companyRepo.create(companyEntity);
+      await this.companyRepo.addMember(newCompany.id, userId, 'active');
 
-    return this.getCompanyById(newCompany.id);
+      return this.getCompanyById(newCompany.id);
+    });
   }
 
   /**
@@ -148,10 +167,18 @@ export class CompanyService {
     }
 
     // Kiểm tra quyền: Admin hoặc thành viên/người tạo công ty
-    if (currentUser.role !== 'admin' && company.createdbyuserid !== currentUser.id) {
-      const isMember = await this.companyRepo.findMember(companyId, currentUser.id);
+    if (
+      currentUser.role !== 'admin' &&
+      company.createdbyuserid !== currentUser.id
+    ) {
+      const isMember = await this.companyRepo.findMember(
+        companyId,
+        currentUser.id,
+      );
       if (!isMember) {
-        throw new ForbiddenException('Bạn không có quyền chỉnh sửa công ty này');
+        throw new ForbiddenException(
+          'Bạn không có quyền chỉnh sửa công ty này',
+        );
       }
     }
 
@@ -171,51 +198,46 @@ export class CompanyService {
   /**
    * Xóa công ty và toàn bộ dữ liệu liên quan (jobs, posts, attachments, reviews...)
    */
-  async deleteCompany(companyId: number, currentUser: { id: number; role: string }) {
+  async deleteCompany(
+    companyId: number,
+    currentUser: { id: number; role: string },
+  ) {
     const company = await this.companyRepo.findSimpleById(companyId);
     if (!company) {
       throw new NotFoundException('Không tìm thấy thông tin công ty');
     }
 
-    if (currentUser.role !== 'admin' && company.createdbyuserid !== currentUser.id) {
+    if (
+      currentUser.role !== 'admin' &&
+      company.createdbyuserid !== currentUser.id
+    ) {
       throw new ForbiddenException('Bạn không có quyền xóa công ty này');
     }
 
-    // 1. Xóa ảnh đại diện và ảnh bìa trên Cloudinary
-    if (company.avatar) {
-      await this.cloudinaryService.deleteFile(company.avatar).catch(() => {});
-    }
-    if (company.coverimage) {
-      await this.cloudinaryService.deleteFile(company.coverimage).catch(() => {});
-    }
-
-    // 2. Dọn dẹp Jobs và Applications
-    const jobs = await this.companyRepo.findJobsByCompanyId(companyId);
-    const jobIds = jobs.map((j: any) => j.id);
-
-    if (jobIds.length > 0) {
-      await this.companyRepo.deleteJobsAndApplications(jobIds);
-    }
-
-    // 3. Dọn dẹp Posts, Attachments (trên Cloudinary và DB), Interactions
-    const posts = await this.companyRepo.findPostsByCompanyId(companyId);
-    const postIds = posts.map((p: any) => p.id);
-
-    if (postIds.length > 0) {
-      const attachments = await this.companyRepo.findAttachmentsByPostIds(postIds);
-
-      for (const att of attachments) {
-        if (att.fileurl) {
-          await this.cloudinaryService.deleteFile(att.fileurl).catch(() => {});
-        }
-      }
-
+    const urls = await withTransaction(async () => {
+      const jobs = await this.companyRepo.findJobsByCompanyId(companyId);
+      const posts = await this.companyRepo.findPostsByCompanyId(companyId);
+      const postIds = posts.map((p) => p.id);
+      const attachments =
+        await this.companyRepo.findAllPostAttachments(postIds);
+      await this.companyRepo.deleteJobsAndApplications(jobs.map((j) => j.id));
       await this.companyRepo.deletePostsAndRelations(postIds);
+      await this.companyRepo.deleteFollowsReviewsMembersAndCompany(companyId);
+      return [
+        company.avatar,
+        company.coverimage,
+        ...attachments.map((a) => a.fileurl),
+      ].filter((url): url is NonNullable<typeof url> => Boolean(url));
+    }, true);
+    for (const url of urls) {
+      await this.cloudinaryService.deleteFile(url).catch((error) => {
+        console.warn(
+          'Cloudinary cleanup failed; retry deletion for:',
+          url,
+          error?.message,
+        );
+      });
     }
-
-    // 4. Dọn dẹp Follows, Reviews, CompanyMembers và xóa Company
-    await this.companyRepo.deleteFollowsReviewsMembersAndCompany(companyId);
-
     return { success: true, message: 'Xóa công ty thành công' };
   }
 
