@@ -1,3 +1,4 @@
+import { salaryFields, salaryDisplay } from './salary.js';
 import { CreateJobDto } from './dto/create-job.dto.js';
 import { UpdateJobDto } from './dto/update-job.dto.js';
 import {
@@ -32,7 +33,12 @@ export interface JobResponseData {
   status: string;
   quantity: number;
   deadline: string | null;
-  salary: string | null;
+  salary: string;
+  salarymin: string | null;
+  salarymax: string | null;
+  currency: string;
+  salaryperiod: string;
+  isnegotiable: boolean;
   createdat: any | null;
   updatedat: any | null;
   company: JobCompanyInfo | null;
@@ -81,12 +87,18 @@ export class JobMapper {
       status: job.status || 'open',
       quantity: job.quantity || 1,
       deadline: formatDateString(job.deadline),
-      salary: job.salary || null,
+      salary: salaryDisplay(job),
+      salarymin: job.salarymin == null ? null : String(job.salarymin),
+      salarymax: job.salarymax == null ? null : String(job.salarymax),
+      currency: job.currency,
+      salaryperiod: job.salaryperiod,
+      isnegotiable: job.isnegotiable,
       createdat: job.createdat || null,
       updatedat: job.updatedat || null,
       company: companyInfo,
       skills: formattedSkills,
-      applicationCount: applicationCount ?? (job.applications ? job.applications.length : 0),
+      applicationCount:
+        applicationCount ?? (job.applications ? job.applications.length : 0),
     };
   }
 
@@ -101,7 +113,7 @@ export class JobMapper {
       _type: (dto.type || 'full-time') as any,
       quantity: (dto.quantity || 1) as any,
       deadline: toPlainDate(dto.deadline) as any,
-      salary: (dto.salary || null) as any,
+      ...salaryFields(dto),
       status: (dto.status || 'open') as any,
     };
   }
@@ -109,7 +121,7 @@ export class JobMapper {
   /**
    * Map từ UpdateJobDto sang payload cập nhật Job trong database
    */
-  static toUpdateJobEntity(dto: UpdateJobDto) {
+  static toUpdateJobEntity(dto: UpdateJobDto, current?: any) {
     const updateData: Record<string, any> = {};
 
     if (dto.title !== undefined) updateData.title = dto.title.trim();
@@ -119,7 +131,7 @@ export class JobMapper {
     if (dto.deadline !== undefined) {
       updateData.deadline = toPlainDate(dto.deadline);
     }
-    if (dto.salary !== undefined) updateData.salary = dto.salary;
+    Object.assign(updateData, salaryFields(dto, current));
     if (dto.status !== undefined) updateData.status = dto.status;
 
     updateData.updatedat = nowPlainDateTime();

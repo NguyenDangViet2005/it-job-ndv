@@ -33,10 +33,7 @@ export class AuthRepository {
   }
 
   async findWardWithProvince(wardId: number) {
-    return orm.Wards
-      .where({ id: wardId })
-      .include('provinces')
-      .first();
+    return orm.Wards.where({ id: wardId }).include('provinces').first();
   }
 
   async createCompany(data: any) {
@@ -55,8 +52,11 @@ export class AuthRepository {
   }
 
   async findActiveSessionsByUserId(userId: number) {
-    return orm.SessionLogins
-      .where({ userid: userId, isrevoked: false })
+    return orm.SessionLogins.where({
+      userid: userId,
+      isrevoked: false,
+      isused: false,
+    })
       .orderBy((s: any) => s.id.desc())
       .all();
   }
@@ -80,14 +80,18 @@ export class AuthRepository {
   }
 
   async markTokenUsed(id: number) {
-    return orm.SessionLogins.where({ id }).update({
+    return orm.SessionLogins.where({
+      id,
+      isused: false,
+      isrevoked: false,
+    }).updateAndCount({
       isused: true,
       updatedat: nowPlainDateTime() as any,
     });
   }
 
   async revokeFamily(family: string) {
-    return orm.SessionLogins.where({ family }).update({
+    return orm.SessionLogins.where({ family }).updateAndCount({
       isrevoked: true,
       updatedat: nowPlainDateTime() as any,
     });
@@ -107,6 +111,6 @@ export class AuthRepository {
   }
 
   async deleteSessionsByUserId(userId: number) {
-    return orm.SessionLogins.where({ userid: userId }).delete();
+    return orm.SessionLogins.where({ userid: userId }).deleteAndCount();
   }
 }

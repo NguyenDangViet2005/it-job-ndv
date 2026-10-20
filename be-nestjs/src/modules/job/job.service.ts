@@ -1,3 +1,4 @@
+import { withTransaction } from '~/prisma/db.js';
 import {
   Injectable,
   NotFoundException,
@@ -41,7 +42,9 @@ export class JobService {
     }
 
     // 3. Tải thông tin công ty nếu chưa được nạp sẵn
-    const companyIds = [...new Set(jobs.map((j) => j.companyid).filter(Boolean))] as number[];
+    const companyIds = [
+      ...new Set(jobs.map((j) => j.companyid).filter(Boolean)),
+    ] as number[];
     let companyMap = new Map<number, any>();
     if (companyIds.length > 0) {
       const companies = await this.jobRepo.findCompaniesByIds(companyIds);
@@ -60,7 +63,8 @@ export class JobService {
    * Lấy danh sách việc làm đang mở có phân trang và tìm kiếm theo từ khóa
    */
   async getAll(query: JobQueryDto) {
-    const pageNumber = query.pageNumber && query.pageNumber > 0 ? query.pageNumber : 1;
+    const pageNumber =
+      query.pageNumber && query.pageNumber > 0 ? query.pageNumber : 1;
     const pageSize = query.pageSize && query.pageSize > 0 ? query.pageSize : 10;
     const keyword = (query.keyword || '').trim();
     const offset = (pageNumber - 1) * pageSize;
@@ -105,7 +109,11 @@ export class JobService {
   /**
    * Lấy danh sách công việc theo kỹ năng
    */
-  async getJobsBySkill(skillId: number, pageNumber: number = 1, pageSize: number = 10) {
+  async getJobsBySkill(
+    skillId: number,
+    pageNumber: number = 1,
+    pageSize: number = 10,
+  ) {
     const pNumber = pageNumber > 0 ? pageNumber : 1;
     const pSize = pageSize > 0 ? pageSize : 10;
     const offset = (pNumber - 1) * pSize;
@@ -152,8 +160,16 @@ export class JobService {
     const pSize = pageSize > 0 ? pageSize : 10;
     const offset = (pNumber - 1) * pSize;
 
-    const count = await this.jobRepo.countJobsByCompanyId(companyId, onlyActive);
-    const rows = await this.jobRepo.findJobsByCompanyId(companyId, offset, pSize, onlyActive);
+    const count = await this.jobRepo.countJobsByCompanyId(
+      companyId,
+      onlyActive,
+    );
+    const rows = await this.jobRepo.findJobsByCompanyId(
+      companyId,
+      offset,
+      pSize,
+      onlyActive,
+    );
 
     const formatted = await this.enrichJobs(rows);
 
@@ -195,28 +211,33 @@ export class JobService {
    * Tạo tin tuyển dụng mới
    */
   async create(userId: number, dto: CreateJobDto): Promise<JobResponseData> {
-    const member = await this.jobRepo.findCompanyMemberByUserId(userId);
+    return withTransaction(async () => {
+      const member = await this.jobRepo.findCompanyMemberByUserId(userId);
 
-    let companyId = member?.companyid;
-    if (!companyId) {
-      const createdCompany = await this.jobRepo.findCompanyByCreatorId(userId);
-      companyId = createdCompany?.id;
-    }
-
-    if (!companyId) {
-      throw new BadRequestException('Tài khoản của bạn chưa được liên kết với công ty nào để đăng tin');
-    }
-
-    const jobEntity = JobMapper.toCreateJobEntity(dto, companyId);
-    const newJob = await this.jobRepo.create(jobEntity);
-
-    if (dto.skillids && dto.skillids.length > 0) {
-      for (const skillid of dto.skillids) {
-        await this.jobRepo.addSkillJob(newJob.id, skillid);
+      let companyId = member?.companyid;
+      if (!companyId) {
+        const createdCompany =
+          await this.jobRepo.findCompanyByCreatorId(userId);
+        companyId = createdCompany?.id;
       }
-    }
 
-    return this.getById(newJob.id);
+      if (!companyId) {
+        throw new BadRequestException(
+          'Tài khoản của bạn chưa được liên kết với công ty nào để đăng tin',
+        );
+      }
+
+      const jobEntity = JobMapper.toCreateJobEntity(dto, companyId);
+      const newJob = await this.jobRepo.create(jobEntity);
+
+      if (dto.skillids && dto.skillids.length > 0) {
+        for (const skillid of dto.skillids) {
+          await this.jobRepo.addSkillJob(newJob.id, skillid);
+        }
+      }
+
+      return this.getById(newJob.id);
+    }, true);
   }
 
   /**
@@ -227,57 +248,75 @@ export class JobService {
     currentUser: { id: number; role: string },
     dto: UpdateJobDto,
   ): Promise<JobResponseData> {
-    const job = await this.jobRepo.findById(jobId);
-    if (!job) {
-      throw new NotFoundException('Không tìm thấy tin tuyển dụng');
-    }
-
-    // Kiểm tra quyền hạn
-    if (currentUser.role !== 'admin') {
-      const member = await this.jobRepo.findCompanyMember(job.companyid, currentUser.id);
-      const isCreator = (await this.jobRepo.findCompanyById(job.companyid))?.createdbyuserid === currentUser.id;
-
-      if (!member && !isCreator) {
-        throw new ForbiddenException('Bạn không có quyền chỉnh sửa tin tuyển dụng của công ty này');
+    return withTransaction(async () => {
+      const job = await this.jobRepo.findById(jobId);
+      if (!job) {
+        throw new NotFoundException('Không tìm thấy tin tuyển dụng');
       }
-    }
 
-    const updatePayload = JobMapper.toUpdateJobEntity(dto);
-    await this.jobRepo.update(jobId, updatePayload);
+      // Kiểm tra quyền hạn
+      if (currentUser.role !== 'admin') {
+        const member = await this.jobRepo.findCompanyMember(
+          job.companyid,
+          currentUser.id,
+        );
+        const isCreator =
+          (await this.jobRepo.findCompanyById(job.companyid))
+            ?.createdbyuserid === currentUser.id;
 
-    if (dto.skillids !== undefined) {
-      await this.jobRepo.deleteSkillJobsByJobId(jobId);
-      for (const skillid of dto.skillids) {
-        await this.jobRepo.addSkillJob(jobId, skillid);
+        if (!member && !isCreator) {
+          throw new ForbiddenException(
+            'Bạn không có quyền chỉnh sửa tin tuyển dụng của công ty này',
+          );
+        }
       }
-    }
 
-    return this.getById(jobId);
+      const updatePayload = JobMapper.toUpdateJobEntity(dto, job);
+      await this.jobRepo.update(jobId, updatePayload);
+
+      if (dto.skillids !== undefined) {
+        await this.jobRepo.deleteSkillJobsByJobId(jobId);
+        for (const skillid of dto.skillids) {
+          await this.jobRepo.addSkillJob(jobId, skillid);
+        }
+      }
+
+      return this.getById(jobId);
+    }, true);
   }
 
   /**
    * Xóa tin tuyển dụng
    */
   async deleteJob(jobId: number, currentUser: { id: number; role: string }) {
-    const job = await this.jobRepo.findById(jobId);
-    if (!job) {
-      throw new NotFoundException('Không tìm thấy tin tuyển dụng');
-    }
-
-    if (currentUser.role !== 'admin') {
-      const member = await this.jobRepo.findCompanyMember(job.companyid, currentUser.id);
-      const isCreator = (await this.jobRepo.findCompanyById(job.companyid))?.createdbyuserid === currentUser.id;
-
-      if (!member && !isCreator) {
-        throw new ForbiddenException('Bạn không có quyền xóa tin tuyển dụng của công ty này');
+    return withTransaction(async () => {
+      const job = await this.jobRepo.findById(jobId);
+      if (!job) {
+        throw new NotFoundException('Không tìm thấy tin tuyển dụng');
       }
-    }
 
-    await this.jobRepo.delete(jobId);
+      if (currentUser.role !== 'admin') {
+        const member = await this.jobRepo.findCompanyMember(
+          job.companyid,
+          currentUser.id,
+        );
+        const isCreator =
+          (await this.jobRepo.findCompanyById(job.companyid))
+            ?.createdbyuserid === currentUser.id;
 
-    return {
-      success: true,
-      message: 'Xóa tin tuyển dụng thành công',
-    };
+        if (!member && !isCreator) {
+          throw new ForbiddenException(
+            'Bạn không có quyền xóa tin tuyển dụng của công ty này',
+          );
+        }
+      }
+
+      await this.jobRepo.delete(jobId);
+
+      return {
+        success: true,
+        message: 'Xóa tin tuyển dụng thành công',
+      };
+    }, true);
   }
 }

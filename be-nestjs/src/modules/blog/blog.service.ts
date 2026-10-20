@@ -25,13 +25,17 @@ export class BlogService {
   async getAllBlogs(query: BlogQueryDto) {
     const pageNumber =
       query.pageNumber && query.pageNumber > 0 ? query.pageNumber : 1;
-    const pageSize =
-      query.pageSize && query.pageSize > 0 ? query.pageSize : 10;
+    const pageSize = query.pageSize && query.pageSize > 0 ? query.pageSize : 10;
     const keyword = (query.keyword || '').trim();
     const offset = (pageNumber - 1) * pageSize;
 
     const count = await this.blogRepo.count(query.categoryid, keyword);
-    const rows = await this.blogRepo.findMany(query.categoryid, keyword, offset, pageSize);
+    const rows = await this.blogRepo.findMany(
+      query.categoryid,
+      keyword,
+      offset,
+      pageSize,
+    );
 
     // Tối ưu hóa truy vấn tác giả và danh mục theo lô (tránh N+1)
     const userIds = [...new Set(rows.map((r: any) => r.userid))] as number[];
@@ -92,8 +96,7 @@ export class BlogService {
   async getBlogsByUserId(userId: number, query: BlogQueryDto) {
     const pageNumber =
       query.pageNumber && query.pageNumber > 0 ? query.pageNumber : 1;
-    const pageSize =
-      query.pageSize && query.pageSize > 0 ? query.pageSize : 10;
+    const pageSize = query.pageSize && query.pageSize > 0 ? query.pageSize : 10;
     const offset = (pageNumber - 1) * pageSize;
 
     const count = await this.blogRepo.countByUserId(userId);
@@ -142,7 +145,18 @@ export class BlogService {
     }
 
     const blogEntity = BlogMapper.toCreateBlogEntity(dto, userId, imageUrl);
-    const newBlog = await this.blogRepo.create(blogEntity);
+    let newBlog;
+    try {
+      newBlog = await this.blogRepo.create(blogEntity);
+    } catch (error) {
+      if (imageUrl)
+        await this.cloudinaryService
+          .deleteFile(imageUrl)
+          .catch((cleanupError) =>
+            console.warn('Cloudinary cleanup failed:', imageUrl, cleanupError),
+          );
+      throw error;
+    }
 
     return this.getBlogById(newBlog.id);
   }
@@ -172,14 +186,26 @@ export class BlogService {
         'IT-JOB/blogs',
       );
       imageUrl = uploadRes.secure_url;
-
-      if (blog.image) {
-        await this.cloudinaryService.deleteFile(blog.image).catch(() => {});
-      }
     }
 
     const updatePayload = BlogMapper.toUpdateBlogEntity(dto, imageUrl);
-    await this.blogRepo.update(id, updatePayload);
+    try {
+      await this.blogRepo.update(id, updatePayload);
+    } catch (error) {
+      if (imageUrl)
+        await this.cloudinaryService
+          .deleteFile(imageUrl)
+          .catch((cleanupError) =>
+            console.warn('Cloudinary cleanup failed:', imageUrl, cleanupError),
+          );
+      throw error;
+    }
+    if (imageUrl && blog.image)
+      await this.cloudinaryService
+        .deleteFile(blog.image)
+        .catch((cleanupError) =>
+          console.warn('Cloudinary cleanup failed:', blog.image, cleanupError),
+        );
 
     return this.getBlogById(id);
   }
@@ -197,11 +223,13 @@ export class BlogService {
       throw new ForbiddenException('Bạn không có quyền xóa bài viết này');
     }
 
-    if (blog.image) {
-      await this.cloudinaryService.deleteFile(blog.image).catch(() => {});
-    }
-
     await this.blogRepo.delete(id);
+    if (blog.image)
+      await this.cloudinaryService
+        .deleteFile(blog.image)
+        .catch((cleanupError) =>
+          console.warn('Cloudinary cleanup failed:', blog.image, cleanupError),
+        );
 
     return {
       success: true,
