@@ -5,6 +5,7 @@ if (process.env.NODE_ENV === "development") {
 }
 
 const nextConfig: NextConfig = {
+  reactStrictMode: false,
   // Use App Router only, ignore Pages directory
   pageExtensions: ["tsx", "ts", "jsx", "js"]
     .map((ext) => `app.${ext}`)
