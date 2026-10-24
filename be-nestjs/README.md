@@ -46,15 +46,53 @@ $ npm run start:prod
 
 ## Run tests
 
+Backend dùng **Vitest**, không phải Jest. Các file `*.service.spec.ts` nằm cạnh
+service trong 13 module: auth, application, job, user, company, post, connection,
+blog, skill, follow, review, search và cloudinary.
+
 ```bash
 # unit tests
 $ npm run test
+
+# chạy riêng một service (nên đọc FollowService trước)
+$ npm test -- src/modules/follow/follow.service.spec.ts
+
+# theo dõi test khi sửa code
+$ npm run test:watch -- src/modules/skill/skill.service.spec.ts
 
 # e2e tests
 $ npm run test:e2e
 
 # test coverage
 $ npm run test:cov
+```
+
+### Cách đọc service unit test
+
+- **Arrange:** `mockResolvedValue(...)` giả lập kết quả repository hoặc dịch vụ ngoài.
+- **Act:** gọi method của service thật.
+- **Assert:** dùng `expect(...)` kiểm tra kết quả/lỗi và tác dụng phụ. Ví dụ:
+  bị từ chối quyền thì repository không được ghi dữ liệu.
+- `beforeEach` reset mock và tạo service mới để các case độc lập.
+- Dùng mapper thật; mock repository, JWT, bcrypt và Cloudinary SDK ở nơi cần.
+  Không cần database hoặc tài khoản Cloudinary để chạy service unit test.
+- `withTransaction` được mock để chạy callback. Các test này không chứng minh
+  rollback, khóa hay constraint trên DB thật; cần integration test riêng cho chúng.
+- Auth dùng fake timers và timestamp Temporal để kiểm tra hạn OAuth code và ranh
+  giới grace period. Sau mỗi case đều dọn timer và khôi phục biến môi trường.
+
+Nên đọc theo thứ tự: `follow.service.spec.ts` → `skill.service.spec.ts` →
+`review.service.spec.ts` → `application.service.spec.ts` → `auth.service.spec.ts`.
+Location và BlogCategory chưa có service unit test vì chủ yếu đọc/chuyển tiếp dữ liệu.
+
+Nếu runner gặp lỗi `EPERM` khi ghi thư mục tạm trên Windows sandbox, chạy trong
+thư mục `be-nestjs` bằng PowerShell (chỉ đổi biến môi trường của phiên hiện tại):
+
+```powershell
+New-Item -ItemType Directory -Force node_modules/.test-tmp | Out-Null
+$env:TEMP = Join-Path (Get-Location) 'node_modules/.test-tmp'
+$env:TMP = $env:TEMP
+npm test
 ```
 
 ## Deployment
