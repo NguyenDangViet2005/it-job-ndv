@@ -20,6 +20,8 @@
     "test:cov": "vitest run --coverage",
     "test:debug": "vitest --inspect-brk --no-file-parallelism",
     "test:e2e": "vitest run --config ./vitest.config.e2e.ts",
+    "test:integration": "vitest run --config ./vitest.config.integration.ts",
+    "test:integration:prepare": "node scripts/prepare-integration-db.mjs",
     "contract:emit": "prisma contract emit"
   },
   "dependencies": {

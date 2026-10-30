@@ -85,6 +85,82 @@ Nên đọc theo thứ tự: `follow.service.spec.ts` → `skill.service.spec.ts
 `review.service.spec.ts` → `application.service.spec.ts` → `auth.service.spec.ts`.
 Location và BlogCategory chưa có service unit test vì chủ yếu đọc/chuyển tiếp dữ liệu.
 
+### Integration test với PostgreSQL thật
+
+Integration test đặt cạnh code của từng module, chạy service, repository,
+mapper và `withTransaction` thật, không mock database:
+
+```text
+src/modules/<module>/<module>.integration-spec.ts
+src/prisma/db.integration-spec.ts
+```
+
+Phần cấu hình môi trường, fixture và cleanup dùng chung nằm trong
+`test/integration/`. Hiện có 68 case trong 15 file, gồm 14 module truy cập
+database và nhóm test database:
+
+| Module | Case | Phạm vi chính |
+| --- | ---: | --- |
+| Auth | 10 | Bcrypt/JWT thật, đăng ký/đăng nhập, rotation/reuse, logout, HR, liên kết profile OAuth, claim session đồng thời |
+| Application | 7 | CV, dữ liệu quan hệ, đơn trùng, tin đóng/hết hạn, quyền duyệt và hủy đơn |
+| Blog | 4 | CRUD, quyền tác giả, lọc/phân trang, khóa ngoại danh mục |
+| BlogCategory | 2 | Đọc danh mục, thứ tự, not found |
+| Company | 4 | Tạo thành viên, địa chỉ, quyền cập nhật, xóa dữ liệu liên quan |
+| Connection | 3 | Gửi/chấp nhận/từ chối/xóa, quyền, cấm tự kết nối, unique cặp hai chiều |
+| Follow | 2 | Toggle và hai yêu cầu đồng thời qua SERIALIZABLE |
+| Job | 4 | Lương/kỹ năng, quyền cập nhật, rollback liên kết lỗi, cascade |
+| Location | 3 | Tỉnh/phường, lọc theo tỉnh, thứ tự, not found |
+| Post | 5 | CRUD/quyền, bài công ty, like/comment, tác giả, attachment và dọn media |
+| Review | 3 | CRUD/quyền, dữ liệu quan hệ, check số sao |
+| Search | 3 | ILIKE và dữ liệu quan hệ, tin đóng/hết hạn, phân trang |
+| Skill | 5 | CRUD, trùng tên, ILIKE/phân trang, chặn xóa kỹ năng đang dùng |
+| User | 4 | Hồ sơ/quyền, kỹ năng, đổi mật khẩu và xóa session, đơn ứng tuyển |
+| Database | 9 | Commit/rollback, transaction lồng nhau, async context, constraint/cascade, cleanup nhiều bản ghi |
+
+Auth dùng `JwtService` và bcrypt thật với secret chỉ dành cho test. Profile
+OAuth được truyền trực tiếp vào service; không gọi Google/Facebook. Với các
+service phụ thuộc Cloudinary, chỉ thay phần upload/xóa media bằng stub; database,
+repository, mapper và service vẫn chạy thật. Cloudinary không truy cập PostgreSQL,
+nên giữ unit test riêng, chưa có test gọi API Cloudinary thật.
+
+Thêm URL riêng vào `.env` (giữ `DATABASE_URL` hiện tại):
+
+```dotenv
+DATABASE_TEST_URL="postgresql://itjob:itjob_test_123@localhost:5433/it_job_test"
+```
+
+Database test phải nằm trên loopback (`localhost`, `127.0.0.1`, `::1`), có tên
+chứa thành phần `test` như `it_job_test`, và khác đích `DATABASE_URL`.
+Runner kiểm tra các điều kiện này trước khi import database client, rồi thay
+`DATABASE_URL` trong tiến trình test. Không ghi lại `.env`, không fallback sang
+production. Các guard có unit test riêng, không cần kết nối database.
+
+```bash
+# Chỉ cần khi database mới/chưa có schema hoặc cần đồng bộ contract:
+# dùng Prisma 8 db update với contract đã emit của dự án.
+npm run test:integration:prepare
+
+# Chạy integration test (container PostgreSQL test phải đang chạy).
+npm run test:integration
+
+# Chạy riêng integration test của một module.
+npm run test:integration -- src/modules/skill/skill.integration-spec.ts
+npm run test:integration -- src/modules/auth/auth.integration-spec.ts
+
+# Chạy riêng nhóm transaction/constraint.
+npm run test:integration -- -t "Real PostgreSQL"
+```
+
+Lệnh prepare không reset database và không tự đồng ý thay đổi phá hủy dữ liệu;
+nếu Prisma yêu cầu consent thì lệnh sẽ thất bại để bạn kiểm tra schema.
+Test dùng fixture có UUID riêng, dọn đúng các bản ghi do nó tạo sau mỗi case,
+không truncate bảng hoặc reset sequence. Nếu dừng cưỡng bức tiến trình, fixture
+của lần chạy đó có thể còn lại trong database test. Pool được đóng sau khi chạy.
+
+`npm test` tiếp tục chạy unit test; `npm run test:integration` là lệnh riêng.
+Đây là integration test ở tầng service/repository, chưa kiểm tra HTTP/JWT guard
+hay các dịch vụ bên ngoài như Cloudinary/OAuth.
+
 Nếu runner gặp lỗi `EPERM` khi ghi thư mục tạm trên Windows sandbox, chạy trong
 thư mục `be-nestjs` bằng PowerShell (chỉ đổi biến môi trường của phiên hiện tại):
 
