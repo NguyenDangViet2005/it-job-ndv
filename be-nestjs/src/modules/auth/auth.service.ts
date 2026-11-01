@@ -15,6 +15,8 @@ import { RegisterHRDto } from './dto/register-hr.dto.js';
 import { LoginDto } from './dto/login.dto.js';
 import { AuthMapper } from './auth.mapper.js';
 import { AuthRepository } from './auth.repository.js';
+import { RedisCacheService } from '../redis/redis-cache.service.js';
+import { REDIS_CACHE_TTL, REDIS_KEYS } from '../redis/redis-cache.constants.js';
 
 @Injectable()
 export class AuthService {
@@ -26,6 +28,7 @@ export class AuthService {
   constructor(
     private readonly authRepo: AuthRepository,
     private readonly jwtService: JwtService,
+    private readonly cache: RedisCacheService,
   ) {
     const cleanupInterval = setInterval(() => {
       const now = Date.now();
@@ -436,12 +439,17 @@ export class AuthService {
   /**
    * Tạo mã One-Time Exchange Code tạm thời (hạn 60s, chỉ dùng 1 lần) để FE đổi token
    */
-  createOAuthExchangeCode(userId: number): string {
+  async createOAuthExchangeCode(userId: number): Promise<string> {
     const code = crypto.randomBytes(32).toString('hex');
     this.oauthExchangeCodes.set(code, {
       userId,
-      expiresAt: Date.now() + 60 * 1000,
+      expiresAt: Date.now() + REDIS_CACHE_TTL.AUTH.OAUTH_EXCHANGE_CODE * 1000,
     });
+    await this.cache.set(
+      REDIS_KEYS.auth.oauthCode(code),
+      String(userId),
+      REDIS_CACHE_TTL.AUTH.OAUTH_EXCHANGE_CODE,
+    );
     return code;
   }
 
@@ -453,23 +461,29 @@ export class AuthService {
       throw new BadRequestException('Mã xác thực không được để trống');
     }
 
-    const entry = this.oauthExchangeCodes.get(code);
-    if (!entry) {
+    const redisValue = await this.cache.getDel(REDIS_KEYS.auth.oauthCode(code));
+    const localEntry = this.oauthExchangeCodes.get(code);
+    this.oauthExchangeCodes.delete(code);
+
+    const userId =
+      redisValue === undefined ? localEntry?.userId : Number(redisValue);
+    if (!userId || (redisValue === undefined && !localEntry)) {
       throw new UnauthorizedException(
         'Mã xác thực không hợp lệ hoặc đã được sử dụng',
       );
     }
 
-    // Xóa ngay lập tức khỏi bộ nhớ để chống Replay Attack (chỉ dùng đúng 1 lần)
-    this.oauthExchangeCodes.delete(code);
-
-    if (Date.now() > entry.expiresAt) {
+    if (
+      redisValue === undefined &&
+      localEntry &&
+      Date.now() > localEntry.expiresAt
+    ) {
       throw new UnauthorizedException(
         'Mã xác thực đã hết hạn (chỉ có hiệu lực trong 60 giây)',
       );
     }
 
-    const user = await this.authRepo.findUserById(entry.userId);
+    const user = await this.authRepo.findUserById(userId);
     if (!user) {
       throw new UnauthorizedException('Tài khoản người dùng không tồn tại');
     }
@@ -493,7 +507,7 @@ export class AuthService {
 
     try {
       // Tạo mã code ngẫu nhiên an toàn, tuyệt đối không truyền JWT token qua URL query
-      const code = this.createOAuthExchangeCode(user.id);
+      const code = await this.createOAuthExchangeCode(user.id);
 
       return {
         redirectUrl: `${clientUrl}/callback?code=${code}`,

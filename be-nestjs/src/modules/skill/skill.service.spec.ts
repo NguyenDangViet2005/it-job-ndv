@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { SkillService } from './skill.service.js';
 import type { SkillRepository } from './skill.repository.js';
+import type { RedisCacheService } from '../redis/redis-cache.service.js';
 
 vi.mock('~/prisma/db.js', () => ({}));
 
@@ -19,10 +20,20 @@ describe('SkillService', () => {
     delete: vi.fn(),
   };
   let service: SkillService;
+  const cache = {
+    remember: vi.fn(
+      async (_key: string, _ttl: number, load: () => Promise<unknown>) =>
+        load(),
+    ),
+    deleteByPattern: vi.fn(),
+  };
 
   beforeEach(() => {
     vi.resetAllMocks();
-    service = new SkillService(repo as unknown as SkillRepository);
+    service = new SkillService(
+      repo as unknown as SkillRepository,
+      cache as unknown as RedisCacheService,
+    );
     repo.findById.mockResolvedValue({ id: 1, name: 'TypeScript' });
   });
 
@@ -34,6 +45,15 @@ describe('SkillService', () => {
     });
     expect(repo.findByNameCaseInsensitive).toHaveBeenCalledWith('Jest');
     expect(repo.create).toHaveBeenCalledWith('Jest');
+  });
+
+  it('caches skill detail with a domain-specific key and TTL', async () => {
+    await service.getSkillById(1);
+    expect(cache.remember).toHaveBeenCalledWith(
+      'itjob:skills:detail:1',
+      3600,
+      expect.any(Function),
+    );
   });
 
   it('rejects a duplicate skill without creating it', async () => {
@@ -89,5 +109,7 @@ describe('SkillService', () => {
     repo.isUsed.mockResolvedValue(false);
     await expect(service.deleteSkill(1)).resolves.toBe(true);
     expect(repo.delete).toHaveBeenCalledWith(1);
+    expect(cache.deleteByPattern).toHaveBeenCalledWith('itjob:skills:*');
+    expect(cache.deleteByPattern).toHaveBeenCalledWith('itjob:jobs:*');
   });
 });

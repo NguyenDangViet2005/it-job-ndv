@@ -3,11 +3,15 @@ import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { orm } from '../../prisma/db.js';
 import { ApplicationRepository } from './application.repository.js';
 import { ApplicationService } from './application.service.js';
+import { RedisCacheService } from '../redis/redis-cache.service.js';
 import {
   useDatabaseFixtures,
   varchar,
 } from '../../../test/integration/fixtures.js';
-const applications = new ApplicationService(new ApplicationRepository());
+const applications = new ApplicationService(
+  new ApplicationRepository(),
+  new RedisCacheService(),
+);
 const context = useDatabaseFixtures();
 
 describe('Application service + repository + PostgreSQL', () => {

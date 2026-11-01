@@ -11,6 +11,8 @@ import { UpdateCompanyDto } from './dto/update-company.dto.js';
 import { CompanyQueryDto } from './dto/company-query.dto.js';
 import { CompanyMapper, type FormattedCompany } from './company.mapper.js';
 import { CompanyRepository } from './company.repository.js';
+import { RedisCacheService } from '../redis/redis-cache.service.js';
+import { REDIS_KEYS } from '../redis/redis-cache.constants.js';
 
 export type { FormattedCompany };
 
@@ -19,6 +21,7 @@ export class CompanyService {
   constructor(
     private readonly companyRepo: CompanyRepository,
     private readonly cloudinaryService: CloudinaryService,
+    private readonly cache: RedisCacheService,
   ) {}
 
   /**
@@ -137,7 +140,7 @@ export class CompanyService {
     userId: number,
     dto: CreateCompanyDto,
   ): Promise<FormattedCompany> {
-    return withTransaction(async () => {
+    const result = await withTransaction(async () => {
       if (dto.wardid) {
         const ward = await this.companyRepo.findWardById(dto.wardid);
         if (!ward) {
@@ -151,6 +154,8 @@ export class CompanyService {
 
       return this.getCompanyById(newCompany.id);
     });
+    await this.cache.deleteByPattern(REDIS_KEYS.job.all);
+    return result;
   }
 
   /**
@@ -191,6 +196,7 @@ export class CompanyService {
 
     const updateData = CompanyMapper.toUpdateCompanyEntity(dto);
     await this.companyRepo.update(companyId, updateData);
+    await this.cache.deleteByPattern(REDIS_KEYS.job.all);
 
     return this.getCompanyById(companyId);
   }
@@ -229,6 +235,7 @@ export class CompanyService {
         ...attachments.map((a) => a.fileurl),
       ].filter((url): url is NonNullable<typeof url> => Boolean(url));
     }, true);
+    await this.cache.deleteByPattern(REDIS_KEYS.job.all);
     for (const url of urls) {
       await this.cloudinaryService.deleteFile(url).catch((error) => {
         console.warn(
@@ -254,6 +261,7 @@ export class CompanyService {
     const oldAvatar = company.avatar;
 
     await this.companyRepo.updateAvatar(companyId, uploadRes.secure_url);
+    await this.cache.deleteByPattern(REDIS_KEYS.job.all);
 
     if (oldAvatar) {
       await this.cloudinaryService.deleteFile(oldAvatar).catch(() => {});
@@ -275,6 +283,7 @@ export class CompanyService {
     const oldCover = company.coverimage;
 
     await this.companyRepo.updateCover(companyId, uploadRes.secure_url);
+    await this.cache.deleteByPattern(REDIS_KEYS.job.all);
 
     if (oldCover) {
       await this.cloudinaryService.deleteFile(oldCover).catch(() => {});

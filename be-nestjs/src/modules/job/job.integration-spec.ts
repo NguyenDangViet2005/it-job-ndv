@@ -3,6 +3,7 @@ import { Temporal } from '@js-temporal/polyfill';
 import { orm } from '../../prisma/db.js';
 import { JobService } from './job.service.js';
 import { JobRepository } from './job.repository.js';
+import { RedisCacheService } from '../redis/redis-cache.service.js';
 import {
   useDatabaseFixtures,
   varchar,
@@ -10,7 +11,7 @@ import {
 } from '../../../test/integration/fixtures.js';
 
 const context = useDatabaseFixtures();
-const service = new JobService(new JobRepository());
+const service = new JobService(new JobRepository(), new RedisCacheService());
 const deadline = () => Temporal.Now.plainDateISO().add({ days: 30 }).toString();
 
 describe('Job service + repository + PostgreSQL', () => {

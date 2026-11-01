@@ -1,9 +1,10 @@
 import { BadRequestException, ConflictException } from '@nestjs/common';
 import { orm } from '../../prisma/db.js';
 import { SkillRepository } from './skill.repository.js';
+import { RedisCacheService } from '../redis/redis-cache.service.js';
 import { SkillService } from './skill.service.js';
 import { useDatabaseFixtures } from '../../../test/integration/fixtures.js';
-const skills = new SkillService(new SkillRepository());
+const skills = new SkillService(new SkillRepository(), new RedisCacheService());
 const context = useDatabaseFixtures();
 
 describe('Skill service + repository + PostgreSQL', () => {

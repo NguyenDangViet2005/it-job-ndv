@@ -7,9 +7,11 @@ import { AuthRepository } from './auth.repository.js';
 import { JwtStrategy } from './strategies/jwt.strategy.js';
 import { GoogleStrategy } from './strategies/google.strategy.js';
 import { FacebookStrategy } from './strategies/facebook.strategy.js';
+import { RedisModule } from '../redis/redis.module.js';
 
 @Module({
   imports: [
+    RedisModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({}),
   ],
@@ -21,6 +23,12 @@ import { FacebookStrategy } from './strategies/facebook.strategy.js';
     GoogleStrategy,
     FacebookStrategy,
   ],
-  exports: [AuthService, AuthRepository, JwtStrategy, PassportModule, JwtModule],
+  exports: [
+    AuthService,
+    AuthRepository,
+    JwtStrategy,
+    PassportModule,
+    JwtModule,
+  ],
 })
 export class AuthModule {}

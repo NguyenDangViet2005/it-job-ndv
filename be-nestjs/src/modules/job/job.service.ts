@@ -10,12 +10,26 @@ import { UpdateJobDto } from './dto/update-job.dto.js';
 import { JobQueryDto } from './dto/job-query.dto.js';
 import { JobMapper, type JobResponseData } from './job.mapper.js';
 import { JobRepository } from './job.repository.js';
+import { RedisCacheService } from '../redis/redis-cache.service.js';
+import { REDIS_CACHE_TTL, REDIS_KEYS } from '../redis/redis-cache.constants.js';
 
 export type { JobResponseData };
 
 @Injectable()
 export class JobService {
-  constructor(private readonly jobRepo: JobRepository) {}
+  constructor(
+    private readonly jobRepo: JobRepository,
+    private readonly cache: RedisCacheService,
+  ) {}
+
+  private listKey(type: string, ...parts: Array<string | number | boolean>) {
+    return `itjob:jobs:${type}:${parts.map((part) => encodeURIComponent(String(part))).join(':')}`;
+  }
+
+  private async invalidateJobCache(jobId?: number) {
+    if (jobId) await this.cache.delete(REDIS_KEYS.job.detail(jobId));
+    await this.cache.deleteByPattern(REDIS_KEYS.job.all);
+  }
 
   /**
    * Tối ưu hóa tải kèm thông tin công ty, kỹ năng và số lượng ứng tuyển trong 3 truy vấn gộp (tránh N+1)
@@ -67,27 +81,38 @@ export class JobService {
       query.pageNumber && query.pageNumber > 0 ? query.pageNumber : 1;
     const pageSize = query.pageSize && query.pageSize > 0 ? query.pageSize : 10;
     const keyword = (query.keyword || '').trim();
-    const offset = (pageNumber - 1) * pageSize;
-
-    const count = await this.jobRepo.countOpenJobs(keyword);
-    const rows = await this.jobRepo.findOpenJobs(keyword, offset, pageSize);
-
-    const formatted = await this.enrichJobs(rows);
-
-    return {
-      data: formatted,
-      totalItems: count,
-      pageNumber,
-      page: pageNumber,
-      pageSize,
-      totalPages: Math.ceil(count / pageSize),
-    };
+    return this.cache.remember(
+      this.listKey('list', pageNumber, pageSize, keyword.toLowerCase()),
+      REDIS_CACHE_TTL.JOB.LIST,
+      async () => {
+        const offset = (pageNumber - 1) * pageSize;
+        const count = await this.jobRepo.countOpenJobs(keyword);
+        const rows = await this.jobRepo.findOpenJobs(keyword, offset, pageSize);
+        const formatted = await this.enrichJobs(rows);
+        return {
+          data: formatted,
+          totalItems: count,
+          pageNumber,
+          page: pageNumber,
+          pageSize,
+          totalPages: Math.ceil(count / pageSize),
+        };
+      },
+    );
   }
 
   /**
    * Lấy chi tiết công việc theo ID
    */
   async getById(id: number): Promise<JobResponseData> {
+    return this.cache.remember(
+      REDIS_KEYS.job.detail(id),
+      REDIS_CACHE_TTL.JOB.DETAIL,
+      () => this.getByIdFromDb(id),
+    );
+  }
+
+  private async getByIdFromDb(id: number): Promise<JobResponseData> {
     const job = await this.jobRepo.findById(id);
 
     if (!job) {
@@ -102,8 +127,14 @@ export class JobService {
    * Lấy các công việc được đăng trong ngày hôm nay
    */
   async getJobsToday(): Promise<JobResponseData[]> {
-    const jobs = await this.jobRepo.findJobsToday();
-    return this.enrichJobs(jobs);
+    return this.cache.remember(
+      this.listKey('today'),
+      REDIS_CACHE_TTL.JOB.TODAY,
+      async () => {
+        const jobs = await this.jobRepo.findJobsToday();
+        return this.enrichJobs(jobs);
+      },
+    );
   }
 
   /**
@@ -116,6 +147,18 @@ export class JobService {
   ) {
     const pNumber = pageNumber > 0 ? pageNumber : 1;
     const pSize = pageSize > 0 ? pageSize : 10;
+    return this.cache.remember(
+      this.listKey('skill', skillId, pNumber, pSize),
+      REDIS_CACHE_TTL.JOB.LIST,
+      () => this.getJobsBySkillFromDb(skillId, pNumber, pSize),
+    );
+  }
+
+  private async getJobsBySkillFromDb(
+    skillId: number,
+    pNumber: number,
+    pSize: number,
+  ) {
     const offset = (pNumber - 1) * pSize;
 
     const skillJobs = await this.jobRepo.findSkillJobsBySkillId(skillId);
@@ -140,9 +183,9 @@ export class JobService {
     return {
       data: formatted,
       totalItems: count,
-      pageNumber,
+      pageNumber: pNumber,
       page: pNumber,
-      pageSize,
+      pageSize: pSize,
       totalPages: Math.ceil(count / pSize),
     };
   }
@@ -158,6 +201,20 @@ export class JobService {
   ) {
     const pNumber = pageNumber > 0 ? pageNumber : 1;
     const pSize = pageSize > 0 ? pageSize : 10;
+    return this.cache.remember(
+      this.listKey('company', companyId, pNumber, pSize, onlyActive),
+      REDIS_CACHE_TTL.JOB.LIST,
+      () =>
+        this.getJobsByCompanyIdFromDb(companyId, pNumber, pSize, onlyActive),
+    );
+  }
+
+  private async getJobsByCompanyIdFromDb(
+    companyId: number,
+    pNumber: number,
+    pSize: number,
+    onlyActive: boolean,
+  ) {
     const offset = (pNumber - 1) * pSize;
 
     const count = await this.jobRepo.countJobsByCompanyId(
@@ -176,9 +233,9 @@ export class JobService {
     return {
       data: formatted,
       totalItems: count,
-      pageNumber,
+      pageNumber: pNumber,
       page: pNumber,
-      pageSize,
+      pageSize: pSize,
       totalPages: Math.ceil(count / pSize),
     };
   }
@@ -211,7 +268,7 @@ export class JobService {
    * Tạo tin tuyển dụng mới
    */
   async create(userId: number, dto: CreateJobDto): Promise<JobResponseData> {
-    return withTransaction(async () => {
+    const result = await withTransaction(async () => {
       const member = await this.jobRepo.findCompanyMemberByUserId(userId);
 
       let companyId = member?.companyid;
@@ -236,8 +293,10 @@ export class JobService {
         }
       }
 
-      return this.getById(newJob.id);
+      return this.getByIdFromDb(newJob.id);
     }, true);
+    await this.invalidateJobCache(result.id);
+    return result;
   }
 
   /**
@@ -248,7 +307,7 @@ export class JobService {
     currentUser: { id: number; role: string },
     dto: UpdateJobDto,
   ): Promise<JobResponseData> {
-    return withTransaction(async () => {
+    const result = await withTransaction(async () => {
       const job = await this.jobRepo.findById(jobId);
       if (!job) {
         throw new NotFoundException('Không tìm thấy tin tuyển dụng');
@@ -281,15 +340,17 @@ export class JobService {
         }
       }
 
-      return this.getById(jobId);
+      return this.getByIdFromDb(jobId);
     }, true);
+    await this.invalidateJobCache(jobId);
+    return result;
   }
 
   /**
    * Xóa tin tuyển dụng
    */
   async deleteJob(jobId: number, currentUser: { id: number; role: string }) {
-    return withTransaction(async () => {
+    const result = await withTransaction(async () => {
       const job = await this.jobRepo.findById(jobId);
       if (!job) {
         throw new NotFoundException('Không tìm thấy tin tuyển dụng');
@@ -318,5 +379,7 @@ export class JobService {
         message: 'Xóa tin tuyển dụng thành công',
       };
     }, true);
+    await this.invalidateJobCache(jobId);
+    return result;
   }
 }

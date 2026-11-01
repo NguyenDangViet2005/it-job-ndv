@@ -6,6 +6,9 @@ import { SecurityThrottlerGuard } from '~/common/guards/security-throttler.guard
 // Core & Infrastructure Modules
 import { PrismaModule } from '~/prisma/prisma.module.js';
 import { CloudinaryModule } from '~/modules/cloudinary/cloudinary.module.js';
+import { RedisModule } from '~/modules/redis/redis.module.js';
+import { RedisCacheService } from '~/modules/redis/redis-cache.service.js';
+import { RedisThrottlerStorage } from '~/modules/redis/redis-throttler.storage.js';
 
 // Feature Modules
 import { AuthModule } from '~/modules/auth/auth.module.js';
@@ -24,20 +27,29 @@ import { BlogModule } from '~/modules/blog/blog.module.js';
 import { SearchModule } from '~/modules/search/search.module.js';
 
 // Common Pipeline: Middlewares & Interceptors
-import { RequestIdMiddleware, RequestLoggerMiddleware } from '~/common/middlewares/index.js';
-import { SecurityInterceptor, TransformInterceptor } from '~/common/interceptors/index.js';
+import {
+  RequestIdMiddleware,
+  RequestLoggerMiddleware,
+} from '~/common/middlewares/index.js';
+import {
+  SecurityInterceptor,
+  TransformInterceptor,
+} from '~/common/interceptors/index.js';
 
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 
 @Module({
   imports: [
-    ThrottlerModule.forRoot([
-      {
-        ttl: 60000,
-        limit: 120,
-      },
-    ]),
+    RedisModule,
+    ThrottlerModule.forRootAsync({
+      imports: [RedisModule],
+      inject: [RedisCacheService],
+      useFactory: (redis: RedisCacheService) => ({
+        storage: new RedisThrottlerStorage(redis),
+        throttlers: [{ ttl: 60000, limit: 120 }],
+      }),
+    }),
     PrismaModule,
     CloudinaryModule,
     AuthModule,
@@ -78,8 +90,6 @@ import { AppService } from './app.service.js';
 export class AppModule implements NestModule {
   // Step 1 in Pipeline: Middlewares
   configure(consumer: MiddlewareConsumer): void {
-    consumer
-      .apply(RequestIdMiddleware, RequestLoggerMiddleware)
-      .forRoutes('*');
+    consumer.apply(RequestIdMiddleware, RequestLoggerMiddleware).forRoutes('*');
   }
 }

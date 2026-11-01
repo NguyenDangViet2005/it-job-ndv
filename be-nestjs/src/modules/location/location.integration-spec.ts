@@ -2,13 +2,18 @@ import { NotFoundException } from '@nestjs/common';
 import { orm } from '../../prisma/db.js';
 import { LocationService } from './location.service.js';
 import { LocationRepository } from './location.repository.js';
+import { RedisCacheService } from '../redis/redis-cache.service.js';
 import {
   useDatabaseFixtures,
   varchar,
 } from '../../../test/integration/fixtures.js';
 
 const context = useDatabaseFixtures();
-const service = new LocationService(new LocationRepository());
+// No lifecycle initialization: these DB integration tests bypass Redis.
+const service = new LocationService(
+  new LocationRepository(),
+  new RedisCacheService(),
+);
 
 describe('Location service + repository + PostgreSQL', () => {
   it('reads provinces from PostgreSQL', async () => {

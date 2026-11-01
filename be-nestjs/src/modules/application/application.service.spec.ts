@@ -7,6 +7,7 @@ import {
 import { ApplicationService } from './application.service.js';
 import type { ApplicationRepository } from './application.repository.js';
 import { isDeadlinePassed } from '~/common/utils/temporal.util.js';
+import type { RedisCacheService } from '../redis/redis-cache.service.js';
 
 vi.mock('~/prisma/db.js', () => ({
   withTransaction: vi.fn(async (work: () => Promise<unknown>) => work()),
@@ -35,6 +36,7 @@ describe('ApplicationService', () => {
     findByUserId: vi.fn(),
   };
   let service: ApplicationService;
+  const cache = { deleteByPattern: vi.fn() };
   const app = { jobid: 10, userid: 1, cvurl: 'profile.pdf', status: 'pending' };
   const job = {
     id: 10,
@@ -47,7 +49,10 @@ describe('ApplicationService', () => {
 
   beforeEach(() => {
     vi.resetAllMocks();
-    service = new ApplicationService(repo as unknown as ApplicationRepository);
+    service = new ApplicationService(
+      repo as unknown as ApplicationRepository,
+      cache as unknown as RedisCacheService,
+    );
     vi.mocked(isDeadlinePassed).mockReturnValue(false);
     repo.findJobById.mockResolvedValue(job);
     repo.findByJobAndUser.mockResolvedValue(app);

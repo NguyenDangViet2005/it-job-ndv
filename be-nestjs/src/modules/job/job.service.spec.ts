@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { JobService } from './job.service.js';
 import type { JobRepository } from './job.repository.js';
+import type { RedisCacheService } from '../redis/redis-cache.service.js';
 
 vi.mock('~/prisma/db.js', () => ({
   withTransaction: vi.fn(async (work: () => Promise<unknown>) => work()),
@@ -30,6 +31,14 @@ describe('JobService', () => {
     findOpenJobs: vi.fn(),
   };
   let service: JobService;
+  const cache = {
+    remember: vi.fn(
+      async (_key: string, _ttl: number, load: () => Promise<unknown>) =>
+        load(),
+    ),
+    delete: vi.fn(),
+    deleteByPattern: vi.fn(),
+  };
   const job = { id: 10, companyid: 20, title: 'Backend', isnegotiable: true };
   const dto = {
     title: ' Backend ',
@@ -39,7 +48,10 @@ describe('JobService', () => {
 
   beforeEach(() => {
     vi.resetAllMocks();
-    service = new JobService(repo as unknown as JobRepository);
+    service = new JobService(
+      repo as unknown as JobRepository,
+      cache as unknown as RedisCacheService,
+    );
     repo.findById.mockResolvedValue(job);
     repo.create.mockResolvedValue(job);
     repo.findSkillJobsByJobIds.mockResolvedValue([]);
@@ -179,6 +191,11 @@ describe('JobService', () => {
       applicationCount: 0,
     });
     expect(repo.findCompaniesByIds).toHaveBeenCalledWith([20]);
+    expect(cache.remember).toHaveBeenCalledWith(
+      'itjob:jobs:list:1:10:nest',
+      60,
+      expect.any(Function),
+    );
   });
 
   it('returns an empty page without enrichment queries', async () => {

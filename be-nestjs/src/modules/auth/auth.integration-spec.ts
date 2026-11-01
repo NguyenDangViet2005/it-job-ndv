@@ -7,6 +7,7 @@ import { vi } from 'vitest';
 import { orm } from '../../prisma/db.js';
 import { AuthService } from './auth.service.js';
 import { AuthRepository } from './auth.repository.js';
+import { RedisCacheService } from '../redis/redis-cache.service.js';
 import {
   useDatabaseFixtures,
   expectSqlState,
@@ -15,7 +16,7 @@ import {
 const context = useDatabaseFixtures();
 const repo = new AuthRepository();
 const jwt = new JwtService();
-const service = new AuthService(repo, jwt);
+const service = new AuthService(repo, jwt, new RedisCacheService());
 const password = 'Integration-password-123';
 const hash = (token: string) =>
   createHash('sha256').update(token).digest('hex');

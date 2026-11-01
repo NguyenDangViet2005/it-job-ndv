@@ -7,6 +7,7 @@ import {
 import { CompanyService } from './company.service.js';
 import type { CompanyRepository } from './company.repository.js';
 import type { CloudinaryService } from '../cloudinary/cloudinary.service.js';
+import type { RedisCacheService } from '../redis/redis-cache.service.js';
 
 vi.mock('~/prisma/db.js', () => ({
   withTransaction: vi.fn(async (work: () => Promise<unknown>) => work()),
@@ -33,6 +34,7 @@ describe('CompanyService', () => {
     deleteFollowsReviewsMembersAndCompany: vi.fn(),
   };
   const cloud = { uploadFile: vi.fn(), deleteFile: vi.fn() };
+  const cache = { deleteByPattern: vi.fn() };
   const company = {
     id: 20,
     name: 'Acme',
@@ -48,6 +50,7 @@ describe('CompanyService', () => {
     service = new CompanyService(
       repo as unknown as CompanyRepository,
       cloud as unknown as CloudinaryService,
+      cache as unknown as RedisCacheService,
     );
     repo.findById.mockResolvedValue(company);
     repo.findSimpleById.mockResolvedValue(company);

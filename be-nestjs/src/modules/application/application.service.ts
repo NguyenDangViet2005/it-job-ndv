@@ -14,12 +14,17 @@ import {
   type ApplicationResponseData,
 } from './application.mapper.js';
 import { ApplicationRepository } from './application.repository.js';
+import { RedisCacheService } from '../redis/redis-cache.service.js';
+import { REDIS_KEYS } from '../redis/redis-cache.constants.js';
 
 export type { ApplicationResponseData };
 
 @Injectable()
 export class ApplicationService {
-  constructor(private readonly appRepo: ApplicationRepository) {}
+  constructor(
+    private readonly appRepo: ApplicationRepository,
+    private readonly cache: RedisCacheService,
+  ) {}
 
   /**
    * Tối ưu hóa tải thông tin công việc, công ty và ứng viên trong 2 truy vấn gộp (tránh N+1)
@@ -78,7 +83,7 @@ export class ApplicationService {
     userId: number,
     dto: CreateApplicationDto,
   ): Promise<ApplicationResponseData> {
-    return withTransaction(async () => {
+    const result = await withTransaction(async () => {
       const job = await this.appRepo.findJobById(dto.jobid);
       if (!job) {
         throw new NotFoundException('Không tìm thấy tin tuyển dụng');
@@ -125,6 +130,8 @@ export class ApplicationService {
 
       return this.getById(dto.jobid, userId, { id: userId, role: 'user' });
     }, true);
+    await this.cache.deleteByPattern(REDIS_KEYS.job.all);
+    return result;
   }
 
   /**
@@ -375,6 +382,7 @@ export class ApplicationService {
     }
 
     await this.appRepo.delete(jobId, targetUserId);
+    await this.cache.deleteByPattern(REDIS_KEYS.job.all);
 
     return {
       success: true,
