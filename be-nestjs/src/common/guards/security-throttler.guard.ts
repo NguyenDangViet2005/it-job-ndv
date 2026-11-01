@@ -13,7 +13,10 @@ import {
   type ThrottlerModuleOptions,
   type ThrottlerStorage,
 } from '@nestjs/throttler';
-import type { ThrottlerLimitDetail, ThrottlerRequest } from '@nestjs/throttler/dist/throttler.guard.interface.js';
+import type {
+  ThrottlerLimitDetail,
+  ThrottlerRequest,
+} from '@nestjs/throttler/dist/throttler.guard.interface.js';
 import { JwtService } from '@nestjs/jwt';
 import {
   RATE_LIMIT_METADATA_KEY,
@@ -21,6 +24,7 @@ import {
   type RateLimitOptions,
   type BurstLimitOptions,
 } from '~/common/decorators/rate-limit.decorator.js';
+import { RedisCacheService } from '~/modules/redis/redis-cache.service.js';
 
 interface TokenBucketState {
   tokens: number;
@@ -47,17 +51,23 @@ export class SecurityThrottlerGuard extends ThrottlerGuard {
     @InjectThrottlerOptions() options: ThrottlerModuleOptions,
     @InjectThrottlerStorage() storageService: ThrottlerStorage,
     reflector: Reflector,
+    private readonly redis: RedisCacheService,
   ) {
     super(options, storageService, reflector);
 
     // Tự động dọn dẹp các bucket cũ sau mỗi 10 phút để tránh rò rỉ bộ nhớ
-    const cleanupInterval = setInterval(() => {
-      this.cleanupTokenBuckets();
-    }, 10 * 60 * 1000);
+    const cleanupInterval = setInterval(
+      () => {
+        this.cleanupTokenBuckets();
+      },
+      10 * 60 * 1000,
+    );
     cleanupInterval.unref?.();
   }
 
-  protected override async handleRequest(requestProps: ThrottlerRequest): Promise<boolean> {
+  protected override async handleRequest(
+    requestProps: ThrottlerRequest,
+  ): Promise<boolean> {
     const { context } = requestProps;
     const { req } = this.getRequestResponse(context);
 
@@ -73,7 +83,7 @@ export class SecurityThrottlerGuard extends ThrottlerGuard {
     if (burstOptions) {
       const tracker = await this.getTracker(req);
       const burstKey = `${context.getClass().name}:${context.getHandler().name}:${tracker}`;
-      const isAllowed = this.consumeTokenBucket(burstKey, burstOptions);
+      const isAllowed = await this.consumeTokenBucket(burstKey, burstOptions);
 
       if (!isAllowed) {
         const clientIp = this.getClientIp(req);
@@ -88,7 +98,8 @@ export class SecurityThrottlerGuard extends ThrottlerGuard {
         throw new HttpException(
           {
             statusCode: HttpStatus.TOO_MANY_REQUESTS,
-            message: 'Bạn đang thao tác quá nhanh. Vui lòng dừng lại vài giây trước khi tiếp tục.',
+            message:
+              'Bạn đang thao tác quá nhanh. Vui lòng dừng lại vài giây trước khi tiếp tục.',
             error: 'Too Many Requests (Burst Limit Exceeded)',
           },
           HttpStatus.TOO_MANY_REQUESTS,
@@ -106,7 +117,9 @@ export class SecurityThrottlerGuard extends ThrottlerGuard {
    * - Đã login: User-ID
    * - Nhạy cảm: Cả IP và User-ID
    */
-  protected override async getTracker(req: Record<string, any>): Promise<string> {
+  protected override async getTracker(
+    req: Record<string, any>,
+  ): Promise<string> {
     const clientIp = this.getClientIp(req);
     const userId = this.extractUserId(req);
 
@@ -160,8 +173,8 @@ export class SecurityThrottlerGuard extends ThrottlerGuard {
     // Ghi Security Audit Log
     this.logger.warn(
       `🚨 [SECURITY RATE-LIMIT BLOCKED] IP: ${clientIp} | UserID: ${userId ?? 'ANONYMOUS'} | ` +
-      `Route: [${method}] ${path} | Limit: ${throttlerLimitDetail.limit} reqs / ${Math.ceil(throttlerLimitDetail.ttl / 1000)}s | ` +
-      `RetryAfter: ${retryAfter}s | UserAgent: ${userAgent} | RequestId: ${reqId}`,
+        `Route: [${method}] ${path} | Limit: ${throttlerLimitDetail.limit} reqs / ${Math.ceil(throttlerLimitDetail.ttl / 1000)}s | ` +
+        `RetryAfter: ${retryAfter}s | UserAgent: ${userAgent} | RequestId: ${reqId}`,
     );
 
     // Thiết lập HTTP headers phản hồi chuẩn RFC 6585
@@ -181,7 +194,28 @@ export class SecurityThrottlerGuard extends ThrottlerGuard {
   /**
    * Thuật toán Token Bucket: Tiêu thụ 1 token trong xô
    */
-  private consumeTokenBucket(key: string, options: BurstLimitOptions): boolean {
+  private async consumeTokenBucket(
+    key: string,
+    options: BurstLimitOptions,
+  ): Promise<boolean> {
+    const redisResult = await this.redis.eval(
+      `
+      local values = redis.call('HMGET', KEYS[1], 'tokens', 'lastRefill')
+      local tokens = tonumber(values[1]) or tonumber(ARGV[1])
+      local lastRefill = tonumber(values[2]) or tonumber(ARGV[3])
+      local now = tonumber(ARGV[3])
+      tokens = math.min(tonumber(ARGV[1]), tokens + ((now - lastRefill) / 1000) * tonumber(ARGV[2]))
+      local allowed = 0
+      if tokens >= 1 then tokens = tokens - 1; allowed = 1 end
+      redis.call('HSET', KEYS[1], 'tokens', tokens, 'lastRefill', now)
+      redis.call('PEXPIRE', KEYS[1], math.ceil((tonumber(ARGV[1]) / tonumber(ARGV[2])) * 2000))
+      return allowed
+      `,
+      [`itjob:burst:${key}`],
+      [options.capacity, options.refillRate, Date.now()],
+    );
+    if (redisResult !== undefined) return Number(redisResult) === 1;
+
     const now = Date.now();
     let bucket = this.tokenBuckets.get(key);
 
@@ -192,7 +226,10 @@ export class SecurityThrottlerGuard extends ThrottlerGuard {
       // Hồi phục token theo thời gian trôi qua
       const elapsedSeconds = (now - bucket.lastRefill) / 1000;
       const refilledTokens = elapsedSeconds * options.refillRate;
-      bucket.tokens = Math.min(options.capacity, bucket.tokens + refilledTokens);
+      bucket.tokens = Math.min(
+        options.capacity,
+        bucket.tokens + refilledTokens,
+      );
       bucket.lastRefill = now;
     }
 

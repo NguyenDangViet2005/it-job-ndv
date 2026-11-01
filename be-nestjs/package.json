@@ -44,6 +44,7 @@
     "cookie-parser": "^1.4.7",
     "dotenv": "^18.0.4",
     "helmet": "^8.3.0",
+    "ioredis": "^6.0.0",
     "morgan": "^1.12.1",
     "passport": "^0.7.0",
     "passport-facebook": "^3.0.0",

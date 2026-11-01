@@ -10,6 +10,7 @@ import { Temporal } from '@js-temporal/polyfill';
 import bcrypt from 'bcryptjs';
 import { AuthService } from './auth.service.js';
 import type { AuthRepository } from './auth.repository.js';
+import type { RedisCacheService } from '../redis/redis-cache.service.js';
 
 vi.mock('~/prisma/db.js', () => ({
   withTransaction: vi.fn(async (work: () => Promise<unknown>) => work()),
@@ -34,6 +35,10 @@ describe('AuthService', () => {
     findUserByProvider: vi.fn(),
   };
   const jwt = { sign: vi.fn(), verify: vi.fn() };
+  const cache = {
+    set: vi.fn().mockResolvedValue(false),
+    getDel: vi.fn().mockResolvedValue(undefined),
+  };
   const user = {
     id: 1,
     email: 'an@test.local',
@@ -86,6 +91,7 @@ describe('AuthService', () => {
     service = new AuthService(
       repo as unknown as AuthRepository,
       jwt as unknown as JwtService,
+      cache as unknown as RedisCacheService,
     );
     repo.findUserById.mockResolvedValue(user);
     repo.createUser.mockResolvedValue(user);
@@ -466,7 +472,7 @@ describe('AuthService', () => {
     });
 
     it('exchanges a code once, creating a hashed login session', async () => {
-      const code = service.createOAuthExchangeCode(1);
+      const code = await service.createOAuthExchangeCode(1);
       await expect(service.exchangeOAuthCode(code)).resolves.toMatchObject({
         accesstoken: 'access-token',
         refreshtoken: 'refresh-token',
@@ -480,8 +486,25 @@ describe('AuthService', () => {
       expect(repo.createSession).toHaveBeenCalledTimes(1);
     });
 
+    it('stores and atomically consumes an exchange code in Redis', async () => {
+      cache.set.mockResolvedValue(true);
+      cache.getDel.mockResolvedValueOnce('1').mockResolvedValueOnce(null);
+      const code = await service.createOAuthExchangeCode(1);
+      expect(cache.set).toHaveBeenCalledWith(
+        `itjob:auth:oauth-code:${code}`,
+        '1',
+        60,
+      );
+      await expect(service.exchangeOAuthCode(code)).resolves.toHaveProperty(
+        'accesstoken',
+      );
+      await expect(service.exchangeOAuthCode(code)).rejects.toBeInstanceOf(
+        UnauthorizedException,
+      );
+    });
+
     it('rejects expired codes without creating a session', async () => {
-      const code = service.createOAuthExchangeCode(1);
+      const code = await service.createOAuthExchangeCode(1);
       vi.setSystemTime(Date.now() + 60001);
       await expect(service.exchangeOAuthCode(code)).rejects.toBeInstanceOf(
         UnauthorizedException,
@@ -504,7 +527,9 @@ describe('AuthService', () => {
     it('rejects an exchange if the user was deleted', async () => {
       repo.findUserById.mockResolvedValue(null);
       await expect(
-        service.exchangeOAuthCode(service.createOAuthExchangeCode(1)),
+        service
+          .createOAuthExchangeCode(1)
+          .then((code) => service.exchangeOAuthCode(code)),
       ).rejects.toBeInstanceOf(UnauthorizedException);
       expect(repo.createSession).not.toHaveBeenCalled();
     });

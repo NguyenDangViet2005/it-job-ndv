@@ -2,6 +2,7 @@ import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { orm } from '../../prisma/db.js';
 import { CompanyService } from './company.service.js';
 import { CompanyRepository } from './company.repository.js';
+import { RedisCacheService } from '../redis/redis-cache.service.js';
 import {
   useDatabaseFixtures,
   createOfflineCloudinary,
@@ -11,6 +12,7 @@ const context = useDatabaseFixtures();
 const service = new CompanyService(
   new CompanyRepository(),
   createOfflineCloudinary(),
+  new RedisCacheService(),
 );
 
 describe('Company service + repository + PostgreSQL', () => {

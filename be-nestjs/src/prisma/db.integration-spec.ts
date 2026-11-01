@@ -5,6 +5,7 @@ import { FollowRepository } from '../modules/follow/follow.repository.js';
 import { FollowService } from '../modules/follow/follow.service.js';
 import { ApplicationRepository } from '../modules/application/application.repository.js';
 import { ApplicationService } from '../modules/application/application.service.js';
+import { RedisCacheService } from '../modules/redis/redis-cache.service.js';
 import {
   useDatabaseFixtures,
   skillName,
@@ -13,7 +14,10 @@ import {
   varchar,
 } from '../../test/integration/fixtures.js';
 const follows = new FollowService(new FollowRepository());
-const applications = new ApplicationService(new ApplicationRepository());
+const applications = new ApplicationService(
+  new ApplicationRepository(),
+  new RedisCacheService(),
+);
 const context = useDatabaseFixtures();
 
 describe('Real PostgreSQL constraints and transaction context', () => {
