@@ -13,17 +13,25 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const pathname = usePathname()
 
+  const isProtectedRoute = Boolean(
+    pathname &&
+      (pathname.startsWith('/hr') ||
+        pathname.startsWith('/admin') ||
+        pathname.startsWith(ROUTES.USER_DASHBOARD))
+  )
+
+  const isQARoute = Boolean(
+    pathname &&
+      (pathname === ROUTES.QA || pathname.startsWith(ROUTES.QA + '/'))
+  )
+
+  const requiresAuthCheck = isProtectedRoute || isQARoute
+
   useEffect(() => {
     if (loading || !pathname) return
 
     // Don't check on welcome page or access-denied page
     if (pathname === '/' || pathname === ROUTES.WELCOME || pathname === ROUTES.ACCESS_DENIED) return
-
-    // Check protected routes
-    const isProtectedRoute =
-      pathname.startsWith("/hr") ||
-      pathname.startsWith("/admin") ||
-      pathname.startsWith(ROUTES.USER_DASHBOARD)
 
     if (isProtectedRoute) {
       // Not logged in -> Redirect to login page
@@ -32,34 +40,30 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
         return
       }
     }
-  }, [pathname, loading, isAuthenticated, router])
+  }, [pathname, loading, isAuthenticated, isProtectedRoute, router])
 
-  // Không check và không hiện LoadingScreen ở trang Welcome để tối ưu UX lần đầu vào web
-  if (pathname === '/' || pathname === ROUTES.WELCOME) {
-    return <>{children}</>;
-  }
-
-  if (loading) {
+  // Chỉ hiện LoadingScreen toàn màn hình đối với các route bắt buộc kiểm tra quyền (Protected / QA).
+  // Các trang Public (Welcome, Trang chủ, Việc làm, Công ty, Bài viết...) render ngay lập tức không bị chặn.
+  if (loading && requiresAuthCheck) {
     return <LoadingScreen message="Đang tải...." />
   }
 
-  // Check route permissions
-  if (pathname) {
+  // Check route permissions sau khi hoàn tất xác thực
+  if (!loading && pathname) {
     // 1. Kiểm tra trang Hỏi đáp (QA) - nếu chưa đăng nhập thì trả về trang unauthorize (AccessDeniedPage)
-    const isQARoute = pathname === ROUTES.QA || pathname.startsWith(ROUTES.QA + '/');
     if (isQARoute && !isAuthenticated) {
-      return <AccessDeniedPage />;
+      return <AccessDeniedPage />
     }
 
-    // 2. Check role permissions for administrative routes
-    const isProtectedRoute =
-      pathname.startsWith("/hr") ||
-      pathname.startsWith("/admin") ||
-      pathname.startsWith(ROUTES.USER_DASHBOARD);
+    // 2. Chặn hiển thị nội dung Protected Route trong lúc chờ router.push chuyển về trang đăng nhập
+    if (isProtectedRoute && !isAuthenticated) {
+      return <LoadingScreen message="Đang chuyển hướng..." />
+    }
 
+    // 3. Check role permissions for administrative routes
     if (isProtectedRoute && user?.role && !hasRouteAccess(user.role, pathname)) {
       // Render Access Denied inline at the same URL (no router redirect)
-      return <AccessDeniedPage />;
+      return <AccessDeniedPage />
     }
   }
 
