@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { authApi } from "@/apis/auth.api";
 import { companyApi } from "@/apis/company.api";
 import { AuthContext } from "@/lib/contexts/auth.context";
-import { AuthGuard } from "../guards/auth.guard"; 
+import { AuthGuard } from "../guards/auth.guard";
 import { ROUTES } from "@/constants";
 import { Company, User } from "@/types";
 
@@ -15,21 +15,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [company, setCompany] = useState<Company | null>(null);
   const [token, setToken] = useState<string | null>(null);
-  const pathname = usePathname();
-  const isWelcomePage = pathname === "/" || pathname === ROUTES.WELCOME;
-
-  // Nếu đang ở welcome page thì không cần chờ loading auth
-  const [loading, setLoading] = useState(!isWelcomePage);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  // Initialize Auth (Silent Refresh) - Đảm bảo chạy đúng 1 lần duy nhất khi reload/mount trang
+  // Initialize Auth (Silent Refresh) - Chạy ngầm 1 lần duy nhất ngay khi ứng dụng mount
+  // (kể cả ở trang Welcome) để đánh thức server sớm và sẵn sàng trạng thái đăng nhập trước khi chuyển trang
   useEffect(() => {
-    // Không check auth ở trang welcome để tối ưu trải nghiệm (UX) người dùng lần đầu
-    if (pathname === "/" || pathname === ROUTES.WELCOME) {
-      setLoading(false);
-      return;
-    }
-
     // Module-level guard: Chống chạy lặp do React StrictMode hoặc re-mount component
     if (isGlobalAuthInitStarted) return;
     isGlobalAuthInitStarted = true;
@@ -60,7 +51,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     initAuth();
-  }, [pathname]);
+  }, []);
 
   // Tự động làm mới access token định kỳ (mỗi 10 phút, trước khi token 15 phút hết hạn)
   useEffect(() => {

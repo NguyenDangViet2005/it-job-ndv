@@ -27,11 +27,12 @@ import { ROUTES } from '@/constants'
 const UserHeader = () => {
   const router = useRouter()
   const [scrolled, setScrolled] = useState(false)
-  const { user, isAuthenticated, logout } = useAuth()
+  const { user, isAuthenticated, loading, logout } = useAuth()
   const [mounted, setMounted] = useState(false)
 
   // Use isAuthenticated only after mount to prevent hydration mismatch
   const isLoggedIn = mounted ? isAuthenticated : false
+  const isAuthPending = !mounted || loading
 
   useEffect(() => {
     setMounted(true)
@@ -149,7 +150,12 @@ const UserHeader = () => {
 
         {/* Right side - Auth buttons and theme toggle */}
         <div className="flex items-center space-x-3">
-          {isLoggedIn ? (
+          {isAuthPending ? (
+            <div className="hidden sm:flex items-center space-x-2">
+              <div className="h-9 w-24 rounded-md bg-muted/60 animate-pulse" />
+              <div className="h-9 w-20 rounded-md bg-muted/60 animate-pulse" />
+            </div>
+          ) : isLoggedIn ? (
             <UserDropdown user={user} onLogout={handleLogout} />
           ) : (
             <div className="hidden sm:flex items-center space-x-2">

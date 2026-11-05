@@ -209,7 +209,10 @@ export class AuthService {
     }
 
     const hashedToken = this.hashToken(token);
-    const session = await this.authRepo.findSessionByRefreshToken(hashedToken);
+    const [session, user] = await Promise.all([
+      this.authRepo.findSessionByRefreshToken(hashedToken),
+      this.authRepo.findUserById(decoded.id),
+    ]);
 
     if (!session) {
       throw new UnauthorizedException(
@@ -232,21 +235,18 @@ export class AuthService {
         : 0;
       const isWithinGracePeriod = Date.now() - updatedTime < 15000;
 
-      if (isWithinGracePeriod) {
-        const user = await this.authRepo.findUserById(decoded.id);
-        if (user) {
-          const userWithoutPassword = AuthMapper.toSafeUser(user);
-          const tokens = this.generateTokens(
-            user.id,
-            user.role || 'user',
-            user.email,
-          );
-          return {
-            accesstoken: tokens.accesstoken,
-            refreshtoken: token,
-            user: userWithoutPassword,
-          };
-        }
+      if (isWithinGracePeriod && user) {
+        const userWithoutPassword = AuthMapper.toSafeUser(user);
+        const tokens = this.generateTokens(
+          user.id,
+          user.role || 'user',
+          user.email,
+        );
+        return {
+          accesstoken: tokens.accesstoken,
+          refreshtoken: token,
+          user: userWithoutPassword,
+        };
       }
 
       // Vượt quá Grace Period -> Thật sự bị lộ token cũ -> Khóa ngay lập tức toàn bộ family
@@ -256,7 +256,6 @@ export class AuthService {
       );
     }
 
-    const user = await this.authRepo.findUserById(decoded.id);
     if (!user) {
       throw new UnauthorizedException('Người dùng không tồn tại');
     }
