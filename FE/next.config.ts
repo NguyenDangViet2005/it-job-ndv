@@ -5,6 +5,7 @@ if (process.env.NODE_ENV === "development") {
 }
 
 const nextConfig: NextConfig = {
+  ...(process.env.NEXT_STANDALONE === "1" && { output: "standalone" }),
   reactStrictMode: false,
   // Use App Router only, ignore Pages directory
   pageExtensions: ["tsx", "ts", "jsx", "js"]

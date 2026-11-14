@@ -9,16 +9,24 @@ export const isProductionEnv = (): boolean =>
   Boolean(process.env.VERCEL) ||
   (Boolean(process.env.CLIENT_URL) && !process.env.CLIENT_URL?.includes('localhost'));
 
+const useSecureRefreshCookie = (): boolean => {
+  const isLocalHttp = /^http:\/\/localhost(?::\d+)?\/?$/.test(
+    process.env.CLIENT_URL ?? '',
+  );
+  return isProductionEnv() &&
+    !(isLocalHttp && process.env.COOKIE_ALLOW_LOCAL_HTTP === 'true');
+};
+
 /**
  * Thiết lập cookie Refresh Token
  */
 export const setRefreshTokenCookie = (res: Response, token: string): void => {
-  const isProduction = isProductionEnv();
+  const secure = useSecureRefreshCookie();
 
   res.cookie(COOKIE_NAME, token, {
     httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? 'none' : 'lax',
+    secure,
+    sameSite: secure ? 'none' : 'lax',
     path: '/',
     maxAge: COOKIE_MAX_AGE,
   });
@@ -28,12 +36,12 @@ export const setRefreshTokenCookie = (res: Response, token: string): void => {
  * Xóa cookie Refresh Token
  */
 export const clearRefreshTokenCookie = (res: Response): void => {
-  const isProduction = isProductionEnv();
+  const secure = useSecureRefreshCookie();
 
   res.clearCookie(COOKIE_NAME, {
     httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? 'none' : 'lax',
+    secure,
+    sameSite: secure ? 'none' : 'lax',
     path: '/',
   });
 };

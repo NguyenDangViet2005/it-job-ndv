@@ -1,3 +1,4 @@
+import { getApiEndpoint } from "./api-endpoint";
 import { Like } from "@/types";
 import { apiPost, apiDelete, apiGetPaginated } from "./api";
 
@@ -48,7 +49,7 @@ export const interactionApi = {
     }
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BE_ENDPOINT}${ENDPOINT}/${postid}/comment`,
+      `${getApiEndpoint()}${ENDPOINT}/${postid}/comment`,
       {
         method: "POST",
         headers: {
@@ -95,7 +96,7 @@ export const interactionApi = {
     }
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BE_ENDPOINT}${ENDPOINT}/${postid}/comment/${commentId}`,
+      `${getApiEndpoint()}${ENDPOINT}/${postid}/comment/${commentId}`,
       {
         method: "PUT",
         headers: {

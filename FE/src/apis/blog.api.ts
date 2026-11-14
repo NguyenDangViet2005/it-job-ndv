@@ -1,3 +1,4 @@
+import { getApiEndpoint } from "./api-endpoint";
 import { Blog } from "@/types";
 import {
   apiGet,
@@ -47,10 +48,9 @@ export const blogApi = {
 
   // Tạo blog mới
   create: async (data: FormData | any, token: string) => {
-    const BE_ENDPOINT = process.env.NEXT_PUBLIC_BE_ENDPOINT || "http://localhost:8081/api";
     const isFormData = data instanceof FormData;
 
-    const response = await fetch(`${BE_ENDPOINT}${ENDPOINT}`, {
+    const response = await fetch(`${getApiEndpoint()}${ENDPOINT}`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -72,10 +72,9 @@ export const blogApi = {
 
   // Cập nhật blog
   update: async (id: number, data: FormData | any, token: string) => {
-    const BE_ENDPOINT = process.env.NEXT_PUBLIC_BE_ENDPOINT || "http://localhost:8081/api";
     const isFormData = data instanceof FormData;
 
-    const response = await fetch(`${BE_ENDPOINT}${ENDPOINT}/${id}`, {
+    const response = await fetch(`${getApiEndpoint()}${ENDPOINT}/${id}`, {
       method: "PUT",
       headers: {
         Authorization: `Bearer ${token}`,

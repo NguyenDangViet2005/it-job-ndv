@@ -51,7 +51,7 @@ interface SearchResponse {
 }
 
 export const searchApi = {
-  search: (keyword: string, pageNumber: number = 1, pageSize: number = 10) => {
+  search: (keyword: string, page: number = 1, pageSize: number = 10) => {
     const trimmedKeyword = keyword.trim();
     if (!trimmedKeyword) {
       return Promise.reject(new Error("Keyword is required"));
@@ -59,8 +59,8 @@ export const searchApi = {
     return apiGet<SearchResponse>(ENDPOINT, {
       params: {
         keyword: trimmedKeyword,
-        pageNumber: pageNumber,
-        pageSize: pageSize,
+        page,
+        pageSize,
       },
     });
   },

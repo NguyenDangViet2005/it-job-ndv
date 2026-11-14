@@ -1,8 +1,6 @@
+import { getApiEndpoint } from "./api-endpoint";
 import type { ApiResponse, ResponseData } from "@/types/api.type";
 import { buildURL, handleResponse } from "@/utils/api.utils";
-
-const BE_ENDPOINT =
-  process.env.NEXT_PUBLIC_BE_ENDPOINT || "http://localhost:8081/api";
 
 interface ApiConfig extends RequestInit {
   params?: Record<string, string | number | boolean | undefined | null>;
@@ -47,7 +45,7 @@ export async function apiGet<T>(
   config?: ApiConfig,
 ): Promise<T> {
   const { params, token, headers: customHeaders, ...restConfig } = config || {};
-  const url = buildURL(BE_ENDPOINT, endpoint, params);
+  const url = buildURL(getApiEndpoint(), endpoint, params);
   const headers = createHeaders(customHeaders, token);
 
   try {
@@ -71,7 +69,7 @@ export async function apiPost<T>(
   config?: ApiConfig,
 ): Promise<T> {
   const { params, token, headers: customHeaders, ...restConfig } = config || {};
-  const url = buildURL(BE_ENDPOINT, endpoint, params);
+  const url = buildURL(getApiEndpoint(), endpoint, params);
   const headers = createHeaders(customHeaders, token);
 
   const response = await fetch(url, {
@@ -91,7 +89,7 @@ export async function apiPut<T>(
   config?: ApiConfig,
 ): Promise<T> {
   const { params, token, headers: customHeaders, ...restConfig } = config || {};
-  const url = buildURL(BE_ENDPOINT, endpoint, params);
+  const url = buildURL(getApiEndpoint(), endpoint, params);
   const headers = createHeaders(customHeaders, token);
 
   const response = await fetch(url, {
@@ -110,7 +108,7 @@ export async function apiDelete<T>(
   config?: ApiConfig,
 ): Promise<T> {
   const { params, token, headers: customHeaders, ...restConfig } = config || {};
-  const url = buildURL(BE_ENDPOINT, endpoint, params);
+  const url = buildURL(getApiEndpoint(), endpoint, params);
   const headers = createHeaders(customHeaders, token);
 
   const response = await fetch(url, {
@@ -129,7 +127,7 @@ export async function apiPatch<T>(
   config?: ApiConfig,
 ): Promise<T> {
   const { params, token, headers: customHeaders, ...restConfig } = config || {};
-  const url = buildURL(BE_ENDPOINT, endpoint, params);
+  const url = buildURL(getApiEndpoint(), endpoint, params);
   const headers = createHeaders(customHeaders, token);
 
   const response = await fetch(url, {
@@ -150,7 +148,7 @@ export async function apiUploadFile<T>(
   config?: ApiConfig,
 ): Promise<T> {
   const { params, token, headers: customHeaders, ...restConfig } = config || {};
-  const url = buildURL(BE_ENDPOINT, endpoint, params);
+  const url = buildURL(getApiEndpoint(), endpoint, params);
   const headers = createHeaders(customHeaders, token, null);
 
   const formData = new FormData();

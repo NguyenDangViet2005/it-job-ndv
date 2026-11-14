@@ -20,6 +20,42 @@ Hệ sinh thái tuyển dụng và kết nối việc làm ngành Công nghệ T
 
 ---
 
+## Chạy local với Docker Compose
+
+Mở Docker Desktop, rồi chạy các lệnh PowerShell sau ở thư mục gốc của repo. Chỉ tạo `.env.docker` ở lần đầu để giữ nguyên khóa JWT giữa các lần chạy.
+
+```powershell
+if (-not (Test-Path .env.docker)) {
+  $random = [Security.Cryptography.RandomNumberGenerator]::Create()
+  $lines = foreach ($key in 'JWT_ACCESS_SECRET', 'JWT_REFRESH_SECRET') {
+    $bytes = New-Object byte[] 32
+    $random.GetBytes($bytes)
+    "$key=$([Convert]::ToBase64String($bytes))"
+  }
+  $random.Dispose()
+  $lines | Set-Content .env.docker -Encoding ascii
+}
+docker compose up -d --build --remove-orphans
+docker compose ps
+```
+
+- Web mở tại [http://localhost:3001](http://localhost:3001). API health ở [http://localhost:8081/api/health](http://localhost:8081/api/health).
+- Compose chạy bốn service gồm `web`, `api`, `postgres` và `redis`. Khi khởi động, container `api` đợi PostgreSQL và Redis sẵn sàng, áp schema Prisma local rồi chạy NestJS. Database mới chỉ có schema, nên cần tạo hoặc nhập dữ liệu local để thấy danh sách việc làm.
+- Compose dùng PostgreSQL 15 và volume `postgres15-data`. Volume `postgres-data` từ cấu hình PostgreSQL 17 trước đây được lưu riêng. Database 15 bắt đầu trống khi tạo volume mới.
+- Image API của Compose dùng target `local` có Prisma CLI. Script khởi động chuẩn hóa biểu thức `CHECK` cho PostgreSQL 15 trong một bản sao contract. Target `runtime` mặc định chạy NestJS trực tiếp và cần database đã có schema.
+- `--remove-orphans` dọn container `db-init` cũ nếu đã từng chạy cấu hình Compose trước đây.
+- `NEXT_PUBLIC_BE_ENDPOINT` được đưa vào bundle khi build để browser gọi API. Server Next.js dùng `API_INTERNAL_URL=http://api:8081/api` để gọi qua mạng Compose. Cấu hình này dành cho máy local.
+- Compose bật `COOKIE_ALLOW_LOCAL_HTTP` để kiểm thử refresh cookie qua HTTP. Cờ này chỉ áp dụng khi `CLIENT_URL` là `http://localhost` với cổng tùy chọn.
+- Nếu trùng cổng, đặt `$env:WEB_PORT = "3002"` hoặc `$env:API_PORT = "8082"` rồi chạy lại `docker compose up -d --build`. Mở web bằng hostname `localhost` để khớp cấu hình API, CORS và cookie.
+- Để dùng upload và OAuth, điền biến tùy chọn từ `.env.docker.example` vào `.env.docker` rồi chạy `docker compose up -d api`. Google dùng callback `/api/auth/callback/google` và Facebook dùng `/api/auth/facebook/callback` trên URL API đã đăng ký với từng nhà cung cấp.
+
+```powershell
+docker compose logs -f web api
+docker compose down
+```
+
+`docker compose down` giữ volume PostgreSQL. Lần sau chạy lại bằng `docker compose up -d`, hoặc thêm `--build` khi có thay đổi source hay cấu hình build.
+
 ## 📁 Cấu Trúc Dự Án (Monorepo)
 
 ```text

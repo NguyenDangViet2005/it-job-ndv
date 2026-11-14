@@ -1,3 +1,4 @@
+import { getApiEndpoint } from "./api-endpoint";
 import { Attachment, Post, User } from "@/types";
 import { apiGet, apiPut, apiPost, apiDelete, apiGetPaginated } from "./api";
 
@@ -31,7 +32,7 @@ export const userApi = {
     formData.append("avatar", file);
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BE_ENDPOINT}${ENDPOINT}/${id}/avatar`,
+      `${getApiEndpoint()}${ENDPOINT}/${id}/avatar`,
       {
         method: "PUT",
         headers: {
@@ -55,7 +56,7 @@ export const userApi = {
     formData.append("coverimage", file);
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BE_ENDPOINT}${ENDPOINT}/${id}/cover-image`,
+      `${getApiEndpoint()}${ENDPOINT}/${id}/cover-image`,
       {
         method: "PUT",
         headers: {
@@ -162,7 +163,7 @@ export const userApi = {
     formData.append("cv", file);
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BE_ENDPOINT}${ENDPOINT}/${id}/cv`,
+      `${getApiEndpoint()}${ENDPOINT}/${id}/cv`,
       {
         method: "PUT",
         headers: {

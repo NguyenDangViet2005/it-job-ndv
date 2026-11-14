@@ -1,3 +1,4 @@
+import { getApiEndpoint } from "./api-endpoint";
 import { Post } from "@/types";
 import {
   apiPost,
@@ -89,7 +90,7 @@ export const postApi = {
     }
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BE_ENDPOINT}${ENDPOINT}`,
+      `${getApiEndpoint()}${ENDPOINT}`,
       {
         method: "POST",
         headers: {
@@ -141,7 +142,7 @@ export const postApi = {
     }
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BE_ENDPOINT}${ENDPOINT}/${id}`,
+      `${getApiEndpoint()}${ENDPOINT}/${id}`,
       {
         method: "PUT",
         headers: {

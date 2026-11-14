@@ -27,6 +27,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { authApi } from "@/apis/auth.api";
+import { getApiEndpoint } from "@/apis/api-endpoint";
 import { getRedirectPathByRole } from "@/helpers/permission.helper";
 import { toast } from "sonner";
 
@@ -37,16 +38,12 @@ export default function FormLogin() {
 
   const handleFacebookLogin = () => {
     setIsLoading(true);
-    window.location.href = `${
-      process.env.NEXT_PUBLIC_BE_ENDPOINT || "http://localhost:8081/api"
-    }/auth/facebook`;
+    window.location.href = `${getApiEndpoint()}/auth/facebook`;
   };
 
   const handleGoogleLogin = () => {
     setIsLoading(true);
-    window.location.href = `${
-      process.env.NEXT_PUBLIC_BE_ENDPOINT || "http://localhost:8081/api"
-    }/auth/google`;
+    window.location.href = `${getApiEndpoint()}/auth/google`;
   };
 
   const form = useForm<LoginFormData>({
